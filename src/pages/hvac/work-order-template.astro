@@ -1,0 +1,643 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/hvacTools';
+
+const tool = getToolBySlug('work-order-template')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What should be on an HVAC work order?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A complete HVAC work order includes dispatch info (date, technician, priority), customer details, equipment identification (make, model, serial number), reported issue and diagnosis, work performed, parts used, refrigerant quantities added or recovered, system readings (pressures, temperatures, superheat, subcooling), a safety checklist, and technician signature with arrival and completion times."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why do I need to record system readings?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "System readings like suction pressure, head pressure, superheat, subcooling, and temperature split document the system's operating condition at the time of service. These readings are critical for warranty claims, verifying proper charge levels, tracking system degradation over time, and protecting your company from liability disputes."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is refrigerant tracking required?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. EPA Section 608 requires tracking refrigerant usage for systems containing 50 or more pounds of refrigerant. However, best practice is to log every refrigerant addition and recovery regardless of system size. Detailed records protect you during EPA audits and help diagnose recurring leak issues."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's a normal temperature split for AC?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A normal temperature split (return air minus supply air) for an air conditioning system is 15 to 20 degrees Fahrenheit. A split below 15°F may indicate low refrigerant charge, a dirty evaporator coil, or airflow restrictions. A split above 20°F can suggest low airflow from a clogged filter or failing blower motor."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool}>
+  <div id="work-order-form">
+
+    <!-- Section: Dispatch Info -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Dispatch Info</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="wo-number">Work Order #</label>
+        <input type="text" id="wo-number" value="WO-001" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="wo-date">Date</label>
+        <input type="date" id="wo-date" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="wo-time">Time</label>
+        <input type="time" id="wo-time" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="tech-name">Technician Name</label>
+        <input type="text" id="tech-name" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="truck-number">Truck #</label>
+        <input type="text" id="truck-number" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="priority">Priority</label>
+        <select id="priority" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="Routine" selected>Routine</option>
+          <option value="Urgent">Urgent</option>
+          <option value="Emergency">Emergency</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Section: Customer Info -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Customer Info</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="cust-name">Customer Name</label>
+        <input type="text" id="cust-name" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="cust-address">Address</label>
+        <input type="text" id="cust-address" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="cust-phone">Phone</label>
+        <input type="text" id="cust-phone" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="access-instructions">Access Instructions</label>
+        <input type="text" id="access-instructions" placeholder="Gate code, lockbox, etc." class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <!-- Section: System Info -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">System Info</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="equip-type">Equipment Type</label>
+        <select id="equip-type" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="Central AC">Central AC</option>
+          <option value="Heat Pump">Heat Pump</option>
+          <option value="Furnace">Furnace</option>
+          <option value="Mini Split">Mini Split</option>
+          <option value="Boiler">Boiler</option>
+          <option value="Package Unit">Package Unit</option>
+          <option value="RTU">RTU</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="equip-make">Make</label>
+        <input type="text" id="equip-make" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="equip-model">Model</label>
+        <input type="text" id="equip-model" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="equip-serial">Serial #</label>
+        <input type="text" id="equip-serial" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="install-date">Install Date</label>
+        <input type="date" id="install-date" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="filter-size">Filter Size</label>
+        <input type="text" id="filter-size" placeholder="e.g., 16x25x1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="refrigerant-type">Refrigerant Type</label>
+        <select id="refrigerant-type" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="R-410A" selected>R-410A</option>
+          <option value="R-22">R-22</option>
+          <option value="R-32">R-32</option>
+          <option value="R-134a">R-134a</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Section: Service Details -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Service Details</h3>
+    <div class="space-y-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="reported-issue">Reported Issue</label>
+        <textarea id="reported-issue" rows="3" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors resize-y"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="diagnosis">Diagnosis</label>
+        <textarea id="diagnosis" rows="3" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors resize-y"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="work-performed">Work Performed</label>
+        <textarea id="work-performed" rows="4" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors resize-y"></textarea>
+      </div>
+    </div>
+
+    <!-- Section: Parts Used -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Parts Used</h3>
+    <div class="mb-8">
+      <div id="parts-table" class="space-y-3">
+        <div class="grid grid-cols-[1fr_1fr_80px_40px] gap-3 items-end part-row">
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-2">Part Name</label>
+            <input type="text" class="part-name w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-2">Part #</label>
+            <input type="text" class="part-number w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-2">Qty</label>
+            <input type="number" value="1" min="1" class="part-qty w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-2">&nbsp;</label>
+            <button type="button" class="remove-part-btn w-full bg-red-900/30 text-red-400 rounded-lg py-3 hover:bg-red-900/50 transition-colors cursor-pointer text-lg font-bold" title="Remove part">&times;</button>
+          </div>
+        </div>
+      </div>
+      <button type="button" id="add-part-btn" class="mt-3 text-accent hover:text-accent-hover transition-colors cursor-pointer text-sm font-medium">+ Add Part</button>
+    </div>
+
+    <!-- Section: Refrigerant Log -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Refrigerant Log</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="ref-added">Amount Added (lbs)</label>
+        <input type="number" id="ref-added" min="0" step="0.25" value="0" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="ref-recovered">Amount Recovered (lbs)</label>
+        <input type="number" id="ref-recovered" min="0" step="0.25" value="0" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <!-- Section: System Readings -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">System Readings</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="suction-psi">Suction Pressure (PSI)</label>
+        <input type="number" id="suction-psi" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="head-psi">Head/Liquid Pressure (PSI)</label>
+        <input type="number" id="head-psi" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="superheat">Superheat (&deg;F)</label>
+        <input type="number" id="superheat" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="subcooling">Subcooling (&deg;F)</label>
+        <input type="number" id="subcooling" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="supply-temp">Supply Air Temp (&deg;F)</label>
+        <input type="number" id="supply-temp" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="return-temp">Return Air Temp (&deg;F)</label>
+        <input type="number" id="return-temp" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2">Temperature Split (&deg;F)</label>
+        <div id="temp-split-display" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-lg font-bold text-text-muted">&mdash;</div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="comp-amps">Compressor Amps</label>
+        <input type="number" id="comp-amps" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <!-- Section: Safety Checklist -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Safety Checklist</h3>
+    <div class="space-y-3 mb-8">
+      <div class="flex items-center gap-3">
+        <input type="checkbox" id="chk-co" class="w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent cursor-pointer" />
+        <label for="chk-co" class="text-text-primary cursor-pointer">CO Test</label>
+        <input type="number" id="co-ppm" placeholder="PPM" min="0" class="w-24 bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div class="flex items-center gap-3">
+        <input type="checkbox" id="chk-gasleak" class="w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent cursor-pointer" />
+        <label for="chk-gasleak" class="text-text-primary cursor-pointer">Gas Leak Check</label>
+      </div>
+      <div class="flex items-center gap-3">
+        <input type="checkbox" id="chk-electrical" class="w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent cursor-pointer" />
+        <label for="chk-electrical" class="text-text-primary cursor-pointer">Electrical Connections Inspected</label>
+      </div>
+      <div class="flex items-center gap-3">
+        <input type="checkbox" id="chk-capacitor" class="w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent cursor-pointer" />
+        <label for="chk-capacitor" class="text-text-primary cursor-pointer">Capacitor Tested</label>
+      </div>
+      <div class="flex items-center gap-3">
+        <input type="checkbox" id="chk-contactor" class="w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent cursor-pointer" />
+        <label for="chk-contactor" class="text-text-primary cursor-pointer">Contactor Inspected</label>
+      </div>
+      <div class="flex items-center gap-3">
+        <input type="checkbox" id="chk-drain" class="w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent cursor-pointer" />
+        <label for="chk-drain" class="text-text-primary cursor-pointer">Drain Line Clear</label>
+      </div>
+    </div>
+
+    <!-- Section: Completion -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Completion</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="time-arrived">Time Arrived</label>
+        <input type="time" id="time-arrived" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="time-completed">Time Completed</label>
+        <input type="time" id="time-completed" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2">Total Hours</label>
+        <div id="total-hours-display" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-lg font-bold text-text-muted">&mdash;</div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="tech-signature">Technician Signature</label>
+        <input type="text" id="tech-signature" placeholder="Type full name" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <!-- Generate Button -->
+    <button id="generate-btn" class="w-full md:w-auto bg-accent text-white font-heading font-bold text-base uppercase tracking-wider px-8 py-3.5 rounded-lg hover:bg-accent-hover hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,107,43,0.3)] transition-all cursor-pointer">
+      Generate Work Order &rarr;
+    </button>
+  </div>
+
+  <!-- Content sections -->
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <!-- How to Use -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Template</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Fill in dispatch and customer info.</strong> Start with the work order number, date, and technician assignment. Add the customer's name, address, phone, and any access instructions like gate codes or lockbox combos.</p>
+          <p><strong class="text-text-primary">2. Identify the system.</strong> Select the equipment type and enter the make, model, and serial number from the data plate. Record the install date and current filter size so the next tech has a complete picture.</p>
+          <p><strong class="text-text-primary">3. Document the service.</strong> Write what the customer reported, your diagnosis, and exactly what work you performed. Be specific — vague notes cause problems during warranty claims and callbacks.</p>
+          <p><strong class="text-text-primary">4. Record readings and safety checks.</strong> Log all system pressures, temperatures, and amp draws. Run through the safety checklist. These readings prove the system was operating correctly when you left.</p>
+          <p><strong class="text-text-primary">5. Generate the work order.</strong> Hit the button to create a clean, printable work order. Have the customer review it, then use it for your records, warranty documentation, or office filing.</p>
+        </div>
+      </section>
+
+      <!-- What Goes on a Work Order -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">What Goes on an HVAC Work Order</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>A work order is the single document that proves what happened on a job. Every section exists for a reason.</p>
+          <p><strong class="text-text-primary">System identification</strong> — make, model, and serial number — ties the work to a specific piece of equipment. Manufacturers require this for warranty claims. Without it, you're fighting an uphill battle to get a compressor covered.</p>
+          <p><strong class="text-text-primary">System readings</strong> document the equipment's operating condition at the time of service. Suction and head pressures, superheat, subcooling, and the temperature split tell the full story. If a customer calls back two weeks later saying the system never worked right, your readings prove otherwise.</p>
+          <p><strong class="text-text-primary">Refrigerant tracking</strong> is not optional. EPA Section 608 requires records of refrigerant added and recovered for commercial systems. Smart contractors track it on every job regardless of size. It protects you during audits and helps identify systems with chronic leak issues.</p>
+          <p><strong class="text-text-primary">The safety checklist</strong> is your liability shield. Documenting that you checked for CO, inspected gas connections, and tested electrical components shows due diligence. If something goes wrong after you leave, that checklist is your first line of defense.</p>
+          <p><strong class="text-text-primary">Parts used</strong> with part numbers create a clear record for inventory management, warranty tracking, and accurate invoicing. No more guessing what capacitor you put in three months ago.</p>
+        </div>
+      </section>
+
+      <!-- When Pros Use This -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When HVAC Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Service and repair calls.</strong> Every diagnostic visit and repair needs a work order. The tech fills it out on site — reported issue, diagnosis, work performed, parts used, and system readings. It becomes the permanent record of the visit and the basis for the invoice.</p>
+          <p><strong class="text-text-primary">Preventive maintenance visits.</strong> During seasonal tune-ups, the work order captures baseline readings and safety checks. Over multiple visits, these readings show trends — rising amp draws, declining temperature splits, slowly dropping pressures — that help you recommend repairs before failures happen.</p>
+          <p><strong class="text-text-primary">Warranty and callback documentation.</strong> When a manufacturer asks for proof that a system was properly maintained, or when a customer disputes what was done, the work order is your evidence. Complete work orders with readings, parts, and signatures eliminate he-said-she-said situations.</p>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What should be on an HVAC work order?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A complete HVAC work order includes dispatch info (date, technician, priority), customer details, equipment identification (make, model, serial number), reported issue and diagnosis, work performed, parts used, refrigerant quantities added or recovered, system readings (pressures, temperatures, superheat, subcooling), a safety checklist, and technician signature with arrival and completion times.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Why do I need to record system readings?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">System readings like suction pressure, head pressure, superheat, subcooling, and temperature split document the system's operating condition at the time of service. These readings are critical for warranty claims, verifying proper charge levels, tracking system degradation over time, and protecting your company from liability disputes.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Is refrigerant tracking required?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. EPA Section 608 requires tracking refrigerant usage for systems containing 50 or more pounds of refrigerant. However, best practice is to log every refrigerant addition and recovery regardless of system size. Detailed records protect you during EPA audits and help diagnose recurring leak issues.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What's a normal temperature split for AC?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A normal temperature split (return air minus supply air) for an air conditioning system is 15 to 20 degrees Fahrenheit. A split below 15°F may indicate low refrigerant charge, a dirty evaporator coil, or airflow restrictions. A split above 20°F can suggest low airflow from a clogged filter or failing blower motor.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  // --- Default date and time ---
+  const now = new Date();
+  const dateInput = document.getElementById('wo-date') as HTMLInputElement;
+  const timeInput = document.getElementById('wo-time') as HTMLInputElement;
+  if (dateInput && !dateInput.value) {
+    dateInput.value = now.toISOString().slice(0, 10);
+  }
+  if (timeInput && !timeInput.value) {
+    timeInput.value = now.toTimeString().slice(0, 5);
+  }
+
+  // --- Temperature Split auto-calculation ---
+  function updateTempSplit() {
+    const supply = parseFloat((document.getElementById('supply-temp') as HTMLInputElement).value);
+    const ret = parseFloat((document.getElementById('return-temp') as HTMLInputElement).value);
+    const display = document.getElementById('temp-split-display')!;
+    if (!isNaN(supply) && !isNaN(ret)) {
+      const split = ret - supply;
+      display.textContent = split.toFixed(1) + '°F';
+      if (split >= 15 && split <= 20) {
+        display.className = 'w-full bg-bg-dark border border-green-500/50 rounded-lg px-4 py-3 text-lg font-bold text-green-400';
+      } else {
+        display.className = 'w-full bg-bg-dark border border-yellow-500/50 rounded-lg px-4 py-3 text-lg font-bold text-yellow-400';
+      }
+    } else {
+      display.textContent = '\u2014';
+      display.className = 'w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-lg font-bold text-text-muted';
+    }
+  }
+  document.getElementById('supply-temp')?.addEventListener('input', updateTempSplit);
+  document.getElementById('return-temp')?.addEventListener('input', updateTempSplit);
+
+  // --- Total Hours auto-calculation ---
+  function updateTotalHours() {
+    const arrived = (document.getElementById('time-arrived') as HTMLInputElement).value;
+    const completed = (document.getElementById('time-completed') as HTMLInputElement).value;
+    const display = document.getElementById('total-hours-display')!;
+    if (arrived && completed) {
+      const [ah, am] = arrived.split(':').map(Number);
+      const [ch, cm] = completed.split(':').map(Number);
+      let totalMinutes = (ch * 60 + cm) - (ah * 60 + am);
+      if (totalMinutes < 0) totalMinutes += 24 * 60; // handle overnight
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      display.textContent = hours + 'h ' + minutes + 'm';
+      display.className = 'w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-lg font-bold text-text-primary';
+    } else {
+      display.textContent = '\u2014';
+      display.className = 'w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-lg font-bold text-text-muted';
+    }
+  }
+  document.getElementById('time-arrived')?.addEventListener('input', updateTotalHours);
+  document.getElementById('time-completed')?.addEventListener('input', updateTotalHours);
+
+  // --- Dynamic Parts Table ---
+  function addPartRow() {
+    const table = document.getElementById('parts-table')!;
+    const row = document.createElement('div');
+    row.className = 'grid grid-cols-[1fr_1fr_80px_40px] gap-3 items-end part-row';
+    row.innerHTML = `
+      <div>
+        <input type="text" class="part-name w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <input type="text" class="part-number w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <input type="number" value="1" min="1" class="part-qty w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <button type="button" class="remove-part-btn w-full bg-red-900/30 text-red-400 rounded-lg py-3 hover:bg-red-900/50 transition-colors cursor-pointer text-lg font-bold" title="Remove part">&times;</button>
+      </div>
+    `;
+    table.appendChild(row);
+  }
+
+  document.getElementById('add-part-btn')?.addEventListener('click', addPartRow);
+
+  document.getElementById('parts-table')?.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    if (target.classList.contains('remove-part-btn')) {
+      const row = target.closest('.part-row');
+      const allRows = document.querySelectorAll('.part-row');
+      if (allRows.length > 1 && row) {
+        row.remove();
+      }
+    }
+  });
+
+  // --- Generate Work Order ---
+  function getVal(id: string): string {
+    const el = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
+    return el ? el.value : '';
+  }
+  function getChecked(id: string): boolean {
+    return (document.getElementById(id) as HTMLInputElement)?.checked || false;
+  }
+
+  function generateWorkOrder() {
+    // Collect parts
+    const partRows = document.querySelectorAll('.part-row');
+    let partsHtml = '';
+    partRows.forEach(row => {
+      const name = (row.querySelector('.part-name') as HTMLInputElement)?.value || '';
+      const num = (row.querySelector('.part-number') as HTMLInputElement)?.value || '';
+      const qty = (row.querySelector('.part-qty') as HTMLInputElement)?.value || '';
+      if (name || num) {
+        partsHtml += `<tr><td style="border:1px solid #ddd;padding:6px 10px;">${name}</td><td style="border:1px solid #ddd;padding:6px 10px;">${num}</td><td style="border:1px solid #ddd;padding:6px 10px;text-align:center;">${qty}</td></tr>`;
+      }
+    });
+
+    // Temperature split
+    const supplyT = parseFloat(getVal('supply-temp'));
+    const returnT = parseFloat(getVal('return-temp'));
+    let splitVal = '';
+    let splitColor = '#666';
+    if (!isNaN(supplyT) && !isNaN(returnT)) {
+      const s = returnT - supplyT;
+      splitVal = s.toFixed(1) + '°F';
+      splitColor = (s >= 15 && s <= 20) ? '#16a34a' : '#ca8a04';
+    }
+
+    // Total hours
+    const arrived = getVal('time-arrived');
+    const completed = getVal('time-completed');
+    let totalHours = '';
+    if (arrived && completed) {
+      const [ah, am] = arrived.split(':').map(Number);
+      const [ch, cm] = completed.split(':').map(Number);
+      let totalMin = (ch * 60 + cm) - (ah * 60 + am);
+      if (totalMin < 0) totalMin += 24 * 60;
+      totalHours = Math.floor(totalMin / 60) + 'h ' + (totalMin % 60) + 'm';
+    }
+
+    // Safety checklist
+    const safetyItems = [
+      { id: 'chk-co', label: 'CO Test', extra: getVal('co-ppm') ? ' — ' + getVal('co-ppm') + ' PPM' : '' },
+      { id: 'chk-gasleak', label: 'Gas Leak Check', extra: '' },
+      { id: 'chk-electrical', label: 'Electrical Connections Inspected', extra: '' },
+      { id: 'chk-capacitor', label: 'Capacitor Tested', extra: '' },
+      { id: 'chk-contactor', label: 'Contactor Inspected', extra: '' },
+      { id: 'chk-drain', label: 'Drain Line Clear', extra: '' },
+    ];
+    let safetyHtml = '';
+    safetyItems.forEach(item => {
+      const checked = getChecked(item.id);
+      const mark = checked ? '&#9745;' : '&#9744;';
+      safetyHtml += `<div style="margin-bottom:4px;">${mark} ${item.label}${item.extra}</div>`;
+    });
+
+    const html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Work Order ${getVal('wo-number')}</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color:#1a1a1a; padding:40px; max-width:850px; margin:0 auto; font-size:14px; line-height:1.5; }
+  h1 { font-size:22px; margin-bottom:4px; }
+  h2 { font-size:15px; color:#333; margin:20px 0 8px; padding-bottom:4px; border-bottom:2px solid #e5e5e5; text-transform:uppercase; letter-spacing:0.5px; }
+  .header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; padding-bottom:16px; border-bottom:3px solid #1a1a1a; }
+  .header-left { }
+  .header-right { text-align:right; font-size:13px; color:#555; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:4px 24px; margin-bottom:6px; }
+  .grid2 .label { font-weight:600; font-size:12px; color:#666; text-transform:uppercase; letter-spacing:0.3px; }
+  .grid2 .value { font-size:14px; margin-bottom:6px; }
+  .text-block { margin-bottom:12px; }
+  .text-block .label { font-weight:600; font-size:12px; color:#666; text-transform:uppercase; letter-spacing:0.3px; margin-bottom:2px; }
+  .text-block .value { font-size:14px; white-space:pre-wrap; background:#f9f9f9; padding:8px 10px; border-radius:4px; min-height:24px; }
+  table { width:100%; border-collapse:collapse; margin-bottom:8px; }
+  th { background:#f0f0f0; border:1px solid #ddd; padding:6px 10px; text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:0.3px; }
+  td { border:1px solid #ddd; padding:6px 10px; }
+  .readings-table td { text-align:center; }
+  .split-val { font-weight:700; color:${splitColor}; }
+  .safety { font-size:14px; }
+  .signature-block { display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:40px; padding-top:16px; }
+  .sig-line { border-top:1px solid #1a1a1a; padding-top:6px; font-size:12px; color:#666; text-transform:uppercase; }
+  .sig-name { font-size:16px; font-weight:600; min-height:20px; }
+  .priority-badge { display:inline-block; padding:2px 10px; border-radius:4px; font-size:12px; font-weight:600; text-transform:uppercase; }
+  .priority-Routine { background:#e0f2e9; color:#166534; }
+  .priority-Urgent { background:#fef3c7; color:#92400e; }
+  .priority-Emergency { background:#fee2e2; color:#991b1b; }
+  @media print { body { padding:20px; } }
+</style>
+</head><body>
+<div class="header">
+  <div class="header-left">
+    <h1>HVAC Work Order</h1>
+    <div style="font-size:13px;color:#555;">Service Documentation</div>
+  </div>
+  <div class="header-right">
+    <div style="font-size:20px;font-weight:700;">${getVal('wo-number')}</div>
+    <div>${getVal('wo-date')}</div>
+    <div>${getVal('wo-time')}</div>
+    <span class="priority-badge priority-${getVal('priority')}">${getVal('priority')}</span>
+  </div>
+</div>
+
+<h2>Dispatch</h2>
+<div class="grid2">
+  <div><span class="label">Technician:</span></div><div><span class="label">Truck #:</span></div>
+  <div class="value">${getVal('tech-name') || '—'}</div><div class="value">${getVal('truck-number') || '—'}</div>
+</div>
+
+<h2>Customer</h2>
+<div class="grid2">
+  <div><span class="label">Name:</span></div><div><span class="label">Phone:</span></div>
+  <div class="value">${getVal('cust-name') || '—'}</div><div class="value">${getVal('cust-phone') || '—'}</div>
+  <div><span class="label">Address:</span></div><div><span class="label">Access:</span></div>
+  <div class="value">${getVal('cust-address') || '—'}</div><div class="value">${getVal('access-instructions') || '—'}</div>
+</div>
+
+<h2>Equipment</h2>
+<div class="grid2">
+  <div><span class="label">Type:</span></div><div><span class="label">Make:</span></div>
+  <div class="value">${getVal('equip-type')}</div><div class="value">${getVal('equip-make') || '—'}</div>
+  <div><span class="label">Model:</span></div><div><span class="label">Serial #:</span></div>
+  <div class="value">${getVal('equip-model') || '—'}</div><div class="value">${getVal('equip-serial') || '—'}</div>
+  <div><span class="label">Install Date:</span></div><div><span class="label">Filter Size:</span></div>
+  <div class="value">${getVal('install-date') || '—'}</div><div class="value">${getVal('filter-size') || '—'}</div>
+  <div><span class="label">Refrigerant:</span></div><div></div>
+  <div class="value">${getVal('refrigerant-type')}</div><div></div>
+</div>
+
+<h2>Service Details</h2>
+<div class="text-block"><div class="label">Reported Issue</div><div class="value">${getVal('reported-issue') || '—'}</div></div>
+<div class="text-block"><div class="label">Diagnosis</div><div class="value">${getVal('diagnosis') || '—'}</div></div>
+<div class="text-block"><div class="label">Work Performed</div><div class="value">${getVal('work-performed') || '—'}</div></div>
+
+${partsHtml ? `<h2>Parts Used</h2>
+<table><thead><tr><th>Part Name</th><th>Part #</th><th style="text-align:center;">Qty</th></tr></thead><tbody>${partsHtml}</tbody></table>` : ''}
+
+<h2>Refrigerant Log</h2>
+<div class="grid2">
+  <div><span class="label">Added:</span></div><div><span class="label">Recovered:</span></div>
+  <div class="value">${getVal('ref-added') || '0'} lbs</div><div class="value">${getVal('ref-recovered') || '0'} lbs</div>
+</div>
+
+<h2>System Readings</h2>
+<table class="readings-table">
+  <thead><tr><th>Suction PSI</th><th>Head PSI</th><th>Superheat</th><th>Subcooling</th></tr></thead>
+  <tbody><tr><td>${getVal('suction-psi') || '—'}</td><td>${getVal('head-psi') || '—'}</td><td>${getVal('superheat') ? getVal('superheat') + '°F' : '—'}</td><td>${getVal('subcooling') ? getVal('subcooling') + '°F' : '—'}</td></tr></tbody>
+</table>
+<table class="readings-table" style="margin-top:8px;">
+  <thead><tr><th>Supply Air</th><th>Return Air</th><th>Temp Split</th><th>Comp. Amps</th></tr></thead>
+  <tbody><tr><td>${getVal('supply-temp') ? getVal('supply-temp') + '°F' : '—'}</td><td>${getVal('return-temp') ? getVal('return-temp') + '°F' : '—'}</td><td class="split-val">${splitVal || '—'}</td><td>${getVal('comp-amps') || '—'}</td></tr></tbody>
+</table>
+
+<h2>Safety Checklist</h2>
+<div class="safety">${safetyHtml}</div>
+
+<h2>Completion</h2>
+<div class="grid2">
+  <div><span class="label">Time Arrived:</span></div><div><span class="label">Time Completed:</span></div>
+  <div class="value">${arrived || '—'}</div><div class="value">${completed || '—'}</div>
+  <div><span class="label">Total Hours:</span></div><div></div>
+  <div class="value">${totalHours || '—'}</div><div></div>
+</div>
+
+<div class="signature-block">
+  <div>
+    <div class="sig-name">${getVal('tech-signature') || ''}</div>
+    <div class="sig-line">Technician Signature</div>
+  </div>
+  <div>
+    <div class="sig-name">&nbsp;</div>
+    <div class="sig-line">Customer Signature</div>
+  </div>
+</div>
+
+</body></html>`;
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(html);
+      printWindow.document.close();
+    }
+  }
+
+  document.getElementById('generate-btn')?.addEventListener('click', generateWorkOrder);
+</script>

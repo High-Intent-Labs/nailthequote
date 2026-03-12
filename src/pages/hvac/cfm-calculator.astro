@@ -1,0 +1,181 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/hvacTools';
+const tool = getToolBySlug('cfm-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "How do I calculate CFM for a room?", "acceptedAnswer": { "@type": "Answer", "text": "Multiply the room volume (length × width × height) by the recommended air changes per hour (ACH) for the room type, then divide by 60. For a standard bedroom: (12×14×8 × 5.5) / 60 = 123 CFM." } },
+    { "@type": "Question", "name": "How many CFM per square foot for HVAC?", "acceptedAnswer": { "@type": "Answer", "text": "Roughly 1 CFM per square foot for standard 8-foot ceilings. For higher ceilings, increase proportionally. Kitchens and bathrooms need more airflow per square foot than bedrooms due to higher ACH requirements." } },
+    { "@type": "Question", "name": "What is a good CFM for a house?", "acceptedAnswer": { "@type": "Answer", "text": "A typical 2,000 sq ft home needs 800-1,200 CFM total supply airflow depending on ceiling height and layout. Most residential systems deliver 400 CFM per ton of cooling capacity." } },
+    { "@type": "Question", "name": "How many CFM per register?", "acceptedAnswer": { "@type": "Answer", "text": "A standard 6×10 inch supply register handles 75-100 CFM. A 6×12 handles 100-125 CFM. A 10×10 handles 125-175 CFM. Size registers so air velocity stays between 600-900 FPM for quiet operation." } }
+  ]
+};
+---
+
+<ToolLayout tool={tool}>
+  <div id="cfm-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="length">Room Length (ft)</label>
+        <input type="number" id="length" value="14" min="1" max="200" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="width">Room Width (ft)</label>
+        <input type="number" id="width" value="12" min="1" max="200" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="ceiling">Ceiling Height (ft)</label>
+        <input type="number" id="ceiling" value="8" min="6" max="30" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roomType">Room Type</label>
+        <select id="roomType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="5.5">Bedroom (5.5 ACH)</option>
+          <option value="5" selected>Living Room (5 ACH)</option>
+          <option value="7.5">Kitchen (7.5 ACH)</option>
+          <option value="7">Bathroom (7 ACH)</option>
+          <option value="8.5">Laundry (8.5 ACH)</option>
+          <option value="7">Garage (7 ACH)</option>
+          <option value="13">Attic / Crawlspace (13 ACH)</option>
+          <option value="5">Office / Study (5 ACH)</option>
+          <option value="3.5">Basement (3.5 ACH)</option>
+          <option value="8">Commercial / Retail (8 ACH)</option>
+          <option value="17">Restaurant Kitchen (17 ACH)</option>
+          <option value="17">Server Room (17 ACH)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="occupants">Occupants</label>
+        <input type="number" id="occupants" value="2" min="0" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <button id="calc-btn" class="w-full md:w-auto bg-accent text-white font-heading font-bold text-base uppercase tracking-wider px-8 py-3.5 rounded-lg hover:bg-accent-hover hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,107,43,0.3)] transition-all cursor-pointer">
+      Calculate CFM &rarr;
+    </button>
+
+    <div id="results" class="hidden mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Required CFM</div>
+          <div id="r-cfm" class="font-heading font-extrabold text-3xl text-accent">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Room Volume</div>
+          <div id="r-vol" class="font-heading font-extrabold text-2xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Registers Needed</div>
+          <div id="r-reg" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+          <div class="text-text-muted text-xs mt-1">6×10" @ 85 CFM each</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">ASHRAE Check</div>
+          <div id="r-ashrae" class="font-heading font-extrabold text-lg text-text-primary">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter room dimensions.</strong> Measure the length, width, and ceiling height. For irregular rooms, approximate the total square footage.</p>
+          <p><strong class="text-text-primary">2. Select the room type.</strong> Each room type has a recommended air changes per hour (ACH) rate based on ASHRAE standards. Kitchens and bathrooms need more ventilation than bedrooms.</p>
+          <p><strong class="text-text-primary">3. Enter occupant count.</strong> This is used for the ASHRAE outdoor air check — each person needs a minimum of 15 CFM of outdoor air.</p>
+          <p><strong class="text-text-primary">4. Read the results.</strong> The required CFM tells you how much airflow the room needs. The register count helps you plan supply duct layout.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the CFM Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>CFM (cubic feet per minute) measures how much air moves through a space. The calculation is straightforward:</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm">
+            <p>Room_Volume = Length × Width × Ceiling_Height</p>
+            <p>CFM = (Room_Volume × ACH) ÷ 60</p>
+          </div>
+          <p>ACH (air changes per hour) varies by room type. A kitchen at 7.5 ACH means the entire room volume of air is replaced 7.5 times per hour. The division by 60 converts from hourly to per-minute flow.</p>
+          <p>The ASHRAE check ensures the CFM meets minimum outdoor air requirements: at least 15 CFM per occupant. If the calculated CFM falls below this, the room needs supplemental ventilation.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When HVAC Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Duct design and layout.</strong> Before sizing ducts, you need to know the CFM each room requires. This calculator gives you room-by-room CFM to feed into duct sizing.</p>
+          <p><strong class="text-text-primary">Register selection.</strong> Knowing the CFM tells you how many registers a room needs and what size. Undersized registers create noise and restrict airflow.</p>
+          <p><strong class="text-text-primary">Troubleshooting comfort complaints.</strong> Customer says a room is always hot? Check if the CFM delivered matches what's needed. A bedroom getting 50 CFM when it needs 120 will never be comfortable.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate CFM for a room?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Multiply the room volume (length × width × height) by the recommended ACH for the room type, then divide by 60. For a standard bedroom: (12×14×8 × 5.5) / 60 = 123 CFM.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many CFM per square foot for HVAC?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Roughly 1 CFM per square foot for standard 8-foot ceilings. For higher ceilings, increase proportionally. Kitchens and bathrooms need more airflow per square foot due to higher ACH requirements.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a good CFM for a house?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A typical 2,000 sq ft home needs 800-1,200 CFM total supply airflow. Most residential systems deliver 400 CFM per ton of cooling capacity.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many CFM per register?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard 6×10" supply register handles 75-100 CFM. A 6×12 handles 100-125 CFM. Size registers so velocity stays between 600-900 FPM for quiet operation.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const length = parseFloat((document.getElementById('length') as HTMLInputElement).value) || 14;
+    const width = parseFloat((document.getElementById('width') as HTMLInputElement).value) || 12;
+    const ceiling = parseFloat((document.getElementById('ceiling') as HTMLInputElement).value) || 8;
+    const ach = parseFloat((document.getElementById('roomType') as HTMLSelectElement).value);
+    const occupants = parseInt((document.getElementById('occupants') as HTMLInputElement).value) || 0;
+
+    const volume = length * width * ceiling;
+    const cfm = Math.round((volume * ach) / 60);
+    const registers = Math.ceil(cfm / 85);
+    const ashraeMin = occupants * 15;
+    const ashraePasses = cfm >= ashraeMin;
+
+    document.getElementById('r-cfm')!.textContent = cfm.toLocaleString() + ' CFM';
+    document.getElementById('r-vol')!.textContent = volume.toLocaleString() + ' cu ft';
+    document.getElementById('r-reg')!.textContent = registers.toString();
+
+    const ashraeEl = document.getElementById('r-ashrae')!;
+    if (occupants === 0) {
+      ashraeEl.textContent = 'N/A';
+      ashraeEl.className = 'font-heading font-extrabold text-lg text-text-muted';
+    } else if (ashraePasses) {
+      ashraeEl.textContent = '✓ Passes (' + ashraeMin + ' CFM min)';
+      ashraeEl.className = 'font-heading font-extrabold text-lg text-[#34D399]';
+    } else {
+      ashraeEl.textContent = '✗ Below min (' + ashraeMin + ' CFM needed)';
+      ashraeEl.className = 'font-heading font-extrabold text-lg text-[#F87171]';
+    }
+
+    document.getElementById('results')!.classList.remove('hidden');
+  }
+
+  document.getElementById('calc-btn')?.addEventListener('click', calculate);
+  document.querySelectorAll('#cfm-calc input, #cfm-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+  });
+  calculate();
+</script>

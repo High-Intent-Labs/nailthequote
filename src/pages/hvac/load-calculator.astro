@@ -1,0 +1,233 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/hvacTools';
+
+const tool = getToolBySlug('load-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I calculate HVAC load for a house?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Start with 20 BTU per square foot, then multiply by adjustment factors for climate zone, insulation quality, ceiling height, and sun exposure. Add BTU for windows, doors, occupants, and kitchen. Divide cooling BTU by 12,000 to get tonnage." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Manual J and do I need it?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Manual J is the industry standard whole-house load calculation developed by ACCA. It considers wall construction, window types, orientation, infiltration, and duct losses. This calculator provides a simplified estimate — a full Manual J is required for permit applications and final equipment selection." }
+    },
+    {
+      "@type": "Question",
+      "name": "How many tons of AC do I need per square foot?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A rough rule is 1 ton per 500-600 square feet in moderate climates, or 1 ton per 400-500 sq ft in hot climates. However, factors like insulation, windows, and occupancy make every home different. Use this calculator for a more accurate estimate." }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if I oversize or undersize an HVAC system?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Oversizing causes short cycling, poor humidity control, higher energy bills, and premature equipment failure. Undersizing means the system runs constantly and can't maintain temperature on extreme days. Proper sizing is the most important factor in system performance." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool}>
+  <div id="load-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="sqft">Total Square Footage</label>
+        <input type="number" id="sqft" value="2000" min="200" max="20000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="ceiling">Ceiling Height (ft)</label>
+        <input type="number" id="ceiling" value="8" min="6" max="20" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="zone">Climate Zone</label>
+        <select id="zone" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1">Zone 1 — Hot Humid (Miami, Houston)</option>
+          <option value="2">Zone 2 — Hot Dry (Phoenix, Las Vegas)</option>
+          <option value="3">Zone 3 — Warm (Atlanta, Dallas)</option>
+          <option value="4" selected>Zone 4 — Mixed (DC, Nashville, St. Louis)</option>
+          <option value="5">Zone 5 — Cool (Chicago, Boston, Denver)</option>
+          <option value="6">Zone 6 — Cold (Minneapolis, Milwaukee)</option>
+          <option value="7">Zone 7 — Very Cold (Duluth, Anchorage)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="insulation">Insulation Quality</label>
+        <select id="insulation" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="poor">Poor — Little/no wall insulation, single-pane</option>
+          <option value="average" selected>Average — Standard fiberglass, double-pane</option>
+          <option value="good">Good — Above-code insulation, Low-E glass</option>
+          <option value="excellent">Excellent — Spray foam, triple-pane, tight envelope</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="windows">Number of Windows</label>
+        <input type="number" id="windows" value="10" min="0" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="windowType">Window Type</label>
+        <select id="windowType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1200">Single-pane</option>
+          <option value="800" selected>Double-pane</option>
+          <option value="500">Triple-pane / Low-E</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="doors">Exterior Doors</label>
+        <input type="number" id="doors" value="2" min="0" max="20" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="sun">Sun Exposure</label>
+        <select id="sun" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="heavy">Heavy — South/west facing, lots of glass</option>
+          <option value="moderate" selected>Moderate — Mixed exposure</option>
+          <option value="minimal">Minimal — North facing, heavy shade</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="occupants">Number of Occupants</label>
+        <input type="number" id="occupants" value="4" min="1" max="30" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="kitchen">Kitchen?</label>
+        <select id="kitchen" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="4000" selected>Yes</option>
+          <option value="0">No</option>
+        </select>
+      </div>
+    </div>
+
+    <button id="calc-btn" class="w-full md:w-auto bg-accent text-white font-heading font-bold text-base uppercase tracking-wider px-8 py-3.5 rounded-lg hover:bg-accent-hover hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,107,43,0.3)] transition-all cursor-pointer">
+      Calculate Load &rarr;
+    </button>
+
+    <div id="results" class="hidden mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cooling BTU</div>
+          <div id="r-cool" class="font-heading font-extrabold text-2xl text-accent">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Heating BTU</div>
+          <div id="r-heat" class="font-heading font-extrabold text-2xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">System Tonnage</div>
+          <div id="r-tons" class="font-heading font-extrabold text-2xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Size Range (±15%)</div>
+          <div id="r-range" class="font-heading font-extrabold text-lg text-text-primary">—</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">This is an estimate — a full Manual J calculation is required for final system sizing and permit applications.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter total square footage.</strong> Include all conditioned living space. Don't include unfinished basements, garages, or unconditioned attics.</p>
+          <p><strong class="text-text-primary">2. Select your climate zone.</strong> Zones 1-2 are hot (southern US), zones 4-5 are moderate (mid-Atlantic, Midwest), zones 6-7 are cold (northern US). The zone affects both cooling and heating load.</p>
+          <p><strong class="text-text-primary">3. Rate insulation quality.</strong> "Poor" means pre-1980 construction with minimal upgrades. "Excellent" means spray foam walls, triple-pane windows, and verified air sealing.</p>
+          <p><strong class="text-text-primary">4. Count windows and doors.</strong> Each window and exterior door is a heat transfer point. Window type matters — single-pane transfers 2.4× more heat than triple-pane Low-E.</p>
+          <p><strong class="text-text-primary">5. Set sun exposure and occupants.</strong> South and west-facing homes in zones 1-3 take heavy solar load. Each occupant adds ~600 BTU of body heat.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the HVAC Load Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>This calculator uses a simplified Manual J approach with a <strong class="text-text-primary">20 BTU/sq ft baseline</strong> and seven adjustment factors.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm overflow-x-auto">
+            <p>Cooling_BTU = (20 × Sqft × Climate × Ceiling × Insulation × Sun) + (Windows × Window_BTU) + (Doors × 1000) + (Occupants × 600) + Kitchen</p>
+            <p class="mt-2">Heating_BTU = Cooling_BTU × Heating_Factor</p>
+            <p class="mt-2">Tonnage = Cooling_BTU / 12,000 (rounded to nearest 0.5 ton)</p>
+          </div>
+          <p>The climate zone adjusts cooling demand (hot zones multiply up, cold zones multiply down) and applies a separate heating factor. Cold zones like Minneapolis need significantly more heating BTU than cooling BTU.</p>
+          <p>The ±15% range accounts for variables this calculator doesn't capture — duct losses, building orientation, thermal mass, and infiltration rate. Use the low end for tight, well-built homes and the high end for older construction.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When HVAC Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Sales calls and estimates.</strong> Run a quick load calc in front of the customer to show you're sizing the system properly — not just guessing or matching the old unit's tonnage.</p>
+          <p><strong class="text-text-primary">Sanity-checking existing systems.</strong> Customer complains their system runs all day? Check if it was properly sized. A 2-ton unit on a home that needs 4 tons was never going to keep up.</p>
+          <p><strong class="text-text-primary">Pre-qualifying leads.</strong> Before driving to the job site, ask the homeowner for square footage and approximate home details. Get a ballpark tonnage so you know what to quote before you arrive.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate HVAC load for a house?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Start with 20 BTU per square foot, then multiply by adjustment factors for climate zone, insulation quality, ceiling height, and sun exposure. Add BTU for windows, doors, occupants, and kitchen. Divide cooling BTU by 12,000 to get tonnage.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is Manual J and do I need it?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Manual J is the ACCA-standard whole-house load calculation. It accounts for wall construction, window orientation, duct losses, and infiltration. This calculator provides a simplified estimate — a full Manual J is required for permit applications and final equipment selection.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many tons of AC do I need per square foot?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A rough rule is 1 ton per 500-600 sq ft in moderate climates, or 1 ton per 400-500 sq ft in hot climates. But factors like insulation, windows, and occupancy make every home different.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What happens if I oversize or undersize an HVAC system?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Oversizing causes short cycling, poor humidity control, higher energy bills, and premature equipment failure. Undersizing means the system can't maintain temperature on extreme days. Proper sizing is the most critical factor in system performance and longevity.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const sqft = parseFloat((document.getElementById('sqft') as HTMLInputElement).value) || 2000;
+    const ceiling = parseFloat((document.getElementById('ceiling') as HTMLInputElement).value) || 8;
+    const zone = parseInt((document.getElementById('zone') as HTMLSelectElement).value);
+    const insulation = (document.getElementById('insulation') as HTMLSelectElement).value;
+    const windows = parseInt((document.getElementById('windows') as HTMLInputElement).value) || 0;
+    const windowBtu = parseInt((document.getElementById('windowType') as HTMLSelectElement).value);
+    const doors = parseInt((document.getElementById('doors') as HTMLInputElement).value) || 0;
+    const sunVal = (document.getElementById('sun') as HTMLSelectElement).value;
+    const occupants = parseInt((document.getElementById('occupants') as HTMLInputElement).value) || 2;
+    const kitchen = parseInt((document.getElementById('kitchen') as HTMLSelectElement).value);
+
+    const climateFactor: Record<number, number> = { 1: 1.3, 2: 1.2, 3: 1.1, 4: 1.0, 5: 0.95, 6: 0.9, 7: 0.85 };
+    const insulationFactor: Record<string, number> = { poor: 1.2, average: 1.0, good: 0.9, excellent: 0.8 };
+    const sunFactor: Record<string, number> = { heavy: 1.15, moderate: 1.0, minimal: 0.9 };
+    const heatingFactor: Record<number, number> = { 1: 0.8, 2: 0.8, 3: 1.0, 4: 1.1, 5: 1.2, 6: 1.3, 7: 1.4 };
+
+    const ceilingF = ceiling / 8;
+    const baseBtu = 20 * sqft * climateFactor[zone] * ceilingF * insulationFactor[insulation] * sunFactor[sunVal];
+    const coolBtu = Math.round(baseBtu + (windows * windowBtu) + (doors * 1000) + (occupants * 600) + kitchen);
+    const heatBtu = Math.round(coolBtu * heatingFactor[zone]);
+
+    const tonnageRaw = coolBtu / 12000;
+    const tonnage = Math.round(tonnageRaw * 2) / 2; // nearest 0.5
+    const lowTon = (tonnageRaw * 0.85 / 12000 * 12000).toLocaleString();
+    const highTon = (tonnageRaw * 1.15 / 12000 * 12000).toLocaleString();
+
+    document.getElementById('r-cool')!.textContent = coolBtu.toLocaleString() + ' BTU';
+    document.getElementById('r-heat')!.textContent = heatBtu.toLocaleString() + ' BTU';
+    document.getElementById('r-tons')!.textContent = tonnage + ' ton';
+    document.getElementById('r-range')!.textContent = Math.round(coolBtu * 0.85).toLocaleString() + ' – ' + Math.round(coolBtu * 1.15).toLocaleString();
+    document.getElementById('results')!.classList.remove('hidden');
+  }
+
+  document.getElementById('calc-btn')?.addEventListener('click', calculate);
+  document.querySelectorAll('#load-calc input, #load-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+  });
+  calculate();
+</script>
