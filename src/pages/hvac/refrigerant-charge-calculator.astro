@@ -1,0 +1,322 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/hvacTools';
+
+const tool = getToolBySlug('refrigerant-charge-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much refrigerant do I add per foot of line set?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It depends on the refrigerant type and liquid line diameter. For R-410A with a 3/8\" liquid line, add 0.6 oz per foot of line set beyond the factory-included length. A 1/4\" line uses 0.28 oz/ft, a 1/2\" line uses 1.0 oz/ft, and a 5/8\" line uses 1.64 oz/ft. Always verify with the manufacturer's specifications on the outdoor unit nameplate."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is factory charge on an AC unit?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Factory charge is the amount of refrigerant pre-loaded into the outdoor condensing unit at the factory. Most residential units come charged for 15 to 25 feet of line set. The exact factory charge amount and included line length are listed on the unit's nameplate or in the installation manual. If your actual line set is longer, you must add refrigerant to compensate."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I verify refrigerant charge after adding?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "After adding refrigerant based on line set length, verify the charge using the subcooling method for TXV systems. Target 10-12 degrees F of subcooling. Measure the liquid line temperature at the condensing unit and subtract it from the saturated condensing temperature read from your gauges. Adjust charge until subcooling is within the manufacturer's specified range."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "When do I need a crankcase heater?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A crankcase heater is typically required when the line set exceeds 50 feet. Long line sets allow refrigerant to migrate and pool in the compressor crankcase during the off cycle, which dilutes the oil and can cause compressor damage on startup. Lines over 80 feet also require a non-bleed TXV and a liquid line solenoid valve to prevent migration."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool}>
+  <div id="refrig-calc">
+    <!-- Input Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="refrigerant">Refrigerant Type</label>
+        <select id="refrigerant" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="R-410A" selected>R-410A</option>
+          <option value="R-22">R-22</option>
+          <option value="R-32">R-32</option>
+          <option value="R-454B">R-454B</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="diameter">Liquid Line Diameter</label>
+        <select id="diameter" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1/4">1/4"</option>
+          <option value="3/8" selected>3/8"</option>
+          <option value="1/2">1/2"</option>
+          <option value="5/8">5/8"</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="actual-length">Actual Line Set Length (ft)</label>
+        <input type="number" id="actual-length" value="25" min="1" max="200" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="factory-length">Factory-Included Line Length (ft)</label>
+        <input type="number" id="factory-length" value="15" min="0" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="factory-charge">Factory Charge (lbs)</label>
+        <input type="number" id="factory-charge" value="7" min="0" max="50" step="0.25" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <!-- Calculate Button -->
+    <button id="calc-btn" class="w-full md:w-auto bg-accent text-white font-heading font-bold text-base uppercase tracking-wider px-8 py-3.5 rounded-lg hover:bg-accent-hover hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,107,43,0.3)] transition-all cursor-pointer">
+      Calculate Charge &rarr;
+    </button>
+
+    <!-- Results -->
+    <div id="results" class="hidden mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Additional Charge Needed</div>
+          <div id="result-additional" class="font-heading font-extrabold text-3xl text-accent">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total System Charge</div>
+          <div id="result-total" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Additional Line Length</div>
+          <div id="result-extra-length" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Charge Rate</div>
+          <div id="result-rate" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+      </div>
+
+      <!-- Warnings -->
+      <div id="warnings" class="space-y-3 mb-6"></div>
+
+      <p class="text-text-muted text-sm italic">Verify final charge using subcooling method (target 10-12&deg;F for TXV systems). Always consult manufacturer installation manual for exact charge specifications.</p>
+    </div>
+
+    <!-- Reference Table -->
+    <div class="mt-10">
+      <h3 class="font-heading font-bold text-xl mb-4">Charge Rate Reference Table (oz per foot of liquid line)</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border border-border rounded-lg overflow-hidden">
+          <thead>
+            <tr class="bg-bg-dark text-text-secondary text-xs uppercase tracking-wider">
+              <th class="px-4 py-3 text-left">Refrigerant</th>
+              <th class="px-4 py-3 text-center">1/4"</th>
+              <th class="px-4 py-3 text-center">3/8"</th>
+              <th class="px-4 py-3 text-center">1/2"</th>
+              <th class="px-4 py-3 text-center">5/8"</th>
+            </tr>
+          </thead>
+          <tbody class="text-text-primary">
+            <tr class="border-t border-border">
+              <td class="px-4 py-3 font-medium">R-410A</td>
+              <td class="px-4 py-3 text-center">0.28</td>
+              <td class="px-4 py-3 text-center">0.60</td>
+              <td class="px-4 py-3 text-center">1.00</td>
+              <td class="px-4 py-3 text-center">1.64</td>
+            </tr>
+            <tr class="border-t border-border bg-bg-dark/50">
+              <td class="px-4 py-3 font-medium">R-22</td>
+              <td class="px-4 py-3 text-center text-text-muted">—</td>
+              <td class="px-4 py-3 text-center">0.60</td>
+              <td class="px-4 py-3 text-center">1.00</td>
+              <td class="px-4 py-3 text-center text-text-muted">—</td>
+            </tr>
+            <tr class="border-t border-border">
+              <td class="px-4 py-3 font-medium">R-32</td>
+              <td class="px-4 py-3 text-center text-text-muted">—</td>
+              <td class="px-4 py-3 text-center">0.60</td>
+              <td class="px-4 py-3 text-center text-text-muted">—</td>
+              <td class="px-4 py-3 text-center text-text-muted">—</td>
+            </tr>
+            <tr class="border-t border-border bg-bg-dark/50">
+              <td class="px-4 py-3 font-medium">R-454B</td>
+              <td class="px-4 py-3 text-center text-text-muted">—</td>
+              <td class="px-4 py-3 text-center">0.60</td>
+              <td class="px-4 py-3 text-center text-text-muted">—</td>
+              <td class="px-4 py-3 text-center text-text-muted">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content sections -->
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <!-- How to Use -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select the refrigerant type.</strong> Check the outdoor unit nameplate for the refrigerant. R-410A is standard on systems manufactured after 2010. R-22 is found on older systems. R-32 and R-454B are newer low-GWP alternatives appearing on 2025+ equipment.</p>
+          <p><strong class="text-text-primary">2. Choose the liquid line diameter.</strong> Measure the smaller of the two copper lines running between the indoor and outdoor units. Common residential sizes are 3/8" for systems up to 5 tons.</p>
+          <p><strong class="text-text-primary">3. Enter the line set lengths.</strong> Measure the actual run from the outdoor unit service valve to the indoor coil connection. Then enter the factory-included length from the unit nameplate or installation manual, typically 15 or 25 feet.</p>
+          <p><strong class="text-text-primary">4. Enter the factory charge.</strong> This is the total refrigerant weight pre-loaded at the factory, listed on the outdoor unit nameplate in pounds. It covers the condenser, line set up to the factory length, and evaporator coil.</p>
+        </div>
+      </section>
+
+      <!-- How It Works -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Refrigerant Charging Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>Every air conditioning and heat pump system ships from the factory with a pre-measured refrigerant charge. This <strong class="text-text-primary">factory charge</strong> is calculated to cover the condenser coil, the evaporator coil, and a specific length of connecting line set, usually 15 or 25 feet depending on the manufacturer.</p>
+          <p>When the actual installation requires a longer line set, the additional copper tubing creates extra internal volume that needs to be filled with refrigerant. The <strong class="text-text-primary">additional charge</strong> is calculated by multiplying the extra line length by a charge rate that depends on the liquid line diameter. Larger diameter lines hold more refrigerant per foot.</p>
+          <p>After adding refrigerant based on the line length calculation, the charge must be verified using the <strong class="text-text-primary">subcooling method</strong>. For TXV-equipped systems, target 10-12 degrees F of subcooling. Measure the liquid line temperature at the service valve and compare it to the saturated condensing temperature from your gauge manifold. Adjust the charge in small increments until subcooling falls within the manufacturer's specified range.</p>
+          <p>Line length calculations give you a starting point, but subcooling verification is what confirms the system has the correct charge for actual operating conditions including ambient temperature, indoor load, and airflow.</p>
+        </div>
+      </section>
+
+      <!-- When Pros Use This -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When HVAC Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">New equipment installs.</strong> You are installing a new condenser and the line set runs 40 feet to a second-floor air handler. The unit nameplate says factory charge covers 15 feet. Punch in the numbers to know exactly how many ounces of refrigerant to add from your tank before verifying with subcooling.</p>
+          <p><strong class="text-text-primary">Line set replacement or rerouting.</strong> The original install ran 20 feet through a crawlspace, but a renovation forces you to reroute through the attic at 35 feet. Calculate the additional charge needed for the 15-foot increase so you can quote the extra refrigerant cost on the invoice.</p>
+          <p><strong class="text-text-primary">System relocations.</strong> A customer is moving their outdoor unit from the side of the house to a pad behind the garage. The line set goes from 15 feet to 55 feet. This calculator tells you the additional charge and flags that you need a crankcase heater and liquid line solenoid for the longer run.</p>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much refrigerant do I add per foot of line set?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">It depends on the refrigerant type and liquid line diameter. For R-410A with a 3/8" liquid line, add 0.6 oz per foot of line set beyond the factory-included length. A 1/4" line uses 0.28 oz/ft, a 1/2" line uses 1.0 oz/ft, and a 5/8" line uses 1.64 oz/ft. Always verify with the manufacturer's specifications on the outdoor unit nameplate.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is factory charge on an AC unit?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Factory charge is the amount of refrigerant pre-loaded into the outdoor condensing unit at the factory. Most residential units come charged for 15 to 25 feet of line set. The exact factory charge amount and included line length are listed on the unit's nameplate or in the installation manual. If your actual line set is longer, you must add refrigerant to compensate.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I verify refrigerant charge after adding?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">After adding refrigerant based on line set length, verify the charge using the subcooling method for TXV systems. Target 10-12 degrees F of subcooling. Measure the liquid line temperature at the condensing unit and subtract it from the saturated condensing temperature read from your gauges. Adjust charge until subcooling is within the manufacturer's specified range.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">When do I need a crankcase heater?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A crankcase heater is typically required when the line set exceeds 50 feet. Long line sets allow refrigerant to migrate and pool in the compressor crankcase during the off cycle, which dilutes the oil and can cause compressor damage on startup. Lines over 80 feet also require a non-bleed TXV and a liquid line solenoid valve to prevent migration.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  const chargeRates: Record<string, Record<string, number>> = {
+    'R-410A': { '1/4': 0.28, '3/8': 0.6, '1/2': 1.0, '5/8': 1.64 },
+    'R-22': { '3/8': 0.6, '1/2': 1.0 },
+    'R-32': { '3/8': 0.6 },
+    'R-454B': { '3/8': 0.6 }
+  };
+
+  function updateDiameterOptions() {
+    const refrigerant = (document.getElementById('refrigerant') as HTMLSelectElement).value;
+    const diameterSelect = document.getElementById('diameter') as HTMLSelectElement;
+    const availableRates = chargeRates[refrigerant] || {};
+    const allDiameters = ['1/4', '3/8', '1/2', '5/8'];
+    const currentValue = diameterSelect.value;
+
+    diameterSelect.innerHTML = '';
+    allDiameters.forEach(d => {
+      if (availableRates[d] !== undefined) {
+        const option = document.createElement('option');
+        option.value = d;
+        option.textContent = d + '"';
+        if (d === currentValue) option.selected = true;
+        diameterSelect.appendChild(option);
+      }
+    });
+
+    // If current selection is not available, pick first available
+    if (!availableRates[currentValue]) {
+      diameterSelect.selectedIndex = 0;
+    }
+  }
+
+  function calculate() {
+    const refrigerant = (document.getElementById('refrigerant') as HTMLSelectElement).value;
+    const diameter = (document.getElementById('diameter') as HTMLSelectElement).value;
+    const actualLength = parseFloat((document.getElementById('actual-length') as HTMLInputElement).value) || 25;
+    const factoryLength = parseFloat((document.getElementById('factory-length') as HTMLInputElement).value) || 15;
+    const factoryCharge = parseFloat((document.getElementById('factory-charge') as HTMLInputElement).value) || 7;
+
+    const rate = chargeRates[refrigerant]?.[diameter];
+    if (rate === undefined) {
+      document.getElementById('result-additional')!.textContent = 'N/A';
+      document.getElementById('result-total')!.textContent = 'N/A';
+      document.getElementById('result-extra-length')!.textContent = 'N/A';
+      document.getElementById('result-rate')!.textContent = 'N/A';
+      document.getElementById('results')!.classList.remove('hidden');
+      return;
+    }
+
+    const additionalLength = Math.max(0, actualLength - factoryLength);
+    const additionalChargeOz = additionalLength * rate;
+    const additionalChargeLbs = additionalChargeOz / 16;
+    const totalChargeOz = (factoryCharge * 16) + additionalChargeOz;
+    const totalChargeLbs = totalChargeOz / 16;
+
+    // Format additional charge display
+    const additionalOzStr = additionalChargeOz.toFixed(1);
+    const additionalLbsStr = additionalChargeLbs.toFixed(2);
+    document.getElementById('result-additional')!.innerHTML = `${additionalOzStr} oz<span class="block text-base text-text-secondary mt-1">(${additionalLbsStr} lbs)</span>`;
+    document.getElementById('result-total')!.textContent = `${totalChargeLbs.toFixed(2)} lbs`;
+    document.getElementById('result-extra-length')!.textContent = `${additionalLength} ft`;
+    document.getElementById('result-rate')!.textContent = `${rate} oz/ft`;
+
+    // Warnings
+    const warningsEl = document.getElementById('warnings')!;
+    warningsEl.innerHTML = '';
+
+    if (actualLength < factoryLength) {
+      warningsEl.innerHTML += `<div class="bg-yellow-900/30 border border-yellow-600/40 rounded-lg px-4 py-3 text-yellow-300 text-sm"><strong>Warning:</strong> If line set is SHORTER than factory included length, do NOT remove refrigerant. The factory charge accounts for the condenser and evaporator coil volumes. Only adjust charge for line sets longer than factory spec.</div>`;
+    }
+    if (actualLength > 80) {
+      warningsEl.innerHTML += `<div class="bg-red-900/30 border border-red-600/40 rounded-lg px-4 py-3 text-red-300 text-sm"><strong>Long Line Set:</strong> Lines over 80 ft require a non-bleed TXV, crankcase heater, and liquid line solenoid valve to prevent refrigerant migration and ensure proper oil return.</div>`;
+    } else if (actualLength > 50) {
+      warningsEl.innerHTML += `<div class="bg-yellow-900/30 border border-yellow-600/40 rounded-lg px-4 py-3 text-yellow-300 text-sm"><strong>Long Line Set:</strong> Lines over 50 ft may require a crankcase heater and liquid line solenoid valve. Consult the manufacturer's installation manual for requirements.</div>`;
+    }
+
+    warningsEl.innerHTML += `<div class="bg-blue-900/30 border border-blue-600/40 rounded-lg px-4 py-3 text-blue-300 text-sm"><strong>Reminder:</strong> Verify final charge using subcooling method (target 10-12&deg;F for TXV systems). Line length calculations provide a starting point only.</div>`;
+
+    document.getElementById('results')!.classList.remove('hidden');
+  }
+
+  document.getElementById('refrigerant')?.addEventListener('change', () => {
+    updateDiameterOptions();
+    calculate();
+  });
+
+  document.getElementById('calc-btn')?.addEventListener('click', calculate);
+
+  // Auto-calculate on input change
+  document.querySelectorAll('#refrig-calc input, #refrig-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+  });
+
+  // Initialize diameter options and calculate on load
+  updateDiameterOptions();
+  calculate();
+</script>

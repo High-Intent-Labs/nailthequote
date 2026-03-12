@@ -1,0 +1,330 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/hvacTools';
+const tool = getToolBySlug('ach-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is a good ACH for a house?", "acceptedAnswer": { "@type": "Answer", "text": "Most residential rooms need 4-6 ACH. Bedrooms and living rooms are fine at 4-6, kitchens need 7-8, and bathrooms need 6-8. Higher ACH means fresher air but also higher energy cost, so aim for the recommended range for each room type." } },
+    { "@type": "Question", "name": "How do I calculate air changes per hour?", "acceptedAnswer": { "@type": "Answer", "text": "ACH = (CFM x 60) / Room Volume. First calculate the room volume (length x width x ceiling height in feet). Then multiply the airflow in CFM by 60 and divide by the volume. For example, 200 CFM in a 1,344 cu ft room = (200 x 60) / 1344 = 8.9 ACH." } },
+    { "@type": "Question", "name": "What ACH is required for bathrooms?", "acceptedAnswer": { "@type": "Answer", "text": "Bathrooms require a minimum of 6 ACH, with 7-8 ACH recommended. ASHRAE 62.2 requires continuous exhaust of 20 CFM or intermittent exhaust of 50 CFM for residential bathrooms. Higher ACH helps control moisture and prevent mold growth." } },
+    { "@type": "Question", "name": "What's the difference between ACH and CFM?", "acceptedAnswer": { "@type": "Answer", "text": "CFM (cubic feet per minute) measures raw airflow volume. ACH (air changes per hour) measures how many times per hour the entire room air volume is replaced. ACH accounts for room size, so a small room with 100 CFM has more air changes than a large room with 100 CFM. ACH is more useful for evaluating ventilation adequacy." } }
+  ]
+};
+---
+
+<ToolLayout tool={tool}>
+  <div id="ach-calc">
+    <div class="flex flex-wrap gap-3 mb-6">
+      <button id="mode-ach" class="bg-accent text-white font-heading font-bold text-sm uppercase tracking-wider px-5 py-2.5 rounded-lg transition-all cursor-pointer">Calculate ACH from CFM</button>
+      <button id="mode-cfm" class="bg-bg-dark text-text-secondary border border-border font-heading font-bold text-sm uppercase tracking-wider px-5 py-2.5 rounded-lg hover:border-accent hover:text-text-primary transition-all cursor-pointer">Calculate Required CFM from Target ACH</button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div class="lg:col-span-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-2" for="length">Room Length (ft)</label>
+            <input type="number" id="length" value="14" min="1" max="200" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-2" for="width">Room Width (ft)</label>
+            <input type="number" id="width" value="12" min="1" max="200" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-2" for="ceiling">Ceiling Height (ft)</label>
+            <input type="number" id="ceiling" value="8" min="6" max="30" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+          </div>
+          <div id="input-cfm-wrap">
+            <label class="block text-sm font-medium text-text-secondary mb-2" for="currentCfm">Current CFM</label>
+            <input type="number" id="currentCfm" value="200" min="1" max="50000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+          </div>
+          <div id="input-ach-wrap" class="hidden">
+            <label class="block text-sm font-medium text-text-secondary mb-2" for="targetAch">Target ACH</label>
+            <input type="number" id="targetAch" value="6" min="0.5" max="100" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-3">Room Type Reference</h3>
+        <div class="bg-bg-dark border border-border rounded-lg overflow-hidden text-sm">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left px-3 py-2 text-text-muted font-medium">Room Type</th>
+                <th class="text-center px-3 py-2 text-text-muted font-medium">Min</th>
+                <th class="text-center px-3 py-2 text-text-muted font-medium">Rec.</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-secondary">
+              <tr class="border-b border-border/50"><td class="px-3 py-1.5">Bedroom</td><td class="text-center px-3 py-1.5">4</td><td class="text-center px-3 py-1.5">5-6</td></tr>
+              <tr class="border-b border-border/50"><td class="px-3 py-1.5">Living Room</td><td class="text-center px-3 py-1.5">4</td><td class="text-center px-3 py-1.5">5</td></tr>
+              <tr class="border-b border-border/50"><td class="px-3 py-1.5">Kitchen</td><td class="text-center px-3 py-1.5">7</td><td class="text-center px-3 py-1.5">7-8</td></tr>
+              <tr class="border-b border-border/50"><td class="px-3 py-1.5">Bathroom</td><td class="text-center px-3 py-1.5">6</td><td class="text-center px-3 py-1.5">7-8</td></tr>
+              <tr class="border-b border-border/50"><td class="px-3 py-1.5">Office</td><td class="text-center px-3 py-1.5">4</td><td class="text-center px-3 py-1.5">5-6</td></tr>
+              <tr class="border-b border-border/50"><td class="px-3 py-1.5">Commercial</td><td class="text-center px-3 py-1.5">6</td><td class="text-center px-3 py-1.5">8-12</td></tr>
+              <tr class="border-b border-border/50"><td class="px-3 py-1.5">Restaurant</td><td class="text-center px-3 py-1.5">10</td><td class="text-center px-3 py-1.5">15-20</td></tr>
+              <tr><td class="px-3 py-1.5">Server Room</td><td class="text-center px-3 py-1.5">15</td><td class="text-center px-3 py-1.5">17-20</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <button id="calc-btn" class="w-full md:w-auto bg-accent text-white font-heading font-bold text-base uppercase tracking-wider px-8 py-3.5 rounded-lg hover:bg-accent-hover hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,107,43,0.3)] transition-all cursor-pointer">
+      Calculate &rarr;
+    </button>
+
+    <!-- Mode 1 Results: ACH from CFM -->
+    <div id="results-ach" class="hidden mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Air Changes / Hour</div>
+          <div id="r-ach" class="font-heading font-extrabold text-3xl text-accent">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Room Volume</div>
+          <div id="r-vol" class="font-heading font-extrabold text-2xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Room Type Match</div>
+          <div id="r-match" class="font-heading font-extrabold text-lg text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">ASHRAE Compliance</div>
+          <div id="r-ashrae" class="font-heading font-extrabold text-lg text-text-primary">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode 2 Results: CFM from ACH -->
+    <div id="results-cfm" class="hidden mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Required CFM</div>
+          <div id="r-cfm" class="font-heading font-extrabold text-3xl text-accent">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Room Volume</div>
+          <div id="r-vol2" class="font-heading font-extrabold text-2xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Registers Needed</div>
+          <div id="r-reg" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+          <div class="text-text-muted text-xs mt-1">6x10" @ 85 CFM each</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">ASHRAE Compliance</div>
+          <div id="r-ashrae2" class="font-heading font-extrabold text-lg text-text-primary">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Choose your calculation mode.</strong> Use "ACH from CFM" if you know the current airflow and want to see if it's adequate. Use "CFM from ACH" if you have a target ventilation rate and need to know the required airflow.</p>
+          <p><strong class="text-text-primary">2. Enter room dimensions.</strong> Measure the length, width, and ceiling height in feet. For irregular rooms, approximate the closest rectangular dimensions.</p>
+          <p><strong class="text-text-primary">3. Enter airflow or target ACH.</strong> In ACH mode, enter the measured or rated CFM from the supply registers. In CFM mode, enter the desired ACH from the reference table.</p>
+          <p><strong class="text-text-primary">4. Review the results.</strong> Check the color-coded ACH rating against the room type reference table and verify ASHRAE compliance status.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How ACH Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>Air changes per hour (ACH) measures how many times the entire volume of air in a room is replaced in one hour. It is the standard metric for evaluating ventilation adequacy and indoor air quality.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm">
+            <p>ACH = (CFM x 60) / Room_Volume</p>
+            <p>Required_CFM = (Room_Volume x Target_ACH) / 60</p>
+          </div>
+          <p>Higher ACH means fresher air but also higher energy costs, because you are conditioning more outside air. The goal is to hit the right range for each room type. A bedroom at 4-6 ACH is comfortable and healthy. A commercial kitchen below 10 ACH will have grease buildup, odor complaints, and code violations.</p>
+          <p>ACH matters for IAQ because it directly controls the dilution of indoor pollutants, CO2, moisture, and volatile organic compounds. Rooms with inadequate ACH develop stale air, condensation problems, and occupant complaints. Rooms with excessive ACH waste energy and can create uncomfortable drafts.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When HVAC Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Ventilation system design.</strong> Before specifying fans, ductwork, or ERVs, you need to know the target ACH for every room. This calculator converts those targets into CFM values you can use for equipment selection and duct sizing.</p>
+          <p><strong class="text-text-primary">IAQ complaint investigation.</strong> When a customer reports stuffiness, odors, or moisture issues, measuring the actual CFM and calculating ACH tells you immediately whether the room is under-ventilated. If a bathroom is running at 3 ACH when it needs 7, you have found the problem.</p>
+          <p><strong class="text-text-primary">Code compliance verification.</strong> Building inspectors and commissioning agents use ACH to verify that mechanical ventilation meets ASHRAE 62.1 (commercial) and 62.2 (residential) requirements. This calculator flags whether the ACH meets those minimums.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a good ACH for a house?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most residential rooms need 4-6 ACH. Bedrooms and living rooms are fine at 4-6, kitchens need 7-8, and bathrooms need 6-8. Higher ACH means fresher air but also higher energy cost, so aim for the recommended range for each room type.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate air changes per hour?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">ACH = (CFM x 60) / Room Volume. First calculate the room volume (length x width x ceiling height in feet). Then multiply the airflow in CFM by 60 and divide by the volume. For example, 200 CFM in a 1,344 cu ft room = (200 x 60) / 1344 = 8.9 ACH.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What ACH is required for bathrooms?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Bathrooms require a minimum of 6 ACH, with 7-8 ACH recommended. ASHRAE 62.2 requires continuous exhaust of 20 CFM or intermittent exhaust of 50 CFM for residential bathrooms. Higher ACH helps control moisture and prevent mold growth.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What's the difference between ACH and CFM?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">CFM (cubic feet per minute) measures raw airflow volume. ACH (air changes per hour) measures how many times the room air is fully replaced per hour. ACH accounts for room size, so a small room with 100 CFM has more air changes than a large room with 100 CFM. ACH is more useful for evaluating ventilation adequacy.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  const roomTypes = [
+    { name: 'Bedroom', min: 4, max: 6 },
+    { name: 'Living Room', min: 4, max: 5 },
+    { name: 'Kitchen', min: 7, max: 8 },
+    { name: 'Bathroom', min: 6, max: 8 },
+    { name: 'Office', min: 4, max: 6 },
+    { name: 'Commercial', min: 6, max: 12 },
+    { name: 'Restaurant', min: 10, max: 20 },
+    { name: 'Server Room', min: 15, max: 20 }
+  ];
+
+  let currentMode: 'ach' | 'cfm' = 'ach';
+
+  function setMode(mode: 'ach' | 'cfm') {
+    currentMode = mode;
+    const btnAch = document.getElementById('mode-ach')!;
+    const btnCfm = document.getElementById('mode-cfm')!;
+    const wrapCfm = document.getElementById('input-cfm-wrap')!;
+    const wrapAch = document.getElementById('input-ach-wrap')!;
+
+    if (mode === 'ach') {
+      btnAch.className = 'bg-accent text-white font-heading font-bold text-sm uppercase tracking-wider px-5 py-2.5 rounded-lg transition-all cursor-pointer';
+      btnCfm.className = 'bg-bg-dark text-text-secondary border border-border font-heading font-bold text-sm uppercase tracking-wider px-5 py-2.5 rounded-lg hover:border-accent hover:text-text-primary transition-all cursor-pointer';
+      wrapCfm.classList.remove('hidden');
+      wrapAch.classList.add('hidden');
+    } else {
+      btnCfm.className = 'bg-accent text-white font-heading font-bold text-sm uppercase tracking-wider px-5 py-2.5 rounded-lg transition-all cursor-pointer';
+      btnAch.className = 'bg-bg-dark text-text-secondary border border-border font-heading font-bold text-sm uppercase tracking-wider px-5 py-2.5 rounded-lg hover:border-accent hover:text-text-primary transition-all cursor-pointer';
+      wrapAch.classList.remove('hidden');
+      wrapCfm.classList.add('hidden');
+    }
+    calculate();
+  }
+
+  function getMatchingRoomType(ach: number): string {
+    for (const rt of roomTypes) {
+      if (ach >= rt.min && ach <= rt.max) {
+        return rt.name;
+      }
+    }
+    if (ach < 4) return 'Below all minimums';
+    if (ach > 20) return 'Exceeds all standards';
+    // Find closest match
+    let closest = roomTypes[0];
+    let closestDist = Infinity;
+    for (const rt of roomTypes) {
+      const mid = (rt.min + rt.max) / 2;
+      const dist = Math.abs(ach - mid);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closest = rt;
+      }
+    }
+    return 'Near ' + closest.name + ' range';
+  }
+
+  function getAchColor(ach: number): { color: string; label: string } {
+    // Check against general residential minimum of 4
+    if (ach < 4) return { color: '#F87171', label: 'Below minimum' };
+    if (ach > 20) return { color: '#FBBF24', label: 'Excessive' };
+    return { color: '#34D399', label: 'In range' };
+  }
+
+  function getAshraeCompliance(ach: number): { passes: boolean; standard: string } {
+    // ASHRAE 62.2 residential minimum ~0.35 ACH for whole-house; room-level minimums ~4 ACH
+    // ASHRAE 62.1 commercial minimum varies but typically 4-6 ACH
+    if (ach >= 4) {
+      return { passes: true, standard: 'Meets ASHRAE 62.1/62.2' };
+    }
+    return { passes: false, standard: 'Below ASHRAE 62.1/62.2 minimums' };
+  }
+
+  function calculate() {
+    const length = parseFloat((document.getElementById('length') as HTMLInputElement).value) || 14;
+    const width = parseFloat((document.getElementById('width') as HTMLInputElement).value) || 12;
+    const ceiling = parseFloat((document.getElementById('ceiling') as HTMLInputElement).value) || 8;
+    const volume = length * width * ceiling;
+
+    const resultsAch = document.getElementById('results-ach')!;
+    const resultsCfm = document.getElementById('results-cfm')!;
+
+    if (currentMode === 'ach') {
+      const cfm = parseFloat((document.getElementById('currentCfm') as HTMLInputElement).value) || 200;
+      const ach = (cfm * 60) / volume;
+      const achRounded = Math.round(ach * 10) / 10;
+      const achStatus = getAchColor(achRounded);
+      const matchType = getMatchingRoomType(achRounded);
+      const ashrae = getAshraeCompliance(achRounded);
+
+      const achEl = document.getElementById('r-ach')!;
+      achEl.textContent = achRounded.toString() + ' ACH';
+      achEl.style.color = achStatus.color;
+
+      document.getElementById('r-vol')!.textContent = volume.toLocaleString() + ' cu ft';
+
+      const matchEl = document.getElementById('r-match')!;
+      matchEl.textContent = matchType;
+
+      const ashraeEl = document.getElementById('r-ashrae')!;
+      if (ashrae.passes) {
+        ashraeEl.textContent = '\u2713 ' + ashrae.standard;
+        ashraeEl.className = 'font-heading font-extrabold text-lg text-[#34D399]';
+      } else {
+        ashraeEl.textContent = '\u2717 ' + ashrae.standard;
+        ashraeEl.className = 'font-heading font-extrabold text-lg text-[#F87171]';
+      }
+
+      resultsAch.classList.remove('hidden');
+      resultsCfm.classList.add('hidden');
+    } else {
+      const targetAch = parseFloat((document.getElementById('targetAch') as HTMLInputElement).value) || 6;
+      const requiredCfm = Math.round((volume * targetAch) / 60);
+      const registers = Math.ceil(requiredCfm / 85);
+      const ashrae = getAshraeCompliance(targetAch);
+
+      document.getElementById('r-cfm')!.textContent = requiredCfm.toLocaleString() + ' CFM';
+      document.getElementById('r-vol2')!.textContent = volume.toLocaleString() + ' cu ft';
+      document.getElementById('r-reg')!.textContent = registers.toString();
+
+      const ashraeEl2 = document.getElementById('r-ashrae2')!;
+      if (ashrae.passes) {
+        ashraeEl2.textContent = '\u2713 ' + ashrae.standard;
+        ashraeEl2.className = 'font-heading font-extrabold text-lg text-[#34D399]';
+      } else {
+        ashraeEl2.textContent = '\u2717 ' + ashrae.standard;
+        ashraeEl2.className = 'font-heading font-extrabold text-lg text-[#F87171]';
+      }
+
+      resultsCfm.classList.remove('hidden');
+      resultsAch.classList.add('hidden');
+    }
+  }
+
+  document.getElementById('mode-ach')?.addEventListener('click', () => setMode('ach'));
+  document.getElementById('mode-cfm')?.addEventListener('click', () => setMode('cfm'));
+  document.getElementById('calc-btn')?.addEventListener('click', calculate);
+  document.querySelectorAll('#ach-calc input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+  calculate();
+</script>

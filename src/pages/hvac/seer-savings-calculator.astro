@@ -1,0 +1,318 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/hvacTools';
+
+const tool = getToolBySlug('seer-savings-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does upgrading SEER save per year?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The savings depend on your current and new SEER rating, local electricity rates, and how many hours you run cooling per year. Upgrading from a 10 SEER to a 16 SEER system on a 3-ton unit typically saves $400 to $900 per year in cooling costs alone, depending on climate and energy prices."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What SEER rating should I recommend?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For most homeowners, 16 SEER offers the best balance of upfront cost and long-term savings. In hot climates like the South or Southwest where cooling runs 2,500+ hours per year, 18-20 SEER can be justified. In mild climates with under 1,500 cooling hours, 14-16 SEER is usually the sweet spot."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does a new AC take to pay for itself?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Payback periods typically range from 5 to 12 years depending on the efficiency jump, system size, local energy costs, and climate. A homeowner in the South upgrading from 10 SEER to 16 SEER on a 3-ton system often sees payback in 6-8 years. Factor in rebates and tax credits to shorten that timeline."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a good SEER rating for 2024?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The federal minimum is 14 SEER in northern states and 15 SEER in southern states as of 2023. A good target is 16-18 SEER for most homes. High-efficiency inverter systems reach 20-26 SEER and make sense in hot climates or for homeowners planning to stay in the home 10+ years."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool}>
+  <div id="seer-calc">
+    <!-- Input Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="old-seer">Current SEER Rating</label>
+        <input type="number" id="old-seer" value="10" min="8" max="26" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="new-seer">New SEER Rating</label>
+        <input type="number" id="new-seer" value="16" min="13" max="26" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="old-afue">Current AFUE %</label>
+        <input type="number" id="old-afue" value="80" min="50" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="new-afue">New AFUE %</label>
+        <input type="number" id="new-afue" value="96" min="50" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="tons">System Size (Tons)</label>
+        <select id="tons" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.5">1.5 Ton</option>
+          <option value="2">2 Ton</option>
+          <option value="2.5">2.5 Ton</option>
+          <option value="3" selected>3 Ton</option>
+          <option value="3.5">3.5 Ton</option>
+          <option value="4">4 Ton</option>
+          <option value="5">5 Ton</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="elec-rate">Electricity Rate ($/kWh)</label>
+        <input type="number" id="elec-rate" value="0.16" min="0.01" max="1" step="0.01" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="gas-rate">Gas Rate ($/therm)</label>
+        <input type="number" id="gas-rate" value="1.20" min="0.10" max="5" step="0.05" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="region">Region</label>
+        <select id="region" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="2500,600">South (2500 / 600 hrs)</option>
+          <option value="2200,800">Southeast (2200 / 800 hrs)</option>
+          <option value="1400,2000">Midwest (1400 / 2000 hrs)</option>
+          <option value="1200,2200">Northeast (1200 / 2200 hrs)</option>
+          <option value="2800,400">Southwest (2800 / 400 hrs)</option>
+          <option value="800,1800">Northwest (800 / 1800 hrs)</option>
+          <option value="2100,1500" selected>National Avg (2100 / 1500 hrs)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="cool-hours">Annual Cooling Hours</label>
+        <input type="number" id="cool-hours" value="2100" min="0" max="8760" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="heat-hours">Annual Heating Hours</label>
+        <input type="number" id="heat-hours" value="1500" min="0" max="8760" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="upgrade-cost">Upgrade Cost ($)</label>
+        <input type="number" id="upgrade-cost" value="8000" min="0" max="100000" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <!-- Calculate Button -->
+    <button id="calc-btn" class="w-full md:w-auto bg-accent text-white font-heading font-bold text-base uppercase tracking-wider px-8 py-3.5 rounded-lg hover:bg-accent-hover hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,107,43,0.3)] transition-all cursor-pointer">
+      Calculate Savings &rarr;
+    </button>
+
+    <!-- Results -->
+    <div id="results" class="hidden mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <!-- Row 1 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Annual Savings</div>
+          <div id="result-annual" class="font-heading font-extrabold text-3xl text-accent">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Monthly Savings</div>
+          <div id="result-monthly" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Payback Period</div>
+          <div id="result-payback" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">10-Year Net Savings</div>
+          <div id="result-tenyear" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+      </div>
+      <!-- Row 2 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Old Annual Cost</div>
+          <div id="result-old-cost" class="font-heading font-extrabold text-xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">New Annual Cost</div>
+          <div id="result-new-cost" class="font-heading font-extrabold text-xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">CO2 Reduction</div>
+          <div id="result-co2" class="font-heading font-extrabold text-xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cooling vs Heating</div>
+          <div id="result-breakdown" class="font-heading font-extrabold text-sm text-text-primary leading-relaxed">—</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Estimates based on average usage patterns. Actual savings depend on equipment condition, duct efficiency, thermostat settings, and local weather. Consult with a licensed HVAC contractor for a detailed energy audit.</p>
+    </div>
+  </div>
+
+  <!-- Content sections -->
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <!-- How to Use -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your current SEER and AFUE ratings.</strong> Check the nameplate on the existing outdoor condenser for SEER and the furnace data plate for AFUE. If unknown, 10 SEER and 80% AFUE are safe assumptions for systems over 12 years old.</p>
+          <p><strong class="text-text-primary">2. Enter the new system's ratings.</strong> Use the SEER and AFUE from the equipment you're quoting. A 16 SEER / 96% AFUE combination is a common mid-tier upgrade.</p>
+          <p><strong class="text-text-primary">3. Select the system size and enter local energy rates.</strong> Check the customer's utility bill for their electricity rate per kWh and gas rate per therm. System tonnage should match the existing or proposed equipment.</p>
+          <p><strong class="text-text-primary">4. Choose the region or manually set cooling and heating hours.</strong> The region dropdown auto-fills typical annual runtime hours. Override them if you know the customer's actual usage or have local degree-day data.</p>
+          <p><strong class="text-text-primary">5. Enter the upgrade cost and review the results.</strong> The calculator shows annual savings, payback period, 10-year net savings, and CO2 reduction — everything you need for a compelling proposal.</p>
+        </div>
+      </section>
+
+      <!-- How SEER Ratings Affect Energy Costs -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How SEER Ratings Affect Energy Costs</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">SEER (Seasonal Energy Efficiency Ratio)</strong> measures cooling efficiency — the total BTU of heat removed per watt-hour of electricity over a typical cooling season. A 16 SEER unit uses 37.5% less electricity than a 10 SEER unit to produce the same cooling output. Higher SEER means lower operating costs every summer.</p>
+          <p><strong class="text-text-primary">AFUE (Annual Fuel Utilization Efficiency)</strong> measures heating efficiency for gas furnaces. An 80% AFUE furnace sends 20 cents of every dollar up the flue as waste heat. A 96% AFUE furnace captures almost all of that, cutting gas consumption by 20% compared to the 80% unit.</p>
+          <p>Together, SEER and AFUE represent the full picture of HVAC energy costs. In warm climates, the SEER improvement drives most savings. In cold climates, the AFUE upgrade often matters more. This calculator models both sides so you can show the customer exactly where their money goes.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm">
+            <p>Cooling: kWh = (Tons x 12,000 x Cooling_Hours) / (SEER x 1,000)</p>
+            <p>Heating: Therms = (Tons x 12,000 x Heating_Hours) / (AFUE/100 x 100,000)</p>
+          </div>
+          <p>The payback calculation divides the upgrade cost by total annual savings. Ten-year net savings projects the long-term financial benefit beyond the initial investment — the number that closes deals.</p>
+        </div>
+      </section>
+
+      <!-- When HVAC Pros Use This -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When HVAC Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Sales presentations at the kitchen table.</strong> Pull this up on your tablet while sitting with the homeowner. Enter their current system specs, show them the annual savings in real dollars, and let the 10-year net savings number make the case for the higher-efficiency option. Numbers sell better than talking points.</p>
+          <p><strong class="text-text-primary">Proposal justification for premium equipment.</strong> When you're quoting a 16 SEER system against a competitor's 14 SEER bid, this calculator proves the long-term value. Show the customer that paying $1,500 more upfront saves $3,000+ over 10 years. Attach the results to your written proposal.</p>
+          <p><strong class="text-text-primary">Customer education on upgrade timing.</strong> When a customer asks "should I repair or replace?", run their current system through the calculator alongside the new option. If the annual savings alone cover a significant portion of the repair cost, replacement makes financial sense even before factoring in reliability.</p>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does upgrading SEER save per year?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The savings depend on your current and new SEER rating, local electricity rates, and how many hours you run cooling per year. Upgrading from a 10 SEER to a 16 SEER system on a 3-ton unit typically saves $400 to $900 per year in cooling costs alone, depending on climate and energy prices.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What SEER rating should I recommend?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For most homeowners, 16 SEER offers the best balance of upfront cost and long-term savings. In hot climates like the South or Southwest where cooling runs 2,500+ hours per year, 18-20 SEER can be justified. In mild climates with under 1,500 cooling hours, 14-16 SEER is usually the sweet spot.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does a new AC take to pay for itself?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Payback periods typically range from 5 to 12 years depending on the efficiency jump, system size, local energy costs, and climate. A homeowner in the South upgrading from 10 SEER to 16 SEER on a 3-ton system often sees payback in 6-8 years. Factor in rebates and tax credits to shorten that timeline.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a good SEER rating for 2024?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The federal minimum is 14 SEER in northern states and 15 SEER in southern states as of 2023. A good target is 16-18 SEER for most homes. High-efficiency inverter systems reach 20-26 SEER and make sense in hot climates or for homeowners planning to stay in the home 10+ years.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  const regions: Record<string, [number, number]> = {
+    '2500,600': [2500, 600],
+    '2200,800': [2200, 800],
+    '1400,2000': [1400, 2000],
+    '1200,2200': [1200, 2200],
+    '2800,400': [2800, 400],
+    '800,1800': [800, 1800],
+    '2100,1500': [2100, 1500],
+  };
+
+  function updateHoursFromRegion() {
+    const regionVal = (document.getElementById('region') as HTMLSelectElement).value;
+    const hours = regions[regionVal];
+    if (hours) {
+      (document.getElementById('cool-hours') as HTMLInputElement).value = String(hours[0]);
+      (document.getElementById('heat-hours') as HTMLInputElement).value = String(hours[1]);
+    }
+  }
+
+  function formatCurrency(val: number): string {
+    return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  }
+
+  function calculate() {
+    const oldSeer = parseFloat((document.getElementById('old-seer') as HTMLInputElement).value) || 10;
+    const newSeer = parseFloat((document.getElementById('new-seer') as HTMLInputElement).value) || 16;
+    const oldAfue = parseFloat((document.getElementById('old-afue') as HTMLInputElement).value) || 80;
+    const newAfue = parseFloat((document.getElementById('new-afue') as HTMLInputElement).value) || 96;
+    const tons = parseFloat((document.getElementById('tons') as HTMLSelectElement).value) || 3;
+    const elecRate = parseFloat((document.getElementById('elec-rate') as HTMLInputElement).value) || 0.16;
+    const gasRate = parseFloat((document.getElementById('gas-rate') as HTMLInputElement).value) || 1.20;
+    const coolHours = parseFloat((document.getElementById('cool-hours') as HTMLInputElement).value) || 2100;
+    const heatHours = parseFloat((document.getElementById('heat-hours') as HTMLInputElement).value) || 1500;
+    const upgradeCost = parseFloat((document.getElementById('upgrade-cost') as HTMLInputElement).value) || 8000;
+
+    // Cooling calculations
+    const oldKwh = (tons * 12000 * coolHours) / (oldSeer * 1000);
+    const newKwh = (tons * 12000 * coolHours) / (newSeer * 1000);
+    const oldCoolingCost = oldKwh * elecRate;
+    const newCoolingCost = newKwh * elecRate;
+    const coolingSavings = oldCoolingCost - newCoolingCost;
+
+    // Heating calculations (gas)
+    const btuOutput = tons * 12000;
+    const oldHeatCost = (btuOutput * heatHours) / ((oldAfue / 100) * 100000) * gasRate;
+    const newHeatCost = (btuOutput * heatHours) / ((newAfue / 100) * 100000) * gasRate;
+    const heatingSavings = oldHeatCost - newHeatCost;
+
+    // Totals
+    const totalAnnualSavings = coolingSavings + heatingSavings;
+    const monthlySavings = totalAnnualSavings / 12;
+    const paybackYears = totalAnnualSavings > 0 ? upgradeCost / totalAnnualSavings : 0;
+    const tenYearSavings = (totalAnnualSavings * 10) - upgradeCost;
+    const co2Reduction = (oldKwh - newKwh) * 0.92;
+
+    const oldTotalCost = oldCoolingCost + oldHeatCost;
+    const newTotalCost = newCoolingCost + newHeatCost;
+
+    // Update results
+    document.getElementById('result-annual')!.textContent = formatCurrency(Math.round(totalAnnualSavings));
+    document.getElementById('result-monthly')!.textContent = formatCurrency(Math.round(monthlySavings));
+    document.getElementById('result-payback')!.textContent = paybackYears > 0 ? paybackYears.toFixed(1) + ' yrs' : 'N/A';
+    document.getElementById('result-tenyear')!.textContent = formatCurrency(Math.round(tenYearSavings));
+    document.getElementById('result-old-cost')!.textContent = formatCurrency(Math.round(oldTotalCost));
+    document.getElementById('result-new-cost')!.textContent = formatCurrency(Math.round(newTotalCost));
+    document.getElementById('result-co2')!.textContent = Math.round(co2Reduction).toLocaleString() + ' lbs/yr';
+    document.getElementById('result-breakdown')!.innerHTML =
+      'Cooling: ' + formatCurrency(Math.round(coolingSavings)) +
+      '<br>Heating: ' + formatCurrency(Math.round(heatingSavings));
+
+    document.getElementById('results')!.classList.remove('hidden');
+  }
+
+  // Region change updates hours then recalculates
+  document.getElementById('region')?.addEventListener('change', () => {
+    updateHoursFromRegion();
+    calculate();
+  });
+
+  document.getElementById('calc-btn')?.addEventListener('click', calculate);
+
+  // Auto-calculate on input change
+  document.querySelectorAll('#seer-calc input, #seer-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+  });
+
+  // Calculate on load with defaults
+  calculate();
+</script>

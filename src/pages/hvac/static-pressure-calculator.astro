@@ -1,0 +1,303 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/hvacTools';
+const tool = getToolBySlug('static-pressure-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is a good static pressure for HVAC?", "acceptedAnswer": { "@type": "Answer", "text": "For residential systems, total external static pressure should stay below the equipment's rated TESP. PSC motors are typically rated at 0.50 in. WC, ECM motors at 0.80 in. WC. A friction rate between 0.06 and 0.10 in. WC per 100 ft of equivalent duct length is ideal for quiet, efficient operation." } },
+    { "@type": "Question", "name": "How do I measure static pressure?", "acceptedAnswer": { "@type": "Answer", "text": "Use a manometer with static pressure tips. Drill small test ports in the supply and return plenums near the equipment. Measure pressure at each port and add the absolute values together to get total external static pressure. Compare the reading to the equipment's rated TESP." } },
+    { "@type": "Question", "name": "What causes high static pressure?", "acceptedAnswer": { "@type": "Answer", "text": "Common causes include undersized ductwork, dirty or high-MERV filters, too many fittings (especially square elbows), collapsed flex duct, closed dampers, and dirty evaporator coils. Each adds resistance that the blower must overcome to move air." } },
+    { "@type": "Question", "name": "What is total equivalent length?", "acceptedAnswer": { "@type": "Answer", "text": "Total equivalent length (TEL) converts all duct fittings into their straight-duct equivalent. A 90-degree round elbow creates the same resistance as 15 feet of straight duct. TEL is the sum of all straight duct runs plus the equivalent lengths of every fitting in the system." } }
+  ]
+};
+---
+
+<ToolLayout tool={tool}>
+  <div id="sp-calc">
+    <!-- Equipment Section -->
+    <h3 class="font-heading font-bold text-lg text-text-primary mb-4">Equipment</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="motorType">Motor Type</label>
+        <select id="motorType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.50" selected>PSC Motor (0.50" WC)</option>
+          <option value="0.80">ECM Motor (0.80" WC)</option>
+          <option value="1.00">ECM High (1.00" WC)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="ratedTESP">Equipment Rated TESP (in WC)</label>
+        <input type="number" id="ratedTESP" value="0.50" min="0.10" max="2.00" step="0.01" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <!-- Filter Section -->
+    <h3 class="font-heading font-bold text-lg text-text-primary mb-4">Filter</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="filterType">Filter Type</label>
+        <select id="filterType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.10" selected>MERV 8 (1") &mdash; 0.10" WC</option>
+          <option value="0.16">MERV 11 (1") &mdash; 0.16" WC</option>
+          <option value="0.25">MERV 13 (1") &mdash; 0.25" WC</option>
+          <option value="0.07">MERV 8 (4") &mdash; 0.07" WC</option>
+          <option value="0.15">MERV 13 (4") &mdash; 0.15" WC</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Coil Section -->
+    <h3 class="font-heading font-bold text-lg text-text-primary mb-4">Coil</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="coilCondition">Coil Condition</label>
+        <select id="coilCondition" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.15">Clean Dry &mdash; 0.15" WC</option>
+          <option value="0.20" selected>Clean Wet &mdash; 0.20" WC</option>
+          <option value="0.35">Dirty &mdash; 0.35" WC</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Ductwork Section -->
+    <h3 class="font-heading font-bold text-lg text-text-primary mb-4">Ductwork — Straight Runs</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="supplyRun">Supply Duct Straight Run (ft)</label>
+        <input type="number" id="supplyRun" value="40" min="0" max="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="returnRun">Return Duct Straight Run (ft)</label>
+        <input type="number" id="returnRun" value="25" min="0" max="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <!-- Fittings Section -->
+    <h3 class="font-heading font-bold text-lg text-text-primary mb-4">Fittings</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="elbows90round">90&deg; Round Elbows <span class="text-text-muted">(15 ft ea)</span></label>
+        <input type="number" id="elbows90round" value="4" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="elbows90square">90&deg; Square Elbows <span class="text-text-muted">(75 ft ea)</span></label>
+        <input type="number" id="elbows90square" value="0" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="elbows45">45&deg; Elbows <span class="text-text-muted">(8 ft ea)</span></label>
+        <input type="number" id="elbows45" value="2" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="flexBends">Flex Duct 90&deg; Bends <span class="text-text-muted">(10 ft ea)</span></label>
+        <input type="number" id="flexBends" value="0" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="supplyBoots">Supply Register Boots <span class="text-text-muted">(35 ft ea)</span></label>
+        <input type="number" id="supplyBoots" value="6" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="returnGrilles">Return Grilles <span class="text-text-muted">(10 ft ea)</span></label>
+        <input type="number" id="returnGrilles" value="2" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="teeBranches">Tee Branches <span class="text-text-muted">(35 ft ea)</span></label>
+        <input type="number" id="teeBranches" value="3" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="transitions">Transitions / Reducers <span class="text-text-muted">(5 ft ea)</span></label>
+        <input type="number" id="transitions" value="2" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <button id="calc-btn" class="w-full md:w-auto bg-accent text-white font-heading font-bold text-base uppercase tracking-wider px-8 py-3.5 rounded-lg hover:bg-accent-hover hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,107,43,0.3)] transition-all cursor-pointer">
+      Calculate Static Pressure &rarr;
+    </button>
+
+    <!-- Results -->
+    <div id="results" class="hidden mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+
+      <!-- Pass/Fail Banner -->
+      <div id="r-banner" class="rounded-xl p-5 mb-6 text-center font-heading font-bold text-xl"></div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Available Static Pressure</div>
+          <div id="r-available" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div class="text-text-muted text-xs mt-1">in WC</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Equivalent Length</div>
+          <div id="r-tel" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">feet</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Friction Rate</div>
+          <div id="r-friction" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">in WC per 100 ft</div>
+        </div>
+      </div>
+
+      <!-- Breakdown -->
+      <div class="bg-bg-dark rounded-xl p-5 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-3">Pressure Breakdown</h4>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between"><span class="text-text-secondary">Equipment Rated TESP</span><span id="r-tesp" class="text-text-primary font-medium">--</span></div>
+          <div class="flex justify-between"><span class="text-text-secondary">Filter Pressure Drop</span><span id="r-filter" class="text-text-primary font-medium">--</span></div>
+          <div class="flex justify-between"><span class="text-text-secondary">Coil Pressure Drop</span><span id="r-coil" class="text-text-primary font-medium">--</span></div>
+          <div class="border-t border-border my-2"></div>
+          <div class="flex justify-between font-bold"><span class="text-text-primary">Available for Ductwork</span><span id="r-avail2" class="text-accent">--</span></div>
+        </div>
+      </div>
+
+      <!-- Recommendations (shown on fail) -->
+      <div id="r-recs" class="hidden bg-[#F871711A] border border-[#F87171] rounded-xl p-5">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-[#F87171] mb-3">Recommendations</h4>
+        <ul class="space-y-2 text-sm text-text-secondary">
+          <li>Consider upgrading to an ECM motor for more available static pressure.</li>
+          <li>Use a lower MERV filter to reduce filter pressure drop.</li>
+          <li>Reduce fittings &mdash; each 90&deg; square elbow adds 75 ft of equivalent length.</li>
+          <li>Upsize ductwork to reduce friction rate.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select your motor type.</strong> The motor type determines the maximum total external static pressure (TESP) the blower can handle. ECM motors tolerate higher static than PSC motors. The rated TESP auto-fills but you can override it with the nameplate value from your equipment.</p>
+          <p><strong class="text-text-primary">2. Choose your filter and coil condition.</strong> Higher-MERV filters and dirty coils eat into available static pressure. Pick the filter you plan to install and the worst-case coil condition for a realistic estimate.</p>
+          <p><strong class="text-text-primary">3. Enter duct straight runs.</strong> Measure the total linear feet of straight supply and return ductwork from the equipment to the farthest outlet and back.</p>
+          <p><strong class="text-text-primary">4. Count your fittings.</strong> Walk the longest duct run and count every elbow, boot, tee, and transition. Each fitting adds equivalent length that increases resistance.</p>
+          <p><strong class="text-text-primary">5. Read the results.</strong> The calculator shows available static pressure for ductwork, total equivalent length, friction rate, and a pass/fail verdict. If it fails, follow the recommendations to fix the design.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Static Pressure Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>Total external static pressure (TESP) is the total resistance the blower motor must overcome to push air through the entire duct system. Think of it as blood pressure for your HVAC system -- too high and the system struggles to deliver airflow, too low and you may have leaks.</p>
+          <p>Every component in the air path adds resistance: the filter, evaporator coil, ductwork, fittings, registers, and grilles. The blower motor has a maximum rated TESP it can handle. If the sum of all resistances exceeds that rating, airflow drops below design levels and the system cannot heat or cool properly.</p>
+          <p>Total equivalent length (TEL) converts all duct fittings into their straight-duct equivalent. A 90-degree round elbow creates about the same resistance as 15 feet of straight duct. By converting everything to equivalent feet, you can calculate a friction rate -- the pressure drop per 100 feet of duct -- and use it to verify that the system will deliver design airflow.</p>
+          <p>A well-designed residential system targets a friction rate between 0.06 and 0.10 inches of water column per 100 feet. Higher friction rates mean undersized ducts or too many fittings, leading to noise, reduced comfort, and higher energy bills.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When HVAC Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">New system installations.</strong> Before installing ductwork, verify the design will deliver required airflow. Running this calculation during the design phase prevents callbacks from rooms that never reach temperature because the duct system is too restrictive.</p>
+          <p><strong class="text-text-primary">Troubleshooting low airflow.</strong> Customer says certain rooms are always uncomfortable? Measure actual static pressure at the equipment and compare it to rated TESP. If the measured value is close to or above the rated TESP, the system is choked. This calculator helps identify which components are the biggest contributors.</p>
+          <p><strong class="text-text-primary">Filter upgrade impact analysis.</strong> A customer wants to upgrade from MERV 8 to MERV 13 for better air quality. Run the calculator with both filter types to see if the system can handle the additional pressure drop. On a PSC motor system with tight ductwork, that filter upgrade can push the system into failure territory.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a good static pressure for HVAC?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For residential systems, total external static pressure should stay below the equipment's rated TESP. PSC motors are typically rated at 0.50 in. WC, ECM motors at 0.80 in. WC. A friction rate between 0.06 and 0.10 in. WC per 100 ft of equivalent duct length is ideal for quiet, efficient operation.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I measure static pressure?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Use a manometer with static pressure tips. Drill small test ports in the supply and return plenums near the equipment. Measure pressure at each port and add the absolute values together to get total external static pressure. Compare the reading to the equipment's rated TESP.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What causes high static pressure?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Common causes include undersized ductwork, dirty or high-MERV filters, too many fittings (especially square elbows), collapsed flex duct, closed dampers, and dirty evaporator coils. Each adds resistance that the blower must overcome to move air.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is total equivalent length?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Total equivalent length (TEL) converts all duct fittings into their straight-duct equivalent. A 90-degree round elbow creates the same resistance as 15 feet of straight duct. TEL is the sum of all straight duct runs plus the equivalent lengths of every fitting in the system.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    // Equipment
+    const ratedTESP = parseFloat((document.getElementById('ratedTESP') as HTMLInputElement).value) || 0.50;
+
+    // Filter & Coil
+    const filterDrop = parseFloat((document.getElementById('filterType') as HTMLSelectElement).value);
+    const coilDrop = parseFloat((document.getElementById('coilCondition') as HTMLSelectElement).value);
+
+    // Ductwork straight runs
+    const supplyRun = parseFloat((document.getElementById('supplyRun') as HTMLInputElement).value) || 0;
+    const returnRun = parseFloat((document.getElementById('returnRun') as HTMLInputElement).value) || 0;
+
+    // Fittings: [id, equivalent length per fitting]
+    const fittings: [string, number][] = [
+      ['elbows90round', 15],
+      ['elbows90square', 75],
+      ['elbows45', 8],
+      ['flexBends', 10],
+      ['supplyBoots', 35],
+      ['returnGrilles', 10],
+      ['teeBranches', 35],
+      ['transitions', 5],
+    ];
+
+    let fittingEquiv = 0;
+    for (const [id, equiv] of fittings) {
+      const count = parseInt((document.getElementById(id) as HTMLInputElement).value) || 0;
+      fittingEquiv += count * equiv;
+    }
+
+    // Calculations
+    const availableStatic = ratedTESP - filterDrop - coilDrop;
+    const tel = supplyRun + returnRun + fittingEquiv;
+    const frictionRate = tel > 0 ? (availableStatic * 100) / tel : 0;
+    const totalLosses = filterDrop + coilDrop;
+    const passes = totalLosses <= ratedTESP && availableStatic > 0;
+
+    // Display results
+    document.getElementById('r-available')!.textContent = availableStatic.toFixed(2);
+    document.getElementById('r-tel')!.textContent = tel.toLocaleString();
+    document.getElementById('r-friction')!.textContent = frictionRate.toFixed(3);
+
+    // Breakdown
+    document.getElementById('r-tesp')!.textContent = ratedTESP.toFixed(2) + '" WC';
+    document.getElementById('r-filter')!.textContent = '−' + filterDrop.toFixed(2) + '" WC';
+    document.getElementById('r-coil')!.textContent = '−' + coilDrop.toFixed(2) + '" WC';
+    document.getElementById('r-avail2')!.textContent = availableStatic.toFixed(2) + '" WC';
+
+    // Pass/Fail banner
+    const banner = document.getElementById('r-banner')!;
+    if (passes) {
+      banner.textContent = 'PASS — system can deliver required airflow';
+      banner.className = 'rounded-xl p-5 mb-6 text-center font-heading font-bold text-xl bg-[#34D3991A] border border-[#34D399] text-[#34D399]';
+    } else {
+      banner.textContent = 'FAIL — system will be airflow-restricted';
+      banner.className = 'rounded-xl p-5 mb-6 text-center font-heading font-bold text-xl bg-[#F871711A] border border-[#F87171] text-[#F87171]';
+    }
+
+    // Recommendations
+    document.getElementById('r-recs')!.classList.toggle('hidden', passes);
+
+    document.getElementById('results')!.classList.remove('hidden');
+  }
+
+  // Motor type auto-fills rated TESP
+  document.getElementById('motorType')?.addEventListener('change', function () {
+    const val = (this as HTMLSelectElement).value;
+    (document.getElementById('ratedTESP') as HTMLInputElement).value = val;
+    calculate();
+  });
+
+  document.getElementById('calc-btn')?.addEventListener('click', calculate);
+  document.querySelectorAll('#sp-calc input, #sp-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+  });
+  calculate();
+</script>

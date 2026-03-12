@@ -1,0 +1,322 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/hvacTools';
+const tool = getToolBySlug('duct-size-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What size duct do I need for 400 CFM?", "acceptedAnswer": { "@type": "Answer", "text": "For 400 CFM with sheet metal duct at a standard friction rate of 0.08 in WC per 100 ft, you need a 10-inch round duct. If using flex duct, upsize to 12 inches to compensate for higher friction loss. The equivalent rectangular size would be approximately 8×10 inches." } },
+    { "@type": "Question", "name": "Should I use round or rectangular duct?", "acceptedAnswer": { "@type": "Answer", "text": "Round duct is more efficient — it has less friction loss per foot, is cheaper to install, and carries more air per square inch of material. Use rectangular duct when you have limited space (tight ceiling cavities, soffits, or wall chases). Rectangular duct costs more and has higher friction loss at the same airflow." } },
+    { "@type": "Question", "name": "What is friction rate in duct sizing?", "acceptedAnswer": { "@type": "Answer", "text": "Friction rate is the pressure drop per 100 feet of duct, measured in inches of water column (in WC). A typical residential system uses 0.08 in WC per 100 ft. Lower friction rates mean larger ducts but quieter operation. Higher friction rates allow smaller ducts but increase static pressure and fan energy use." } },
+    { "@type": "Question", "name": "Why is flex duct sized larger?", "acceptedAnswer": { "@type": "Answer", "text": "Flex duct has a corrugated inner liner that creates significantly more friction than smooth sheet metal — roughly 50% more at the same diameter. To deliver the same CFM at the same friction rate, flex duct must be upsized by at least 1 inch (e.g., use 10-inch flex where you would use 8-inch sheet metal). Poorly stretched flex duct is even worse." } }
+  ]
+};
+---
+
+<ToolLayout tool={tool}>
+  <div id="duct-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="cfm">Required CFM</label>
+        <input type="number" id="cfm" value="400" min="25" max="10000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="material">Duct Material</label>
+        <select id="material" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="sheet-metal" selected>Sheet Metal</option>
+          <option value="flex">Flex Duct</option>
+          <option value="fiberglass">Fiberglass Duct Board</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="shape">Duct Shape</label>
+        <select id="shape" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="round" selected>Round</option>
+          <option value="rectangular">Rectangular</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="friction">Friction Rate (in WC per 100 ft)</label>
+        <input type="number" id="friction" value="0.08" min="0.01" max="1.0" step="0.01" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="application">Application</label>
+        <select id="application" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="supply" selected>Supply</option>
+          <option value="return">Return</option>
+          <option value="trunk">Trunk Line</option>
+        </select>
+      </div>
+    </div>
+
+    <button id="calc-btn" class="w-full md:w-auto bg-accent text-white font-heading font-bold text-base uppercase tracking-wider px-8 py-3.5 rounded-lg hover:bg-accent-hover hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,107,43,0.3)] transition-all cursor-pointer">
+      Calculate Duct Size &rarr;
+    </button>
+
+    <div id="results" class="hidden mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Round Duct Size</div>
+          <div id="r-size" class="font-heading font-extrabold text-3xl text-accent">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Duct Area</div>
+          <div id="r-area" class="font-heading font-extrabold text-2xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Air Velocity</div>
+          <div id="r-velocity" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+          <div id="r-velocity-check" class="text-xs mt-1">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Noise Level</div>
+          <div id="r-noise" class="font-heading font-extrabold text-lg text-text-primary">—</div>
+        </div>
+      </div>
+
+      <div id="rect-results" class="hidden mb-6">
+        <h4 class="font-heading font-bold text-lg mb-4">Rectangular Equivalent</h4>
+        <div class="bg-bg-dark rounded-xl p-5">
+          <div id="r-rect" class="font-heading font-extrabold text-2xl text-accent text-center">—</div>
+        </div>
+      </div>
+
+      <div id="rect-table" class="hidden">
+        <h4 class="font-heading font-bold text-lg mb-4">Common Rectangular Equivalents</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead>
+              <tr class="border-b border-border text-text-muted uppercase text-xs tracking-wider">
+                <th class="py-3 px-4">Round Size</th>
+                <th class="py-3 px-4">Rectangular Equivalents</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-secondary">
+              <tr class="border-b border-border"><td class="py-3 px-4 text-text-primary font-medium">6"</td><td class="py-3 px-4">3.25 &times; 10"</td></tr>
+              <tr class="border-b border-border"><td class="py-3 px-4 text-text-primary font-medium">7"</td><td class="py-3 px-4">4 &times; 10" &bull; 6 &times; 7"</td></tr>
+              <tr class="border-b border-border"><td class="py-3 px-4 text-text-primary font-medium">8"</td><td class="py-3 px-4">6 &times; 8" &bull; 4 &times; 12"</td></tr>
+              <tr class="border-b border-border"><td class="py-3 px-4 text-text-primary font-medium">9"</td><td class="py-3 px-4">6 &times; 10" &bull; 8 &times; 8"</td></tr>
+              <tr class="border-b border-border"><td class="py-3 px-4 text-text-primary font-medium">10"</td><td class="py-3 px-4">8 &times; 10" &bull; 6 &times; 12"</td></tr>
+              <tr class="border-b border-border"><td class="py-3 px-4 text-text-primary font-medium">12"</td><td class="py-3 px-4">8 &times; 14" &bull; 10 &times; 12"</td></tr>
+              <tr class="border-b border-border"><td class="py-3 px-4 text-text-primary font-medium">14"</td><td class="py-3 px-4">10 &times; 14" &bull; 8 &times; 18"</td></tr>
+              <tr class="border-b border-border"><td class="py-3 px-4 text-text-primary font-medium">16"</td><td class="py-3 px-4">12 &times; 16" &bull; 10 &times; 18"</td></tr>
+              <tr class="border-b border-border"><td class="py-3 px-4 text-text-primary font-medium">18"</td><td class="py-3 px-4">14 &times; 18" &bull; 12 &times; 20"</td></tr>
+              <tr class="border-b border-border"><td class="py-3 px-4 text-text-primary font-medium">20"</td><td class="py-3 px-4">16 &times; 20" &bull; 14 &times; 22"</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the required CFM.</strong> This is the airflow the duct run needs to deliver. Use a CFM calculator or Manual D worksheet to determine this value for each room or branch.</p>
+          <p><strong class="text-text-primary">2. Select duct material and shape.</strong> Sheet metal is the baseline. Flex duct automatically upsizes by 1 inch due to higher friction. Choose rectangular if you have limited clearance in ceiling cavities or soffits.</p>
+          <p><strong class="text-text-primary">3. Set the friction rate.</strong> The default of 0.08 in WC per 100 ft works for most residential systems. Commercial systems may use 0.1 or higher. Lower friction rates mean larger ducts but quieter, more efficient airflow.</p>
+          <p><strong class="text-text-primary">4. Review the results.</strong> Check the velocity and noise indicators. Green velocity means quiet operation. If the velocity is red, consider upsizing the duct to reduce noise and turbulence.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Duct Sizing Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>There are two primary methods for sizing ducts: the friction rate method and the velocity method. This calculator uses the friction rate method, which is the standard approach in ACCA Manual D.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm">
+            <p>Duct_Area = CFM / Velocity</p>
+            <p>Diameter = 2 × sqrt(Area / pi)</p>
+            <p>Velocity = CFM / (Area in sq ft)</p>
+          </div>
+          <p>The friction rate method sizes ducts so that each 100 feet of duct creates the same pressure drop. This keeps the system balanced and ensures the blower can deliver the designed airflow to every room. A typical residential friction rate of 0.08 in WC per 100 ft balances duct size against noise and energy use.</p>
+          <p>The velocity method caps air speed to control noise. Residential supply ducts should stay below 900 FPM for quiet operation. Return ducts can tolerate slightly higher velocities because they are typically located in less noise-sensitive areas. Trunk lines serving multiple branches can run up to 1,000 FPM.</p>
+          <p>Undersized ducts create high velocity, noise, and excessive pressure drop that starves downstream rooms. Oversized ducts waste material and space but deliver quieter airflow. The goal is the smallest duct that keeps velocity within acceptable limits.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When HVAC Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">New construction duct design.</strong> After calculating room-by-room CFM loads, technicians size each duct run. Trunk lines carry the total system airflow and branch ducts split off to individual rooms. Getting the sizes right here prevents callbacks for comfort complaints.</p>
+          <p><strong class="text-text-primary">Duct replacement and retrofit.</strong> When replacing old ductwork or converting from one material to another, you need to re-verify sizes. Swapping sheet metal for flex duct at the same diameter will choke airflow because flex has higher friction loss.</p>
+          <p><strong class="text-text-primary">Troubleshooting airflow problems.</strong> If a room is not getting enough air, check whether the duct is undersized for the required CFM. A 6-inch flex duct trying to deliver 200 CFM will create noise, turbulence, and starve the room of conditioned air.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What size duct do I need for 400 CFM?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For 400 CFM with sheet metal duct at a standard friction rate of 0.08 in WC per 100 ft, you need a 10-inch round duct. If using flex duct, upsize to 12 inches to compensate for higher friction loss. The equivalent rectangular size would be approximately 8x10 inches.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I use round or rectangular duct?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Round duct is more efficient with less friction loss per foot, cheaper to install, and carries more air per square inch of material. Use rectangular duct when you have limited space in tight ceiling cavities, soffits, or wall chases. Rectangular duct costs more and has higher friction loss at the same airflow.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is friction rate in duct sizing?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Friction rate is the pressure drop per 100 feet of duct, measured in inches of water column (in WC). A typical residential system uses 0.08 in WC per 100 ft. Lower friction rates mean larger ducts but quieter operation. Higher friction rates allow smaller ducts but increase static pressure and fan energy use.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Why is flex duct sized larger?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Flex duct has a corrugated inner liner that creates significantly more friction than smooth sheet metal. To deliver the same CFM at the same friction rate, flex duct must be upsized by at least 1 inch. Poorly stretched flex duct is even worse, so always pull flex tight and use the shortest run possible.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  // Lookup table: [cfm, diameter in inches]
+  const ductTable: [number, number][] = [
+    [100, 6], [150, 7], [200, 8], [300, 9], [400, 10],
+    [600, 12], [800, 14], [1000, 16], [1200, 18], [1600, 20]
+  ];
+
+  // Rectangular equivalents: diameter -> "WxH" options
+  const rectEquivalents: Record<number, string> = {
+    6: '3.25 \u00d7 10"',
+    7: '4 \u00d7 10" or 6 \u00d7 7"',
+    8: '6 \u00d7 8" or 4 \u00d7 12"',
+    9: '6 \u00d7 10" or 8 \u00d7 8"',
+    10: '8 \u00d7 10" or 6 \u00d7 12"',
+    12: '8 \u00d7 14" or 10 \u00d7 12"',
+    14: '10 \u00d7 14" or 8 \u00d7 18"',
+    16: '12 \u00d7 16" or 10 \u00d7 18"',
+    18: '14 \u00d7 18" or 12 \u00d7 20"',
+    20: '16 \u00d7 20" or 14 \u00d7 22"',
+  };
+
+  function interpolateDuct(cfm: number): number {
+    if (cfm <= ductTable[0][0]) return ductTable[0][1];
+    if (cfm >= ductTable[ductTable.length - 1][0]) return ductTable[ductTable.length - 1][1];
+
+    for (let i = 0; i < ductTable.length - 1; i++) {
+      const [cfm1, d1] = ductTable[i];
+      const [cfm2, d2] = ductTable[i + 1];
+      if (cfm >= cfm1 && cfm <= cfm2) {
+        const ratio = (cfm - cfm1) / (cfm2 - cfm1);
+        return d1 + ratio * (d2 - d1);
+      }
+    }
+    return ductTable[ductTable.length - 1][1];
+  }
+
+  function nearestRectEquivalent(diameter: number): string {
+    // Find the closest standard size
+    const sizes = Object.keys(rectEquivalents).map(Number).sort((a, b) => a - b);
+    let closest = sizes[0];
+    let minDiff = Math.abs(diameter - closest);
+    for (const s of sizes) {
+      const diff = Math.abs(diameter - s);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closest = s;
+      }
+    }
+    // If the interpolated diameter is between two sizes, round up
+    for (const s of sizes) {
+      if (s >= diameter) {
+        closest = s;
+        break;
+      }
+    }
+    return rectEquivalents[closest] || rectEquivalents[sizes[sizes.length - 1]];
+  }
+
+  function calculate() {
+    const cfm = parseFloat((document.getElementById('cfm') as HTMLInputElement).value) || 400;
+    const material = (document.getElementById('material') as HTMLSelectElement).value;
+    const shape = (document.getElementById('shape') as HTMLSelectElement).value;
+    const friction = parseFloat((document.getElementById('friction') as HTMLInputElement).value) || 0.08;
+    const application = (document.getElementById('application') as HTMLSelectElement).value;
+
+    // Get base diameter from lookup table
+    let rawDiameter = interpolateDuct(cfm);
+
+    // Flex duct: upsize by 1 inch
+    if (material === 'flex') {
+      rawDiameter += 1;
+    }
+
+    // Round up to nearest whole inch for practical sizing
+    const diameter = Math.ceil(rawDiameter);
+
+    // Calculate area in square inches
+    const areaIn2 = Math.PI * Math.pow(diameter / 2, 2);
+    const areaFt2 = areaIn2 / 144;
+
+    // Calculate velocity
+    const velocity = Math.round(cfm / areaFt2);
+
+    // Velocity limits based on application
+    let velocityMax = 900;   // residential supply default
+    let velocityWarn = 900;
+    if (application === 'return') {
+      velocityMax = 1000;
+      velocityWarn = 1000;
+    } else if (application === 'trunk') {
+      velocityMax = 1200;
+      velocityWarn = 1000;
+    }
+
+    // Display results
+    const suffix = material === 'flex' ? '" (flex)' : '"';
+    document.getElementById('r-size')!.textContent = diameter + suffix;
+    document.getElementById('r-area')!.textContent = areaIn2.toFixed(1) + ' sq in';
+    document.getElementById('r-velocity')!.textContent = velocity.toLocaleString() + ' FPM';
+
+    // Velocity check
+    const velCheckEl = document.getElementById('r-velocity-check')!;
+    if (velocity < velocityWarn) {
+      velCheckEl.textContent = '\u2713 Good for residential';
+      velCheckEl.className = 'text-xs mt-1 text-[#34D399]';
+    } else if (velocity <= velocityMax) {
+      velCheckEl.textContent = '\u26A0 Acceptable, may be audible';
+      velCheckEl.className = 'text-xs mt-1 text-[#FBBF24]';
+    } else {
+      velCheckEl.textContent = '\u2717 Too high \u2014 upsize duct';
+      velCheckEl.className = 'text-xs mt-1 text-[#F87171]';
+    }
+
+    // Noise level
+    const noiseEl = document.getElementById('r-noise')!;
+    if (velocity < 600) {
+      noiseEl.textContent = 'Quiet';
+      noiseEl.className = 'font-heading font-extrabold text-lg text-[#34D399]';
+    } else if (velocity <= 900) {
+      noiseEl.textContent = 'Acceptable';
+      noiseEl.className = 'font-heading font-extrabold text-lg text-[#FBBF24]';
+    } else {
+      noiseEl.textContent = 'Noisy';
+      noiseEl.className = 'font-heading font-extrabold text-lg text-[#F87171]';
+    }
+
+    // Rectangular results
+    const rectResultsEl = document.getElementById('rect-results')!;
+    const rectTableEl = document.getElementById('rect-table')!;
+    if (shape === 'rectangular') {
+      rectResultsEl.classList.remove('hidden');
+      rectTableEl.classList.remove('hidden');
+      document.getElementById('r-rect')!.textContent = nearestRectEquivalent(diameter);
+    } else {
+      rectResultsEl.classList.add('hidden');
+      rectTableEl.classList.add('hidden');
+    }
+
+    document.getElementById('results')!.classList.remove('hidden');
+  }
+
+  document.getElementById('calc-btn')?.addEventListener('click', calculate);
+  document.querySelectorAll('#duct-calc input, #duct-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+  });
+  calculate();
+</script>
