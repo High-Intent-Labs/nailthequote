@@ -15,7 +15,7 @@ const faqSchema = {
 };
 ---
 
-<ToolLayout tool={tool}>
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
   <div id="ach-calc">
     <div class="flex flex-wrap gap-3 mb-6">
       <button id="mode-ach" class="bg-accent text-white font-heading font-bold text-sm uppercase tracking-wider px-5 py-2.5 rounded-lg transition-all cursor-pointer">Calculate ACH from CFM</button>
