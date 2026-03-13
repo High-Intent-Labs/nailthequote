@@ -1,0 +1,255 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/landscapingTools';
+
+const tool = getToolBySlug('paver-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How many pavers do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Divide your project area in square feet by the square footage of each paver. A standard 12x12 inch paver covers 1 sq ft, a 16x24 inch paver covers 2.67 sq ft, and an 8x16 inch paver covers 0.89 sq ft. Add 10-15% for cuts and breakage on straight layouts, or 15-20% for complex patterns."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much base material do I need for pavers?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Standard paver installation requires a 4-6 inch compacted gravel base plus a 1 inch sand setting bed. Calculate base material as: Area x Base Depth / 324 = cubic yards of gravel. For the sand layer: Area x 1 / 324 = cubic yards of sand. A 200 sq ft patio needs about 2.5-3.7 cubic yards of base and 0.6 cubic yards of sand."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the recommended waste factor for pavers?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For straight, rectangular layouts, add 10% for waste. For diagonal patterns or borders, add 15%. For complex curves, circles, or intricate patterns, add 20%. It is cheaper to buy a few extra pavers upfront than to pay for a separate delivery of matching pavers later."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much do pavers weigh?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The average concrete paver weighs about 9 pounds each. A 200 sq ft patio using 12x12 pavers (200 pavers) weighs roughly 1,800 lbs in pavers alone. Add the weight of the gravel base (1.5 tons per cubic yard) and sand layer. Plan delivery and equipment accordingly."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="paver-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="calcMethod">Measurement Method</label>
+        <select id="calcMethod" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="area">Enter Total Area (sq ft)</option>
+          <option value="lw">Enter Length x Width</option>
+        </select>
+      </div>
+      <div id="area-input">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="area">Project Area (sq ft)</label>
+        <input type="number" id="area" value="200" min="1" max="100000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="length-input" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="length">Length (ft)</label>
+        <input type="number" id="length" value="20" min="1" max="10000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="width-input" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="width">Width (ft)</label>
+        <input type="number" id="width" value="10" min="1" max="10000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="paverSize">Paver Size</label>
+        <select id="paverSize" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.00">12" x 12" (1.00 sq ft)</option>
+          <option value="0.89">8" x 16" (0.89 sq ft)</option>
+          <option value="2.00">12" x 24" (2.00 sq ft)</option>
+          <option value="2.67" selected>16" x 24" (2.67 sq ft)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="waste">Waste / Cuts (%)</label>
+        <select id="waste" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="10">10% — Straight layout</option>
+          <option value="15" selected>15% — Standard / diagonal</option>
+          <option value="20">20% — Complex patterns</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="baseDepth">Gravel Base Depth (inches)</label>
+        <select id="baseDepth" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="4">4 inches (walkways)</option>
+          <option value="6" selected>6 inches (patios, standard)</option>
+          <option value="8">8 inches (driveways)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="costPerPaver">Cost per Paver ($)</label>
+        <input type="number" id="costPerPaver" value="5" min="0" max="50" step="0.50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Leave at 0 to skip cost estimate</p>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Pavers Needed</div>
+          <div id="result-pavers" class="font-heading font-extrabold text-3xl text-accent">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Base Gravel (yd3)</div>
+          <div id="result-base" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Sand Layer (yd3)</div>
+          <div id="result-sand" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Paver Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Paver Weight</div>
+          <div id="result-paver-weight" class="font-heading font-extrabold text-xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Base Weight</div>
+          <div id="result-base-weight" class="font-heading font-extrabold text-xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Weight</div>
+          <div id="result-total-weight" class="font-heading font-extrabold text-xl text-text-primary">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter project area.</strong> Measure the patio, walkway, or driveway area in square feet.</p>
+          <p><strong class="text-text-primary">2. Select paver size.</strong> Choose from common paver dimensions. The calculator converts to square feet per paver automatically.</p>
+          <p><strong class="text-text-primary">3. Set waste factor.</strong> Use 10% for straight rectangular layouts, 15% for standard patterns, and 20% for complex curves or borders.</p>
+          <p><strong class="text-text-primary">4. Choose base depth.</strong> 4 inches for walkways, 6 inches for patios, and 8 inches for driveways that support vehicle traffic.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Paver Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator uses standard hardscape material calculations:</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Pavers = Area / Paver_sqft x (1 + Waste% / 100)</p>
+            <p>Base Material (yd3) = Area x Base_Depth / 324</p>
+            <p>Sand Layer (yd3) = Area x 1 / 324</p>
+            <p>Paver Weight = Count x 9 lbs</p>
+            <p>Base Weight = Base_yd3 x 1.5 tons</p>
+          </div>
+          <p>The number 324 comes from the conversion factor: 27 cubic feet per cubic yard times 12 inches per foot. A 1-inch layer over 324 square feet equals exactly 1 cubic yard.</p>
+          <p>Every paver installation needs three layers: compacted gravel base for structural support, a 1-inch sand setting bed for leveling, and the pavers themselves. Skipping or shortcutting the base layer leads to settling, shifting, and callbacks.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When Landscape Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Bidding hardscape projects.</strong> Get accurate paver counts and material volumes before quoting. Knowing the exact gravel and sand quantities prevents under-ordering or over-spending.</p>
+          <p><strong class="text-text-primary">Ordering materials.</strong> Calculate everything in one place: pavers, base gravel, and setting sand. Place one order for all materials and coordinate a single delivery.</p>
+          <p><strong class="text-text-primary">Planning equipment and labor.</strong> The weight estimates help determine if you need a skid steer, how many dump truck loads to plan for, and how much crew time to allocate for material handling.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many pavers do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Divide your project area in square feet by the square footage of each paver. A standard 12x12 paver covers 1 sq ft, a 16x24 covers 2.67 sq ft. Add 10-15% for cuts and breakage on straight layouts, or 15-20% for complex patterns.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much base material do I need for pavers?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Standard installation requires a 4-6 inch gravel base plus 1 inch sand. Calculate base as: Area x Depth / 324 = cubic yards. A 200 sq ft patio at 6 inches needs about 3.7 cubic yards of gravel and 0.6 cubic yards of sand.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the recommended waste factor for pavers?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For straight, rectangular layouts, add 10% for waste. For diagonal patterns or borders, add 15%. For complex curves, circles, or intricate patterns, add 20%.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much do pavers weigh?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The average concrete paver weighs about 9 pounds each. A 200 sq ft patio using 12x12 pavers weighs roughly 1,800 lbs in pavers alone. Add the weight of gravel base (1.5 tons per cubic yard) and sand layer.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const method = (document.getElementById('calcMethod') as HTMLSelectElement).value;
+    let area: number;
+
+    if (method === 'lw') {
+      const length = parseFloat((document.getElementById('length') as HTMLInputElement).value) || 0;
+      const width = parseFloat((document.getElementById('width') as HTMLInputElement).value) || 0;
+      area = length * width;
+    } else {
+      area = parseFloat((document.getElementById('area') as HTMLInputElement).value) || 0;
+    }
+
+    const paverSqft = parseFloat((document.getElementById('paverSize') as HTMLSelectElement).value);
+    const waste = parseFloat((document.getElementById('waste') as HTMLSelectElement).value);
+    const baseDepth = parseFloat((document.getElementById('baseDepth') as HTMLSelectElement).value);
+    const costPerPaver = parseFloat((document.getElementById('costPerPaver') as HTMLInputElement).value) || 0;
+
+    const basePavers = area / paverSqft;
+    const paversWithWaste = Math.ceil(basePavers * (1 + waste / 100));
+    const baseYards = (area * baseDepth) / 324;
+    const sandYards = area / 324;
+
+    const paverWeight = paversWithWaste * 9;
+    const baseWeight = baseYards * 1.5 * 2000;
+    const sandWeight = sandYards * 0.5 * 2000;
+    const totalWeight = paverWeight + baseWeight + sandWeight;
+
+    document.getElementById('result-pavers')!.textContent = paversWithWaste.toLocaleString();
+    document.getElementById('result-base')!.textContent = baseYards.toFixed(1);
+    document.getElementById('result-sand')!.textContent = sandYards.toFixed(1);
+    document.getElementById('result-cost')!.textContent = costPerPaver > 0 ? '$' + (paversWithWaste * costPerPaver).toLocaleString() : '—';
+
+    document.getElementById('result-paver-weight')!.textContent = Math.round(paverWeight).toLocaleString() + ' lbs';
+    document.getElementById('result-base-weight')!.textContent = (baseYards * 1.5).toFixed(1) + ' tons';
+    document.getElementById('result-total-weight')!.textContent = (totalWeight / 2000).toFixed(1) + ' tons';
+  }
+
+  function toggleMethod() {
+    const method = (document.getElementById('calcMethod') as HTMLSelectElement).value;
+    document.getElementById('area-input')!.classList.toggle('hidden', method === 'lw');
+    document.getElementById('length-input')!.classList.toggle('hidden', method !== 'lw');
+    document.getElementById('width-input')!.classList.toggle('hidden', method !== 'lw');
+    calculate();
+  }
+
+  document.getElementById('calcMethod')?.addEventListener('change', toggleMethod);
+  document.querySelectorAll('#paver-calc input, #paver-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

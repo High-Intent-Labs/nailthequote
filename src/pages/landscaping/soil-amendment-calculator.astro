@@ -1,0 +1,254 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/landscapingTools';
+
+const tool = getToolBySlug('soil-amendment-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much topsoil do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Measure the area in square feet, choose your depth in inches, then use the formula: (Area x Depth) / 12 / 27 = cubic yards. For example, 500 sq ft at 4 inches deep needs about 6.2 cubic yards of topsoil. Add 5% for waste and settling."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does a cubic yard of soil weigh?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Weight varies by material. Topsoil weighs about 1.4 tons (2,800 lbs) per cubic yard. Compost is lighter at 1.2 tons per cubic yard. Gravel is heavier at 1.5 tons, and sand is the heaviest common material at 1.6 tons per cubic yard. These are approximate weights for dry material."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What depth of soil amendment should I use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For existing bed amendments and top-dressing, use 2-3 inches. For new bed creation from scratch, use 4-6 inches to establish a healthy root zone. For gravel drainage layers, 3-4 inches is standard. Always till amendments into existing soil for best results."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many bags of soil are in a cubic yard?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A standard bag of topsoil or compost is 2 cubic feet. One cubic yard equals 27 cubic feet, so you need 13.5 bags per cubic yard. For jobs over 3 cubic yards, bulk delivery is more cost-effective than buying bags from a garden center."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="soil-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="calcMethod">Measurement Method</label>
+        <select id="calcMethod" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="area">Enter Total Area (sq ft)</option>
+          <option value="lw">Enter Length x Width</option>
+        </select>
+      </div>
+      <div id="area-input">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="area">Area (sq ft)</label>
+        <input type="number" id="area" value="500" min="1" max="100000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="length-input" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="length">Length (ft)</label>
+        <input type="number" id="length" value="25" min="1" max="10000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="width-input" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="width">Width (ft)</label>
+        <input type="number" id="width" value="20" min="1" max="10000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="material">Material Type</label>
+        <select id="material" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.4" selected>Topsoil (1.4 tons/yd)</option>
+          <option value="1.2">Compost (1.2 tons/yd)</option>
+          <option value="0.8">Mulch (0.8 tons/yd)</option>
+          <option value="1.5">Gravel (1.5 tons/yd)</option>
+          <option value="1.6">Sand (1.6 tons/yd)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="depth">Depth (inches)</label>
+        <select id="depth" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1">1 inch</option>
+          <option value="2">2 inches</option>
+          <option value="3">3 inches</option>
+          <option value="4" selected>4 inches</option>
+          <option value="5">5 inches</option>
+          <option value="6">6 inches</option>
+          <option value="8">8 inches</option>
+          <option value="12">12 inches</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="waste">Waste / Buffer (%)</label>
+        <select id="waste" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0">0% — No waste</option>
+          <option value="3">3% — Minimal buffer</option>
+          <option value="5" selected>5% — Standard buffer</option>
+          <option value="10">10% — Irregular shape</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="costPerYard">Cost per Cubic Yard ($)</label>
+        <input type="number" id="costPerYard" value="45" min="0" max="300" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Leave at 0 to skip cost estimate</p>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cubic Yards</div>
+          <div id="result-yards" class="font-heading font-extrabold text-3xl text-accent">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cubic Feet</div>
+          <div id="result-cuft" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Weight (tons)</div>
+          <div id="result-weight" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">2 cu ft Bags</div>
+          <div id="result-bags" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+      </div>
+
+      <!-- Depth Reference -->
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Recommended Depths</h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div><span class="text-text-muted">Bed amendment:</span> <span class="text-text-primary font-semibold">2-3 inches</span></div>
+          <div><span class="text-text-muted">New bed creation:</span> <span class="text-text-primary font-semibold">4-6 inches</span></div>
+          <div><span class="text-text-muted">Gravel/drainage:</span> <span class="text-text-primary font-semibold">3-4 inches</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Choose your measurement method.</strong> Enter the total area in square feet, or enter length and width separately for rectangular beds.</p>
+          <p><strong class="text-text-primary">2. Select your material type.</strong> Different materials have different densities, which affects weight and hauling requirements. The calculator adjusts the weight estimate automatically.</p>
+          <p><strong class="text-text-primary">3. Select your depth.</strong> Use 2-3 inches for amending existing beds, 4-6 inches for building new beds from scratch, and 3-4 inches for gravel drainage layers.</p>
+          <p><strong class="text-text-primary">4. Enter material cost (optional).</strong> Enter the bulk price per cubic yard from your supplier to get a total material cost estimate.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Soil Amendment Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator uses the standard cubic volume formula used across the landscaping industry:</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Volume (cubic feet) = Area (sq ft) x Depth (inches) / 12</p>
+            <p>Volume (cubic yards) = Cubic Feet / 27</p>
+            <p>With Waste = Cubic Yards x (1 + Waste% / 100)</p>
+            <p>Weight (tons) = Cubic Yards x Density Factor</p>
+          </div>
+          <p>Material densities vary significantly. One cubic yard of topsoil weighs about 2,800 lbs (1.4 tons), while the same volume of sand weighs 3,200 lbs (1.6 tons). Knowing the weight is critical for planning truck loads and ensuring your delivery vehicle can handle the material.</p>
+          <p>Bag count is calculated at 2 cubic feet per bag (standard retail bag). For jobs over 3 cubic yards, bulk delivery is significantly more cost-effective than buying bags.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When Landscape Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">New bed construction.</strong> Calculate exactly how much topsoil or garden mix you need to build beds from scratch. Avoid over-ordering and paying for material you do not need, or under-ordering and making a second trip to the supplier.</p>
+          <p><strong class="text-text-primary">Gravel and drainage projects.</strong> Whether it is a French drain, patio base, or driveway, get the exact cubic yards of gravel or stone needed. The weight estimate helps you plan dump truck loads.</p>
+          <p><strong class="text-text-primary">Compost and amendment applications.</strong> For annual bed amendments, top-dressing, or soil improvement projects, calculate the exact volume needed at the recommended depth for the application.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much topsoil do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Measure the area in square feet, choose your depth in inches, then use the formula: (Area x Depth) / 12 / 27 = cubic yards. For example, 500 sq ft at 4 inches deep needs about 6.2 cubic yards of topsoil. Add 5% for waste and settling.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a cubic yard of soil weigh?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Weight varies by material. Topsoil weighs about 1.4 tons (2,800 lbs) per cubic yard. Compost is lighter at 1.2 tons per cubic yard. Gravel is heavier at 1.5 tons, and sand is the heaviest common material at 1.6 tons per cubic yard.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What depth of soil amendment should I use?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For existing bed amendments and top-dressing, use 2-3 inches. For new bed creation from scratch, use 4-6 inches to establish a healthy root zone. For gravel drainage layers, 3-4 inches is standard.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many bags of soil are in a cubic yard?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard bag of topsoil or compost is 2 cubic feet. One cubic yard equals 27 cubic feet, so you need 13.5 bags per cubic yard. For jobs over 3 cubic yards, bulk delivery is more cost-effective than buying bags from a garden center.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const method = (document.getElementById('calcMethod') as HTMLSelectElement).value;
+    let area: number;
+
+    if (method === 'lw') {
+      const length = parseFloat((document.getElementById('length') as HTMLInputElement).value) || 0;
+      const width = parseFloat((document.getElementById('width') as HTMLInputElement).value) || 0;
+      area = length * width;
+    } else {
+      area = parseFloat((document.getElementById('area') as HTMLInputElement).value) || 0;
+    }
+
+    const density = parseFloat((document.getElementById('material') as HTMLSelectElement).value);
+    const depth = parseFloat((document.getElementById('depth') as HTMLSelectElement).value);
+    const waste = parseFloat((document.getElementById('waste') as HTMLSelectElement).value);
+    const costPerYard = parseFloat((document.getElementById('costPerYard') as HTMLInputElement).value) || 0;
+
+    const cubicFeet = (area * depth) / 12;
+    const cubicYards = cubicFeet / 27;
+    const withWaste = cubicYards * (1 + waste / 100);
+    const weight = withWaste * density;
+    const bags = Math.ceil((withWaste * 27) / 2);
+    const cost = withWaste * costPerYard;
+
+    document.getElementById('result-yards')!.textContent = withWaste.toFixed(1);
+    document.getElementById('result-cuft')!.textContent = (withWaste * 27).toFixed(0);
+    document.getElementById('result-weight')!.textContent = weight.toFixed(1);
+    document.getElementById('result-bags')!.textContent = bags.toString();
+    document.getElementById('result-cost')!.textContent = costPerYard > 0 ? '$' + cost.toFixed(0) : '—';
+  }
+
+  function toggleMethod() {
+    const method = (document.getElementById('calcMethod') as HTMLSelectElement).value;
+    document.getElementById('area-input')!.classList.toggle('hidden', method === 'lw');
+    document.getElementById('length-input')!.classList.toggle('hidden', method !== 'lw');
+    document.getElementById('width-input')!.classList.toggle('hidden', method !== 'lw');
+    calculate();
+  }
+
+  document.getElementById('calcMethod')?.addEventListener('change', toggleMethod);
+  document.querySelectorAll('#soil-calc input, #soil-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

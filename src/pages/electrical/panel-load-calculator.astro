@@ -1,0 +1,308 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/electricalTools';
+
+const tool = getToolBySlug('panel-load-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do you calculate panel load per NEC Article 220?",
+      "acceptedAnswer": { "@type": "Answer", "text": "NEC Article 220 uses demand factors to reduce the total connected load to a realistic demand. General lighting is 3 VA per square foot with a demand factor of 100% on the first 3000 VA and 35% on the remainder. Small appliance and laundry circuits add 4500 VA with the same demand factor. Individual loads like range, dryer, water heater, and HVAC are added at nameplate or demand values from NEC tables." }
+    },
+    {
+      "@type": "Question",
+      "name": "What size electrical service do I need for my house?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Most modern homes require 200A service. NEC 230.79 sets the minimum at 100A for single-family homes. To determine exact size, calculate total demand load per Article 220, divide by 240V, and round up to the next standard breaker size (100, 125, 150, 200, 225, 300, or 400A). Homes with electric heating, EV chargers, or pools often need 200A or more." }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I use the larger of heating or cooling load?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. NEC assumes heating and cooling are not used simultaneously, so you include only the larger of the two loads in your demand calculation. If you have a 10 kW heat pump and a 3-ton AC (about 12 kW), you would include the 12 kW cooling load and omit the heating load." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="panel-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="sqft">Square Footage</label>
+        <input type="number" id="sqft" value="2000" min="200" max="20000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="heatingType">Heating Type</label>
+        <select id="heatingType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="none">None / Gas / Oil</option>
+          <option value="electric">Electric Resistance</option>
+          <option value="heatpump" selected>Heat Pump</option>
+        </select>
+      </div>
+      <div id="heatingKwWrap">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="heatingKw">Heating (kW)</label>
+        <input type="number" id="heatingKw" value="10" min="0" max="100" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="acTons">Central AC (Tons)</label>
+        <input type="number" id="acTons" value="3" min="0" max="10" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="rangeKw">Electric Range (kW)</label>
+        <select id="rangeKw" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0">None / Gas</option>
+          <option value="8" selected>Standard (8 kW)</option>
+          <option value="12">Large (12 kW)</option>
+          <option value="16">Double Oven (16 kW)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="dryer">Electric Dryer</label>
+        <select id="dryer" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0">None / Gas</option>
+          <option value="5000" selected>Standard (5 kW)</option>
+          <option value="6000">Large (6 kW)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="waterHeater">Electric Water Heater</label>
+        <select id="waterHeater" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0">None / Gas</option>
+          <option value="4500" selected>Standard Tank (4.5 kW)</option>
+          <option value="5500">Large Tank (5.5 kW)</option>
+          <option value="18000">Tankless (18 kW)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="evCharger">EV Charger</label>
+        <select id="evCharger" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0" selected>None</option>
+          <option value="1440">Level 1 (1.4 kW / 12A)</option>
+          <option value="7200">Level 2 — 30A (7.2 kW)</option>
+          <option value="9600">Level 2 — 40A (9.6 kW)</option>
+          <option value="11520">Level 2 — 48A (11.5 kW)</option>
+          <option value="19200">Level 2 — 80A (19.2 kW)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="pool">Pool / Hot Tub</label>
+        <select id="pool" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0" selected>None</option>
+          <option value="2400">Above-Ground Pool (pump only)</option>
+          <option value="7200">In-Ground Pool (pump + heater)</option>
+          <option value="6000">Hot Tub / Spa (6 kW)</option>
+          <option value="12000">Pool + Spa Combo</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Demand</div>
+          <div id="result-demand" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Service Amps</div>
+          <div id="result-amps" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Recommended</div>
+          <div id="result-breaker" class="font-heading font-extrabold text-3xl text-[#34D399]">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Future-Proof</div>
+          <div id="result-future" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <!-- Breakdown table -->
+      <div class="bg-bg-dark rounded-xl p-5 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Load Breakdown</h4>
+        <div id="breakdown" class="space-y-2 text-sm"></div>
+        <div class="border-t border-border mt-3 pt-3 flex justify-between font-bold text-text-primary">
+          <span>Total Demand Load</span>
+          <span id="breakdown-total">--</span>
+        </div>
+      </div>
+
+      <div id="result-notes" class="mb-4"></div>
+      <p class="text-text-muted text-sm italic">Based on NEC Article 220 demand factors for single-family residential. This is an estimate — consult a licensed engineer for final service design.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your home square footage.</strong> The calculator uses 3 VA per square foot for general lighting load per NEC 220.12.</p>
+          <p><strong class="text-text-primary">2. Select your heating type and cooling size.</strong> The calculator uses the larger of heating or cooling load — NEC assumes they do not run simultaneously.</p>
+          <p><strong class="text-text-primary">3. Check off major appliances.</strong> Electric range, dryer, water heater, and EV charger each add significant load. Gas appliances do not contribute to the electrical demand.</p>
+          <p><strong class="text-text-primary">4. Review the results.</strong> The calculator applies NEC Article 220 demand factors and recommends the nearest standard service size.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">NEC Article 220 Demand Factors</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The NEC does not require you to size service for 100% of all connected loads running simultaneously. <strong class="text-text-primary">Demand factors</strong> reduce the calculated load to a realistic peak demand.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>General Lighting: First 3,000 VA at 100%, remainder at 35%</p>
+            <p>Small Appliance + Laundry: 4,500 VA with same demand factor</p>
+            <p>Range (Table 220.55): 8 kW demand = 8,000 VA</p>
+            <p>Dryer: 5,000 VA (or nameplate if larger)</p>
+            <p>Water Heater: Full nameplate VA</p>
+            <p>HVAC: Larger of heating or cooling at 100%</p>
+            <p>EV Charger: Full nameplate VA</p>
+            <p>Service Amps = Total Demand VA / 240V</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do you calculate panel load per NEC Article 220?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">NEC Article 220 uses demand factors to reduce the total connected load to a realistic demand. General lighting is 3 VA per square foot with a demand factor of 100% on the first 3000 VA and 35% on the remainder. Small appliance and laundry circuits add 4500 VA with the same demand factor. Individual loads like range, dryer, water heater, and HVAC are added at nameplate or demand values from NEC tables.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What size electrical service do I need for my house?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most modern homes require 200A service. NEC 230.79 sets the minimum at 100A for single-family homes. Calculate total demand load per Article 220, divide by 240V, and round up to the next standard breaker size.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Do I use the larger of heating or cooling load?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. NEC assumes heating and cooling are not used simultaneously, so you include only the larger of the two loads in your demand calculation.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const sqft = parseFloat((document.getElementById('sqft') as HTMLInputElement).value) || 2000;
+    const heatingType = (document.getElementById('heatingType') as HTMLSelectElement).value;
+    const heatingKw = parseFloat((document.getElementById('heatingKw') as HTMLInputElement).value) || 0;
+    const acTons = parseFloat((document.getElementById('acTons') as HTMLInputElement).value) || 0;
+    const rangeKw = parseFloat((document.getElementById('rangeKw') as HTMLSelectElement).value) || 0;
+    const dryerVa = parseFloat((document.getElementById('dryer') as HTMLSelectElement).value) || 0;
+    const waterHeaterVa = parseFloat((document.getElementById('waterHeater') as HTMLSelectElement).value) || 0;
+    const evVa = parseFloat((document.getElementById('evCharger') as HTMLSelectElement).value) || 0;
+    const poolVa = parseFloat((document.getElementById('pool') as HTMLSelectElement).value) || 0;
+
+    // Show/hide heating kW field
+    const heatingKwWrap = document.getElementById('heatingKwWrap')!;
+    if (heatingType === 'none') {
+      heatingKwWrap.style.display = 'none';
+    } else {
+      heatingKwWrap.style.display = '';
+    }
+
+    // Step 1: General Lighting Load (NEC 220.12)
+    const lightingVa = sqft * 3;
+
+    // Step 2: Apply demand factor (NEC 220.42)
+    // Combine lighting + small appliance + laundry then apply demand
+    const smallApplianceVa = 4500; // 2 kitchen + 1 laundry
+    const combinedVa = lightingVa + smallApplianceVa;
+    const demandLightingAppliance = Math.min(3000, combinedVa) + Math.max(0, combinedVa - 3000) * 0.35;
+
+    // Step 3: Range demand (NEC Table 220.55)
+    let rangeDemand = 0;
+    if (rangeKw > 0) {
+      if (rangeKw <= 8.75) rangeDemand = 8000;
+      else rangeDemand = rangeKw * 1000;
+    }
+
+    // Step 4: Dryer
+    const dryerDemand = dryerVa;
+
+    // Step 5: Water heater
+    const whDemand = waterHeaterVa;
+
+    // Step 6: Heating or cooling (use larger)
+    const heatingVa = (heatingType !== 'none') ? heatingKw * 1000 : 0;
+    const coolingVa = acTons * 4000; // approx 4 kW per ton at 240V
+    const hvacDemand = Math.max(heatingVa, coolingVa);
+    const hvacLabel = heatingVa >= coolingVa && heatingVa > 0 ? 'Heating' : 'Cooling';
+
+    // Step 7: EV Charger
+    const evDemand = evVa;
+
+    // Step 8: Pool/Spa
+    const poolDemand = poolVa;
+
+    // Total
+    const totalDemand = demandLightingAppliance + rangeDemand + dryerDemand + whDemand + hvacDemand + evDemand + poolDemand;
+    const serviceAmps = totalDemand / 240;
+
+    // Standard breaker sizes
+    const standardSizes = [100, 125, 150, 200, 225, 300, 400];
+    let recommended = 400;
+    for (const s of standardSizes) {
+      if (s >= serviceAmps) { recommended = s; break; }
+    }
+    // NEC 230.79 minimum 100A
+    if (recommended < 100) recommended = 100;
+
+    // Future proof
+    let futureAmps = Math.ceil(serviceAmps * 1.25);
+    let futureSize = 400;
+    for (const s of standardSizes) {
+      if (s >= futureAmps) { futureSize = s; break; }
+    }
+
+    // Display results
+    document.getElementById('result-demand')!.textContent = Math.round(totalDemand).toLocaleString() + ' VA';
+    document.getElementById('result-amps')!.textContent = serviceAmps.toFixed(0) + 'A';
+    document.getElementById('result-breaker')!.textContent = recommended + 'A';
+    document.getElementById('result-future')!.textContent = futureSize + 'A (with 25% buffer)';
+
+    // Breakdown table
+    const breakdownEl = document.getElementById('breakdown')!;
+    const rows = [
+      { label: 'General Lighting (' + sqft + ' sqft x 3 VA)', va: lightingVa },
+      { label: 'Small Appliance + Laundry (2+1 circuits)', va: smallApplianceVa },
+      { label: 'Lighting/Appliance Demand Factor Applied', va: demandLightingAppliance, note: 'First 3,000 VA at 100%, remainder at 35%' },
+    ];
+    if (rangeDemand > 0) rows.push({ label: 'Electric Range (' + rangeKw + ' kW)', va: rangeDemand });
+    if (dryerDemand > 0) rows.push({ label: 'Electric Dryer', va: dryerDemand });
+    if (whDemand > 0) rows.push({ label: 'Electric Water Heater', va: whDemand });
+    if (hvacDemand > 0) rows.push({ label: hvacLabel + ' (larger of heat/cool)', va: hvacDemand });
+    if (evDemand > 0) rows.push({ label: 'EV Charger', va: evDemand });
+    if (poolDemand > 0) rows.push({ label: 'Pool / Hot Tub', va: poolDemand });
+
+    breakdownEl.innerHTML = rows.map(r => {
+      const isDemandRow = r.label.includes('Demand Factor');
+      return `<div class="flex justify-between ${isDemandRow ? 'border-t border-border pt-2 mt-2 font-medium text-text-primary' : 'text-text-secondary'}">
+        <span>${r.label}</span>
+        <span class="font-mono">${Math.round(r.va).toLocaleString()} VA</span>
+      </div>`;
+    }).join('');
+
+    document.getElementById('breakdown-total')!.textContent = Math.round(totalDemand).toLocaleString() + ' VA';
+
+    // Notes
+    const notesEl = document.getElementById('result-notes')!;
+    if (serviceAmps > 400) {
+      notesEl.innerHTML = `<div class="bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCA5A5]">Calculated load exceeds 400A. This may require a commercial-grade service or multiple panels. Consult a licensed engineer.</div>`;
+    } else if (recommended >= 300) {
+      notesEl.innerHTML = `<div class="bg-[rgba(251,191,36,0.1)] border border-[rgba(251,191,36,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCD34D]">300A+ service typically requires utility coordination and a CT (current transformer) meter. Plan for 2-4 weeks lead time.</div>`;
+    } else {
+      notesEl.innerHTML = '';
+    }
+  }
+
+  document.querySelectorAll('#panel-calc input, #panel-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+  calculate();
+</script>

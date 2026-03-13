@@ -1,0 +1,248 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/paintingTools';
+
+const tool = getToolBySlug('surface-prep-estimator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How long does surface prep take before painting?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Surface prep typically takes 30-50% of total project time. A clean room in good condition may need only 0.5-1 hour of prep. A room with moderate peeling, patching, and sanding can take 3-5 hours. Heavy prep like wallpaper removal or paint stripping can add 4-8 hours or more depending on the area." }
+    },
+    {
+      "@type": "Question",
+      "name": "What prep work is needed before painting?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Common prep tasks include cleaning walls (dust, grease, cobwebs), sanding rough spots, patching drywall holes, caulking gaps and seams, filling nail holes, removing loose or peeling paint, and priming bare surfaces. The specific tasks depend on the current wall condition and the type of finish you want." }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does wallpaper removal cost in time?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Wallpaper removal is one of the most time-intensive prep tasks. Expect 3-8 hours depending on the room size, number of layers, and adhesive type. Vinyl wallpaper is harder to remove than paper. Steam or chemical strippers can speed the process. Budget 1-2 hours per 100 square feet as a rough estimate." }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I charge separately for prep work?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Prep work should be itemized or clearly included in your estimate. Underestimating prep is the number one cause of job losses for painters. By calculating prep time separately, you ensure the customer understands the scope and you protect your profit margin." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="prep-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="area">Total Area (sq ft)</label>
+        <input type="number" id="area" value="400" min="1" max="100000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="condition">Surface Condition</label>
+        <select id="condition" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.01">Clean / Good Condition</option>
+          <option value="0.015" selected>Light Dust / Dirt</option>
+          <option value="0.03">Moderate Dirt / Peeling</option>
+          <option value="0.06">Heavy Peeling / Damage</option>
+          <option value="0.005">New Construction</option>
+          <option value="0.10">Commercial Renovation</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="hourlyRate">Hourly Labor Rate ($)</label>
+        <input type="number" id="hourlyRate" value="55" min="0" max="200" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div class="mb-8">
+      <p class="text-sm font-medium text-text-secondary mb-3">Additional Prep Tasks</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <label class="flex items-center gap-3 bg-bg-dark rounded-lg px-4 py-3 cursor-pointer hover:bg-bg-card-hover transition-colors">
+          <input type="checkbox" id="taskClean" checked class="prep-task w-4 h-4 rounded accent-accent" />
+          <div><span class="text-text-primary text-sm">Wall Cleaning</span><span class="text-text-muted text-xs ml-2">+1-2 hr</span></div>
+        </label>
+        <label class="flex items-center gap-3 bg-bg-dark rounded-lg px-4 py-3 cursor-pointer hover:bg-bg-card-hover transition-colors">
+          <input type="checkbox" id="taskSand" class="prep-task w-4 h-4 rounded accent-accent" />
+          <div><span class="text-text-primary text-sm">Sanding Rough Areas</span><span class="text-text-muted text-xs ml-2">+0.5 hr/100 sqft</span></div>
+        </label>
+        <label class="flex items-center gap-3 bg-bg-dark rounded-lg px-4 py-3 cursor-pointer hover:bg-bg-card-hover transition-colors">
+          <input type="checkbox" id="taskPatch" class="prep-task w-4 h-4 rounded accent-accent" />
+          <div><span class="text-text-primary text-sm">Drywall Patching</span><span class="text-text-muted text-xs ml-2">+0.75 hr (2-3 patches)</span></div>
+        </label>
+        <label class="flex items-center gap-3 bg-bg-dark rounded-lg px-4 py-3 cursor-pointer hover:bg-bg-card-hover transition-colors">
+          <input type="checkbox" id="taskCaulk" checked class="prep-task w-4 h-4 rounded accent-accent" />
+          <div><span class="text-text-primary text-sm">Caulking Seams</span><span class="text-text-muted text-xs ml-2">+0.15 hr/50 sqft</span></div>
+        </label>
+        <label class="flex items-center gap-3 bg-bg-dark rounded-lg px-4 py-3 cursor-pointer hover:bg-bg-card-hover transition-colors">
+          <input type="checkbox" id="taskNails" checked class="prep-task w-4 h-4 rounded accent-accent" />
+          <div><span class="text-text-primary text-sm">Filling Nail Holes</span><span class="text-text-muted text-xs ml-2">+0.1 hr/100 sqft</span></div>
+        </label>
+        <label class="flex items-center gap-3 bg-bg-dark rounded-lg px-4 py-3 cursor-pointer hover:bg-bg-card-hover transition-colors">
+          <input type="checkbox" id="taskWallpaper" class="prep-task w-4 h-4 rounded accent-accent" />
+          <div><span class="text-text-primary text-sm">Wallpaper Removal</span><span class="text-text-muted text-xs ml-2">+5.5 hr avg</span></div>
+        </label>
+        <label class="flex items-center gap-3 bg-bg-dark rounded-lg px-4 py-3 cursor-pointer hover:bg-bg-card-hover transition-colors">
+          <input type="checkbox" id="taskStrip" class="prep-task w-4 h-4 rounded accent-accent" />
+          <div><span class="text-text-primary text-sm">Paint Stripping</span><span class="text-text-muted text-xs ml-2">+0.15 hr/sqft</span></div>
+        </label>
+        <label class="flex items-center gap-3 bg-bg-dark rounded-lg px-4 py-3 cursor-pointer hover:bg-bg-card-hover transition-colors">
+          <input type="checkbox" id="taskWater" class="prep-task w-4 h-4 rounded accent-accent" />
+          <div><span class="text-text-primary text-sm">Water Damage Repair</span><span class="text-text-muted text-xs ml-2">+3 hr avg</span></div>
+        </label>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Prep Hours</div>
+          <div id="result-hours" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Labor Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Work Days</div>
+          <div id="result-days" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">8-hour days</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">% of Typical Job</div>
+          <div id="result-pct" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <!-- Task Breakdown -->
+      <div class="bg-bg-dark rounded-xl p-5 mb-4">
+        <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-3">Hours Breakdown</div>
+        <div id="breakdown" class="space-y-2 text-sm"></div>
+      </div>
+
+      <p class="text-text-muted text-sm italic">Prep time varies widely by surface condition and painter experience. These estimates are conservative baselines -- experienced pros may work faster.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the area and condition.</strong> The surface condition determines the base prep rate per square foot.</p>
+          <p><strong class="text-text-primary">2. Check the prep tasks needed.</strong> Each task adds hours based on the area or a flat time estimate. Only check tasks you actually need to perform.</p>
+          <p><strong class="text-text-primary">3. Set your hourly rate.</strong> The calculator multiplies total prep hours by your rate to show the labor cost for prep work alone.</p>
+          <p><strong class="text-text-primary">4. Use the result in your estimate.</strong> Add the prep labor cost to your paint and painting labor costs for a complete job price.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Why Prep Time Matters</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>Surface preparation is 30-50% of a painting project's total labor time. Underestimating prep is the single biggest reason painting jobs lose money. By calculating prep hours separately, you can give customers a transparent estimate and protect your margins.</p>
+          <p>Every skipped prep step shows in the final result. Unprepared surfaces lead to peeling, bubbling, and adhesion failure that requires costly callbacks and rework.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does surface prep take before painting?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Surface prep typically takes 30-50% of total project time. A clean room in good condition may need only 0.5-1 hour of prep. A room with moderate peeling, patching, and sanding can take 3-5 hours. Heavy prep like wallpaper removal or paint stripping can add 4-8 hours or more depending on the area.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What prep work is needed before painting?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Common prep tasks include cleaning walls (dust, grease, cobwebs), sanding rough spots, patching drywall holes, caulking gaps and seams, filling nail holes, removing loose or peeling paint, and priming bare surfaces. The specific tasks depend on the current wall condition and the type of finish you want.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does wallpaper removal cost in time?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Wallpaper removal is one of the most time-intensive prep tasks. Expect 3-8 hours depending on the room size, number of layers, and adhesive type. Vinyl wallpaper is harder to remove than paper. Steam or chemical strippers can speed the process. Budget 1-2 hours per 100 square feet as a rough estimate.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I charge separately for prep work?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. Prep work should be itemized or clearly included in your estimate. Underestimating prep is the number one cause of job losses for painters. By calculating prep time separately, you ensure the customer understands the scope and you protect your profit margin.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const area = parseFloat((document.getElementById('area') as HTMLInputElement).value) || 400;
+    const conditionRate = parseFloat((document.getElementById('condition') as HTMLSelectElement).value);
+    const hourlyRate = parseFloat((document.getElementById('hourlyRate') as HTMLInputElement).value) || 55;
+
+    const baseHours = area * conditionRate;
+    const breakdown: {name: string; hours: number}[] = [
+      { name: 'Base prep (surface condition)', hours: baseHours }
+    ];
+
+    // Task adders
+    if ((document.getElementById('taskClean') as HTMLInputElement).checked) {
+      const h = 1.5;
+      breakdown.push({ name: 'Wall cleaning', hours: h });
+    }
+    if ((document.getElementById('taskSand') as HTMLInputElement).checked) {
+      const h = (area / 100) * 0.5;
+      breakdown.push({ name: 'Sanding rough areas', hours: h });
+    }
+    if ((document.getElementById('taskPatch') as HTMLInputElement).checked) {
+      const h = 0.75; // assume 2-3 patches
+      breakdown.push({ name: 'Drywall patching (2-3 patches)', hours: h });
+    }
+    if ((document.getElementById('taskCaulk') as HTMLInputElement).checked) {
+      const h = (area / 50) * 0.15;
+      breakdown.push({ name: 'Caulking seams', hours: h });
+    }
+    if ((document.getElementById('taskNails') as HTMLInputElement).checked) {
+      const h = (area / 100) * 0.1;
+      breakdown.push({ name: 'Filling nail holes', hours: h });
+    }
+    if ((document.getElementById('taskWallpaper') as HTMLInputElement).checked) {
+      const h = 5.5;
+      breakdown.push({ name: 'Wallpaper removal', hours: h });
+    }
+    if ((document.getElementById('taskStrip') as HTMLInputElement).checked) {
+      const h = area * 0.15;
+      breakdown.push({ name: 'Paint stripping', hours: h });
+    }
+    if ((document.getElementById('taskWater') as HTMLInputElement).checked) {
+      const h = 3;
+      breakdown.push({ name: 'Water damage repair', hours: h });
+    }
+
+    const totalHours = breakdown.reduce((sum, b) => sum + b.hours, 0);
+    const laborCost = totalHours * hourlyRate;
+    const workDays = Math.ceil(totalHours / 8 * 10) / 10;
+
+    // Estimate painting time to calculate prep percentage
+    const paintingHours = (area / 350) * 2 + totalHours; // 2 coats at 350 sqft/hr + prep
+    const prepPct = Math.round((totalHours / paintingHours) * 100);
+
+    document.getElementById('result-hours')!.textContent = totalHours.toFixed(1);
+    document.getElementById('result-cost')!.textContent = '$' + laborCost.toFixed(0);
+    document.getElementById('result-days')!.textContent = workDays.toFixed(1);
+    document.getElementById('result-pct')!.textContent = prepPct + '%';
+
+    // Render breakdown
+    const breakdownEl = document.getElementById('breakdown')!;
+    breakdownEl.innerHTML = breakdown.map(b => `
+      <div class="flex justify-between">
+        <span class="text-text-secondary">${b.name}</span>
+        <span class="text-text-primary font-medium">${b.hours.toFixed(1)} hr</span>
+      </div>
+    `).join('');
+  }
+
+  document.querySelectorAll('#prep-calc input, #prep-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

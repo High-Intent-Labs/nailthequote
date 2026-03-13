@@ -1,0 +1,231 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/paintingTools';
+
+const tool = getToolBySlug('stain-finish-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much wood stain do I need?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Divide your total area by the stain's coverage rate (typically 200-400 sq ft per quart depending on stain type and wood). Softwoods like pine absorb more stain and reduce coverage by 20%. Previously stained wood absorbs less and increases coverage. One quart covers roughly 200-300 sq ft on most new wood." }
+    },
+    {
+      "@type": "Question",
+      "name": "How many coats of stain should I apply?",
+      "acceptedAnswer": { "@type": "Answer", "text": "One coat of stain is standard for a natural look. Apply two coats for deeper color and richer tone. Always sand lightly between coats with 220-grit sandpaper. More than two coats of stain is rarely needed and can cause blotching. The finish coat (polyurethane, lacquer) typically needs 2-3 coats." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between oil-based and water-based stain?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Oil-based stains penetrate deeper, last longer, and provide richer color but take 8-24 hours to dry and have strong fumes. Water-based stains dry in 2-4 hours, clean up with water, and have low odor, but may raise the wood grain and require light sanding between coats. Oil-based covers about 200-300 sq ft/qt; water-based covers 250-350 sq ft/qt." }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need a finish coat after staining?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes for most applications. Stain adds color but does not protect the wood. A clear finish coat (polyurethane, lacquer, or wipe-on) seals the surface and provides durability. Exterior stains often have built-in UV protection. Interior projects like furniture and floors need 2-3 coats of finish for adequate protection." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="stain-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="area">Total Area to Stain (sq ft)</label>
+        <input type="number" id="area" value="200" min="1" max="50000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="woodType">Wood Type</label>
+        <select id="woodType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.8">Softwood (pine, cedar)</option>
+          <option value="0.9" selected>Hardwood (oak, maple)</option>
+          <option value="1.0">Exotic (walnut, teak)</option>
+          <option value="1.1">Composite / Engineered</option>
+          <option value="1.2">Previously Stained</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="stainType">Stain Type</label>
+        <select id="stainType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="250" selected>Oil-Based Stain (200-300 sqft/qt)</option>
+          <option value="350">Gel Stain (300-400 sqft/qt)</option>
+          <option value="300">Water-Based Stain (250-350 sqft/qt)</option>
+          <option value="450">Dye Stain (400-500 sqft/qt)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="stainCoats">Stain Coats</label>
+        <select id="stainCoats" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1" selected>1 Coat</option>
+          <option value="2">2 Coats</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="finishType">Finish Coat Type</label>
+        <select id="finishType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="375" selected>Polyurethane (350-400 sqft/qt)</option>
+          <option value="400">Lacquer (375-425 sqft/qt)</option>
+          <option value="300">Wipe-On Finish (275-325 sqft/qt)</option>
+          <option value="0">No Finish Coat</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="finishCoats">Finish Coats</label>
+        <select id="finishCoats" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="2" selected>2 Coats</option>
+          <option value="3">3 Coats</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="stainCost">Stain Cost per Quart ($)</label>
+        <input type="number" id="stainCost" value="15" min="0" max="100" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="finishCost">Finish Cost per Quart ($)</label>
+        <input type="number" id="finishCost" value="18" min="0" max="100" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Stain Needed</div>
+          <div id="result-stain" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div class="text-text-muted text-xs mt-1">quarts</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Finish Needed</div>
+          <div id="result-finish" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">quarts</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Materials</div>
+          <div id="result-cost" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Dry Time</div>
+          <div id="result-drytime" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div class="bg-bg-dark rounded-xl p-5 mb-4">
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div class="flex justify-between"><span class="text-text-muted">Stain coverage rate</span><span id="detail-stain-rate" class="text-text-primary font-medium">--</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Finish coverage rate</span><span id="detail-finish-rate" class="text-text-primary font-medium">--</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Wood absorption factor</span><span id="detail-absorption" class="text-text-primary font-medium">--</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Sanding grit</span><span id="detail-grit" class="text-text-primary font-medium">220-grit between coats</span></div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Stain coverage varies significantly by wood type and grain. Always test on scrap wood first. Allow 2-4 hours dry time per coat and sand lightly between coats.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the area to stain.</strong> Measure the total square footage of wood surfaces you plan to stain.</p>
+          <p><strong class="text-text-primary">2. Select wood type.</strong> Softwoods absorb more stain (reducing coverage), while previously stained wood absorbs less.</p>
+          <p><strong class="text-text-primary">3. Choose stain and finish types.</strong> Oil-based stain provides the deepest color. Polyurethane is the most durable finish for high-traffic areas.</p>
+          <p><strong class="text-text-primary">4. Set coat counts.</strong> One coat of stain is standard. Finish coats need 2-3 for proper protection.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Stain Coverage Formula</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Adjusted_Coverage = Base_Stain_Coverage x Wood_Absorption_Factor</p>
+            <p>Stain_Quarts = (Area / Adjusted_Coverage) x Stain_Coats</p>
+            <p>Finish_Quarts = (Area / Finish_Coverage) x Finish_Coats</p>
+          </div>
+          <p>Softwoods like pine have open grain that absorbs more stain, reducing effective coverage by about 20%. Hardwoods absorb moderately. Previously stained or sealed wood absorbs the least, increasing coverage by about 20%.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much wood stain do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Divide your total area by the stain's coverage rate (typically 200-400 sq ft per quart depending on stain type and wood). Softwoods like pine absorb more stain and reduce coverage by 20%. Previously stained wood absorbs less and increases coverage. One quart covers roughly 200-300 sq ft on most new wood.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many coats of stain should I apply?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">One coat of stain is standard for a natural look. Apply two coats for deeper color and richer tone. Always sand lightly between coats with 220-grit sandpaper. More than two coats of stain is rarely needed and can cause blotching. The finish coat (polyurethane, lacquer) typically needs 2-3 coats.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the difference between oil-based and water-based stain?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Oil-based stains penetrate deeper, last longer, and provide richer color but take 8-24 hours to dry and have strong fumes. Water-based stains dry in 2-4 hours, clean up with water, and have low odor, but may raise the wood grain and require light sanding between coats. Oil-based covers about 200-300 sq ft/qt; water-based covers 250-350 sq ft/qt.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Do I need a finish coat after staining?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes for most applications. Stain adds color but does not protect the wood. A clear finish coat (polyurethane, lacquer, or wipe-on) seals the surface and provides durability. Exterior stains often have built-in UV protection. Interior projects like furniture and floors need 2-3 coats of finish for adequate protection.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const area = parseFloat((document.getElementById('area') as HTMLInputElement).value) || 200;
+    const woodFactor = parseFloat((document.getElementById('woodType') as HTMLSelectElement).value);
+    const baseStainCoverage = parseFloat((document.getElementById('stainType') as HTMLSelectElement).value);
+    const stainCoats = parseInt((document.getElementById('stainCoats') as HTMLSelectElement).value);
+    const finishCoverage = parseFloat((document.getElementById('finishType') as HTMLSelectElement).value);
+    const finishCoats = parseInt((document.getElementById('finishCoats') as HTMLSelectElement).value);
+    const stainCost = parseFloat((document.getElementById('stainCost') as HTMLInputElement).value) || 0;
+    const finishCost = parseFloat((document.getElementById('finishCost') as HTMLInputElement).value) || 0;
+
+    const adjustedStainCoverage = baseStainCoverage * woodFactor;
+    const stainQuartsRaw = (area / adjustedStainCoverage) * stainCoats;
+    const stainQuarts = Math.ceil(stainQuartsRaw);
+
+    let finishQuarts = 0;
+    if (finishCoverage > 0) {
+      const finishQuartsRaw = (area / finishCoverage) * finishCoats;
+      finishQuarts = Math.ceil(finishQuartsRaw);
+    }
+
+    const totalCost = (stainQuarts * stainCost) + (finishQuarts * finishCost);
+
+    // Dry time estimate (stain + finish between coats)
+    const stainDryHrs = stainCoats > 1 ? 4 : 0; // 4 hrs between stain coats
+    const finishDryHrs = finishCoverage > 0 ? (finishCoats - 1) * 3 : 0; // 3 hrs between finish coats
+    const transitionDry = 4; // time from last stain to first finish
+    const totalDryHrs = stainDryHrs + (finishCoverage > 0 ? transitionDry : 0) + finishDryHrs;
+
+    let dryText = '';
+    if (totalDryHrs >= 24) {
+      const days = Math.floor(totalDryHrs / 24);
+      const hrs = totalDryHrs % 24;
+      dryText = days + ' day' + (days > 1 ? 's' : '') + (hrs > 0 ? ' ' + hrs + ' hr' : '');
+    } else {
+      dryText = totalDryHrs + ' hours';
+    }
+
+    document.getElementById('result-stain')!.textContent = stainQuarts.toString();
+    document.getElementById('result-finish')!.textContent = finishCoverage > 0 ? finishQuarts.toString() : 'N/A';
+    document.getElementById('result-cost')!.textContent = (stainCost > 0 || finishCost > 0) ? '$' + totalCost.toFixed(0) : '--';
+    document.getElementById('result-drytime')!.textContent = dryText + ' (between coats)';
+
+    document.getElementById('detail-stain-rate')!.textContent = Math.round(adjustedStainCoverage) + ' sqft/qt';
+    document.getElementById('detail-finish-rate')!.textContent = finishCoverage > 0 ? finishCoverage + ' sqft/qt' : 'N/A';
+    document.getElementById('detail-absorption')!.textContent = woodFactor < 1 ? 'High absorption (' + Math.round((1 - woodFactor) * 100) + '% more)' : woodFactor > 1 ? 'Low absorption (' + Math.round((woodFactor - 1) * 100) + '% less)' : 'Normal absorption';
+  }
+
+  document.querySelectorAll('#stain-calc input, #stain-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

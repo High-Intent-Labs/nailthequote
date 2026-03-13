@@ -1,0 +1,204 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/pestControlTools';
+
+const tool = getToolBySlug('ipm-scoring-tool')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is an IPM score?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An IPM (Integrated Pest Management) score is a numerical risk assessment that combines pest severity, conducive conditions, prior treatment history, and maintenance quality into a single number. Scores of 0-5 indicate low risk, 6-10 moderate risk, 11-15 high risk, and 16+ severe risk requiring immediate action."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is integrated pest management?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "IPM is a science-based approach to pest management that prioritizes prevention, monitoring, and targeted treatment over blanket chemical application. It combines biological controls, habitat modification, exclusion, and chemical treatments as a last resort to minimize environmental impact while effectively controlling pests."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you assess pest risk for a property?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Assess pest risk by evaluating infestation severity (none to high), counting conducive conditions (moisture, gaps, debris, vegetation contact), reviewing treatment history and intervals, and rating the property's maintenance quality. These factors combine into an overall risk score that guides treatment recommendations."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="ipm-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="severity">Infestation Severity</label>
+        <select id="severity" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0" selected>None — No pests observed</option>
+          <option value="1">Low — Occasional sightings</option>
+          <option value="3">Moderate — Regular activity</option>
+          <option value="5">High — Heavy infestation</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="maintenance">Customer Maintenance Level</label>
+        <select id="maintenance" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="3">Poor — Significant upkeep issues</option>
+          <option value="2">Fair — Some issues present</option>
+          <option value="1" selected>Good — Generally maintained</option>
+          <option value="0">Excellent — Well maintained</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2">Pests Observed</label>
+        <div class="space-y-2">
+          <label class="flex items-center gap-2 text-text-secondary text-sm"><input type="checkbox" class="pest-check rounded" value="termites"> Termites</label>
+          <label class="flex items-center gap-2 text-text-secondary text-sm"><input type="checkbox" class="pest-check rounded" value="rodents"> Rodents</label>
+          <label class="flex items-center gap-2 text-text-secondary text-sm"><input type="checkbox" class="pest-check rounded" value="cockroaches"> Cockroaches</label>
+          <label class="flex items-center gap-2 text-text-secondary text-sm"><input type="checkbox" class="pest-check rounded" value="bedbugs"> Bed Bugs</label>
+          <label class="flex items-center gap-2 text-text-secondary text-sm"><input type="checkbox" class="pest-check rounded" value="ants"> Ants</label>
+          <label class="flex items-center gap-2 text-text-secondary text-sm"><input type="checkbox" class="pest-check rounded" value="spiders"> Spiders</label>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2">Conducive Conditions</label>
+        <div class="space-y-2">
+          <label class="flex items-center gap-2 text-text-secondary text-sm"><input type="checkbox" class="condition-check rounded" value="moisture"> Excess moisture / standing water</label>
+          <label class="flex items-center gap-2 text-text-secondary text-sm"><input type="checkbox" class="condition-check rounded" value="food"> Exposed food sources / poor sanitation</label>
+          <label class="flex items-center gap-2 text-text-secondary text-sm"><input type="checkbox" class="condition-check rounded" value="harborage"> Harborage areas (clutter, storage)</label>
+          <label class="flex items-center gap-2 text-text-secondary text-sm"><input type="checkbox" class="condition-check rounded" value="cracks"> Cracks and gaps (entry points)</label>
+          <label class="flex items-center gap-2 text-text-secondary text-sm"><input type="checkbox" class="condition-check rounded" value="vegetation"> Vegetation touching structure</label>
+          <label class="flex items-center gap-2 text-text-secondary text-sm"><input type="checkbox" class="condition-check rounded" value="debris"> Debris / trash accumulation</label>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="priorTreatment">Prior Treatment?</label>
+        <select id="priorTreatment" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0" selected>No prior treatment</option>
+          <option value="1">Yes — within 3 months</option>
+          <option value="3">Yes — 3-6 months ago</option>
+          <option value="6">Yes — 6-12 months ago</option>
+          <option value="12">Yes — over 12 months ago</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">IPM Assessment</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">IPM Score</div>
+          <div id="result-score" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Risk Level</div>
+          <div id="result-risk" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Recommended Frequency</div>
+          <div id="result-freq" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Conducive Factors</div>
+          <div id="result-factors" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-3">Recommendation</h4>
+        <p id="result-recommendation" class="text-text-secondary text-sm leading-relaxed">--</p>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Tool</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Rate the infestation severity.</strong> Based on your inspection findings, select the level of pest activity observed at the property.</p>
+          <p><strong class="text-text-primary">2. Check all observed pests and conditions.</strong> Select every pest type found and every conducive condition present. More factors = higher risk score.</p>
+          <p><strong class="text-text-primary">3. Note prior treatment history.</strong> Properties with lapsed treatments have escalating risk over time.</p>
+          <p><strong class="text-text-primary">4. Review the recommendation.</strong> Use the output as a starting point for your treatment proposal and customer education.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is an IPM score?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">An IPM (Integrated Pest Management) score is a numerical risk assessment that combines pest severity, conducive conditions, prior treatment history, and maintenance quality into a single number. Scores of 0-5 indicate low risk, 6-10 moderate risk, 11-15 high risk, and 16+ severe risk requiring immediate action.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is integrated pest management?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">IPM is a science-based approach to pest management that prioritizes prevention, monitoring, and targeted treatment over blanket chemical application. It combines biological controls, habitat modification, exclusion, and chemical treatments as a last resort to minimize environmental impact while effectively controlling pests.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do you assess pest risk for a property?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Assess pest risk by evaluating infestation severity (none to high), counting conducive conditions (moisture, gaps, debris, vegetation contact), reviewing treatment history and intervals, and rating the property's maintenance quality. These factors combine into an overall risk score that guides treatment recommendations.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const severity = parseInt((document.getElementById('severity') as HTMLSelectElement).value);
+    const maintenance = parseInt((document.getElementById('maintenance') as HTMLSelectElement).value);
+    const priorMonths = parseInt((document.getElementById('priorTreatment') as HTMLSelectElement).value);
+
+    const conditionChecks = document.querySelectorAll('.condition-check:checked').length;
+    const ageFactor = priorMonths > 0 ? Math.round(priorMonths / 3) : 0;
+
+    const score = (severity * 3) + conditionChecks + ageFactor + maintenance;
+
+    let riskLevel: string, riskColor: string, frequency: string, recommendation: string;
+
+    if (score <= 5) {
+      riskLevel = 'Low Risk';
+      riskColor = '#34D399';
+      frequency = 'Annual';
+      recommendation = 'Property is low risk. Recommend preventive maintenance with annual inspection. Focus on exclusion (sealing gaps and cracks) and sanitation education. No chemical treatment needed at this time.';
+    } else if (score <= 10) {
+      riskLevel = 'Moderate Risk';
+      riskColor = '#FBBF24';
+      frequency = 'Quarterly';
+      recommendation = 'Moderate pest pressure detected. Recommend quarterly perimeter treatment plus exclusion work to seal entry points. Address conducive conditions (moisture, vegetation, debris) to reduce pest pressure over time.';
+    } else if (score <= 15) {
+      riskLevel = 'High Risk';
+      riskColor = '#EF4444';
+      frequency = 'Monthly';
+      recommendation = 'High pest pressure requires immediate action. Recommend monthly treatment service, comprehensive exclusion work, and remediation of all conducive conditions. Consider targeted treatment for specific pests identified.';
+    } else {
+      riskLevel = 'Severe';
+      riskColor = '#EF4444';
+      frequency = 'Bi-weekly';
+      recommendation = 'Severe infestation requires aggressive treatment plan. Recommend bi-weekly service initially, transitioning to monthly after control is established. Comprehensive exclusion, sanitation remediation, and customer behavioral changes are essential. Consider fumigation or structural treatment if warranted.';
+    }
+
+    document.getElementById('result-score')!.textContent = score.toString();
+    const riskEl = document.getElementById('result-risk')!;
+    riskEl.textContent = riskLevel;
+    riskEl.style.color = riskColor;
+    document.getElementById('result-freq')!.textContent = frequency;
+    document.getElementById('result-factors')!.textContent = conditionChecks.toString();
+    document.getElementById('result-recommendation')!.textContent = recommendation;
+  }
+
+  document.querySelectorAll('#ipm-calc input, #ipm-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

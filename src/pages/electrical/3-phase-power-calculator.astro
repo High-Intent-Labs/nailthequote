@@ -1,0 +1,240 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/electricalTools';
+
+const tool = getToolBySlug('3-phase-power-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the 3-phase power formula?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The key 3-phase formulas are: Apparent Power (kVA) = V x I x 1.732 / 1000. Real Power (kW) = V x I x 1.732 x PF / 1000. Current (Amps) = kW x 1000 / (V x 1.732 x PF). Where V is line-to-line voltage, I is line current, and PF is power factor. The 1.732 factor is the square root of 3." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a typical power factor for motors?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Typical motor power factors range from 0.80 to 0.90 at full load. Lightly loaded motors have lower power factors, sometimes as low as 0.50-0.60 at 25% load. Heating elements and resistive loads are 1.0. Mixed commercial loads average about 0.85-0.90." }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I convert kVA to amps for 3-phase?",
+      "acceptedAnswer": { "@type": "Answer", "text": "To convert kVA to amps in a 3-phase system: Amps = kVA x 1000 / (Voltage x 1.732). For example, a 45 kVA load at 480V: Amps = 45000 / (480 x 1.732) = 54.1 amps." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="three-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="solveFor">Solve For</label>
+        <select id="solveFor" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="power" selected>Power (kW / kVA)</option>
+          <option value="current">Current (Amps)</option>
+          <option value="voltage">Voltage</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="voltage">Line-to-Line Voltage</label>
+        <select id="voltage" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="208">208V</option>
+          <option value="240">240V</option>
+          <option value="380">380V</option>
+          <option value="400">400V</option>
+          <option value="480" selected>480V</option>
+          <option value="600">600V</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="current">Line Current (Amps)</label>
+        <input type="number" id="current" value="50" min="0.1" max="10000" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="kw">Real Power (kW)</label>
+        <input type="number" id="kw" value="" min="0" max="10000" step="0.1" placeholder="Calculated" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="pf">Power Factor</label>
+        <select id="pf" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0">1.00 — Resistive (heaters, lights)</option>
+          <option value="0.95">0.95 — Mixed / near unity</option>
+          <option value="0.90">0.90 — Light inductive</option>
+          <option value="0.85" selected>0.85 — Typical motors</option>
+          <option value="0.80">0.80 — Heavy inductive</option>
+          <option value="0.70">0.70 — Lightly loaded motors</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="system">System</label>
+        <select id="system" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="wye" selected>Wye (Y) — Star</option>
+          <option value="delta">Delta (Triangle)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Apparent Power</div>
+          <div id="result-kva" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Real Power</div>
+          <div id="result-kw" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Reactive Power</div>
+          <div id="result-kvar" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Line Current</div>
+          <div id="result-amps" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Phase Current</div>
+          <div id="result-phaseAmps" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Phase Voltage</div>
+          <div id="result-phaseV" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-5 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-3">Additional Info</h4>
+        <div id="details" class="space-y-1 text-sm text-text-secondary"></div>
+      </div>
+
+      <p class="text-text-muted text-sm italic">Standard IEEE/IEC 3-phase formulas. For motor loads, use actual motor nameplate FLA if available.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Choose what to solve for.</strong> Select Power (kW/kVA), Current (Amps), or Voltage based on what you need to find.</p>
+          <p><strong class="text-text-primary">2. Enter the known values.</strong> For power calculation, enter voltage and current. For current calculation, enter voltage and power (kW). The power factor defaults to 0.85 for typical motor loads.</p>
+          <p><strong class="text-text-primary">3. Review all results.</strong> The calculator shows apparent power (kVA), real power (kW), reactive power (kVAR), line and phase currents, and phase voltage.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">3-Phase Power Formulas</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>kVA = V x I x 1.732 / 1000</p>
+            <p>kW = V x I x 1.732 x PF / 1000</p>
+            <p>kVAR = sqrt(kVA^2 - kW^2)</p>
+            <p>Amps = kW x 1000 / (V x 1.732 x PF)</p>
+            <p>Wye: V_phase = V_line / 1.732, I_phase = I_line</p>
+            <p>Delta: V_phase = V_line, I_phase = I_line / 1.732</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the 3-phase power formula?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">kVA = V x I x 1.732 / 1000. kW = kVA x PF. Current = kW x 1000 / (V x 1.732 x PF). The 1.732 factor is the square root of 3.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a typical power factor for motors?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Typical motor power factors are 0.80 to 0.90 at full load. Lightly loaded motors can drop to 0.50-0.60. Resistive loads are 1.0.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I convert kVA to amps for 3-phase?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Amps = kVA x 1000 / (Voltage x 1.732). For example, 45 kVA at 480V = 45000 / (480 x 1.732) = 54.1 amps.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  const sqrt3 = 1.732;
+
+  function calculate() {
+    const solveFor = (document.getElementById('solveFor') as HTMLSelectElement).value;
+    const V = parseFloat((document.getElementById('voltage') as HTMLSelectElement).value);
+    const I = parseFloat((document.getElementById('current') as HTMLInputElement).value) || 0;
+    const kwInput = parseFloat((document.getElementById('kw') as HTMLInputElement).value) || 0;
+    const pf = parseFloat((document.getElementById('pf') as HTMLSelectElement).value);
+    const system = (document.getElementById('system') as HTMLSelectElement).value;
+
+    let kva: number, kw: number, kvar: number, lineAmps: number;
+
+    if (solveFor === 'power') {
+      // Given V and I, solve for power
+      kva = (V * I * sqrt3) / 1000;
+      kw = kva * pf;
+      lineAmps = I;
+    } else if (solveFor === 'current') {
+      // Given V and kW, solve for current
+      kw = kwInput;
+      kva = pf > 0 ? kw / pf : 0;
+      lineAmps = (V * sqrt3 * pf) > 0 ? (kw * 1000) / (V * sqrt3 * pf) : 0;
+    } else {
+      // Voltage: given I and kW
+      kw = kwInput;
+      kva = pf > 0 ? kw / pf : 0;
+      lineAmps = I;
+    }
+
+    kvar = Math.sqrt(Math.max(0, kva * kva - kw * kw));
+
+    // Phase values
+    let phaseV: number, phaseI: number;
+    if (system === 'wye') {
+      phaseV = V / sqrt3;
+      phaseI = lineAmps;
+    } else {
+      phaseV = V;
+      phaseI = lineAmps / sqrt3;
+    }
+
+    // Breaker sizing (NEC 430 for motors)
+    const breakerAmps = lineAmps * 1.25;
+    const stdBreakers = [15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 100, 125, 150, 175, 200, 225, 250, 300, 350, 400, 500, 600, 700, 800];
+    let breakerSize = stdBreakers[stdBreakers.length - 1];
+    for (const b of stdBreakers) {
+      if (b >= breakerAmps) { breakerSize = b; break; }
+    }
+
+    // Electricity cost
+    const annualKwh = kw * 8760 * 0.65; // 65% load factor
+    const annualCost = annualKwh * 0.12;
+
+    // Display
+    document.getElementById('result-kva')!.textContent = kva.toFixed(1) + ' kVA';
+    document.getElementById('result-kw')!.textContent = kw.toFixed(1) + ' kW';
+    document.getElementById('result-kvar')!.textContent = kvar.toFixed(1) + ' kVAR';
+    document.getElementById('result-amps')!.textContent = lineAmps.toFixed(1) + 'A';
+    document.getElementById('result-phaseAmps')!.textContent = phaseI.toFixed(1) + 'A';
+    document.getElementById('result-phaseV')!.textContent = phaseV.toFixed(0) + 'V';
+
+    document.getElementById('details')!.innerHTML = [
+      `<div class="flex justify-between"><span>Power Factor</span><span class="font-mono text-text-primary">${pf}</span></div>`,
+      `<div class="flex justify-between"><span>System</span><span class="font-mono text-text-primary">${system === 'wye' ? 'Wye (Y)' : 'Delta (\u0394)'}</span></div>`,
+      `<div class="flex justify-between"><span>Suggested Breaker (125%)</span><span class="font-mono text-text-primary">${breakerSize}A</span></div>`,
+      `<div class="flex justify-between"><span>Est. Annual Energy (65% load)</span><span class="font-mono text-text-primary">${Math.round(annualKwh).toLocaleString()} kWh</span></div>`,
+      `<div class="flex justify-between"><span>Est. Annual Cost (@$0.12/kWh)</span><span class="font-mono text-text-primary">$${Math.round(annualCost).toLocaleString()}</span></div>`,
+    ].join('');
+  }
+
+  document.querySelectorAll('#three-calc select, #three-calc input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+  calculate();
+</script>

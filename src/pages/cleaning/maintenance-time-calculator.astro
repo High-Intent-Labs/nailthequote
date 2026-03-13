@@ -1,0 +1,216 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/cleaningTools';
+
+const tool = getToolBySlug('maintenance-time-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How long does it take to clean a 2000 sq ft house?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A standard maintenance clean of a 2000 sq ft home with 2 bathrooms takes approximately 2.5-3.5 hours for a single cleaner. A 2-person team can finish in about 1.5-2 hours. Factors like number of bathrooms, stairs, and carpet vs. hardwood ratio affect the total time."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the average cleaning productivity rate?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The industry standard for maintenance cleaning is 500-600 sq ft per hour per person. A single cleaner handles about 1000 sq ft every 30 minutes at baseline. Two-person teams achieve roughly 85% combined efficiency due to coordination overhead."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does team size affect cleaning time?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Adding team members speeds up the job but with diminishing returns. A 2-person team works at 85% combined efficiency (15% lost to coordination). A 3-person team works at 75% efficiency, and a 4-person team at 65%. The optimal team size depends on the home size and your daily job count."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many houses can a cleaner do in a day?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A solo cleaner can typically handle 3-4 maintenance cleans per day (averaging 2-3 hours each) with travel time. A 2-person team can handle 5-7 cleans per day with tight routing. This depends heavily on home sizes, drive distances, and service scope."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="time-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="sqft">Home Square Footage</label>
+        <input type="number" id="sqft" value="2000" min="200" max="15000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="bathrooms">Number of Bathrooms</label>
+        <input type="number" id="bathrooms" value="2" min="1" max="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="bedrooms">Number of Bedrooms</label>
+        <input type="number" id="bedrooms" value="3" min="1" max="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="kitchen">Kitchen</label>
+        <select id="kitchen" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="10" selected>Yes</option>
+          <option value="0">No</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="stairs">Stairs</label>
+        <select id="stairs" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0" selected>None</option>
+          <option value="10">1 Flight</option>
+          <option value="20">2+ Flights</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="teamSize">Team Size</label>
+        <select id="teamSize" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1">1 Person</option>
+          <option value="2" selected>2 People</option>
+          <option value="3">3 People</option>
+          <option value="4">4 People</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="hardwood">Hardwood/Tile (% of floors)</label>
+        <input type="number" id="hardwood" value="50" min="0" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">0% = all carpet, 100% = all hard floors</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="billableRate">Billable Rate ($/hr)</label>
+        <input type="number" id="billableRate" value="50" min="20" max="200" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Time Estimate</div>
+          <div id="result-time" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Sqft / Hour</div>
+          <div id="result-sqfthr" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cost at Rate</div>
+          <div id="result-cost" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Solo Worker Time</div>
+          <div id="result-solo" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Industry benchmark: 500-600 sqft/hr per person for maintenance cleaning. Actual times vary with clutter level and home condition.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the home's square footage.</strong> Measure or estimate the total livable area. For split-level homes, add both floors.</p>
+          <p><strong class="text-text-primary">2. Count bathrooms and bedrooms.</strong> Bathrooms add significant time (15 minutes each). Bedrooms add 5 minutes each for dusting and vacuuming.</p>
+          <p><strong class="text-text-primary">3. Note kitchen and stairs.</strong> A kitchen adds 10 minutes for counter wiping, appliance exteriors, and floor mopping. Each flight of stairs adds 10-20 minutes.</p>
+          <p><strong class="text-text-primary">4. Set your team size.</strong> The calculator accounts for diminishing returns — a 2-person team is 85% as efficient as two solo cleaners, not 100%.</p>
+          <p><strong class="text-text-primary">5. Enter your billable rate.</strong> This calculates what to charge for the estimated time. The average residential cleaning billable rate is $35-60/hr.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator starts with a baseline of <strong class="text-text-primary">30 minutes per 1,000 sq ft</strong> — the industry standard for maintenance cleaning. This is a conservative midpoint that works for homes with 2-3 bathrooms.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Base_Time = (Sqft / 1000) x 30 min</p>
+            <p>+ Bathrooms x 15 min</p>
+            <p>+ Bedrooms x 5 min</p>
+            <p>+ Kitchen (10 min) + Stairs (0/10/20 min)</p>
+            <p>+ Hardwood bonus (5 min if > 50%)</p>
+            <p>Team_Time = Solo_Time / Team_Multiplier</p>
+          </div>
+          <p>Team productivity multipliers account for diminishing returns: 1 person = 1.0x, 2 people = 0.85x, 3 people = 0.75x, 4 people = 0.65x. These reflect the coordination overhead of working in shared spaces.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does it take to clean a 2000 sq ft house?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard maintenance clean of a 2000 sq ft home with 2 bathrooms takes approximately 2.5-3.5 hours for a single cleaner. A 2-person team can finish in about 1.5-2 hours. Factors like number of bathrooms, stairs, and carpet vs. hardwood ratio affect the total time.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the average cleaning productivity rate?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The industry standard for maintenance cleaning is 500-600 sq ft per hour per person. A single cleaner handles about 1000 sq ft every 30 minutes at baseline. Two-person teams achieve roughly 85% combined efficiency due to coordination overhead.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How does team size affect cleaning time?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Adding team members speeds up the job but with diminishing returns. A 2-person team works at 85% combined efficiency (15% lost to coordination). A 3-person team works at 75%, and a 4-person team at 65%. The optimal team size depends on the home size and your daily job count.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many houses can a cleaner do in a day?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A solo cleaner can typically handle 3-4 maintenance cleans per day (averaging 2-3 hours each) with travel time. A 2-person team can handle 5-7 cleans per day with tight routing. This depends heavily on home sizes, drive distances, and service scope.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const sqft = parseFloat((document.getElementById('sqft') as HTMLInputElement).value) || 2000;
+    const bathrooms = parseInt((document.getElementById('bathrooms') as HTMLInputElement).value) || 2;
+    const bedrooms = parseInt((document.getElementById('bedrooms') as HTMLInputElement).value) || 3;
+    const kitchen = parseInt((document.getElementById('kitchen') as HTMLSelectElement).value);
+    const stairs = parseInt((document.getElementById('stairs') as HTMLSelectElement).value);
+    const teamSize = parseInt((document.getElementById('teamSize') as HTMLSelectElement).value);
+    const hardwood = parseInt((document.getElementById('hardwood') as HTMLInputElement).value) || 0;
+    const billableRate = parseFloat((document.getElementById('billableRate') as HTMLInputElement).value) || 50;
+
+    const baseTime = (sqft / 1000) * 30;
+    const bathroomAdd = bathrooms * 15;
+    const bedroomAdd = bedrooms * 5;
+    const hardwoodAdd = hardwood > 50 ? 5 : 0;
+    const soloMinutes = baseTime + bathroomAdd + bedroomAdd + kitchen + stairs + hardwoodAdd;
+
+    const teamMultipliers: Record<number, number> = { 1: 1.0, 2: 0.85, 3: 0.75, 4: 0.65 };
+    const multiplier = teamMultipliers[teamSize] || 1.0;
+    const adjustedMinutes = soloMinutes / (teamSize * multiplier);
+
+    const hours = Math.floor(adjustedMinutes / 60);
+    const mins = Math.round(adjustedMinutes % 60);
+    const sqftPerHour = sqft / (adjustedMinutes / 60);
+    const cost = (adjustedMinutes / 60) * billableRate;
+
+    const soloHours = Math.floor(soloMinutes / 60);
+    const soloMins = Math.round(soloMinutes % 60);
+
+    document.getElementById('result-time')!.textContent = `${hours}h ${mins}m`;
+    document.getElementById('result-sqfthr')!.textContent = Math.round(sqftPerHour).toLocaleString();
+    document.getElementById('result-cost')!.textContent = '$' + Math.round(cost).toLocaleString();
+    document.getElementById('result-solo')!.textContent = `${soloHours}h ${soloMins}m`;
+  }
+
+  document.querySelectorAll('#time-calc input, #time-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

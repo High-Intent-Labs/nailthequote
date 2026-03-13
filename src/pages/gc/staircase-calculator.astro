@@ -1,0 +1,220 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/gcTools';
+
+const tool = getToolBySlug('staircase-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the IRC code for stairs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "IRC R311.7 requires a maximum riser height of 7-3/4 inches (7.75 in), minimum tread depth of 10 inches (nosing to nosing), and no more than 3/8 inch variation between any two risers or treads. Minimum width is 36 inches clear. Headroom must be at least 6 feet 8 inches."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I calculate stair rise and run?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Divide the total rise (floor to floor height in inches) by 7.75 to get the minimum number of risers. Round up. Then divide the total rise by the number of risers to get the actual riser height. For tread depth, use the comfort formula: 2R + T = 24-25 inches, where R is riser height and T is tread depth."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the ideal stair riser height?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The ideal riser height is between 7 and 7.5 inches. This range satisfies the IRC maximum of 7.75 inches while providing comfortable step height. The comfort formula 2R + T should equal 24-25 inches. A 7.5 inch riser with a 10 inch tread gives 2(7.5) + 10 = 25, which is ideal."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="stair-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="totalRise">Total Rise — Floor to Floor (inches)</label>
+        <input type="number" id="totalRise" value="108" min="24" max="300" step="0.25" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">9 ft = 108 in. Measure from finished floor to finished floor.</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="treadDepth">Desired Tread Depth (inches)</label>
+        <input type="number" id="treadDepth" value="10" min="8" max="14" step="0.25" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">IRC minimum: 10 inches (nosing to nosing)</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="stairWidth">Stair Width (inches)</label>
+        <input type="number" id="stairWidth" value="36" min="30" max="72" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">IRC minimum: 36 inches clear</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="stairType">Stair Type</label>
+        <select id="stairType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="straight" selected>Straight Run</option>
+          <option value="l-shaped">L-Shaped (with landing)</option>
+          <option value="u-shaped">U-Shaped (with landing)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Number of Treads</div>
+          <div id="result-treads" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Riser Height</div>
+          <div id="result-riser" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Run</div>
+          <div id="result-run" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Stringer Length</div>
+          <div id="result-stringer" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Comfort Ratio (2R+T)</div>
+          <div id="result-comfort" class="font-heading font-extrabold text-2xl">--</div>
+          <div class="text-text-muted text-xs mt-1">Target: 24-25 inches</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Stair Angle</div>
+          <div id="result-angle" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">IRC Compliant</div>
+          <div id="result-code" class="font-heading font-extrabold text-2xl">--</div>
+        </div>
+      </div>
+
+      <div id="code-warnings" class="space-y-2 mb-4"></div>
+
+      <p class="text-text-muted text-sm italic">Based on IRC R311.7 residential stair requirements. Always verify with local building codes, which may be more restrictive.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Measure total rise.</strong> This is the vertical distance from finished floor to finished floor, measured in inches. A 9-foot ceiling typically results in about 108 inches of total rise (accounting for floor framing and subfloor above).</p>
+          <p><strong class="text-text-primary">2. Set tread depth.</strong> The IRC minimum is 10 inches from nosing to nosing. The calculator uses the comfort formula (2R + T = 24-25") to recommend ideal tread depth.</p>
+          <p><strong class="text-text-primary">3. Enter stair width.</strong> IRC minimum is 36 inches clear width. Wider stairs are more comfortable and may be required in some jurisdictions.</p>
+          <p><strong class="text-text-primary">4. Check code compliance.</strong> The calculator flags any dimensions that violate IRC R311.7 requirements.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Number_of_Risers = CEIL(Total_Rise / 7.75)</p>
+            <p>Actual_Riser = Total_Rise / Number_of_Risers</p>
+            <p>Total_Run = (Risers - 1) x Tread_Depth</p>
+            <p>Stringer = SQRT(Total_Rise^2 + Total_Run^2)</p>
+            <p>Comfort = 2 x Riser + Tread (target 24-25")</p>
+          </div>
+          <p>The number of risers is always one more than the number of treads (the top floor acts as the final tread). The stringer length is calculated using the Pythagorean theorem.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the IRC code for stairs?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">IRC R311.7 requires a maximum riser height of 7-3/4 inches, minimum tread depth of 10 inches, and no more than 3/8 inch variation between risers or treads. Minimum width is 36 inches clear.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate stair rise and run?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Divide the total rise (floor to floor in inches) by 7.75 to get the minimum number of risers. Round up. Then divide the total rise by the number of risers for actual riser height.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the ideal stair riser height?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The ideal riser height is between 7 and 7.5 inches. The comfort formula 2R + T should equal 24-25 inches for optimal comfort.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const totalRise = parseFloat((document.getElementById('totalRise') as HTMLInputElement).value) || 108;
+    const treadDepth = parseFloat((document.getElementById('treadDepth') as HTMLInputElement).value) || 10;
+    const stairWidth = parseFloat((document.getElementById('stairWidth') as HTMLInputElement).value) || 36;
+
+    const numRisers = Math.ceil(totalRise / 7.75);
+    const actualRiser = totalRise / numRisers;
+    const numTreads = numRisers - 1;
+    const totalRun = numTreads * treadDepth;
+    const stringerLength = Math.sqrt(totalRise * totalRise + totalRun * totalRun);
+    const comfort = 2 * actualRiser + treadDepth;
+    const angle = Math.atan(totalRise / totalRun) * (180 / Math.PI);
+
+    const totalRunFt = Math.floor(totalRun / 12);
+    const totalRunIn = (totalRun % 12).toFixed(1);
+    const stringerFt = Math.floor(stringerLength / 12);
+    const stringerIn = (stringerLength % 12).toFixed(1);
+
+    document.getElementById('result-treads')!.textContent = numTreads.toString();
+    document.getElementById('result-riser')!.textContent = actualRiser.toFixed(2) + '"';
+    document.getElementById('result-run')!.textContent = totalRunFt + "'" + totalRunIn + '"';
+    document.getElementById('result-stringer')!.textContent = stringerFt + "'" + stringerIn + '"';
+    document.getElementById('result-angle')!.textContent = angle.toFixed(1) + '\u00B0';
+
+    const comfortEl = document.getElementById('result-comfort')!;
+    comfortEl.textContent = comfort.toFixed(1) + '"';
+    comfortEl.className = 'font-heading font-extrabold text-2xl';
+    if (comfort >= 24 && comfort <= 25) {
+      comfortEl.classList.add('text-[#34D399]');
+    } else if (comfort >= 23 && comfort <= 26) {
+      comfortEl.classList.add('text-[#FBBF24]');
+    } else {
+      comfortEl.classList.add('text-[#EF4444]');
+    }
+
+    // Code compliance check
+    const warnings: string[] = [];
+    if (actualRiser > 7.75) warnings.push('Riser exceeds IRC max of 7.75 inches');
+    if (treadDepth < 10) warnings.push('Tread depth below IRC min of 10 inches');
+    if (stairWidth < 36) warnings.push('Width below IRC min of 36 inches');
+
+    const codeEl = document.getElementById('result-code')!;
+    if (warnings.length === 0) {
+      codeEl.textContent = 'PASS';
+      codeEl.className = 'font-heading font-extrabold text-2xl text-[#34D399]';
+    } else {
+      codeEl.textContent = 'FAIL';
+      codeEl.className = 'font-heading font-extrabold text-2xl text-[#EF4444]';
+    }
+
+    const warningsEl = document.getElementById('code-warnings')!;
+    warningsEl.innerHTML = warnings.map(w =>
+      `<div class="bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCA5A5]">${w}</div>`
+    ).join('');
+  }
+
+  document.querySelectorAll('#stair-calc input, #stair-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

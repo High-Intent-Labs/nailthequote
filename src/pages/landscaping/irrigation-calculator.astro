@@ -1,0 +1,267 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/landscapingTools';
+
+const tool = getToolBySlug('irrigation-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How many sprinkler heads do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Divide your coverage area by the effective coverage per head. For spray heads with a 15-foot radius at head-to-head spacing, each head covers about 225 sq ft. For rotors with a 30-foot radius, each covers about 900 sq ft. A 5,000 sq ft lawn needs roughly 22 spray heads or 6 rotors."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many irrigation zones do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Zones are determined by your water supply GPM. Most residential systems max out at 15-30 GPM per zone. Calculate total GPM needed (heads x GPM per head), then divide by your zone limit. A system with 20 heads at 2 GPM each needs 40 GPM total, which would require 2 zones at 20 GPM per zone."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a good precipitation rate for irrigation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Target 0.5 to 1.5 inches per hour. Below 0.5 inches per hour is too slow for efficient watering. Above 1.5 inches per hour can cause runoff, especially on slopes or clay soil. The formula is: Precipitation Rate = (96.3 x Zone GPM) / Zone Area in sq ft."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What size irrigation controller do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Match your controller to the number of zones. A 4-zone controller handles small yards. Most residential properties need 6-8 zones. Large properties with separate lawn, bed, and drip zones may need 12+ stations. Always buy a controller with a few extra stations for future expansion."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="irrigation-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="coverageArea">Coverage Area (sq ft)</label>
+        <input type="number" id="coverageArea" value="5000" min="100" max="500000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="headType">Sprinkler Head Type</label>
+        <select id="headType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="spray-10">Spray Head (10 ft radius)</option>
+          <option value="spray-15" selected>Spray Head (15 ft radius)</option>
+          <option value="rotor-25">Rotor (25 ft radius)</option>
+          <option value="rotor-30">Rotor (30 ft radius)</option>
+          <option value="rotor-40">Rotor (40 ft radius)</option>
+          <option value="drip">Drip Irrigation</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="gpmPerHead">GPM per Head</label>
+        <input type="number" id="gpmPerHead" value="2" min="0.5" max="30" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Spray: 1-3 GPM | Rotor: 3-15 GPM | Drip: 0.5-2 GPM</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="maxZoneGPM">Max GPM per Zone</label>
+        <input type="number" id="maxZoneGPM" value="20" min="5" max="100" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Residential: 15-25 GPM | Commercial: 25-50 GPM</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="waterPSI">Water Supply Pressure (PSI)</label>
+        <input type="number" id="waterPSI" value="50" min="20" max="120" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="costPerHead">Cost per Head ($)</label>
+        <input type="number" id="costPerHead" value="5" min="0" max="50" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Leave at 0 to skip cost estimate</p>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Heads Needed</div>
+          <div id="result-heads" class="font-heading font-extrabold text-3xl text-accent">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Zones Required</div>
+          <div id="result-zones" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total System GPM</div>
+          <div id="result-gpm" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Precip. Rate</div>
+          <div id="result-precip" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+          <div class="text-text-muted text-xs mt-1">in/hr</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Controller Size</div>
+          <div id="result-controller" class="font-heading font-extrabold text-xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Available Head PSI</div>
+          <div id="result-psi" class="font-heading font-extrabold text-xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Head Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-xl text-text-primary">—</div>
+        </div>
+      </div>
+
+      <div id="precip-warning" class="hidden mb-4 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCA5A5]"></div>
+
+      <!-- Zone Reference -->
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Zone Sizing Reference</h4>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div><span class="text-text-muted">&lt; 1,000 sqft:</span> <span class="text-text-primary font-semibold">1 zone</span></div>
+          <div><span class="text-text-muted">1-3K sqft:</span> <span class="text-text-primary font-semibold">2-3 zones</span></div>
+          <div><span class="text-text-muted">3-10K sqft:</span> <span class="text-text-primary font-semibold">4-8 zones</span></div>
+          <div><span class="text-text-muted">&gt; 10K sqft:</span> <span class="text-text-primary font-semibold">8+ zones</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter coverage area.</strong> Measure the total area in square feet that needs irrigation coverage.</p>
+          <p><strong class="text-text-primary">2. Select head type.</strong> Spray heads cover smaller areas (10-15 ft radius) and are best for lawns and flower beds. Rotors cover larger areas (25-40 ft radius) for open lawns. Drip is for beds and plantings.</p>
+          <p><strong class="text-text-primary">3. Set GPM per head.</strong> Check your head manufacturer's specs. Typical spray heads run 1-3 GPM, rotors 3-15 GPM, and drip emitters 0.5-2 GPM.</p>
+          <p><strong class="text-text-primary">4. Set zone GPM limit.</strong> This depends on your water supply flow rate. Most residential meters supply 15-25 GPM. Do not exceed your water supply capacity.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Irrigation Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator uses head-to-head spacing coverage calculations and GPM zone splitting:</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Coverage per Head = (2 x Radius)^2 = Spacing^2</p>
+            <p>Heads Needed = Area / Coverage per Head</p>
+            <p>Total GPM = Heads x GPM per Head</p>
+            <p>Zones = Ceiling(Total GPM / Max Zone GPM)</p>
+            <p>Precip Rate = (96.3 x Zone GPM) / Zone Area</p>
+          </div>
+          <p>Head-to-head spacing means placing heads so that each head's spray reaches the next head. This ensures uniform coverage with no dry spots. The precipitation rate tells you how many inches of water per hour the system applies. Target 0.5-1.5 inches per hour for optimal absorption without runoff.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When Landscape Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Designing new irrigation systems.</strong> Calculate head count, zone layout, and controller size before ordering materials. Getting the zone count right prevents undersized valves and pressure problems.</p>
+          <p><strong class="text-text-primary">Bidding irrigation jobs.</strong> Accurate head counts mean accurate material estimates. No more guessing on pipe, fittings, and wire quantities.</p>
+          <p><strong class="text-text-primary">Troubleshooting existing systems.</strong> Check if the precipitation rate is in the target range. Uneven watering often means the system was designed with the wrong head spacing or too many heads per zone.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many sprinkler heads do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Divide your coverage area by the effective coverage per head. For spray heads with a 15-foot radius at head-to-head spacing, each head covers about 225 sq ft. For rotors with a 30-foot radius, each covers about 900 sq ft.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many irrigation zones do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Zones are determined by your water supply GPM. Calculate total GPM needed (heads x GPM per head), then divide by your zone limit. A system with 20 heads at 2 GPM each needs 40 GPM total, which would require 2 zones at 20 GPM per zone.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a good precipitation rate for irrigation?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Target 0.5 to 1.5 inches per hour. Below 0.5 is too slow. Above 1.5 can cause runoff on slopes or clay soil. The formula is: Precipitation Rate = (96.3 x Zone GPM) / Zone Area.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What size irrigation controller do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Match your controller to the number of zones. Most residential properties need 6-8 zones. Large properties may need 12+ stations. Always buy a controller with a few extra stations for future expansion.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const area = parseFloat((document.getElementById('coverageArea') as HTMLInputElement).value) || 0;
+    const headType = (document.getElementById('headType') as HTMLSelectElement).value;
+    const gpmPerHead = parseFloat((document.getElementById('gpmPerHead') as HTMLInputElement).value) || 0;
+    const maxZoneGPM = parseFloat((document.getElementById('maxZoneGPM') as HTMLInputElement).value) || 0;
+    const waterPSI = parseFloat((document.getElementById('waterPSI') as HTMLInputElement).value) || 0;
+    const costPerHead = parseFloat((document.getElementById('costPerHead') as HTMLInputElement).value) || 0;
+
+    // Determine radius based on head type
+    let radius = 15;
+    if (headType === 'spray-10') radius = 10;
+    else if (headType === 'spray-15') radius = 15;
+    else if (headType === 'rotor-25') radius = 25;
+    else if (headType === 'rotor-30') radius = 30;
+    else if (headType === 'rotor-40') radius = 40;
+    else if (headType === 'drip') radius = 2;
+
+    const spacing = 2 * radius;
+    const coveragePerHead = headType === 'drip' ? 16 : spacing * spacing;
+    const headsNeeded = Math.ceil(area / coveragePerHead);
+    const totalGPM = headsNeeded * gpmPerHead;
+    const zones = maxZoneGPM > 0 ? Math.ceil(totalGPM / maxZoneGPM) : 1;
+    const zoneArea = zones > 0 ? area / zones : area;
+    const zoneGPM = zones > 0 ? totalGPM / zones : totalGPM;
+    const precipRate = zoneArea > 0 ? (96.3 * zoneGPM) / zoneArea : 0;
+
+    // Pressure loss estimate
+    const mainlineLoss = 5;
+    const valveLoss = 3;
+    const availablePSI = waterPSI - mainlineLoss - valveLoss;
+
+    // Controller recommendation
+    let controllerSize = '4-station';
+    if (zones <= 4) controllerSize = '4-station';
+    else if (zones <= 6) controllerSize = '6-station';
+    else if (zones <= 8) controllerSize = '8-station';
+    else if (zones <= 12) controllerSize = '12-station';
+    else controllerSize = '16+ station';
+
+    document.getElementById('result-heads')!.textContent = headsNeeded.toString();
+    document.getElementById('result-zones')!.textContent = zones.toString();
+    document.getElementById('result-gpm')!.textContent = totalGPM.toFixed(1);
+    document.getElementById('result-precip')!.textContent = precipRate.toFixed(2);
+    document.getElementById('result-controller')!.textContent = controllerSize;
+    document.getElementById('result-psi')!.textContent = availablePSI.toFixed(0) + ' PSI';
+    document.getElementById('result-cost')!.textContent = costPerHead > 0 ? '$' + (headsNeeded * costPerHead).toFixed(0) : '—';
+
+    // Precipitation rate warning
+    const warningEl = document.getElementById('precip-warning')!;
+    if (precipRate > 1.5) {
+      warningEl.textContent = 'Precipitation rate is above 1.5 in/hr. Risk of runoff on slopes and clay soil. Consider adding more zones or reducing GPM per head.';
+      warningEl.classList.remove('hidden');
+    } else if (precipRate > 0 && precipRate < 0.5) {
+      warningEl.textContent = 'Precipitation rate is below 0.5 in/hr. Watering will be very slow. Consider increasing GPM per head or reducing zone area.';
+      warningEl.classList.remove('hidden');
+    } else {
+      warningEl.classList.add('hidden');
+    }
+  }
+
+  document.querySelectorAll('#irrigation-calc input, #irrigation-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

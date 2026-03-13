@@ -1,0 +1,208 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/cleaningTools';
+
+const tool = getToolBySlug('deep-clean-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How long does a deep clean take?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A deep clean takes approximately 1.6x longer than a standard maintenance clean. For a 2000 sq ft home, expect 4-6 hours for a single cleaner or 2.5-3.5 hours for a 2-person team. Very cluttered homes add another 20% on top of that." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between deep clean and maintenance clean?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A maintenance clean covers surfaces, floors, and bathrooms. A deep clean adds baseboards, inside cabinets and drawers, behind appliances, detailed bathroom scrubbing, window sills, light fixtures, and ceiling fans. Deep cleans run 40-80% longer and cost 1.6x more on average." }
+    },
+    {
+      "@type": "Question",
+      "name": "How much should I charge for a deep clean?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Deep cleans typically cost 1.6x the maintenance clean price. For a 2000 sq ft home where maintenance is $250-330, a deep clean should be $400-530. Very cluttered homes justify a 1.8x multiplier. Always quote deep cleans separately from recurring maintenance pricing." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="deep-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="sqft">Home Square Footage</label>
+        <input type="number" id="sqft" value="2000" min="200" max="15000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="bathrooms">Number of Bathrooms</label>
+        <input type="number" id="bathrooms" value="2" min="1" max="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="bedrooms">Number of Bedrooms</label>
+        <input type="number" id="bedrooms" value="3" min="1" max="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="teamSize">Team Size</label>
+        <select id="teamSize" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1">1 Person</option>
+          <option value="2" selected>2 People</option>
+          <option value="3">3 People</option>
+          <option value="4">4 People</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="cluttered">Very Cluttered?</label>
+        <select id="cluttered" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.6" selected>No - Standard Deep Clean (1.6x)</option>
+          <option value="1.8">Yes - Very Cluttered (1.8x)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="billableRate">Billable Rate ($/hr)</label>
+        <input type="number" id="billableRate" value="55" min="20" max="200" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Deep Clean Time</div>
+          <div id="result-deep-time" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Deep Clean Price</div>
+          <div id="result-deep-price" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Maintenance Time</div>
+          <div id="result-maint-time" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Maintenance Price</div>
+          <div id="result-maint-price" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Price Comparison Guide</h4>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Maintenance Clean</span>
+              <span class="text-text-primary font-semibold">1.0x base</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#60A5FA] h-2 rounded-full" style="width: 45%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Deep Clean</span>
+              <span class="text-text-primary font-semibold">1.6x</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#34D399] h-2 rounded-full" style="width: 72%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Move-Out Clean</span>
+              <span class="text-text-primary font-semibold">2.2x</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#FBBF24] h-2 rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the home details.</strong> Square footage, bathrooms, and bedrooms drive the baseline maintenance time which is then multiplied for the deep clean.</p>
+          <p><strong class="text-text-primary">2. Set your team size.</strong> The calculator accounts for diminishing returns with larger teams.</p>
+          <p><strong class="text-text-primary">3. Mark if the home is very cluttered.</strong> Cluttered homes require moving items, working around obstacles, and extra detail work. This bumps the multiplier from 1.6x to 1.8x.</p>
+          <p><strong class="text-text-primary">4. Compare the results.</strong> The calculator shows both the deep clean and maintenance clean estimates side by side so you can price accordingly.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How It Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator first estimates maintenance clean time using the standard formula (30 min per 1000 sqft + bathroom/bedroom/kitchen adjustments). Then it applies the <strong class="text-text-primary">deep clean multiplier of 1.6x</strong> (or 1.8x for cluttered homes).</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm">
+            <p>Deep_Time = Maintenance_Time x 1.6 (or 1.8 if cluttered)</p>
+          </div>
+          <p>The 1.6x multiplier is based on ISSA cleaning standards. Deep cleaning adds baseboards, inside cabinets, behind appliances, detailed bathroom scrubbing, window sills, light fixtures, and ceiling fans. These tasks typically add 40-80% to a maintenance clean.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does a deep clean take?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A deep clean takes approximately 1.6x longer than a standard maintenance clean. For a 2000 sq ft home, expect 4-6 hours for a single cleaner or 2.5-3.5 hours for a 2-person team. Very cluttered homes add another 20% on top of that.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the difference between deep clean and maintenance clean?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A maintenance clean covers surfaces, floors, and bathrooms. A deep clean adds baseboards, inside cabinets and drawers, behind appliances, detailed bathroom scrubbing, window sills, light fixtures, and ceiling fans. Deep cleans run 40-80% longer and cost 1.6x more on average.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much should I charge for a deep clean?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Deep cleans typically cost 1.6x the maintenance clean price. For a 2000 sq ft home where maintenance is $250-330, a deep clean should be $400-530. Very cluttered homes justify a 1.8x multiplier. Always quote deep cleans separately from recurring maintenance pricing.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const sqft = parseFloat((document.getElementById('sqft') as HTMLInputElement).value) || 2000;
+    const bathrooms = parseInt((document.getElementById('bathrooms') as HTMLInputElement).value) || 2;
+    const bedrooms = parseInt((document.getElementById('bedrooms') as HTMLInputElement).value) || 3;
+    const teamSize = parseInt((document.getElementById('teamSize') as HTMLSelectElement).value);
+    const deepMultiplier = parseFloat((document.getElementById('cluttered') as HTMLSelectElement).value);
+    const billableRate = parseFloat((document.getElementById('billableRate') as HTMLInputElement).value) || 55;
+
+    // Maintenance baseline
+    const baseTime = (sqft / 1000) * 30;
+    const bathroomAdd = bathrooms * 15;
+    const bedroomAdd = bedrooms * 5;
+    const kitchenAdd = 10;
+    const soloMaintMinutes = baseTime + bathroomAdd + bedroomAdd + kitchenAdd;
+
+    const teamMultipliers: Record<number, number> = { 1: 1.0, 2: 0.85, 3: 0.75, 4: 0.65 };
+    const multiplier = teamMultipliers[teamSize] || 1.0;
+    const maintMinutes = soloMaintMinutes / (teamSize * multiplier);
+    const deepMinutes = maintMinutes * deepMultiplier;
+
+    const maintHrs = Math.floor(maintMinutes / 60);
+    const maintMins = Math.round(maintMinutes % 60);
+    const deepHrs = Math.floor(deepMinutes / 60);
+    const deepMins = Math.round(deepMinutes % 60);
+
+    const maintPrice = (maintMinutes / 60) * billableRate;
+    const deepPrice = (deepMinutes / 60) * billableRate;
+
+    document.getElementById('result-deep-time')!.textContent = `${deepHrs}h ${deepMins}m`;
+    document.getElementById('result-deep-price')!.textContent = '$' + Math.round(deepPrice).toLocaleString();
+    document.getElementById('result-maint-time')!.textContent = `${maintHrs}h ${maintMins}m`;
+    document.getElementById('result-maint-price')!.textContent = '$' + Math.round(maintPrice).toLocaleString();
+  }
+
+  document.querySelectorAll('#deep-calc input, #deep-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

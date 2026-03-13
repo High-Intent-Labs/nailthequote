@@ -1,0 +1,154 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/pestControlTools';
+
+const tool = getToolBySlug('parts-markup-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is a typical markup on pest control materials?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pest control companies typically mark up materials 40-100%. Termiticide and fumigants often carry 60-100% markups due to specialized handling and licensing requirements. General pest spray concentrates are typically marked up 40-60%. Bait stations and traps are marked up 50-80%."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I calculate markup vs margin?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Markup is the percentage added to your cost: Retail = Cost x (1 + Markup%). Margin is profit as a percentage of the selling price: Margin = Profit / Retail x 100. A 100% markup equals a 50% margin. A 50% markup equals a 33% margin. Use markup to set prices, margin to measure profitability."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="markup-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="partCost">Material/Part Cost ($)</label>
+        <input type="number" id="partCost" value="45" min="0" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="markupPct">Markup (%)</label>
+        <input type="number" id="markupPct" value="75" min="0" max="500" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="qty">Quantity</label>
+        <input type="number" id="qty" value="1" min="1" max="1000" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="materialType">Material Type (reference)</label>
+        <select id="materialType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="75">Termiticide (75% typical)</option>
+          <option value="60">General Spray Concentrate (60%)</option>
+          <option value="65">Bait Stations (65%)</option>
+          <option value="80">Fumigant (80%)</option>
+          <option value="50">Traps &amp; Glueboards (50%)</option>
+          <option value="100">Specialty Equipment (100%)</option>
+          <option value="">Custom</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Retail Price (each)</div>
+          <div id="result-retail" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Retail</div>
+          <div id="result-total" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Profit (each)</div>
+          <div id="result-profit" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Effective Margin</div>
+          <div id="result-margin" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your material cost.</strong> This is your wholesale cost for the chemical, bait, trap, or equipment.</p>
+          <p><strong class="text-text-primary">2. Set the markup percentage.</strong> Select a material type for a suggested markup, or enter a custom percentage. Pest control markups typically range from 40-100%.</p>
+          <p><strong class="text-text-primary">3. Set quantity.</strong> Enter the number of units to see total retail value.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Markup_Amount = Part_Cost x (Markup_Pct / 100)</p>
+            <p>Retail_Price = Part_Cost + Markup_Amount</p>
+            <p>Effective_Margin = Markup_Amount / Retail_Price x 100</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a typical markup on pest control materials?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Pest control companies typically mark up materials 40-100%. Termiticide and fumigants often carry 60-100% markups due to specialized handling and licensing requirements. General pest spray concentrates are typically marked up 40-60%. Bait stations and traps are marked up 50-80%.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate markup vs margin?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Markup is the percentage added to your cost: Retail = Cost x (1 + Markup%). Margin is profit as a percentage of the selling price: Margin = Profit / Retail x 100. A 100% markup equals a 50% margin. A 50% markup equals a 33% margin. Use markup to set prices, margin to measure profitability.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const partCost = parseFloat((document.getElementById('partCost') as HTMLInputElement).value) || 0;
+    const markupPct = parseFloat((document.getElementById('markupPct') as HTMLInputElement).value) || 0;
+    const qty = parseInt((document.getElementById('qty') as HTMLInputElement).value) || 1;
+
+    const markupAmount = partCost * (markupPct / 100);
+    const retailPrice = partCost + markupAmount;
+    const totalRetail = retailPrice * qty;
+    const margin = retailPrice > 0 ? (markupAmount / retailPrice) * 100 : 0;
+
+    document.getElementById('result-retail')!.textContent = '$' + retailPrice.toFixed(2);
+    document.getElementById('result-total')!.textContent = '$' + totalRetail.toFixed(2);
+    document.getElementById('result-profit')!.textContent = '$' + markupAmount.toFixed(2);
+    document.getElementById('result-margin')!.textContent = margin.toFixed(1) + '%';
+  }
+
+  // When material type changes, update markup percentage
+  document.getElementById('materialType')?.addEventListener('change', (e) => {
+    const val = (e.target as HTMLSelectElement).value;
+    if (val) {
+      (document.getElementById('markupPct') as HTMLInputElement).value = val;
+      calculate();
+    }
+  });
+
+  document.querySelectorAll('#markup-calc input, #markup-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

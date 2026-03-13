@@ -1,0 +1,234 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/paintingTools';
+
+const tool = getToolBySlug('drying-time-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How long does paint take to dry?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Latex paint is dry to the touch in 1-2 hours and ready for recoat in 2-4 hours at standard conditions (70 degrees F, 50% humidity). Oil-based paint takes 6-8 hours to touch and 16-24 hours to recoat. Cold temperatures, high humidity, and poor ventilation can double or triple these times." }
+    },
+    {
+      "@type": "Question",
+      "name": "What temperature is too cold to paint?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Most latex paints should not be applied below 50 degrees F. The paint may not cure properly and can crack, peel, or remain tacky. Some specialty latex paints work down to 35 degrees F. Oil-based paints can handle slightly lower temperatures but still perform best above 50 degrees F. Check the can label for the specific product minimum." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can humidity affect paint drying?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, humidity significantly affects drying time. At 80% or higher humidity, paint can remain tacky for hours longer than normal. Ideal painting humidity is 40-60%. If humidity is above 70%, consider using a dehumidifier indoors or waiting for better conditions outdoors. High humidity can also cause paint to sag and drip." }
+    },
+    {
+      "@type": "Question",
+      "name": "How long should I wait between coats?",
+      "acceptedAnswer": { "@type": "Answer", "text": "For latex paint, wait 2-4 hours between coats at standard conditions. Oil-based paint requires 16-24 hours between coats. The recoat time is longer than the dry-to-touch time because the paint needs to cure enough to accept another coat without lifting or wrinkling. The manufacturer label is the final authority on recoat time." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="dry-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="paintType">Paint Type</label>
+        <select id="paintType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="latex" selected>Latex / Acrylic</option>
+          <option value="oil">Oil-Based</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="temperature">Temperature (&deg;F)</label>
+        <select id="temperature" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="2.0">50&deg;F (cold)</option>
+          <option value="1.5">60&deg;F (cool)</option>
+          <option value="1.0" selected>70&deg;F (ideal)</option>
+          <option value="0.8">80&deg;F (warm)</option>
+          <option value="0.6">90&deg;F (hot)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="humidity">Humidity (%)</label>
+        <select id="humidity" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.8">30% (low/dry)</option>
+          <option value="1.0" selected>50% (normal)</option>
+          <option value="1.3">70% (high)</option>
+          <option value="1.5">80%+ (very high)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="ventilation">Ventilation</label>
+        <select id="ventilation" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.2">Poor (closed room)</option>
+          <option value="1.0" selected>Average (windows cracked)</option>
+          <option value="0.8">Good (fans / cross breeze)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="location">Location</label>
+        <select id="location" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="indoor" selected>Indoor</option>
+          <option value="outdoor">Outdoor</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Estimated Drying Times</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Dry to Touch</div>
+          <div id="result-touch" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Recoat Time</div>
+          <div id="result-recoat" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Full Cure</div>
+          <div id="result-cure" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <!-- Conditions Assessment -->
+      <div id="conditions-box" class="bg-bg-dark rounded-xl p-5 mb-4">
+        <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-3">Conditions Assessment</div>
+        <div id="conditions-badge" class="inline-block px-3 py-1 rounded-full text-sm font-semibold mb-3">--</div>
+        <div id="conditions-note" class="text-text-secondary text-sm leading-relaxed">--</div>
+      </div>
+
+      <!-- Warnings -->
+      <div id="warnings" class="hidden bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCA5A5] mb-4 space-y-1"></div>
+
+      <p class="text-text-muted text-sm italic">Drying times are estimates based on manufacturer data. Actual times vary by product, coat thickness, and exact conditions. The paint can label is the final authority.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select your paint type.</strong> Latex and oil-based paints have fundamentally different drying chemistries. Latex dries by water evaporation; oil-based dries by oxidation.</p>
+          <p><strong class="text-text-primary">2. Enter current conditions.</strong> Temperature and humidity are the biggest factors. Low temperature and high humidity dramatically slow drying.</p>
+          <p><strong class="text-text-primary">3. Set ventilation level.</strong> Good airflow speeds drying. Fans, open windows, or HVAC circulation all help.</p>
+          <p><strong class="text-text-primary">4. Read the results.</strong> Use "Recoat Time" to plan your next coat. "Full Cure" tells you when the paint reaches maximum durability.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Drying Time Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Dry_to_Touch = Base_Time x Temp_Factor x Humidity_Factor x Ventilation_Factor</p>
+            <p>Recoat_Time = Dry_to_Touch x 1.5 to 2.0</p>
+            <p>Full_Cure = 14 to 30 days (latex) or 30 to 60 days (oil)</p>
+          </div>
+          <p>Paint dries in stages: tacky, dry to touch, recoatable, and fully cured. "Dry to touch" means the surface is no longer wet. "Recoatable" means another coat can be applied without lifting or wrinkling the first coat. "Full cure" means the paint has reached maximum hardness and durability.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does paint take to dry?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Latex paint is dry to the touch in 1-2 hours and ready for recoat in 2-4 hours at standard conditions (70 degrees F, 50% humidity). Oil-based paint takes 6-8 hours to touch and 16-24 hours to recoat. Cold temperatures, high humidity, and poor ventilation can double or triple these times.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What temperature is too cold to paint?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most latex paints should not be applied below 50 degrees F. The paint may not cure properly and can crack, peel, or remain tacky. Some specialty latex paints work down to 35 degrees F. Oil-based paints can handle slightly lower temperatures but still perform best above 50 degrees F. Check the can label for the specific product minimum.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Can humidity affect paint drying?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes, humidity significantly affects drying time. At 80% or higher humidity, paint can remain tacky for hours longer than normal. Ideal painting humidity is 40-60%. If humidity is above 70%, consider using a dehumidifier indoors or waiting for better conditions outdoors. High humidity can also cause paint to sag and drip.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long should I wait between coats?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For latex paint, wait 2-4 hours between coats at standard conditions. Oil-based paint requires 16-24 hours between coats. The recoat time is longer than the dry-to-touch time because the paint needs to cure enough to accept another coat without lifting or wrinkling. The manufacturer label is the final authority on recoat time.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const paintType = (document.getElementById('paintType') as HTMLSelectElement).value;
+    const tempFactor = parseFloat((document.getElementById('temperature') as HTMLSelectElement).value);
+    const humidityFactor = parseFloat((document.getElementById('humidity') as HTMLSelectElement).value);
+    const ventFactor = parseFloat((document.getElementById('ventilation') as HTMLSelectElement).value);
+    const location = (document.getElementById('location') as HTMLSelectElement).value;
+
+    // Base dry-to-touch times in hours
+    const baseDryTouch = paintType === 'oil' ? 7 : 1.5;
+    const recoatMultiplier = paintType === 'oil' ? 2.5 : 2.0;
+
+    const dryToTouch = baseDryTouch * tempFactor * humidityFactor * ventFactor;
+    const recoatTime = dryToTouch * recoatMultiplier;
+    const fullCure = paintType === 'oil' ? '30-60 days' : '14-30 days';
+
+    // Format time
+    function formatTime(hours: number): string {
+      if (hours < 1) return Math.round(hours * 60) + ' min';
+      if (hours >= 24) {
+        const days = Math.floor(hours / 24);
+        const h = Math.round(hours % 24);
+        return days + ' day' + (days > 1 ? 's' : '') + (h > 0 ? ' ' + h + ' hr' : '');
+      }
+      return hours.toFixed(1) + ' hr';
+    }
+
+    document.getElementById('result-touch')!.textContent = formatTime(dryToTouch);
+    document.getElementById('result-recoat')!.textContent = formatTime(recoatTime);
+    document.getElementById('result-cure')!.textContent = fullCure;
+
+    // Conditions assessment
+    const conditionScore = tempFactor * humidityFactor * ventFactor;
+    const badge = document.getElementById('conditions-badge')!;
+    const note = document.getElementById('conditions-note')!;
+
+    badge.classList.remove('bg-[#34D399]/20', 'text-[#34D399]', 'bg-[#FBBF24]/20', 'text-[#FBBF24]', 'bg-[#EF4444]/20', 'text-[#EF4444]');
+
+    if (conditionScore <= 1.1) {
+      badge.textContent = 'Optimal';
+      badge.classList.add('bg-[#34D399]/20', 'text-[#34D399]');
+      note.textContent = 'Current conditions are ideal for painting. Paint will dry predictably within the estimated time.';
+    } else if (conditionScore <= 1.8) {
+      badge.textContent = 'Acceptable';
+      badge.classList.add('bg-[#FBBF24]/20', 'text-[#FBBF24]');
+      note.textContent = 'Conditions are workable but drying will be slower than normal. Allow extra time between coats and monitor for sagging.';
+    } else {
+      badge.textContent = 'Poor';
+      badge.classList.add('bg-[#EF4444]/20', 'text-[#EF4444]');
+      note.textContent = 'Conditions are not ideal for painting. Consider postponing or improving ventilation and temperature before proceeding.';
+    }
+
+    // Warnings
+    const warnings: string[] = [];
+    if (tempFactor >= 2.0) warnings.push('Temperature below 50 degrees F: Latex paint may not cure properly. Consider postponing or using specialty cold-weather paint.');
+    if (tempFactor <= 0.6 && humidityFactor <= 0.8) warnings.push('Hot and dry conditions: Paint may dry too fast, causing brush marks and poor leveling. Consider painting in the shade or during cooler hours.');
+    if (humidityFactor >= 1.5) warnings.push('Humidity above 80%: Paint may remain tacky for extended periods. Use a dehumidifier indoors or wait for better weather.');
+    if (location === 'outdoor' && tempFactor >= 2.0) warnings.push('Outdoor painting in cold weather: Dew point may cause moisture on the surface. Paint only when surface temperature is at least 5 degrees above dew point.');
+
+    const warningsEl = document.getElementById('warnings')!;
+    if (warnings.length > 0) {
+      warningsEl.classList.remove('hidden');
+      warningsEl.innerHTML = warnings.map(w => '<p>' + w + '</p>').join('');
+    } else {
+      warningsEl.classList.add('hidden');
+    }
+  }
+
+  document.querySelectorAll('#dry-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+  });
+
+  calculate();
+</script>

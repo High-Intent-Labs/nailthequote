@@ -1,0 +1,241 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/handymanTools';
+
+const tool = getToolBySlug('job-bundler-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I bundle handyman jobs for one visit?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "List all tasks the customer needs, price each individually, then offer a bundled discount for doing them all in one visit. The savings come from eliminating duplicate travel costs and gaining efficiency from doing similar tasks back-to-back. A 10-15% discount on the bundle often wins the larger job."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What discount should I offer for bundled jobs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A same-day bundle discount of 10-15% is standard. You save real money by eliminating extra trips and gaining efficiency, so the discount is funded by your actual cost savings. Do not discount more than your travel and efficiency savings or you will lose money on the bundle."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why should handymen offer bundle pricing?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Bundling increases your average ticket size, reduces drive time between jobs, and improves customer satisfaction. A customer who books three tasks at once is more profitable than three separate one-task calls, even with a discount. Bundling also builds customer loyalty and generates referrals."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="bundler-calc">
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Tasks</h3>
+    <div id="task-list" class="space-y-3 mb-4">
+      <!-- Tasks injected by JS -->
+    </div>
+    <button id="add-task-btn" class="bg-bg-dark border border-border text-text-primary text-sm font-medium px-4 py-2 rounded-lg hover:border-accent hover:text-accent transition-colors cursor-pointer mb-8">
+      + Add Task
+    </button>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="travelCost">Travel Cost per Visit ($)</label>
+        <input type="number" id="travelCost" value="25" min="0" max="100" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="efficiencyGain">Efficiency Gain (%)</label>
+        <input type="number" id="efficiencyGain" value="10" min="0" max="50" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Time saved by grouping tasks (typically 5-15%)</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="sameDayDiscount">Same-Day Discount (%)</label>
+        <input type="number" id="sameDayDiscount" value="10" min="0" max="30" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Discount offered to customer (10-15% typical)</p>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Unbundled Total</div>
+          <div id="result-unbundled" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Bundle Savings</div>
+          <div id="result-savings" class="font-heading font-extrabold text-3xl text-[#34D399]">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Bundled Price</div>
+          <div id="result-bundled" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Savings %</div>
+          <div id="result-pct" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-5 mb-6">
+        <p class="text-text-secondary text-sm"><span class="text-accent font-semibold">Customer message:</span> <span id="customer-msg" class="italic">--</span></p>
+      </div>
+
+      <p class="text-text-muted text-sm italic">Bundle pricing encourages larger jobs and reduces your per-job overhead.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Add tasks.</strong> Enter each service the customer needs with its individual price. Add as many tasks as needed.</p>
+          <p><strong class="text-text-primary">2. Set travel cost.</strong> This is what you would charge per separate visit. Bundling eliminates repeat travel charges.</p>
+          <p><strong class="text-text-primary">3. Set efficiency gain.</strong> Tasks done back-to-back are faster than separate visits. 5-15% is typical.</p>
+          <p><strong class="text-text-primary">4. Set your discount.</strong> The same-day discount is what the customer sees. Keep it at or below your real savings so you still profit more from the bundle.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Bundle Pricing Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Unbundled_Total = Sum(task_prices) + (Travel x Number_of_tasks)</p>
+            <p>Efficiency_Savings = Sum(task_prices) x Efficiency%</p>
+            <p>Travel_Savings = Travel x (Number_of_tasks - 1)</p>
+            <p>Bundle_Discount = Unbundled_Total x Same_Day_Discount%</p>
+            <p>Bundled_Price = Unbundled_Total - Bundle_Discount</p>
+          </div>
+          <p>The key insight is that your real savings (travel + efficiency) often exceed the discount you offer. This means bundling is more profitable for you while still saving the customer money.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I bundle handyman jobs for one visit?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">List all tasks the customer needs, price each individually, then offer a bundled discount for doing them all in one visit. A 10-15% discount often wins the larger job.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What discount should I offer for bundled jobs?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A same-day bundle discount of 10-15% is standard. You save real money by eliminating extra trips and gaining efficiency, so the discount is funded by your actual cost savings.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Why should handymen offer bundle pricing?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Bundling increases your average ticket size, reduces drive time between jobs, and improves customer satisfaction.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  interface Task {
+    id: number;
+    name: string;
+    price: number;
+  }
+
+  let tasks: Task[] = [
+    { id: 1, name: 'Drywall patch', price: 150 },
+    { id: 2, name: 'Paint touchup', price: 120 },
+    { id: 3, name: 'Caulk bathroom', price: 85 },
+  ];
+  let nextTaskId = 4;
+
+  function escapeHtml(str: string): string {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderTasks() {
+    const container = document.getElementById('task-list')!;
+    container.innerHTML = '';
+
+    tasks.forEach(task => {
+      const row = document.createElement('div');
+      row.className = 'grid grid-cols-[1fr_120px_40px] gap-3 items-center';
+      row.innerHTML = `
+        <input type="text" data-id="${task.id}" data-field="name" value="${escapeHtml(task.name)}" placeholder="Task description" class="task-input w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+        <input type="number" data-id="${task.id}" data-field="price" value="${task.price}" min="0" step="5" placeholder="Price" class="task-input w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm text-right focus:border-accent focus:outline-none transition-colors" />
+        ${tasks.length > 1 ? `<button data-remove="${task.id}" class="remove-task-btn text-text-muted hover:text-red-400 transition-colors cursor-pointer text-lg leading-none">&times;</button>` : '<span></span>'}
+      `;
+      container.appendChild(row);
+    });
+
+    container.querySelectorAll('.task-input').forEach(input => {
+      input.addEventListener('input', handleTaskInput);
+    });
+    container.querySelectorAll('.remove-task-btn').forEach(btn => {
+      btn.addEventListener('click', handleRemoveTask);
+    });
+
+    calculate();
+  }
+
+  function handleTaskInput(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const id = parseInt(input.dataset.id!);
+    const field = input.dataset.field!;
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    if (field === 'name') task.name = input.value;
+    if (field === 'price') task.price = parseFloat(input.value) || 0;
+    calculate();
+  }
+
+  function handleRemoveTask(e: Event) {
+    const btn = e.currentTarget as HTMLElement;
+    const id = parseInt(btn.dataset.remove!);
+    tasks = tasks.filter(t => t.id !== id);
+    renderTasks();
+  }
+
+  function calculate() {
+    const travelCost = parseFloat((document.getElementById('travelCost') as HTMLInputElement).value) || 0;
+    const efficiencyGain = parseFloat((document.getElementById('efficiencyGain') as HTMLInputElement).value) || 0;
+    const sameDayDiscount = parseFloat((document.getElementById('sameDayDiscount') as HTMLInputElement).value) || 0;
+
+    const numTasks = tasks.length;
+    const taskTotal = tasks.reduce((sum, t) => sum + t.price, 0);
+    const unbundledTotal = taskTotal + (travelCost * numTasks);
+
+    const bundleDiscount = unbundledTotal * (sameDayDiscount / 100);
+    const bundledPrice = unbundledTotal - bundleDiscount;
+    const savingsPct = unbundledTotal > 0 ? (bundleDiscount / unbundledTotal) * 100 : 0;
+
+    document.getElementById('result-unbundled')!.textContent = '$' + unbundledTotal.toFixed(0);
+    document.getElementById('result-savings')!.textContent = '-$' + bundleDiscount.toFixed(0);
+    document.getElementById('result-bundled')!.textContent = '$' + bundledPrice.toFixed(0);
+    document.getElementById('result-pct')!.textContent = savingsPct.toFixed(0) + '%';
+
+    document.getElementById('customer-msg')!.textContent =
+      numTasks > 1
+        ? `"Save $${bundleDiscount.toFixed(0)} by booking these ${numTasks} tasks together — just $${bundledPrice.toFixed(0)} instead of $${unbundledTotal.toFixed(0)}."`
+        : 'Add more tasks to see bundle savings.';
+  }
+
+  // Init
+  renderTasks();
+
+  document.getElementById('add-task-btn')?.addEventListener('click', () => {
+    tasks.push({ id: nextTaskId++, name: '', price: 0 });
+    renderTasks();
+  });
+
+  document.querySelectorAll('#bundler-calc > .grid input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+</script>

@@ -1,0 +1,184 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/pestControlTools';
+
+const tool = getToolBySlug('termite-treatment-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How many gallons of termiticide do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The standard application rate is 4 gallons of finished solution per 10 linear feet per 1 foot of treatment depth. For a 150-foot perimeter at 4-foot depth, you need (150/10) x 4 x 4 = 240 gallons of finished termiticide solution."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the standard termiticide application rate?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The industry standard for soil-applied liquid barrier treatment is 4 gallons of finished solution per 10 linear feet per 1 foot of depth. This rate is specified on most termiticide product labels including Termidor, Taurus, and Premise."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How deep should termite treatment be applied?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Treatment depth depends on foundation type. Monolithic slab foundations typically require 4 feet of depth to the footer. Stem wall foundations may need 2-3 feet. Crawlspace treatments are typically 1-2 feet. Always treat to the depth of the footer for effective barrier protection."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="term-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="perimeter">Building Perimeter (linear feet)</label>
+        <input type="number" id="perimeter" value="150" min="10" max="5000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="depth">Treatment Depth (ft)</label>
+        <input type="number" id="depth" value="4" min="1" max="6" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="foundation">Foundation Type</label>
+        <select id="foundation" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="4">Monolithic Slab (4 ft depth typical)</option>
+          <option value="3">Stem Wall (3 ft depth typical)</option>
+          <option value="2">Crawlspace (2 ft depth typical)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="rate">Application Rate (gal per 10 lin ft per 1 ft depth)</label>
+        <input type="number" id="rate" value="4" min="1" max="10" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="underslab">Include Under-Slab Treatment?</label>
+        <select id="underslab" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0" selected>No</option>
+          <option value="1">Yes</option>
+        </select>
+      </div>
+      <div id="underslab-wrap" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="slabSqft">Under-Slab Area (sq ft)</label>
+        <input type="number" id="slabSqft" value="1500" min="0" max="50000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="costPerGal">Cost per Gallon of Finished Solution ($)</label>
+        <input type="number" id="costPerGal" value="2.50" min="0" step="0.25" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Gallons</div>
+          <div id="result-gallons" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">55-Gallon Drums</div>
+          <div id="result-drums" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Perimeter Gallons</div>
+          <div id="result-perimeter" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Material Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Based on industry standard application rate of 4 gal per 10 lin ft per 1 ft depth. Always follow the termiticide product label for exact application rates and depth requirements.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the building perimeter.</strong> Measure the total linear footage around the foundation. Walk the perimeter with a measuring wheel or use the property survey.</p>
+          <p><strong class="text-text-primary">2. Set the treatment depth.</strong> This is the vertical depth from grade to the bottom of the footer. Monolithic slabs are typically 4 feet, stem walls 3 feet, crawlspaces 2 feet.</p>
+          <p><strong class="text-text-primary">3. Select foundation type.</strong> This auto-suggests the typical depth for that foundation, but you can override the depth field manually.</p>
+          <p><strong class="text-text-primary">4. Add under-slab treatment if applicable.</strong> Pre-construction or post-tension slab jobs may require under-slab treatment at 1 gallon per 10 square feet.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Termiticide Volume Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Perimeter_Gallons = (Linear_Feet / 10) x Rate x Depth</p>
+            <p>Under_Slab_Gallons = Square_Feet / 10</p>
+            <p>Total = Perimeter_Gallons + Under_Slab_Gallons</p>
+          </div>
+          <p>The standard rate of 4 gallons per 10 linear feet per 1 foot of depth is specified on most major termiticide labels (Termidor, Taurus SC, Premise). This creates a continuous chemical barrier in the soil around the foundation.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many gallons of termiticide do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The standard application rate is 4 gallons of finished solution per 10 linear feet per 1 foot of treatment depth. For a 150-foot perimeter at 4-foot depth, you need (150/10) x 4 x 4 = 240 gallons of finished termiticide solution.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the standard termiticide application rate?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The industry standard for soil-applied liquid barrier treatment is 4 gallons of finished solution per 10 linear feet per 1 foot of depth. This rate is specified on most termiticide product labels including Termidor, Taurus, and Premise.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How deep should termite treatment be applied?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Treatment depth depends on foundation type. Monolithic slab foundations typically require 4 feet of depth to the footer. Stem wall foundations may need 2-3 feet. Crawlspace treatments are typically 1-2 feet. Always treat to the depth of the footer for effective barrier protection.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const perimeter = parseFloat((document.getElementById('perimeter') as HTMLInputElement).value) || 0;
+    const depth = parseFloat((document.getElementById('depth') as HTMLInputElement).value) || 0;
+    const rate = parseFloat((document.getElementById('rate') as HTMLInputElement).value) || 4;
+    const hasUnderslab = (document.getElementById('underslab') as HTMLSelectElement).value === '1';
+    const slabSqft = parseFloat((document.getElementById('slabSqft') as HTMLInputElement).value) || 0;
+    const costPerGal = parseFloat((document.getElementById('costPerGal') as HTMLInputElement).value) || 0;
+
+    document.getElementById('underslab-wrap')!.classList.toggle('hidden', !hasUnderslab);
+
+    // Foundation type sets suggested depth
+    const foundation = (document.getElementById('foundation') as HTMLSelectElement);
+    foundation.addEventListener('change', () => {
+      (document.getElementById('depth') as HTMLInputElement).value = foundation.value;
+      calculate();
+    });
+
+    const perimeterGallons = (perimeter / 10) * rate * depth;
+    const underslabGallons = hasUnderslab ? slabSqft / 10 : 0;
+    const totalGallons = Math.round(perimeterGallons + underslabGallons);
+    const drums = Math.ceil(totalGallons / 55);
+    const cost = totalGallons * costPerGal;
+
+    document.getElementById('result-gallons')!.textContent = totalGallons.toLocaleString();
+    document.getElementById('result-drums')!.textContent = drums.toString();
+    document.getElementById('result-perimeter')!.textContent = Math.round(perimeterGallons).toLocaleString() + ' gal';
+    document.getElementById('result-cost')!.textContent = '$' + cost.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  }
+
+  document.querySelectorAll('#term-calc input, #term-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

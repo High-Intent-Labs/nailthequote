@@ -1,0 +1,139 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/roofingTools';
+
+const tool = getToolBySlug('roof-squares-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is a roofing square?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A roofing square is a unit of measurement equal to 100 square feet. It is the standard unit used to price roofing materials and labor. A 2,500 sq ft roof equals 25 squares."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many bundles of shingles per square?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Standard asphalt shingles require 3 bundles per square (100 sq ft). Some heavier architectural shingles may require 4 bundles per square. Check the manufacturer label for exact coverage per bundle."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I convert square feet to roofing squares?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Divide the total roof area in square feet by 100. For example, 3,200 sq ft divided by 100 equals 32 roofing squares. Always round up to the next whole number when ordering materials."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="squares-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roofArea">Total Roof Area (sq ft)</label>
+        <input type="number" id="roofArea" value="2500" min="100" max="100000" step="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Use actual sloped area, not footprint. Need help? Use the <a href="/roofing/roof-area-calculator" class="text-accent hover:underline">Roof Area Calculator</a>.</p>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Exact Squares</div>
+          <div id="result-exact" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Round Up (Order)</div>
+          <div id="result-rounded" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">squares</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Bundles (3/sq)</div>
+          <div id="result-bundles" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Bundles (4/sq)</div>
+          <div id="result-bundles4" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Standard 3-tab and most architectural shingles use 3 bundles per square. Some heavyweight shingles use 4 bundles per square. Check the manufacturer specs for your specific product.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your roof area in square feet.</strong> This should be the actual sloped area, not the building footprint. If you only have the footprint, use the <a href="/roofing/roof-area-calculator" class="text-accent hover:underline">Roof Area Calculator</a> first to apply the pitch correction.</p>
+          <p><strong class="text-text-primary">2. Read the results.</strong> The calculator shows exact squares, rounded-up squares for ordering, and the number of bundles needed at both 3 and 4 bundles per square.</p>
+          <p><strong class="text-text-primary">3. Order materials.</strong> Always use the rounded-up number. Ordering partial squares means buying extra bundles anyway, and you always need a few extra for waste and starter courses.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Roofing Squares Work</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The roofing industry prices everything in squares. One square equals 100 square feet of roof area. When a supplier quotes shingles at $120 per square, that means $120 per 100 sq ft of coverage.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm">
+            <p>Roofing_Squares = Roof_Area_sqft / 100</p>
+            <p>Bundles_Needed = Roofing_Squares x 3 (standard shingles)</p>
+          </div>
+          <p>Labor is also quoted per square. A crew charging $300 per square on a 25-square roof means $7,500 in labor. Knowing your exact square count is the foundation of every roofing estimate.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a roofing square?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A roofing square is a unit of measurement equal to 100 square feet. It is the standard unit used to price roofing materials and labor. A 2,500 sq ft roof equals 25 squares.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many bundles of shingles per square?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Standard asphalt shingles require 3 bundles per square (100 sq ft). Some heavier architectural shingles may require 4 bundles per square. Check the manufacturer label for exact coverage per bundle.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I convert square feet to roofing squares?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Divide the total roof area in square feet by 100. For example, 3,200 sq ft divided by 100 equals 32 roofing squares. Always round up to the next whole number when ordering materials.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const area = parseFloat((document.getElementById('roofArea') as HTMLInputElement).value) || 2500;
+
+    const exactSquares = area / 100;
+    const roundedSquares = Math.ceil(exactSquares);
+    const bundles3 = roundedSquares * 3;
+    const bundles4 = roundedSquares * 4;
+
+    document.getElementById('result-exact')!.textContent = exactSquares.toFixed(1);
+    document.getElementById('result-rounded')!.textContent = roundedSquares.toString();
+    document.getElementById('result-bundles')!.textContent = bundles3.toString();
+    document.getElementById('result-bundles4')!.textContent = bundles4.toString();
+  }
+
+  document.querySelectorAll('#squares-calc input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

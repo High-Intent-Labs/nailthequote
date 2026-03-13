@@ -1,0 +1,337 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/electricalTools';
+
+const tool = getToolBySlug('wire-size-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I determine the correct wire size for a circuit?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Start with the load current, then apply NEC Table 310.16 to find the minimum AWG that meets the ampacity requirement after derating for temperature and conduit fill. Then verify voltage drop is within 3% for feeders or 5% for branch circuits. Always use the larger wire size if ampacity and voltage drop requirements differ."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between copper and aluminum wire sizing?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Aluminum wire has lower ampacity than copper for the same gauge. For example, #6 copper carries 65A while #6 aluminum carries 50A at 75 degrees C. Aluminum is cheaper per foot but requires a larger gauge. Aluminum also requires anti-oxidant compound and rated connectors. For most residential work, copper is standard."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "When do I need to apply conduit derating factors?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Per NEC 310.15(B)(3)(a), when more than 3 current-carrying conductors are in a raceway or cable, you must derate the ampacity. 4-6 conductors derate to 80%, 7-9 to 70%, and 10-20 to 50%. This is one of the most commonly missed code requirements."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What AWG wire do I need for a 30 amp circuit?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For a 30-amp circuit, you typically need #10 AWG copper wire (rated 35A at 75 degrees C per NEC 310.16). If using aluminum, you need #8 AWG. Always verify with the actual installation conditions including temperature, conduit fill, and distance for voltage drop."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="wire-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="loadAmps">Load Current (Amps)</label>
+        <input type="number" id="loadAmps" value="30" min="1" max="1000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="voltage">Voltage</label>
+        <select id="voltage" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="120">120V</option>
+          <option value="240" selected>240V</option>
+          <option value="277">277V</option>
+          <option value="480">480V</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="circuitType">Circuit Type</label>
+        <select id="circuitType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="single" selected>AC Single-Phase</option>
+          <option value="three">AC 3-Phase</option>
+          <option value="dc">DC</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="material">Conductor Material</label>
+        <select id="material" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="copper" selected>Copper</option>
+          <option value="aluminum">Aluminum</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="insulation">Insulation Type</label>
+        <select id="insulation" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="90" selected>THHN/THWN (90&deg;C)</option>
+          <option value="75">THHW/RHW (75&deg;C)</option>
+          <option value="60">NM-B/TW (60&deg;C)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="ccc">Current-Carrying Conductors</label>
+        <select id="ccc" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="3" selected>3 or fewer</option>
+          <option value="4">4-6</option>
+          <option value="7">7-9</option>
+          <option value="10">10-20</option>
+          <option value="21">21-30</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="distance">One-Way Distance (ft)</label>
+        <input type="number" id="distance" value="100" min="1" max="5000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="vdLimit">Max Voltage Drop (%)</label>
+        <select id="vdLimit" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="3" selected>3% (Feeders)</option>
+          <option value="5">5% (Branch Circuits)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="continuous">Load Type</label>
+        <select id="continuous" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.25" selected>Continuous (x1.25)</option>
+          <option value="1.0">Non-Continuous</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Recommended Wire</div>
+          <div id="result-wire" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Derated Ampacity</div>
+          <div id="result-ampacity" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Voltage Drop</div>
+          <div id="result-vd" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Voltage at Load</div>
+          <div id="result-vload" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div id="result-notes" class="space-y-2 mb-4"></div>
+      <p class="text-text-muted text-sm italic">Based on NEC 2023 Table 310.16 and Chapter 9. Verify final design with your local AHJ.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the load current.</strong> This is the circuit amperage from the breaker or the connected load. For motors, use the nameplate FLA.</p>
+          <p><strong class="text-text-primary">2. Set voltage and circuit type.</strong> Most residential is 120V or 240V single-phase. Commercial often uses 208V or 480V 3-phase.</p>
+          <p><strong class="text-text-primary">3. Choose conductor material and insulation.</strong> Copper with THHN (90 degrees C) is the most common for commercial work. NM-B is standard for residential in-wall wiring.</p>
+          <p><strong class="text-text-primary">4. Set the number of current-carrying conductors.</strong> If more than 3 CCC share a raceway, the calculator applies NEC derating factors automatically.</p>
+          <p><strong class="text-text-primary">5. Enter the one-way run distance.</strong> The calculator checks voltage drop and flags if it exceeds your selected limit (3% for feeders, 5% for branch circuits).</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Wire Sizing Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator starts with <strong class="text-text-primary">NEC Table 310.16</strong> base ampacities for each wire gauge at the selected insulation temperature. For continuous loads, it multiplies the load current by 1.25 per NEC 210.20.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Required_Ampacity = Load_Current x Continuous_Factor</p>
+            <p>Derated_Ampacity = Base_Ampacity x Conduit_Fill_Factor</p>
+            <p>Wire = Smallest AWG where Derated_Ampacity &ge; Required_Ampacity</p>
+            <p>VD% = (Multiplier x I x D x R) / (V x 1000) x 100</p>
+          </div>
+          <p>The conduit fill derating factor reduces ampacity when more than 3 current-carrying conductors share a raceway: 80% for 4-6 CCC, 70% for 7-9, 50% for 10-20, and 45% for 21-30.</p>
+          <p>After selecting the wire for ampacity, the calculator verifies voltage drop using NEC Chapter 9 Table 8 resistance values. If the voltage drop exceeds the limit, it recommends the next size up.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I determine the correct wire size for a circuit?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Start with the load current, then apply NEC Table 310.16 to find the minimum AWG that meets the ampacity requirement after derating for temperature and conduit fill. Then verify voltage drop is within 3% for feeders or 5% for branch circuits. Always use the larger wire size if ampacity and voltage drop requirements differ.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the difference between copper and aluminum wire sizing?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Aluminum wire has lower ampacity than copper for the same gauge. For example, #6 copper carries 65A while #6 aluminum carries 50A at 75 degrees C. Aluminum is cheaper per foot but requires a larger gauge, anti-oxidant compound, and rated connectors.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">When do I need to apply conduit derating factors?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Per NEC 310.15(B)(3)(a), when more than 3 current-carrying conductors are in a raceway or cable, you must derate the ampacity. 4-6 conductors derate to 80%, 7-9 to 70%, and 10-20 to 50%. This is one of the most commonly missed code requirements.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What AWG wire do I need for a 30 amp circuit?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For a 30-amp circuit, you typically need #10 AWG copper wire (rated 35A at 75 degrees C per NEC 310.16). If using aluminum, you need #8 AWG. Always verify with the actual installation conditions including temperature, conduit fill, and distance for voltage drop.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const loadAmps = parseFloat((document.getElementById('loadAmps') as HTMLInputElement).value) || 30;
+    const voltage = parseFloat((document.getElementById('voltage') as HTMLSelectElement).value);
+    const circuitType = (document.getElementById('circuitType') as HTMLSelectElement).value;
+    const material = (document.getElementById('material') as HTMLSelectElement).value;
+    const insulationTemp = parseInt((document.getElementById('insulation') as HTMLSelectElement).value);
+    const ccc = parseInt((document.getElementById('ccc') as HTMLSelectElement).value);
+    const distance = parseFloat((document.getElementById('distance') as HTMLInputElement).value) || 100;
+    const vdLimit = parseFloat((document.getElementById('vdLimit') as HTMLSelectElement).value);
+    const continuousFactor = parseFloat((document.getElementById('continuous') as HTMLSelectElement).value);
+
+    // NEC 310.16 ampacity tables (copper and aluminum)
+    const gauges = ['14','12','10','8','6','4','3','2','1','1/0','2/0','3/0','4/0','250','300','350','400','500'];
+
+    const copperAmpacity: Record<string, Record<number, number>> = {
+      '14': {60:15, 75:20, 90:25}, '12': {60:20, 75:25, 90:30}, '10': {60:30, 75:35, 90:40},
+      '8': {60:40, 75:50, 90:55}, '6': {60:55, 75:65, 90:75}, '4': {60:70, 75:85, 90:95},
+      '3': {60:85, 75:100, 90:115}, '2': {60:95, 75:115, 90:130}, '1': {60:110, 75:130, 90:145},
+      '1/0': {60:125, 75:150, 90:170}, '2/0': {60:145, 75:175, 90:195}, '3/0': {60:165, 75:200, 90:225},
+      '4/0': {60:195, 75:230, 90:260}, '250': {60:215, 75:255, 90:290}, '300': {60:240, 75:285, 90:320},
+      '350': {60:260, 75:310, 90:350}, '400': {60:280, 75:335, 90:380}, '500': {60:320, 75:380, 90:430},
+    };
+
+    const aluminumAmpacity: Record<string, Record<number, number>> = {
+      '14': {60:0, 75:0, 90:0}, '12': {60:15, 75:20, 90:25}, '10': {60:25, 75:30, 90:35},
+      '8': {60:30, 75:40, 90:45}, '6': {60:40, 75:50, 90:60}, '4': {60:55, 75:65, 90:75},
+      '3': {60:65, 75:75, 90:85}, '2': {60:75, 75:90, 90:100}, '1': {60:85, 75:100, 90:115},
+      '1/0': {60:100, 75:120, 90:135}, '2/0': {60:115, 75:135, 90:150}, '3/0': {60:130, 75:155, 90:175},
+      '4/0': {60:150, 75:180, 90:205}, '250': {60:170, 75:205, 90:230}, '300': {60:190, 75:230, 90:255},
+      '350': {60:210, 75:250, 90:280}, '400': {60:225, 75:270, 90:305}, '500': {60:260, 75:310, 90:350},
+    };
+
+    // NEC Chapter 9 Table 8 resistance (ohms per 1000 ft, copper, uncoated)
+    const copperResistance: Record<string, number> = {
+      '14':3.07, '12':1.93, '10':1.21, '8':0.764, '6':0.491, '4':0.308, '3':0.245,
+      '2':0.194, '1':0.154, '1/0':0.122, '2/0':0.0967, '3/0':0.0766, '4/0':0.0608,
+      '250':0.0515, '300':0.0429, '350':0.0367, '400':0.0321, '500':0.0258,
+    };
+    const aluminumResistance: Record<string, number> = {
+      '14':5.06, '12':3.18, '10':2.00, '8':1.26, '6':0.808, '4':0.508, '3':0.403,
+      '2':0.319, '1':0.253, '1/0':0.201, '2/0':0.159, '3/0':0.126, '4/0':0.100,
+      '250':0.0847, '300':0.0707, '350':0.0605, '400':0.0529, '500':0.0424,
+    };
+
+    // Conduit derating factors
+    let conduitFactor = 1.0;
+    if (ccc >= 21) conduitFactor = 0.45;
+    else if (ccc >= 10) conduitFactor = 0.50;
+    else if (ccc >= 7) conduitFactor = 0.70;
+    else if (ccc >= 4) conduitFactor = 0.80;
+
+    const requiredAmpacity = loadAmps * continuousFactor;
+    const ampTable = material === 'copper' ? copperAmpacity : aluminumAmpacity;
+    const resTable = material === 'copper' ? copperResistance : aluminumResistance;
+
+    // Find smallest wire that meets ampacity
+    let selectedGauge = '500';
+    let selectedAmpacity = 0;
+    for (const g of gauges) {
+      const baseAmp = ampTable[g]?.[insulationTemp] || 0;
+      const deratedAmp = baseAmp * conduitFactor;
+      if (deratedAmp >= requiredAmpacity && baseAmp > 0) {
+        selectedGauge = g;
+        selectedAmpacity = deratedAmp;
+        break;
+      }
+    }
+
+    // Calculate voltage drop
+    const R = resTable[selectedGauge] || 0.0258;
+    let vdMultiplier = 2; // single-phase and DC
+    if (circuitType === 'three') vdMultiplier = 1.732;
+    const vdVolts = (vdMultiplier * loadAmps * distance * R) / 1000;
+    let vdPercent = (vdVolts / voltage) * 100;
+
+    // Check if VD exceeds limit, if so bump up wire
+    let vdGauge = selectedGauge;
+    let vdAmpacity = selectedAmpacity;
+    if (vdPercent > vdLimit) {
+      const startIdx = gauges.indexOf(selectedGauge);
+      for (let i = startIdx + 1; i < gauges.length; i++) {
+        const g = gauges[i];
+        const r = resTable[g] || 0;
+        const vd2 = (vdMultiplier * loadAmps * distance * r) / 1000;
+        const vdP = (vd2 / voltage) * 100;
+        const baseAmp = ampTable[g]?.[insulationTemp] || 0;
+        if (vdP <= vdLimit && baseAmp > 0) {
+          vdGauge = g;
+          vdAmpacity = baseAmp * conduitFactor;
+          vdPercent = vdP;
+          break;
+        }
+      }
+    }
+
+    // Use the larger wire (ampacity or VD)
+    const ampIdx = gauges.indexOf(selectedGauge);
+    const vdIdx = gauges.indexOf(vdGauge);
+    const finalGauge = vdIdx > ampIdx ? vdGauge : selectedGauge;
+    const finalAmpacity = vdIdx > ampIdx ? vdAmpacity : selectedAmpacity;
+
+    // Recalculate VD with final wire
+    const finalR = resTable[finalGauge] || 0;
+    const finalVdVolts = (vdMultiplier * loadAmps * distance * finalR) / 1000;
+    const finalVdPercent = (finalVdVolts / voltage) * 100;
+    const voltageAtLoad = voltage - finalVdVolts;
+
+    // Display
+    const isLargeGauge = ['250','300','350','400','500'].includes(finalGauge);
+    const gaugeDisplay = isLargeGauge ? finalGauge + ' kcmil' : '#' + finalGauge + ' AWG';
+    document.getElementById('result-wire')!.textContent = gaugeDisplay;
+    document.getElementById('result-ampacity')!.textContent = Math.round(finalAmpacity) + 'A';
+    document.getElementById('result-vd')!.textContent = finalVdPercent.toFixed(1) + '%';
+    document.getElementById('result-vload')!.textContent = voltageAtLoad.toFixed(1) + 'V';
+
+    // Color VD result
+    const vdEl = document.getElementById('result-vd')!;
+    vdEl.classList.remove('text-[#34D399]', 'text-[#FBBF24]', 'text-[#EF4444]');
+    if (finalVdPercent <= vdLimit) vdEl.classList.add('text-[#34D399]');
+    else vdEl.classList.add('text-[#EF4444]');
+
+    // Notes
+    const notesEl = document.getElementById('result-notes')!;
+    let notes = '';
+    if (conduitFactor < 1.0) {
+      notes += `<div class="bg-[rgba(96,165,250,0.1)] border border-[rgba(96,165,250,0.3)] rounded-lg px-4 py-3 text-sm text-[#93C5FD]">Conduit fill derating applied: ${(conduitFactor * 100).toFixed(0)}% (${ccc}+ CCC per NEC 310.15(B)(3)(a))</div>`;
+    }
+    if (vdIdx > ampIdx) {
+      notes += `<div class="bg-[rgba(251,191,36,0.1)] border border-[rgba(251,191,36,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCD34D]">Wire upsized from #${selectedGauge} to ${gaugeDisplay} to meet ${vdLimit}% voltage drop limit.</div>`;
+    }
+    if (finalVdPercent > vdLimit) {
+      notes += `<div class="bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCA5A5]">WARNING: Voltage drop (${finalVdPercent.toFixed(1)}%) exceeds ${vdLimit}% limit even at largest wire size. Reduce distance or increase voltage.</div>`;
+    }
+    notesEl.innerHTML = notes;
+  }
+
+  document.querySelectorAll('#wire-calc input, #wire-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+  calculate();
+</script>

@@ -1,0 +1,188 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/pestControlTools';
+
+const tool = getToolBySlug('interval-tracker')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How often should pest control be done?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most residential pest control services are performed quarterly (every 90 days). Monthly service is recommended for severe infestations. Termite liquid barriers are re-applied annually. Bait systems are monitored and maintained annually. The right interval depends on pest type, severity, and product used."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does pest control treatment last?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Perimeter spray treatments typically last 30-90 days depending on the product and weather conditions. Termite liquid barriers (Termidor, Taurus) can last 5-10 years in soil but are re-inspected annually. Bait systems require annual monitoring. Indoor treatments may last 30-60 days."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="int-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="lastDate">Last Treatment Date</label>
+        <input type="date" id="lastDate" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="treatmentType">Treatment Type</label>
+        <select id="treatmentType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="30">Monthly Service (30 days)</option>
+          <option value="90" selected>Quarterly Service (90 days)</option>
+          <option value="180">Semi-Annual (180 days)</option>
+          <option value="365">Annual — Termite Liquid Barrier (365 days)</option>
+          <option value="365">Annual — Bait System (365 days)</option>
+          <option value="60">Perimeter Spray (60 days)</option>
+          <option value="custom">Custom Interval</option>
+        </select>
+      </div>
+      <div id="custom-wrap" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="customDays">Custom Interval (days)</label>
+        <input type="number" id="customDays" value="45" min="1" max="730" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="product">Product Used (optional)</label>
+        <input type="text" id="product" placeholder="e.g., Termidor SC, Demand CS" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Service Status</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Days Remaining</div>
+          <div id="result-remaining" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Due Date</div>
+          <div id="result-due" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Status</div>
+          <div id="result-status" class="font-heading font-extrabold text-xl">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Days Since Treatment</div>
+          <div id="result-since" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-3">Customer Reminder Text</h4>
+        <p id="result-reminder" class="text-text-secondary text-sm leading-relaxed mb-3">--</p>
+        <button id="copy-btn" class="text-xs text-accent hover:text-accent-hover transition-colors cursor-pointer">Copy to clipboard</button>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Tracker</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the last treatment date.</strong> Select the date when the most recent service was performed.</p>
+          <p><strong class="text-text-primary">2. Select the treatment type.</strong> This determines the standard re-treatment interval. Monthly is 30 days, quarterly is 90, annual termite services are 365.</p>
+          <p><strong class="text-text-primary">3. Review the status.</strong> The tracker shows days remaining, the next due date, and generates customer reminder text you can copy and send.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How often should pest control be done?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most residential pest control services are performed quarterly (every 90 days). Monthly service is recommended for severe infestations. Termite liquid barriers are re-applied annually. Bait systems are monitored and maintained annually. The right interval depends on pest type, severity, and product used.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does pest control treatment last?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Perimeter spray treatments typically last 30-90 days depending on the product and weather conditions. Termite liquid barriers (Termidor, Taurus) can last 5-10 years in soil but are re-inspected annually. Bait systems require annual monitoring. Indoor treatments may last 30-60 days.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function initDate() {
+    const today = new Date();
+    const thirtyAgo = new Date(today);
+    thirtyAgo.setDate(thirtyAgo.getDate() - 30);
+    (document.getElementById('lastDate') as HTMLInputElement).value = thirtyAgo.toISOString().split('T')[0];
+  }
+
+  function calculate() {
+    const lastDateStr = (document.getElementById('lastDate') as HTMLInputElement).value;
+    const treatmentType = (document.getElementById('treatmentType') as HTMLSelectElement).value;
+    const customDays = parseInt((document.getElementById('customDays') as HTMLInputElement).value) || 45;
+
+    document.getElementById('custom-wrap')!.classList.toggle('hidden', treatmentType !== 'custom');
+
+    if (!lastDateStr) return;
+
+    const lastDate = new Date(lastDateStr + 'T00:00:00');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const intervalDays = treatmentType === 'custom' ? customDays : parseInt(treatmentType);
+    const daysSince = Math.floor((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+    const daysRemaining = intervalDays - daysSince;
+
+    const dueDate = new Date(lastDate);
+    dueDate.setDate(dueDate.getDate() + intervalDays);
+    const dueDateStr = dueDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    let status: string, statusColor: string;
+    if (daysRemaining > 14) {
+      status = 'On Schedule';
+      statusColor = '#34D399';
+    } else if (daysRemaining > 0) {
+      status = 'Due Soon';
+      statusColor = '#FBBF24';
+    } else {
+      status = 'Overdue';
+      statusColor = '#EF4444';
+    }
+
+    document.getElementById('result-remaining')!.textContent = daysRemaining > 0 ? daysRemaining.toString() : '0';
+    document.getElementById('result-due')!.textContent = dueDateStr;
+    const statusEl = document.getElementById('result-status')!;
+    statusEl.textContent = status;
+    statusEl.style.color = statusColor;
+    document.getElementById('result-since')!.textContent = daysSince.toString();
+
+    // Reminder text
+    const product = (document.getElementById('product') as HTMLInputElement).value;
+    let reminder = `Your pest control service is ${daysRemaining > 0 ? 'due on ' + dueDateStr : 'overdue as of ' + dueDateStr}. `;
+    if (product) reminder += `Product used: ${product}. `;
+    reminder += 'Please contact us to schedule your next appointment.';
+    document.getElementById('result-reminder')!.textContent = reminder;
+  }
+
+  document.getElementById('copy-btn')?.addEventListener('click', () => {
+    const text = document.getElementById('result-reminder')!.textContent || '';
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copy-btn')!;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy to clipboard', 2000);
+    });
+  });
+
+  document.querySelectorAll('#int-calc input, #int-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  initDate();
+  calculate();
+</script>

@@ -1,0 +1,170 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/handymanTools';
+
+const tool = getToolBySlug('parts-markup-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is a good markup on handyman parts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The standard markup on handyman parts and materials is 35-50%. Small hardware items like screws and fasteners often get 50-100% markup. Larger items like fixtures or appliances get 25-35%. The markup covers your time sourcing, transporting, and managing inventory."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between markup and margin?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Markup is the percentage added to your cost. Margin is the percentage of the selling price that is profit. A 50% markup on a $100 item means you sell for $150 (margin is 33%). A 50% margin means you sell for $200 (markup is 100%). Most pros think in markup but should track margin."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I include sales tax in my parts markup?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Calculate your markup on the pre-tax cost, then add sales tax on top of the final retail price. This way your margin is consistent regardless of tax rates. Check local laws — in some jurisdictions, labor is not taxable but materials are."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="markup-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="wholesaleCost">Wholesale / Your Cost ($)</label>
+        <input type="number" id="wholesaleCost" value="50" min="0" max="50000" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="markupPct">Markup (%)</label>
+        <input type="number" id="markupPct" value="40" min="0" max="300" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Industry standard: 35-50%</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="quantity">Quantity</label>
+        <input type="number" id="quantity" value="1" min="1" max="1000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="salesTax">Sales Tax (%)</label>
+        <input type="number" id="salesTax" value="0" min="0" max="15" step="0.25" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Set to 0 if not applicable</p>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Retail Price</div>
+          <div id="result-retail" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Profit per Unit</div>
+          <div id="result-profit-unit" class="font-heading font-extrabold text-3xl text-[#34D399]">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Profit</div>
+          <div id="result-profit-total" class="font-heading font-extrabold text-3xl text-[#34D399]">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Profit Margin</div>
+          <div id="result-margin" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">With Tax (per unit)</div>
+          <div id="result-with-tax" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Customer Total</div>
+          <div id="result-customer-total" class="font-heading font-extrabold text-2xl text-accent">--</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Standard handyman markup: 35-50% on small parts, 25-35% on larger items.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your wholesale cost.</strong> This is what you pay for the part or material at the supplier.</p>
+          <p><strong class="text-text-primary">2. Set your markup percentage.</strong> The industry standard for handyman parts is 35-50%. Adjust higher for small specialty items, lower for big-ticket items.</p>
+          <p><strong class="text-text-primary">3. Enter quantity.</strong> If you are billing for multiple units, the calculator shows total profit.</p>
+          <p><strong class="text-text-primary">4. Add sales tax if applicable.</strong> Tax is applied on top of the retail price, not on top of your cost.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Markup Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Retail_Price = Wholesale_Cost x (1 + Markup%)</p>
+            <p>Profit_Per_Unit = Retail_Price - Wholesale_Cost</p>
+            <p>Profit_Margin% = (Profit / Retail_Price) x 100</p>
+            <p>With_Tax = Retail_Price x (1 + Sales_Tax%)</p>
+          </div>
+          <p>Important: markup and margin are not the same. A 40% markup results in about a 29% profit margin. Track your margin to understand what percentage of revenue is actual profit.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a good markup on handyman parts?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The standard markup on handyman parts and materials is 35-50%. Small hardware items often get 50-100% markup. Larger items get 25-35%.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the difference between markup and margin?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Markup is the percentage added to your cost. Margin is the percentage of the selling price that is profit. A 50% markup results in a 33% margin.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I include sales tax in my parts markup?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Calculate your markup on the pre-tax cost, then add sales tax on top of the final retail price. This keeps your margin consistent regardless of tax rates.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const wholesaleCost = parseFloat((document.getElementById('wholesaleCost') as HTMLInputElement).value) || 0;
+    const markupPct = parseFloat((document.getElementById('markupPct') as HTMLInputElement).value) || 0;
+    const quantity = parseInt((document.getElementById('quantity') as HTMLInputElement).value) || 1;
+    const salesTax = parseFloat((document.getElementById('salesTax') as HTMLInputElement).value) || 0;
+
+    const retailPrice = wholesaleCost * (1 + markupPct / 100);
+    const profitPerUnit = retailPrice - wholesaleCost;
+    const profitTotal = profitPerUnit * quantity;
+    const margin = retailPrice > 0 ? (profitPerUnit / retailPrice) * 100 : 0;
+    const withTax = retailPrice * (1 + salesTax / 100);
+    const customerTotal = withTax * quantity;
+
+    document.getElementById('result-retail')!.textContent = '$' + retailPrice.toFixed(2);
+    document.getElementById('result-profit-unit')!.textContent = '$' + profitPerUnit.toFixed(2);
+    document.getElementById('result-profit-total')!.textContent = '$' + profitTotal.toFixed(2);
+    document.getElementById('result-margin')!.textContent = margin.toFixed(1) + '%';
+    document.getElementById('result-with-tax')!.textContent = salesTax > 0 ? '$' + withTax.toFixed(2) : 'N/A';
+    document.getElementById('result-customer-total')!.textContent = '$' + customerTotal.toFixed(2);
+  }
+
+  document.querySelectorAll('#markup-calc input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

@@ -1,0 +1,239 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/electricalTools';
+
+const tool = getToolBySlug('transformer-sizing-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I calculate transformer kVA size?",
+      "acceptedAnswer": { "@type": "Answer", "text": "For single-phase: kVA = (Voltage x Current) / 1000. For 3-phase: kVA = (Voltage x Current x 1.732) / 1000. Then multiply by a 1.25 safety margin and round up to the next standard transformer size. Standard single-phase sizes include 1, 1.5, 2, 3, 5, 7.5, 10, 15, 25, 37.5, 50, 75, and 100 kVA." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between kVA and kW?",
+      "acceptedAnswer": { "@type": "Answer", "text": "kVA (kilovolt-amperes) is apparent power — the total power the transformer must handle. kW (kilowatts) is real power — the actual power consumed by the load. They are related by the power factor: kW = kVA x PF. For resistive loads (heaters), PF is close to 1.0 so kVA approximately equals kW. For inductive loads (motors), PF is typically 0.80 to 0.90." }
+    },
+    {
+      "@type": "Question",
+      "name": "What size breaker do I need for a transformer?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Per NEC Article 450, the primary overcurrent protection for a transformer is typically 125% of the primary full-load current. Calculate primary current as kVA x 1000 / Primary Voltage for single-phase, or kVA x 1000 / (Primary Voltage x 1.732) for 3-phase. Then multiply by 1.25 and round up to the next standard breaker size." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="xfmr-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="phase">Phase</label>
+        <select id="phase" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="single">Single-Phase</option>
+          <option value="three" selected>3-Phase</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="primaryV">Primary Voltage</label>
+        <select id="primaryV" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="208">208V</option>
+          <option value="240">240V</option>
+          <option value="277">277V</option>
+          <option value="480" selected>480V</option>
+          <option value="600">600V</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="secondaryV">Secondary Voltage</label>
+        <select id="secondaryV" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="120">120V</option>
+          <option value="208" selected>208V</option>
+          <option value="240">240V</option>
+          <option value="277">277V</option>
+          <option value="480">480V</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="loadAmps">Load Current — Secondary (Amps)</label>
+        <input type="number" id="loadAmps" value="50" min="1" max="5000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="pf">Power Factor</label>
+        <select id="pf" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0">1.00 — Resistive (heaters)</option>
+          <option value="0.95">0.95 — Mixed / near unity</option>
+          <option value="0.90">0.90 — Light inductive</option>
+          <option value="0.85" selected>0.85 — Typical motors</option>
+          <option value="0.80">0.80 — Heavy inductive</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="duty">Duty Cycle</label>
+        <select id="duty" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0" selected>Continuous</option>
+          <option value="0.9">Intermittent (90%)</option>
+          <option value="0.8">Peak / Short-term (80%)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Calculated kVA</div>
+          <div id="result-kva" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Recommended Size</div>
+          <div id="result-size" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Primary Current</div>
+          <div id="result-primary" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Primary Breaker</div>
+          <div id="result-breaker" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-5 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-3">Details</h4>
+        <div id="details" class="space-y-1 text-sm text-text-secondary"></div>
+      </div>
+
+      <p class="text-text-muted text-sm italic">Verify transformer specs with manufacturer data. Efficiency varies by design (96-99% typical). Consult NEC Article 450 for overcurrent protection requirements.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select single-phase or 3-phase.</strong> Most commercial and industrial transformers are 3-phase. Residential step-down transformers are typically single-phase.</p>
+          <p><strong class="text-text-primary">2. Enter voltages and load current.</strong> The load current is the expected amps on the secondary side of the transformer.</p>
+          <p><strong class="text-text-primary">3. Set the power factor and duty.</strong> Motors and compressors are typically 0.80-0.90 PF. Resistive loads are 1.0. Continuous duty uses full load; intermittent can reduce the sizing.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Transformer Sizing Formula</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Single-Phase: Output kVA = (V x I) / 1000</p>
+            <p>3-Phase: Output kVA = (V x I x 1.732) / 1000</p>
+            <p>Design kVA = Output kVA x Duty Factor x 1.25 (safety margin)</p>
+            <p>Primary Current = kVA x 1000 / (V_primary x 1.732) [3-phase]</p>
+            <p>Primary Breaker = Primary Current x 1.25 (NEC 450)</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate transformer kVA size?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For single-phase: kVA = (Voltage x Current) / 1000. For 3-phase: kVA = (Voltage x Current x 1.732) / 1000. Then multiply by a 1.25 safety margin and round up to the next standard size.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the difference between kVA and kW?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">kVA is apparent power. kW is real power. They are related by the power factor: kW = kVA x PF. For resistive loads, PF is near 1.0. For motors, PF is typically 0.80-0.90.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What size breaker do I need for a transformer?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Per NEC Article 450, primary overcurrent protection is typically 125% of the primary full-load current. Calculate, multiply by 1.25, and round to the next standard breaker size.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const phase = (document.getElementById('phase') as HTMLSelectElement).value;
+    const primaryV = parseFloat((document.getElementById('primaryV') as HTMLSelectElement).value);
+    const secondaryV = parseFloat((document.getElementById('secondaryV') as HTMLSelectElement).value);
+    const loadAmps = parseFloat((document.getElementById('loadAmps') as HTMLInputElement).value) || 50;
+    const pf = parseFloat((document.getElementById('pf') as HTMLSelectElement).value);
+    const duty = parseFloat((document.getElementById('duty') as HTMLSelectElement).value);
+
+    const sqrt3 = 1.732;
+
+    // Step 1: Calculate output kVA
+    let outputKva: number;
+    if (phase === 'three') {
+      outputKva = (secondaryV * loadAmps * sqrt3) / 1000;
+    } else {
+      outputKva = (secondaryV * loadAmps) / 1000;
+    }
+
+    // Step 2: Real power
+    const realKw = outputKva * pf;
+
+    // Step 3: Design kVA with duty and safety margin
+    const designKva = outputKva * duty * 1.25;
+
+    // Step 4: Standard sizes
+    const singleSizes = [1, 1.5, 2, 3, 5, 7.5, 10, 15, 25, 37.5, 50, 75, 100, 150, 200, 250, 500, 1000];
+    const threeSizes = [3, 6, 9, 15, 30, 45, 75, 112.5, 150, 225, 300, 500, 750, 1000, 1500, 2000];
+    const sizes = phase === 'three' ? threeSizes : singleSizes;
+
+    let recommended = sizes[sizes.length - 1];
+    for (const s of sizes) {
+      if (s >= designKva) { recommended = s; break; }
+    }
+
+    // Step 5: Primary current
+    let primaryCurrent: number;
+    if (phase === 'three') {
+      primaryCurrent = (recommended * 1000) / (primaryV * sqrt3);
+    } else {
+      primaryCurrent = (recommended * 1000) / primaryV;
+    }
+
+    // Step 6: Primary breaker (NEC 450: 125%)
+    const breakerAmps = primaryCurrent * 1.25;
+    const stdBreakers = [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 125, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500, 600, 700, 800];
+    let breakerSize = stdBreakers[stdBreakers.length - 1];
+    for (const b of stdBreakers) {
+      if (b >= breakerAmps) { breakerSize = b; break; }
+    }
+
+    // Step 7: Efficiency (estimate)
+    const efficiency = recommended <= 15 ? 0.96 : recommended <= 75 ? 0.97 : 0.98;
+    const lossKw = (recommended * (1 - efficiency)).toFixed(2);
+
+    // Display
+    document.getElementById('result-kva')!.textContent = designKva.toFixed(1) + ' kVA';
+    document.getElementById('result-size')!.textContent = recommended + ' kVA';
+    document.getElementById('result-primary')!.textContent = primaryCurrent.toFixed(1) + 'A';
+    document.getElementById('result-breaker')!.textContent = breakerSize + 'A';
+
+    const detailsEl = document.getElementById('details')!;
+    detailsEl.innerHTML = [
+      `<div class="flex justify-between"><span>Output kVA (before margin)</span><span class="font-mono text-text-primary">${outputKva.toFixed(1)} kVA</span></div>`,
+      `<div class="flex justify-between"><span>Real Power (kW)</span><span class="font-mono text-text-primary">${realKw.toFixed(1)} kW</span></div>`,
+      `<div class="flex justify-between"><span>Design kVA (with 25% margin)</span><span class="font-mono text-text-primary">${designKva.toFixed(1)} kVA</span></div>`,
+      `<div class="flex justify-between"><span>Nearest Standard Size</span><span class="font-mono text-accent font-bold">${recommended} kVA</span></div>`,
+      `<div class="flex justify-between"><span>Primary Current</span><span class="font-mono text-text-primary">${primaryCurrent.toFixed(1)}A @ ${primaryV}V</span></div>`,
+      `<div class="flex justify-between"><span>Primary Breaker (NEC 450)</span><span class="font-mono text-text-primary">${breakerSize}A</span></div>`,
+      `<div class="flex justify-between"><span>Estimated Efficiency</span><span class="font-mono text-text-primary">${(efficiency * 100).toFixed(0)}%</span></div>`,
+      `<div class="flex justify-between"><span>Estimated Losses</span><span class="font-mono text-text-primary">${lossKw} kW</span></div>`,
+      `<div class="flex justify-between"><span>Voltage Ratio</span><span class="font-mono text-text-primary">${primaryV}V → ${secondaryV}V</span></div>`,
+    ].join('');
+  }
+
+  document.querySelectorAll('#xfmr-calc select, #xfmr-calc input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+  calculate();
+</script>

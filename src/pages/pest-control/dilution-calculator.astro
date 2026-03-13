@@ -1,0 +1,192 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/pestControlTools';
+
+const tool = getToolBySlug('dilution-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I calculate pesticide dilution?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For a percent solution: multiply the desired percentage by 128 (oz per gallon) by the tank size in gallons, then divide by 100. For example, a 2% solution in a 1-gallon sprayer needs 2.56 oz of concentrate. For label rate method, simply multiply the per-gallon rate by the number of gallons in your tank."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a 2% dilution in ounces?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A 2% dilution means 2.56 fluid ounces of concentrate per 1 gallon of finished solution, or about 5 tablespoons. For larger tanks: 2% in a 4-gallon tank = 10.24 oz; in a 30-gallon tank = 76.8 oz (about 2.4 quarts)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between percent solution and label rate?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Percent solution specifies the concentration as a percentage of the total volume (e.g., 2% active ingredient). Label rate specifies exact amounts to mix (e.g., 2 oz per gallon or 4 oz per 10 gallons). Both methods produce the same result but are expressed differently. Always follow the product label."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="dil-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="method">Dilution Method</label>
+        <select id="method" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="percent" selected>Percent Solution</option>
+          <option value="label">Label Rate (oz per gallon)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="tankSize">Tank Size (gallons)</label>
+        <select id="tankSize" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1">1 gallon</option>
+          <option value="2">2 gallons</option>
+          <option value="4" selected>4 gallons</option>
+          <option value="5">5 gallons</option>
+          <option value="10">10 gallons</option>
+          <option value="15">15 gallons</option>
+          <option value="25">25 gallons</option>
+          <option value="30">30 gallons</option>
+          <option value="50">50 gallons</option>
+          <option value="55">55 gallons</option>
+        </select>
+      </div>
+      <div id="percent-input">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="percent">Desired Percentage (%)</label>
+        <input type="number" id="percent" value="2" min="0.1" max="25" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="label-input" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="labelRate">Label Rate (oz per gallon)</label>
+        <input type="number" id="labelRate" value="2" min="0.1" max="32" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Mixing Instructions</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Concentrate Needed</div>
+          <div id="result-oz" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div class="text-text-muted text-xs mt-1">fluid ounces</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">In Quarts</div>
+          <div id="result-quarts" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Water Needed</div>
+          <div id="result-water" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Mixing Ratio</div>
+          <div id="result-ratio" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div id="alert-msg" class="hidden bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCA5A5] mb-4"></div>
+      <p class="text-text-muted text-sm italic">Always verify dilution rates against the product label. This calculator provides general mixing guidance — product labels are the legal authority.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Choose your dilution method.</strong> Use "Percent Solution" when the label specifies a concentration percentage. Use "Label Rate" when the label says a specific number of ounces per gallon.</p>
+          <p><strong class="text-text-primary">2. Select your tank size.</strong> Match this to the actual sprayer or tank you are filling. Common sizes are 1-gallon hand sprayers, 4-gallon backpacks, and 25-55 gallon power spray rigs.</p>
+          <p><strong class="text-text-primary">3. Enter the rate.</strong> For percent solution, enter the target percentage (commonly 0.5% to 5%). For label rate, enter ounces per gallon from the product label.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Dilution Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>PERCENT: Oz_Concentrate = (Percent / 100) x 128 x Tank_Gallons</p>
+            <p>LABEL RATE: Oz_Concentrate = Label_Oz_Per_Gallon x Tank_Gallons</p>
+            <p>Water_Oz = (Tank_Gallons x 128) - Oz_Concentrate</p>
+          </div>
+          <p>There are 128 fluid ounces in one gallon. A 2% solution means 2% of the total volume is concentrate. So for 1 gallon: 0.02 x 128 = 2.56 oz of concentrate, with the remaining 125.44 oz being water.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate pesticide dilution?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For a percent solution: multiply the desired percentage by 128 (oz per gallon) by the tank size in gallons, then divide by 100. For example, a 2% solution in a 1-gallon sprayer needs 2.56 oz of concentrate. For label rate method, simply multiply the per-gallon rate by the number of gallons in your tank.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a 2% dilution in ounces?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A 2% dilution means 2.56 fluid ounces of concentrate per 1 gallon of finished solution, or about 5 tablespoons. For larger tanks: 2% in a 4-gallon tank = 10.24 oz; in a 30-gallon tank = 76.8 oz (about 2.4 quarts).</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the difference between percent solution and label rate?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Percent solution specifies the concentration as a percentage of the total volume (e.g., 2% active ingredient). Label rate specifies exact amounts to mix (e.g., 2 oz per gallon or 4 oz per 10 gallons). Both methods produce the same result but are expressed differently. Always follow the product label.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const method = (document.getElementById('method') as HTMLSelectElement).value;
+    const tankSize = parseFloat((document.getElementById('tankSize') as HTMLSelectElement).value) || 4;
+    const percent = parseFloat((document.getElementById('percent') as HTMLInputElement).value) || 0;
+    const labelRate = parseFloat((document.getElementById('labelRate') as HTMLInputElement).value) || 0;
+
+    // Show/hide inputs
+    document.getElementById('percent-input')!.classList.toggle('hidden', method !== 'percent');
+    document.getElementById('label-input')!.classList.toggle('hidden', method !== 'label');
+
+    let concentrateOz = 0;
+    if (method === 'percent') {
+      concentrateOz = (percent / 100) * 128 * tankSize;
+    } else {
+      concentrateOz = labelRate * tankSize;
+    }
+
+    const totalTankOz = tankSize * 128;
+    const waterOz = totalTankOz - concentrateOz;
+    const quarts = concentrateOz / 32;
+    const ratio = concentrateOz > 0 ? Math.round(waterOz / concentrateOz) : 0;
+
+    document.getElementById('result-oz')!.textContent = concentrateOz.toFixed(1);
+    document.getElementById('result-quarts')!.textContent = quarts.toFixed(2) + ' qt';
+    document.getElementById('result-water')!.textContent = (waterOz / 128).toFixed(1) + ' gal';
+    document.getElementById('result-ratio')!.textContent = ratio > 0 ? '1:' + ratio : '--';
+
+    // Alerts
+    const alertEl = document.getElementById('alert-msg')!;
+    const effectivePercent = method === 'percent' ? percent : (labelRate / 128) * 100;
+    if (effectivePercent < 0.5) {
+      alertEl.textContent = 'Warning: Very dilute solution (< 0.5%). Verify this matches the product label.';
+      alertEl.classList.remove('hidden');
+    } else if (effectivePercent > 10) {
+      alertEl.textContent = 'Warning: Very concentrated solution (> 10%). Check the label maximum rate.';
+      alertEl.classList.remove('hidden');
+    } else {
+      alertEl.classList.add('hidden');
+    }
+  }
+
+  document.querySelectorAll('#dil-calc input, #dil-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

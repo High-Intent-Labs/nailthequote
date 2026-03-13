@@ -1,0 +1,241 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/gcTools';
+
+const tool = getToolBySlug('concrete-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I calculate cubic yards of concrete?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Multiply length (ft) x width (ft) x depth (ft), then divide by 27 to convert cubic feet to cubic yards. For a standard 4-inch slab, you can use the shortcut: square footage divided by 81. Always add 5-10% for waste and spillage."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many bags of concrete do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "One cubic yard of concrete equals approximately 45 bags of 80-lb mix, 56 bags of 60-lb mix, or 36 bags of 90-lb pre-mix. For anything over 1 cubic yard, ordering ready-mix from a truck is usually more cost-effective and produces better results."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does a yard of concrete cost?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ready-mix concrete typically costs $125-175 per cubic yard delivered in 2026, depending on your region and mix design. Short load fees apply for orders under 10 yards (typically $50-100 per yard short). Specialty mixes like fiber-reinforced or high-early add $10-30 per yard."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How thick should a concrete slab be?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A standard residential slab is 4 inches thick. Garage floors and driveways should be 4-6 inches. Areas bearing heavy loads like equipment pads need 6-8 inches. Always check local building codes and soil conditions. IRC Section 2802 covers concrete strength requirements."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="concrete-calc">
+    <!-- Input Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="shape">Shape</label>
+        <select id="shape" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="slab">Slab / Footing (rectangular)</option>
+          <option value="wall">Wall</option>
+          <option value="column">Column (round)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="quantity">Quantity</label>
+        <input type="number" id="quantity" value="1" min="1" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="rect-inputs" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="length">Length (ft)</label>
+        <input type="number" id="length" value="20" min="0.1" max="1000" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="width">Width (ft)</label>
+        <input type="number" id="width" value="10" min="0.1" max="1000" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="depth">Depth / Thickness (in)</label>
+        <input type="number" id="depth" value="4" min="1" max="120" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="col-inputs" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="diameter">Diameter (in)</label>
+        <input type="number" id="diameter" value="12" min="4" max="120" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="colHeight">Height (ft)</label>
+        <input type="number" id="colHeight" value="3" min="0.5" max="100" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="waste">Waste Allowance (%)</label>
+        <select id="waste" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.05">5% (standard)</option>
+          <option value="1.10" selected>10% (recommended)</option>
+          <option value="1.15">15% (complex pours)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="costPerYard">Cost per Cubic Yard ($)</label>
+        <input type="number" id="costPerYard" value="150" min="0" max="500" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cubic Yards</div>
+          <div id="result-cy" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cubic Feet</div>
+          <div id="result-cf" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">80-lb Bags</div>
+          <div id="result-bags" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Estimated Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Weight (tons)</div>
+          <div id="result-tons" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">at ~3,700 lbs/CY</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Square Footage</div>
+          <div id="result-sqft" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Includes waste allowance. Ready-mix concrete is sold by the cubic yard. For orders under 10 CY, expect a short-load fee of $50-100 per yard short.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select the shape.</strong> Choose slab/footing for flat pours, wall for vertical pours, or column for round forms like sonotubes.</p>
+          <p><strong class="text-text-primary">2. Enter dimensions.</strong> For slabs, enter length, width, and thickness. For columns, enter diameter and height. Measurements should be in feet for length/width and inches for depth/diameter.</p>
+          <p><strong class="text-text-primary">3. Set quantity and waste.</strong> If you are pouring multiple identical forms, set the quantity. Use 10% waste for standard pours, 15% for complex shapes or first-time pours.</p>
+          <p><strong class="text-text-primary">4. Enter your local cost.</strong> Ready-mix prices vary by region. Call your local batch plant for current pricing. The calculator defaults to $150/CY as a national average.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator converts all measurements to cubic feet, then divides by 27 to get cubic yards (since 1 CY = 27 cubic feet).</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Cubic_Feet = Length_ft x Width_ft x (Depth_in / 12)</p>
+            <p>Cubic_Yards = Cubic_Feet / 27</p>
+            <p>With_Waste = Cubic_Yards x Waste_Factor</p>
+          </div>
+          <p>For a standard 4-inch slab, there is a handy shortcut: divide the square footage by 81 to get cubic yards. This works because (1/3 foot depth x 1 sqft) / 27 = 1/81.</p>
+          <p>Weight is estimated at approximately 3,700 lbs per cubic yard (1.85 tons), which is the standard density for normal-weight concrete. Bag count is based on 80-lb bags yielding approximately 0.6 cubic feet each.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate cubic yards of concrete?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Multiply length (ft) x width (ft) x depth (ft), then divide by 27 to convert cubic feet to cubic yards. For a standard 4-inch slab, you can use the shortcut: square footage divided by 81. Always add 5-10% for waste and spillage.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many bags of concrete do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">One cubic yard of concrete equals approximately 45 bags of 80-lb mix, 56 bags of 60-lb mix, or 36 bags of 90-lb pre-mix. For anything over 1 cubic yard, ordering ready-mix from a truck is usually more cost-effective and produces better results.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a yard of concrete cost?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Ready-mix concrete typically costs $125-175 per cubic yard delivered in 2026, depending on your region and mix design. Short load fees apply for orders under 10 yards (typically $50-100 per yard short). Specialty mixes like fiber-reinforced or high-early add $10-30 per yard.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How thick should a concrete slab be?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard residential slab is 4 inches thick. Garage floors and driveways should be 4-6 inches. Areas bearing heavy loads like equipment pads need 6-8 inches. Always check local building codes and soil conditions. IRC Section 2802 covers concrete strength requirements.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const shape = (document.getElementById('shape') as HTMLSelectElement).value;
+    const quantity = parseInt((document.getElementById('quantity') as HTMLInputElement).value) || 1;
+    const waste = parseFloat((document.getElementById('waste') as HTMLSelectElement).value);
+    const costPerYard = parseFloat((document.getElementById('costPerYard') as HTMLInputElement).value) || 0;
+
+    let cubicFeet = 0;
+    let sqft = 0;
+
+    if (shape === 'column') {
+      const diameter = parseFloat((document.getElementById('diameter') as HTMLInputElement).value) || 12;
+      const height = parseFloat((document.getElementById('colHeight') as HTMLInputElement).value) || 3;
+      const radiusFt = (diameter / 12) / 2;
+      cubicFeet = Math.PI * radiusFt * radiusFt * height * quantity;
+      sqft = Math.PI * radiusFt * radiusFt * quantity;
+    } else {
+      const length = parseFloat((document.getElementById('length') as HTMLInputElement).value) || 0;
+      const width = parseFloat((document.getElementById('width') as HTMLInputElement).value) || 0;
+      const depthIn = parseFloat((document.getElementById('depth') as HTMLInputElement).value) || 4;
+      const depthFt = depthIn / 12;
+      cubicFeet = length * width * depthFt * quantity;
+      sqft = length * width * quantity;
+    }
+
+    const cubicYards = (cubicFeet / 27) * waste;
+    const bags80 = Math.ceil(cubicFeet * waste / 0.6);
+    const tons = (cubicYards * 3700) / 2000;
+    const cost = cubicYards * costPerYard;
+
+    document.getElementById('result-cy')!.textContent = cubicYards.toFixed(2);
+    document.getElementById('result-cf')!.textContent = (cubicFeet * waste).toFixed(1);
+    document.getElementById('result-bags')!.textContent = bags80.toLocaleString();
+    document.getElementById('result-cost')!.textContent = '$' + cost.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    document.getElementById('result-tons')!.textContent = tons.toFixed(1);
+    document.getElementById('result-sqft')!.textContent = sqft.toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' sqft';
+
+    // Toggle inputs
+    document.getElementById('rect-inputs')!.classList.toggle('hidden', shape === 'column');
+    document.getElementById('col-inputs')!.classList.toggle('hidden', shape !== 'column');
+  }
+
+  document.querySelectorAll('#concrete-calc input, #concrete-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

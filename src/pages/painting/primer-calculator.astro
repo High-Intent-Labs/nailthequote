@@ -1,0 +1,220 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/paintingTools';
+
+const tool = getToolBySlug('primer-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much primer do I need?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Divide your total area by the primer coverage rate for your surface type. New drywall with latex primer covers about 300 sq ft/gal. Masonry drops to 200 sq ft/gal. Add a 0.5 gallon safety margin for touch-ups. A typical 12x10 room with 8-ft ceilings needs about 1.5 gallons of primer for one coat." }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I always need primer before painting?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Not always, but primer is recommended for new drywall, bare wood, masonry, stain coverage, color changes from dark to light, and glossy surfaces. If you are painting over a similar color on already-primed drywall, a quality paint-and-primer-in-one may be sufficient." }
+    },
+    {
+      "@type": "Question",
+      "name": "What primer should I use for water stains?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Use a stain-blocking primer like Zinsser B-I-N (shellac-based) or KILZ Original (oil-based) for water stains. These primers seal the stain and prevent bleed-through. Latex primers are not effective against water stains. Apply one coat, let dry, then check for bleed-through before painting." }
+    },
+    {
+      "@type": "Question",
+      "name": "How many coats of primer do I need?",
+      "acceptedAnswer": { "@type": "Answer", "text": "One coat is sufficient for most surfaces. Apply two coats when covering severe stains, water damage, smoke damage, or when transitioning from a very dark color to white or light. Also use two coats on glossy surfaces to ensure proper adhesion for the topcoat." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="primer-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="area">Total Area to Prime (sq ft)</label>
+        <input type="number" id="area" value="400" min="1" max="100000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="surfaceType">Surface Type</label>
+        <select id="surfaceType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="new-drywall">New Drywall</option>
+          <option value="painted-drywall" selected>Previously Painted Drywall</option>
+          <option value="wood">Wood</option>
+          <option value="masonry">Masonry / Brick</option>
+          <option value="metal">Metal</option>
+          <option value="water-stained">Water-Stained Drywall</option>
+          <option value="glossy">Glossy / Semi-Gloss Surface</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="primerType">Primer Type</label>
+        <select id="primerType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="latex" selected>Latex Primer</option>
+          <option value="oil">Oil-Based Primer</option>
+          <option value="stain-blocker">Stain-Blocker (shellac/oil)</option>
+          <option value="bonding">Bonding Primer</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="coats">Primer Coats</label>
+        <select id="coats" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1" selected>1 Coat</option>
+          <option value="2">2 Coats (stains or glossy)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="primerCost">Primer Cost per Gallon ($, optional)</label>
+        <input type="number" id="primerCost" value="35" min="0" max="200" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Primer Needed</div>
+          <div id="result-gallons" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div class="text-text-muted text-xs mt-1">gallons</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Coverage Rate</div>
+          <div id="result-rate" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">sq ft/gal</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cans Needed</div>
+          <div id="result-cans" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div id="recommendation" class="bg-bg-dark rounded-xl p-5 mb-4">
+        <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Primer Recommendation</div>
+        <p id="rec-text" class="text-text-secondary text-sm leading-relaxed">--</p>
+      </div>
+      <p class="text-text-muted text-sm italic">Coverage rates based on manufacturer data. Actual coverage varies by product, application thickness, and surface porosity. Always check the can label.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the area to prime.</strong> This is the total square footage that needs primer. Not all surfaces in a room may need priming.</p>
+          <p><strong class="text-text-primary">2. Select surface type.</strong> The surface determines the appropriate coverage rate. Porous surfaces like new drywall and masonry absorb more primer.</p>
+          <p><strong class="text-text-primary">3. Choose primer type.</strong> The calculator adjusts coverage based on the primer-surface combination. It also provides a recommendation for the best primer for your situation.</p>
+          <p><strong class="text-text-primary">4. Set coats needed.</strong> One coat handles most situations. Two coats for severe stains, water damage, or glossy surfaces needing extra adhesion.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Primer Coverage by Surface Type</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>New drywall + latex primer: 300 sq ft/gal</p>
+            <p>Painted drywall + latex primer: 325 sq ft/gal</p>
+            <p>Wood + latex primer: 300 sq ft/gal</p>
+            <p>Masonry + latex primer: 200 sq ft/gal</p>
+            <p>Metal + oil-based primer: 250 sq ft/gal</p>
+            <p>Water-stained + stain-blocker: 250 sq ft/gal</p>
+            <p>Glossy surfaces + bonding primer: 275 sq ft/gal</p>
+          </div>
+          <p>The calculator includes a 0.5 gallon safety margin to account for touch-ups and uneven application. Primer coverage is generally lower than paint because primer must seal and bond to the substrate.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much primer do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Divide your total area by the primer coverage rate for your surface type. New drywall with latex primer covers about 300 sq ft/gal. Masonry drops to 200 sq ft/gal. Add a 0.5 gallon safety margin for touch-ups. A typical 12x10 room with 8-ft ceilings needs about 1.5 gallons of primer for one coat.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Do I always need primer before painting?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Not always, but primer is recommended for new drywall, bare wood, masonry, stain coverage, color changes from dark to light, and glossy surfaces. If you are painting over a similar color on already-primed drywall, a quality paint-and-primer-in-one may be sufficient.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What primer should I use for water stains?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Use a stain-blocking primer like Zinsser B-I-N (shellac-based) or KILZ Original (oil-based) for water stains. These primers seal the stain and prevent bleed-through. Latex primers are not effective against water stains. Apply one coat, let dry, then check for bleed-through before painting.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many coats of primer do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">One coat is sufficient for most surfaces. Apply two coats when covering severe stains, water damage, smoke damage, or when transitioning from a very dark color to white or light. Also use two coats on glossy surfaces to ensure proper adhesion for the topcoat.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const area = parseFloat((document.getElementById('area') as HTMLInputElement).value) || 400;
+    const surfaceType = (document.getElementById('surfaceType') as HTMLSelectElement).value;
+    const primerType = (document.getElementById('primerType') as HTMLSelectElement).value;
+    const coats = parseInt((document.getElementById('coats') as HTMLSelectElement).value);
+    const primerCost = parseFloat((document.getElementById('primerCost') as HTMLInputElement).value) || 0;
+
+    // Coverage rates by surface+primer combination
+    const coverageMap: Record<string, number> = {
+      'new-drywall': 300,
+      'painted-drywall': 325,
+      'wood': 300,
+      'masonry': 200,
+      'metal': 250,
+      'water-stained': 250,
+      'glossy': 275,
+    };
+
+    const baseCoverage = coverageMap[surfaceType] || 300;
+    const gallonsPerCoat = area / baseCoverage;
+    const totalGallonsRaw = gallonsPerCoat * coats + 0.5; // safety margin
+    const totalGallons = Math.ceil(totalGallonsRaw * 2) / 2;
+
+    // Can recommendations
+    const fiveGalCans = Math.floor(totalGallons / 5);
+    const remaining = totalGallons - (fiveGalCans * 5);
+    const oneGalCans = Math.ceil(remaining);
+    let canText = '';
+    if (fiveGalCans > 0) canText += fiveGalCans + ' x 5-gal';
+    if (fiveGalCans > 0 && oneGalCans > 0) canText += ' + ';
+    if (oneGalCans > 0) canText += oneGalCans + ' x 1-gal';
+    if (!canText) canText = '1 x 1-gal';
+
+    const cost = totalGallons * primerCost;
+
+    document.getElementById('result-gallons')!.textContent = totalGallons.toFixed(1);
+    document.getElementById('result-rate')!.textContent = baseCoverage.toString();
+    document.getElementById('result-cans')!.textContent = canText;
+    document.getElementById('result-cost')!.textContent = primerCost > 0 ? '$' + cost.toFixed(0) : '--';
+
+    // Recommendation text
+    const recommendations: Record<string, string> = {
+      'new-drywall': 'Use latex drywall primer (PVA). One coat is sufficient. Sand lightly after priming for a smooth finish before painting.',
+      'painted-drywall': 'Latex primer works well if the existing paint is in good condition. Spot-prime any patched areas. Full-wall priming optional if same color family.',
+      'wood': 'Use latex or oil-based primer depending on the wood type. Oil-based primer is better for tannin-rich woods like cedar or redwood to prevent bleed-through.',
+      'masonry': 'Use masonry-specific primer or a latex block filler. Masonry is very porous and requires more primer per square foot. Ensure surface is clean and dry.',
+      'metal': 'Use oil-based or rust-inhibiting primer on bare metal. Clean surface thoroughly and remove any rust before priming. Latex primer does not adhere well to metal.',
+      'water-stained': 'Use a stain-blocking primer (shellac or oil-based). Apply two coats for severe stains. Let each coat dry fully before recoating. Check for bleed-through before painting.',
+      'glossy': 'Use a bonding primer to give topcoat proper adhesion. Lightly sand the glossy surface before priming. Two coats recommended for best results.',
+    };
+
+    document.getElementById('rec-text')!.textContent = recommendations[surfaceType] || 'Use appropriate primer for your surface type.';
+  }
+
+  document.querySelectorAll('#primer-calc input, #primer-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

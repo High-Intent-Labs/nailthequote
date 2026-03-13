@@ -1,0 +1,207 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/paintingTools';
+
+const tool = getToolBySlug('paint-coverage-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much paint do I need for a room?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Divide the total paintable square footage by the paint's coverage rate (typically 350-400 sq ft per gallon for latex on smooth drywall). Multiply by the number of coats. Add 5-15% for wastage depending on your application method. A typical 12x10 room with 8-ft ceilings needs about 2-3 gallons for 2 coats." }
+    },
+    {
+      "@type": "Question",
+      "name": "How many square feet does a gallon of paint cover?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A gallon of latex paint covers approximately 350-400 sq ft on smooth drywall. Coverage drops to 250-300 sq ft on textured surfaces and masonry. Oil-based paint averages 350 sq ft per gallon. Always check the manufacturer label for the specific product you are using." }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I use brush, roller, or spray?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Rollers are most efficient for large flat surfaces with only 5% waste. Brushes are best for trim and detail work but waste about 10%. Sprayers cover fastest but waste 15-25% of paint through overspray. Most interior jobs use a roller for walls and brush for cutting in edges." }
+    },
+    {
+      "@type": "Question",
+      "name": "How many coats of paint do I need?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Two coats is standard for most interior jobs. You may need 3 coats when covering dark colors with light, using a low-opacity paint, or painting porous surfaces. One coat may suffice for touch-ups using the same color, or when using a high-quality paint-and-primer-in-one product." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="coverage-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="area">Total Paintable Area (sq ft)</label>
+        <input type="number" id="area" value="427" min="1" max="100000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Use the <a href="/painting/wall-ceiling-area-calculator" class="text-accent hover:underline">Wall Area Calculator</a> if unsure.</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="surfaceType">Surface Type</label>
+        <select id="surfaceType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="400">Drywall / Smooth</option>
+          <option value="300">Textured Drywall</option>
+          <option value="350">Wood</option>
+          <option value="250">Masonry / Brick</option>
+          <option value="350">Metal</option>
+          <option value="280">Stucco</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="paintType">Paint Type</label>
+        <select id="paintType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0" selected>Latex / Acrylic</option>
+          <option value="0.875">Oil-Based (350 sq ft/gal all surfaces)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="coats">Number of Coats</label>
+        <select id="coats" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1">1 Coat</option>
+          <option value="2" selected>2 Coats</option>
+          <option value="3">3 Coats</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="method">Application Method</label>
+        <select id="method" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.1">Brush (10% waste)</option>
+          <option value="1.05" selected>Roller (5% waste)</option>
+          <option value="1.15">Spray (15% waste)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="paintCost">Paint Cost per Gallon ($, optional)</label>
+        <input type="number" id="paintCost" value="45" min="0" max="500" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Gallons</div>
+          <div id="result-gallons" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Per Coat</div>
+          <div id="result-percoat" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">gallons</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cans Needed</div>
+          <div id="result-cans" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Paint Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div class="bg-bg-dark rounded-xl p-5 mb-4">
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div class="flex justify-between"><span class="text-text-muted">Coverage rate used</span><span id="detail-rate" class="text-text-primary font-medium">--</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Wastage factor</span><span id="detail-waste" class="text-text-primary font-medium">--</span></div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Coverage rates based on manufacturer data. Actual coverage varies by product, technique, and surface condition. Always check the can label.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the total paintable area.</strong> Use the Wall Area Calculator to measure your room, or enter a known square footage directly.</p>
+          <p><strong class="text-text-primary">2. Select surface type.</strong> Smooth drywall has the best coverage. Textured surfaces, masonry, and stucco absorb more paint and reduce coverage per gallon.</p>
+          <p><strong class="text-text-primary">3. Choose paint type and coats.</strong> Latex is standard for interior. Two coats is the industry standard for a quality finish.</p>
+          <p><strong class="text-text-primary">4. Pick your application method.</strong> Rollers waste the least paint (5%). Sprayers are fastest but waste 15%. The calculator adjusts coverage accordingly.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Coverage Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Adjusted_Coverage = Base_Coverage / Wastage_Factor</p>
+            <p>Gallons_per_Coat = Area / Adjusted_Coverage</p>
+            <p>Total_Gallons = Gallons_per_Coat x Number_of_Coats</p>
+            <p>Round up to nearest 0.5 gallon</p>
+          </div>
+          <p>Base coverage rates come from manufacturer data (Sherwin-Williams, Benjamin Moore). Latex on smooth drywall covers 400 sq ft/gal, while masonry drops to 250 sq ft/gal due to porosity and surface texture.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much paint do I need for a room?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Divide the total paintable square footage by the paint's coverage rate (typically 350-400 sq ft per gallon for latex on smooth drywall). Multiply by the number of coats. Add 5-15% for wastage depending on your application method. A typical 12x10 room with 8-ft ceilings needs about 2-3 gallons for 2 coats.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many square feet does a gallon of paint cover?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A gallon of latex paint covers approximately 350-400 sq ft on smooth drywall. Coverage drops to 250-300 sq ft on textured surfaces and masonry. Oil-based paint averages 350 sq ft per gallon. Always check the manufacturer label for the specific product you are using.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I use brush, roller, or spray?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Rollers are most efficient for large flat surfaces with only 5% waste. Brushes are best for trim and detail work but waste about 10%. Sprayers cover fastest but waste 15-25% of paint through overspray. Most interior jobs use a roller for walls and brush for cutting in edges.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many coats of paint do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Two coats is standard for most interior jobs. You may need 3 coats when covering dark colors with light, using a low-opacity paint, or painting porous surfaces. One coat may suffice for touch-ups using the same color, or when using a high-quality paint-and-primer-in-one product.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const area = parseFloat((document.getElementById('area') as HTMLInputElement).value) || 427;
+    const baseCoverage = parseFloat((document.getElementById('surfaceType') as HTMLSelectElement).value);
+    const paintTypeFactor = parseFloat((document.getElementById('paintType') as HTMLSelectElement).value);
+    const coats = parseInt((document.getElementById('coats') as HTMLSelectElement).value);
+    const wastage = parseFloat((document.getElementById('method') as HTMLSelectElement).value);
+    const paintCost = parseFloat((document.getElementById('paintCost') as HTMLInputElement).value) || 0;
+
+    // Oil-based overrides base coverage to 350 for all surfaces
+    const effectiveCoverage = paintTypeFactor < 1.0 ? 350 : baseCoverage;
+    const adjustedCoverage = effectiveCoverage / wastage;
+    const gallonsPerCoat = area / adjustedCoverage;
+    const totalGallonsRaw = gallonsPerCoat * coats;
+    const totalGallons = Math.ceil(totalGallonsRaw * 2) / 2; // round up to nearest 0.5
+
+    // Can recommendations
+    const fiveGalCans = Math.floor(totalGallons / 5);
+    const remainingGals = totalGallons - (fiveGalCans * 5);
+    const oneGalCans = Math.ceil(remainingGals);
+    let canText = '';
+    if (fiveGalCans > 0) canText += fiveGalCans + ' x 5-gal';
+    if (fiveGalCans > 0 && oneGalCans > 0) canText += ' + ';
+    if (oneGalCans > 0) canText += oneGalCans + ' x 1-gal';
+    if (!canText) canText = '1 x 1-gal';
+
+    const cost = totalGallons * paintCost;
+
+    document.getElementById('result-gallons')!.textContent = totalGallons.toFixed(1);
+    document.getElementById('result-percoat')!.textContent = (Math.ceil(gallonsPerCoat * 2) / 2).toFixed(1);
+    document.getElementById('result-cans')!.textContent = canText;
+    document.getElementById('result-cost')!.textContent = paintCost > 0 ? '$' + cost.toFixed(0) : '--';
+
+    document.getElementById('detail-rate')!.textContent = Math.round(adjustedCoverage) + ' sq ft/gal';
+    document.getElementById('detail-waste')!.textContent = Math.round((wastage - 1) * 100) + '% waste';
+  }
+
+  document.querySelectorAll('#coverage-calc input, #coverage-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

@@ -1,0 +1,248 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/landscapingTools';
+
+const tool = getToolBySlug('slope-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I calculate slope percentage?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Slope percentage equals rise divided by run, multiplied by 100. For example, if the ground rises 2 feet over a 20-foot horizontal distance, the slope is (2/20) x 100 = 10%. A 10% slope means the ground rises 10 feet for every 100 feet of horizontal distance."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the ADA maximum slope for accessibility?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The ADA maximum slope for accessible ramps is 1:12 (8.33% or 4.76 degrees). This means 1 inch of rise for every 12 inches of run. Ramp landings are required at the top and bottom, and every 30 feet of ramp length. Cross slopes must not exceed 1:48 (2.08%)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What slope is needed for proper drainage?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Minimum drainage slope is 0.5% (1 in 200). Adequate drainage for most landscaping is 2-5% slope away from structures. Steeper slopes above 25% require erosion control measures like retaining walls, terracing, or ground cover plantings."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I convert slope percentage to degrees?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use the formula: Degrees = arctan(Slope% / 100) x (180 / pi). Common conversions: 5% = 2.86 degrees, 10% = 5.71 degrees, 20% = 11.31 degrees, 50% = 26.57 degrees, 100% = 45 degrees."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="slope-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="calcMode">Calculate From</label>
+        <select id="calcMode" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="rise-run" selected>Rise &amp; Run</option>
+          <option value="slope-pct">Slope % &amp; Run</option>
+          <option value="angle">Angle &amp; Run</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="units">Units</label>
+        <select id="units" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="feet" selected>Feet</option>
+          <option value="inches">Inches</option>
+        </select>
+      </div>
+      <div id="rise-input">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="rise">Rise (vertical height)</label>
+        <input type="number" id="rise" value="3" min="0" max="10000" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="run-input">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="run">Run (horizontal distance)</label>
+        <input type="number" id="run" value="50" min="0.1" max="100000" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="slopepct-input" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="slopePct">Slope (%)</label>
+        <input type="number" id="slopePct" value="6" min="0" max="1000" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="angle-input" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="angle">Angle (degrees)</label>
+        <input type="number" id="angle" value="5" min="0" max="89" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Slope %</div>
+          <div id="result-pct" class="font-heading font-extrabold text-3xl text-accent">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Angle</div>
+          <div id="result-angle" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Ratio</div>
+          <div id="result-ratio" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Rise / Run</div>
+          <div id="result-riserun" class="font-heading font-extrabold text-xl text-text-primary">—</div>
+        </div>
+      </div>
+
+      <!-- ADA / Drainage Check -->
+      <div id="ada-check" class="mb-4 rounded-lg px-4 py-3 text-sm hidden"></div>
+
+      <!-- Reference Table -->
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Common Slope References</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div><span class="text-text-muted">Min drainage:</span> <span class="text-text-primary font-semibold">0.5% (1:200)</span></div>
+          <div><span class="text-text-muted">Typical drainage:</span> <span class="text-text-primary font-semibold">2-5%</span></div>
+          <div><span class="text-text-muted">ADA max ramp:</span> <span class="text-text-primary font-semibold">8.33% (1:12)</span></div>
+          <div><span class="text-text-muted">Erosion risk:</span> <span class="text-text-primary font-semibold">&gt; 25%</span></div>
+          <div><span class="text-text-muted">Mowable limit:</span> <span class="text-text-primary font-semibold">~33% (3:1)</span></div>
+          <div><span class="text-text-muted">Retaining wall needed:</span> <span class="text-text-primary font-semibold">&gt; 50%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Choose your calculation mode.</strong> Enter rise and run directly, or enter a known slope percentage or angle to find the other values.</p>
+          <p><strong class="text-text-primary">2. Select units.</strong> Use feet for larger distances or inches for precision grading work.</p>
+          <p><strong class="text-text-primary">3. Enter your measurements.</strong> The calculator instantly converts between slope percentage, angle in degrees, and ratio format.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Slope Calculation Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>Slope is expressed three ways in landscaping. All describe the same grade from different perspectives:</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Slope % = (Rise / Run) x 100</p>
+            <p>Angle = arctan(Rise / Run) x (180 / pi)</p>
+            <p>Ratio = 1 : (Run / Rise)</p>
+          </div>
+          <p>A 2% slope is the minimum for water to flow reliably across a surface. For landscape drainage, 2-5% is the target range. The ADA maximum for accessible ramps is 8.33% (1:12). Slopes above 25% require erosion control, and slopes above 33% are generally too steep to mow safely.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When Landscape Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Grading for drainage.</strong> Ensure water flows away from structures at the proper rate. Too flat and water pools; too steep and it erodes the soil.</p>
+          <p><strong class="text-text-primary">ADA compliance.</strong> Verify walkways and ramps meet the 1:12 maximum slope requirement before pouring concrete or laying pavers.</p>
+          <p><strong class="text-text-primary">Retaining wall design.</strong> Determine if a slope is too steep for planting alone and needs a retaining wall or terracing solution.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate slope percentage?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Slope percentage equals rise divided by run, multiplied by 100. If the ground rises 2 feet over 20 feet, the slope is (2/20) x 100 = 10%.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the ADA maximum slope for accessibility?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The ADA maximum slope for accessible ramps is 1:12 (8.33% or 4.76 degrees). Ramp landings are required at the top and bottom, and every 30 feet of ramp length.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What slope is needed for proper drainage?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Minimum drainage slope is 0.5%. Adequate drainage for most landscaping is 2-5% slope away from structures. Slopes above 25% require erosion control measures.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I convert slope percentage to degrees?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Use the formula: Degrees = arctan(Slope% / 100) x (180 / pi). Common conversions: 5% = 2.86 degrees, 10% = 5.71 degrees, 20% = 11.31 degrees, 100% = 45 degrees.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const mode = (document.getElementById('calcMode') as HTMLSelectElement).value;
+    let rise = 0, run = 0, slopePct = 0, angleDeg = 0;
+
+    if (mode === 'rise-run') {
+      rise = parseFloat((document.getElementById('rise') as HTMLInputElement).value) || 0;
+      run = parseFloat((document.getElementById('run') as HTMLInputElement).value) || 0.1;
+      slopePct = (rise / run) * 100;
+      angleDeg = Math.atan(rise / run) * (180 / Math.PI);
+    } else if (mode === 'slope-pct') {
+      slopePct = parseFloat((document.getElementById('slopePct') as HTMLInputElement).value) || 0;
+      run = parseFloat((document.getElementById('run') as HTMLInputElement).value) || 0.1;
+      rise = (slopePct / 100) * run;
+      angleDeg = Math.atan(slopePct / 100) * (180 / Math.PI);
+    } else if (mode === 'angle') {
+      angleDeg = parseFloat((document.getElementById('angle') as HTMLInputElement).value) || 0;
+      run = parseFloat((document.getElementById('run') as HTMLInputElement).value) || 0.1;
+      rise = Math.tan(angleDeg * Math.PI / 180) * run;
+      slopePct = (rise / run) * 100;
+    }
+
+    const ratio = rise > 0 ? run / rise : 0;
+
+    document.getElementById('result-pct')!.textContent = slopePct.toFixed(1) + '%';
+    document.getElementById('result-angle')!.textContent = angleDeg.toFixed(2) + '\u00B0';
+    document.getElementById('result-ratio')!.textContent = rise > 0 ? '1:' + ratio.toFixed(1) : '—';
+    document.getElementById('result-riserun')!.textContent = rise.toFixed(2) + ' / ' + run.toFixed(1);
+
+    // ADA / drainage check
+    const checkEl = document.getElementById('ada-check')!;
+    if (slopePct <= 8.33 && slopePct >= 2) {
+      checkEl.className = 'mb-4 rounded-lg px-4 py-3 text-sm bg-[rgba(52,211,153,0.1)] border border-[rgba(52,211,153,0.3)] text-[#6EE7B7]';
+      checkEl.textContent = 'This slope meets ADA accessibility requirements and provides good drainage.';
+      checkEl.classList.remove('hidden');
+    } else if (slopePct > 8.33 && slopePct <= 25) {
+      checkEl.className = 'mb-4 rounded-lg px-4 py-3 text-sm bg-[rgba(251,191,36,0.1)] border border-[rgba(251,191,36,0.3)] text-[#FDE68A]';
+      checkEl.textContent = 'This slope exceeds ADA maximum (8.33%). Good for drainage but not accessible. Consider handrails for walkways.';
+      checkEl.classList.remove('hidden');
+    } else if (slopePct > 25) {
+      checkEl.className = 'mb-4 rounded-lg px-4 py-3 text-sm bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] text-[#FCA5A5]';
+      checkEl.textContent = 'Steep slope — erosion risk. Consider retaining walls, terracing, or ground cover plantings. Not mowable above 33%.';
+      checkEl.classList.remove('hidden');
+    } else if (slopePct > 0 && slopePct < 0.5) {
+      checkEl.className = 'mb-4 rounded-lg px-4 py-3 text-sm bg-[rgba(251,191,36,0.1)] border border-[rgba(251,191,36,0.3)] text-[#FDE68A]';
+      checkEl.textContent = 'Slope is below 0.5% minimum for drainage. Water may pool. Increase grade if possible.';
+      checkEl.classList.remove('hidden');
+    } else {
+      checkEl.classList.add('hidden');
+    }
+  }
+
+  function toggleMode() {
+    const mode = (document.getElementById('calcMode') as HTMLSelectElement).value;
+    document.getElementById('rise-input')!.classList.toggle('hidden', mode !== 'rise-run');
+    document.getElementById('slopepct-input')!.classList.toggle('hidden', mode !== 'slope-pct');
+    document.getElementById('angle-input')!.classList.toggle('hidden', mode !== 'angle');
+    calculate();
+  }
+
+  document.getElementById('calcMode')?.addEventListener('change', toggleMode);
+  document.querySelectorAll('#slope-calc input, #slope-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

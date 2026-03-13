@@ -1,0 +1,185 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/handymanTools';
+
+const tool = getToolBySlug('caulk-coverage-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much caulk do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A standard 10 oz cartridge covers 30-240 linear feet depending on joint width and depth. For a 1/4 inch wide by 1/4 inch deep joint, one 10 oz tube covers about 60 linear feet. For a 1/8 inch joint, it covers about 240 linear feet. Always buy one extra tube for waste."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What type of caulk should I use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use silicone caulk for bathrooms and kitchens (waterproof, mold-resistant). Use paintable latex caulk for interior trim and baseboards. Use polyurethane caulk for exterior joints that need flexibility. For general purpose, a hybrid silicone-latex works well."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does caulk last?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Quality silicone caulk lasts 20+ years. Latex caulk typically lasts 5-10 years before it cracks or yellows. Polyurethane caulk lasts 10-20 years. Environment matters: caulk in high-moisture or high-UV areas degrades faster. Replace when you see cracking, peeling, or gaps."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="caulk-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="jointWidth">Joint Width</label>
+        <select id="jointWidth" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.125">1/8"</option>
+          <option value="0.25" selected>1/4"</option>
+          <option value="0.375">3/8"</option>
+          <option value="0.5">1/2"</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="jointDepth">Joint Depth</label>
+        <select id="jointDepth" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.125">1/8"</option>
+          <option value="0.25" selected>1/4" (standard)</option>
+          <option value="0.375">3/8"</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="linearFeet">Total Linear Feet</label>
+        <input type="number" id="linearFeet" value="50" min="1" max="5000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="cartridgeSize">Cartridge Size</label>
+        <select id="cartridgeSize" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="10" selected>10 oz Cartridge</option>
+          <option value="20">20 oz Cartridge</option>
+          <option value="25">25 oz Sausage</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="caulkCost">Cost per Cartridge ($)</label>
+        <input type="number" id="caulkCost" value="5.00" min="1" max="25" step="0.50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="hourlyRate">Hourly Rate ($)</label>
+        <input type="number" id="hourlyRate" value="72.50" min="25" max="200" step="2.50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cartridges Needed</div>
+          <div id="result-cartridges" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Material Cost</div>
+          <div id="result-material" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Labor Hours</div>
+          <div id="result-hours" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Customer Price</div>
+          <div id="result-price" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Includes 5% waste factor. Round up cartridge count for field conditions.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select joint dimensions.</strong> Choose the joint width and depth from the dropdowns. Most interior trim joints are 1/4" wide by 1/4" deep.</p>
+          <p><strong class="text-text-primary">2. Enter total linear feet.</strong> Measure all joints that need caulking and add them up.</p>
+          <p><strong class="text-text-primary">3. Choose your cartridge size.</strong> Standard 10 oz cartridges fit any caulk gun. 25 oz sausage packs need a bulk gun but offer better value on large jobs.</p>
+          <p><strong class="text-text-primary">4. Set your cost and rate.</strong> The calculator shows material cost plus labor to determine customer pricing.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much caulk do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard 10 oz cartridge covers 30-240 linear feet depending on joint width and depth. For a 1/4 inch wide by 1/4 inch deep joint, one 10 oz tube covers about 60 linear feet. Always buy one extra tube for waste.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What type of caulk should I use?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Use silicone caulk for bathrooms and kitchens. Use paintable latex caulk for interior trim and baseboards. Use polyurethane caulk for exterior joints that need flexibility.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does caulk last?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Quality silicone caulk lasts 20+ years. Latex caulk typically lasts 5-10 years. Polyurethane lasts 10-20 years. Replace when you see cracking, peeling, or gaps.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const jointWidth = parseFloat((document.getElementById('jointWidth') as HTMLSelectElement).value);
+    const jointDepth = parseFloat((document.getElementById('jointDepth') as HTMLSelectElement).value);
+    const linearFeet = parseFloat((document.getElementById('linearFeet') as HTMLInputElement).value) || 50;
+    const cartridgeSize = parseInt((document.getElementById('cartridgeSize') as HTMLSelectElement).value);
+    const caulkCost = parseFloat((document.getElementById('caulkCost') as HTMLInputElement).value) || 5;
+    const hourlyRate = parseFloat((document.getElementById('hourlyRate') as HTMLInputElement).value) || 72.50;
+
+    // Coverage lookup (linear feet per 10oz)
+    const key = `${jointWidth}-${jointDepth}`;
+    const coverageMap: Record<string, number> = {
+      '0.125-0.125': 240,
+      '0.125-0.25': 120,
+      '0.125-0.375': 80,
+      '0.25-0.125': 120,
+      '0.25-0.25': 60,
+      '0.25-0.375': 40,
+      '0.375-0.125': 80,
+      '0.375-0.25': 40,
+      '0.375-0.375': 27,
+      '0.5-0.125': 60,
+      '0.5-0.25': 30,
+      '0.5-0.375': 15,
+    };
+    const coveragePer10oz = coverageMap[key] || 60;
+    const coveragePerCart = coveragePer10oz * (cartridgeSize / 10);
+
+    const cartridgesNeeded = Math.ceil((linearFeet * 1.05) / coveragePerCart); // 5% waste
+    const materialCost = cartridgesNeeded * caulkCost;
+    const laborHours = (linearFeet / 10) * 0.15 + 0.25; // 0.15 hrs per 10 LF + setup
+    const laborCost = laborHours * hourlyRate;
+    const totalCost = materialCost + laborCost;
+    const customerPrice = totalCost * 1.40;
+
+    document.getElementById('result-cartridges')!.textContent = cartridgesNeeded.toString();
+    document.getElementById('result-material')!.textContent = '$' + materialCost.toFixed(2);
+    document.getElementById('result-hours')!.textContent = laborHours.toFixed(1) + ' hrs';
+    document.getElementById('result-price')!.textContent = '$' + customerPrice.toFixed(0);
+  }
+
+  document.querySelectorAll('#caulk-calc input, #caulk-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

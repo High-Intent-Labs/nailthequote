@@ -1,0 +1,187 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/handymanTools';
+
+const tool = getToolBySlug('furniture-assembly-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does furniture assembly cost?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Furniture assembly typically costs $50-200 per item depending on complexity. A simple bookshelf runs $50-75. A complex desk or wardrobe can cost $150-250. Most handymen charge either a flat rate per item or their hourly rate ($60-85/hr) with a 1-hour minimum."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does furniture assembly take?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Assembly time varies by item: simple bookshelves take 30-45 minutes, standard desks take 45-90 minutes, bed frames take 30-90 minutes, and complex wardrobes or cabinets can take 1.5-2.5 hours. Add time for placement, wall mounting, and packaging disposal."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I charge hourly or flat rate for assembly?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Flat rate is generally better for furniture assembly because you can price based on item type and complexity rather than time. This rewards your experience and speed. Use this calculator to determine flat-rate prices based on estimated assembly times."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="assembly-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="furnitureType">Furniture Type</label>
+        <select id="furnitureType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="bookshelf">Bookshelf</option>
+          <option value="desk" selected>Desk</option>
+          <option value="bed">Bed Frame</option>
+          <option value="cabinet">Cabinet / Wardrobe</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="complexity">Complexity</label>
+        <select id="complexity" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="simple">Simple — Few parts, clear instructions</option>
+          <option value="moderate" selected>Moderate — Many parts, some complexity</option>
+          <option value="complex">Complex — Many steps, hardware-heavy</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="quantity">Number of Items</label>
+        <input type="number" id="quantity" value="1" min="1" max="20" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="hourlyRate">Hourly Rate ($)</label>
+        <input type="number" id="hourlyRate" value="72.50" min="25" max="200" step="2.50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <!-- Add-ons -->
+    <h3 class="font-heading font-bold text-lg mb-3 text-text-primary">Add-ons</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+        <input type="checkbox" id="placement" class="w-5 h-5 accent-[#FF6B2B]" />
+        <span class="text-text-secondary text-sm">Place in room (+0.5 hr)</span>
+      </label>
+      <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+        <input type="checkbox" id="disposal" class="w-5 h-5 accent-[#FF6B2B]" />
+        <span class="text-text-secondary text-sm">Dispose packaging (+0.25 hr)</span>
+      </label>
+      <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+        <input type="checkbox" id="wallMount" class="w-5 h-5 accent-[#FF6B2B]" />
+        <span class="text-text-secondary text-sm">Mount to wall (+0.5 hr)</span>
+      </label>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Assembly Time</div>
+          <div id="result-time" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Labor Cost</div>
+          <div id="result-labor" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Misc & Supplies</div>
+          <div id="result-misc" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Customer Price</div>
+          <div id="result-price" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Assembly times are estimates based on industry averages. Adjust for instruction quality and your experience with the specific brand.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select the furniture type and complexity.</strong> Simple items have fewer parts and clear instructions. Complex items have many steps and hardware-heavy assembly.</p>
+          <p><strong class="text-text-primary">2. Set the quantity.</strong> Multiple items of the same type are faster per unit because you learn the pattern.</p>
+          <p><strong class="text-text-primary">3. Add extras.</strong> Check add-ons for room placement, packaging disposal, or wall mounting.</p>
+          <p><strong class="text-text-primary">4. Review the flat-rate price.</strong> Use this as your customer quote instead of hourly billing.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does furniture assembly cost?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Furniture assembly typically costs $50-200 per item depending on complexity. A simple bookshelf runs $50-75. A complex desk or wardrobe can cost $150-250.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does furniture assembly take?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Assembly time varies: simple bookshelves take 30-45 minutes, standard desks take 45-90 minutes, bed frames take 30-90 minutes, and complex wardrobes or cabinets can take 1.5-2.5 hours.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I charge hourly or flat rate for assembly?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Flat rate is generally better for furniture assembly because you can price based on item type and complexity rather than time. This rewards your experience and speed.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const furnitureType = (document.getElementById('furnitureType') as HTMLSelectElement).value;
+    const complexity = (document.getElementById('complexity') as HTMLSelectElement).value;
+    const quantity = parseInt((document.getElementById('quantity') as HTMLInputElement).value) || 1;
+    const hourlyRate = parseFloat((document.getElementById('hourlyRate') as HTMLInputElement).value) || 72.50;
+    const placement = (document.getElementById('placement') as HTMLInputElement).checked;
+    const disposal = (document.getElementById('disposal') as HTMLInputElement).checked;
+    const wallMount = (document.getElementById('wallMount') as HTMLInputElement).checked;
+
+    const baseTimes: Record<string, Record<string, number>> = {
+      bookshelf: { simple: 0.5, moderate: 1.0, complex: 1.5 },
+      desk: { simple: 0.75, moderate: 1.5, complex: 2.5 },
+      bed: { simple: 0.5, moderate: 1.0, complex: 1.5 },
+      cabinet: { simple: 1.0, moderate: 1.5, complex: 2.5 },
+      other: { simple: 0.75, moderate: 1.25, complex: 2.0 },
+    };
+
+    const baseTime = baseTimes[furnitureType]?.[complexity] ?? 1.0;
+    const extraItemTime = quantity > 1 ? (quantity - 1) * 0.25 * baseTime : 0;
+    let addOnTime = 0;
+    if (placement) addOnTime += 0.5;
+    if (disposal) addOnTime += 0.25;
+    if (wallMount) addOnTime += 0.5;
+
+    const totalHours = (baseTime * quantity) + extraItemTime + addOnTime;
+    const laborCost = totalHours * hourlyRate;
+    const miscCost = 15 * quantity;
+    const totalCost = laborCost + miscCost;
+    const customerPrice = totalCost * 1.40;
+
+    document.getElementById('result-time')!.textContent = totalHours.toFixed(1) + ' hrs';
+    document.getElementById('result-labor')!.textContent = '$' + laborCost.toFixed(0);
+    document.getElementById('result-misc')!.textContent = '$' + miscCost.toFixed(0);
+    document.getElementById('result-price')!.textContent = '$' + customerPrice.toFixed(0);
+  }
+
+  document.querySelectorAll('#assembly-calc input, #assembly-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

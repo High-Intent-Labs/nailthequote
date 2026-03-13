@@ -1,0 +1,190 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/roofingTools';
+
+const tool = getToolBySlug('roof-area-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I calculate roof area from footprint?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Multiply your building's footprint area by the pitch correction factor. For a 6/12 pitch, the factor is 1.118 — so a 2,000 sq ft footprint becomes 2,236 sq ft of actual roof area. The steeper the pitch, the larger the correction factor."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a roof pitch correction factor?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A pitch correction factor converts flat (horizontal) measurements to actual sloped measurements. It is calculated as the square root of (rise squared plus 144) divided by 12. Common values: 4/12 = 1.054, 6/12 = 1.118, 8/12 = 1.202, 12/12 = 1.414."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many roofing squares is my roof?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "One roofing square equals 100 square feet. Divide your total sloped roof area by 100 to get squares. A 2,500 sq ft roof is 25 squares. Always round up when ordering materials to account for waste and cuts."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does roof type affect the area calculation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Gable roofs are the simplest to calculate. Hip roofs have additional triangular sections that can add 5-10% more area. Complex roofs with dormers and valleys require on-site measurement for accuracy. This calculator provides a gable-equivalent estimate."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="area-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="footprintLength">Building Length (ft)</label>
+        <input type="number" id="footprintLength" value="50" min="1" max="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="footprintWidth">Building Width (ft)</label>
+        <input type="number" id="footprintWidth" value="30" min="1" max="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="pitch">Roof Pitch</label>
+        <select id="pitch" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="2">2/12 — Nearly flat</option>
+          <option value="3">3/12 — Low slope</option>
+          <option value="4">4/12 — Standard low</option>
+          <option value="5">5/12 — Moderate</option>
+          <option value="6" selected>6/12 — Standard</option>
+          <option value="7">7/12 — Moderate steep</option>
+          <option value="8">8/12 — Steep</option>
+          <option value="9">9/12 — Very steep</option>
+          <option value="10">10/12 — Very steep</option>
+          <option value="12">12/12 — 45 degrees</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roofType">Roof Type</label>
+        <select id="roofType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0" selected>Gable</option>
+          <option value="1.05">Hip</option>
+          <option value="1.08">Gambrel</option>
+          <option value="1.1">Mansard</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Footprint Area</div>
+          <div id="result-footprint" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">sq ft</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Pitch Factor</div>
+          <div id="result-factor" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Actual Roof Area</div>
+          <div id="result-area" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div class="text-text-muted text-xs mt-1">sq ft</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Roofing Squares</div>
+          <div id="result-squares" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <p id="roof-type-note" class="text-text-muted text-sm italic hidden">Hip, gambrel, and mansard roofs may have 5-10% more area than this gable-equivalent estimate due to additional ridge/hip geometry. Verify with on-site measurements.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your building dimensions.</strong> Measure the building footprint length and width at ground level. If the building is L-shaped, calculate each rectangle separately and add them together.</p>
+          <p><strong class="text-text-primary">2. Select the roof pitch.</strong> If you do not know the pitch, use a pitch finder app or measure the rise over a 12-inch run on the rafter. Common residential pitches are 4/12 to 8/12.</p>
+          <p><strong class="text-text-primary">3. Choose the roof type.</strong> Gable roofs have two sloping sides. Hip roofs slope on all four sides. Gambrel and mansard roofs have two different slopes on each side.</p>
+          <p><strong class="text-text-primary">4. Read your results.</strong> The calculator shows the actual sloped roof area and converts it to roofing squares (1 square = 100 sq ft) for material ordering.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Pitch Correction Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>When you measure a roof from the ground, you get the horizontal footprint. But shingles and underlayment cover the sloped surface, which is always larger than the flat footprint. The pitch correction factor accounts for this difference.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm">
+            <p>Pitch_Factor = sqrt((Rise^2 + 12^2) / 12^2)</p>
+            <p>Actual_Roof_Area = Footprint_Area x Pitch_Factor</p>
+          </div>
+          <p>For a 6/12 pitch, the factor is 1.118 — meaning the sloped area is about 12% larger than the footprint. At 12/12 (a 45-degree roof), the factor is 1.414 — the sloped area is 41% larger. This is why steep roofs cost significantly more to install.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate roof area from footprint?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Multiply your building's footprint area by the pitch correction factor. For a 6/12 pitch, the factor is 1.118 — so a 2,000 sq ft footprint becomes 2,236 sq ft of actual roof area. The steeper the pitch, the larger the correction factor.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a roof pitch correction factor?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A pitch correction factor converts flat (horizontal) measurements to actual sloped measurements. It is calculated as the square root of (rise squared plus 144) divided by 12. Common values: 4/12 = 1.054, 6/12 = 1.118, 8/12 = 1.202, 12/12 = 1.414.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many roofing squares is my roof?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">One roofing square equals 100 square feet. Divide your total sloped roof area by 100 to get squares. A 2,500 sq ft roof is 25 squares. Always round up when ordering materials to account for waste and cuts.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Does roof type affect the area calculation?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. Gable roofs are the simplest to calculate. Hip roofs have additional triangular sections that can add 5-10% more area. Complex roofs with dormers and valleys require on-site measurement for accuracy. This calculator provides a gable-equivalent estimate.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const length = parseFloat((document.getElementById('footprintLength') as HTMLInputElement).value) || 50;
+    const width = parseFloat((document.getElementById('footprintWidth') as HTMLInputElement).value) || 30;
+    const rise = parseFloat((document.getElementById('pitch') as HTMLSelectElement).value);
+    const roofTypeMult = parseFloat((document.getElementById('roofType') as HTMLSelectElement).value);
+
+    const footprint = length * width;
+    const pitchFactor = Math.sqrt((rise * rise + 144) / 144);
+    const actualArea = Math.round(footprint * pitchFactor * roofTypeMult);
+    const squares = (actualArea / 100).toFixed(1);
+
+    document.getElementById('result-footprint')!.textContent = footprint.toLocaleString();
+    document.getElementById('result-factor')!.textContent = pitchFactor.toFixed(4);
+    document.getElementById('result-area')!.textContent = actualArea.toLocaleString();
+    document.getElementById('result-squares')!.textContent = squares;
+
+    const note = document.getElementById('roof-type-note')!;
+    if (roofTypeMult > 1.0) {
+      note.classList.remove('hidden');
+    } else {
+      note.classList.add('hidden');
+    }
+  }
+
+  document.querySelectorAll('#area-calc input, #area-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

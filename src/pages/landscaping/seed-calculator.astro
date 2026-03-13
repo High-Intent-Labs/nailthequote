@@ -1,0 +1,258 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/landscapingTools';
+
+const tool = getToolBySlug('seed-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much grass seed do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For a new cool-season lawn, use 4-6 lbs per 1,000 square feet. For overseeding, use 2-4 lbs per 1,000 sq ft. Multiply your area in thousands of square feet by the seeding rate. For example, 5,000 sq ft at 5 lbs per 1,000 = 25 lbs of seed."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between new seeding and overseeding rates?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "New seeding uses a higher rate (4-8 lbs per 1,000 sq ft) because you are establishing turf from bare soil with no existing grass. Overseeding uses a lower rate (2-4 lbs per 1,000 sq ft) because you are filling in thin spots where existing grass already provides partial coverage. Using the full new-seeding rate for overseeding wastes seed and can cause overcrowding."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does a bag of grass seed cover?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Coverage depends on the seeding rate. A standard 50 lb bag at 5 lbs per 1,000 sq ft covers about 10,000 square feet for new lawns. At the overseeding rate of 3 lbs per 1,000 sq ft, the same bag covers about 16,700 square feet. Check the bag label for the manufacturer's recommended coverage rate."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "When is the best time to seed a lawn?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For cool-season grasses (fescue, bluegrass, ryegrass), seed in early fall (September-October) or early spring (March-April). For warm-season grasses (bermuda, zoysia), seed in late spring to early summer (May-June) when soil temperatures are above 65 degrees F. Fall seeding generally gives better results because seedlings face less weed competition and heat stress."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="seed-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="calcMethod">Measurement Method</label>
+        <select id="calcMethod" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="area">Enter Total Area (sq ft)</option>
+          <option value="lw">Enter Length x Width</option>
+        </select>
+      </div>
+      <div id="area-input">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="area">Lawn Area (sq ft)</label>
+        <input type="number" id="area" value="5000" min="1" max="5000000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="length-input" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="length">Length (ft)</label>
+        <input type="number" id="length" value="100" min="1" max="50000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="width-input" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="width">Width (ft)</label>
+        <input type="number" id="width" value="50" min="1" max="50000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="seedType">Seeding Type</label>
+        <select id="seedType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="new-cool">New Lawn — Cool Season (4-6 lbs/1k)</option>
+          <option value="new-warm">New Lawn — Warm Season (3-5 lbs/1k)</option>
+          <option value="overseed">Overseeding (2-4 lbs/1k)</option>
+          <option value="dense">Dense/Premium (6-8 lbs/1k)</option>
+          <option value="wildflower">Wildflower/Native (1-2 lbs/1k)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="rate">Seeding Rate (lbs per 1,000 sq ft)</label>
+        <input type="number" id="rate" value="5" min="0.5" max="20" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Auto-set by seed type, adjust as needed</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="bagSize">Bag Size (lbs)</label>
+        <select id="bagSize" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="5">5 lb bag</option>
+          <option value="10">10 lb bag</option>
+          <option value="25">25 lb bag</option>
+          <option value="50" selected>50 lb bag</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="costPerBag">Cost per Bag ($)</label>
+        <input type="number" id="costPerBag" value="0" min="0" max="1000" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Leave at 0 to skip cost estimate</p>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Seed Needed</div>
+          <div id="result-seed" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div class="text-text-muted text-xs mt-1">lbs total</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Bags Needed</div>
+          <div id="result-bags" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Coverage per Bag</div>
+          <div id="result-coverage" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">sq ft</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <!-- Seeding Rates Reference -->
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Seeding Rate Reference</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+          <div class="flex justify-between"><span class="text-text-muted">New cool-season lawn:</span> <span class="text-text-primary font-semibold">4-6 lbs/1k sqft</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">New warm-season lawn:</span> <span class="text-text-primary font-semibold">3-5 lbs/1k sqft</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Overseeding (thin lawn):</span> <span class="text-text-primary font-semibold">2-4 lbs/1k sqft</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Dense/premium lawn:</span> <span class="text-text-primary font-semibold">6-8 lbs/1k sqft</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Wildflower/native:</span> <span class="text-text-primary font-semibold">1-2 lbs/1k sqft</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Broadcast/dormant (+50%):</span> <span class="text-text-primary font-semibold">6-9 lbs/1k sqft</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your lawn area.</strong> Measure the total area in square feet, or enter length and width for rectangular lawns. For irregular shapes, break the lawn into sections and add the areas together.</p>
+          <p><strong class="text-text-primary">2. Select the seeding type.</strong> Choose between new lawn (cool or warm season), overseeding, dense seeding, or wildflower. The calculator auto-sets a recommended rate, but you can adjust it.</p>
+          <p><strong class="text-text-primary">3. Choose your bag size.</strong> Select the bag size your supplier sells. The calculator tells you how many bags to buy so you can order the right quantity.</p>
+          <p><strong class="text-text-primary">4. Enter cost per bag (optional).</strong> Add the price per bag from your supplier to get a total material cost estimate.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Seed Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator uses standard turf industry seeding rates:</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Seed_Lbs = (Area_sqft / 1,000) x Rate_lbs_per_1k</p>
+            <p>Bags = Ceiling(Seed_Lbs / Bag_Size)</p>
+            <p>Coverage_Per_Bag = (Bag_Size / Rate) x 1,000</p>
+          </div>
+          <p>Seeding rates are based on recommendations from turf research programs and seed suppliers. Cool-season grasses (fescue, bluegrass, ryegrass) are common in the northern half of the US. Warm-season grasses (bermuda, zoysia, St. Augustine) are used in the southern half. The transition zone uses blends of both.</p>
+          <p>For broadcast seeding or dormant seeding, increase the rate by 50% over standard because seed placement is less precise and some seed will be lost to birds, wind, and poor soil contact.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When Landscape Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Estimating seed for new lawn installs.</strong> Get the exact quantity needed for the job before ordering. Buying the right amount avoids returns and prevents running short mid-project.</p>
+          <p><strong class="text-text-primary">Pricing overseeding jobs.</strong> Calculate seed cost as part of the total service price. Show the customer exactly how much seed their lawn needs and what it costs as part of a transparent bid.</p>
+          <p><strong class="text-text-primary">Planning seasonal maintenance programs.</strong> Fall overseeding is one of the most common recurring services. Use the calculator to batch-order seed for multiple properties and lock in bulk pricing from your supplier.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much grass seed do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For a new cool-season lawn, use 4-6 lbs per 1,000 square feet. For overseeding, use 2-4 lbs per 1,000 sq ft. Multiply your area in thousands of square feet by the seeding rate. For example, 5,000 sq ft at 5 lbs per 1,000 = 25 lbs of seed.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the difference between new seeding and overseeding rates?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">New seeding uses a higher rate (4-8 lbs per 1,000 sq ft) because you are establishing turf from bare soil with no existing grass. Overseeding uses a lower rate (2-4 lbs per 1,000 sq ft) because you are filling in thin spots where existing grass already provides partial coverage. Using the full new-seeding rate for overseeding wastes seed and can cause overcrowding.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a bag of grass seed cover?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Coverage depends on the seeding rate. A standard 50 lb bag at 5 lbs per 1,000 sq ft covers about 10,000 square feet for new lawns. At the overseeding rate of 3 lbs per 1,000 sq ft, the same bag covers about 16,700 square feet. Check the bag label for the manufacturer's recommended coverage rate.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">When is the best time to seed a lawn?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For cool-season grasses (fescue, bluegrass, ryegrass), seed in early fall (September-October) or early spring (March-April). For warm-season grasses (bermuda, zoysia), seed in late spring to early summer (May-June) when soil temperatures are above 65 degrees F. Fall seeding generally gives better results because seedlings face less weed competition and heat stress.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  const seedRates: Record<string, number> = {
+    'new-cool': 5,
+    'new-warm': 4,
+    'overseed': 3,
+    'dense': 7,
+    'wildflower': 1.5
+  };
+
+  function calculate() {
+    const method = (document.getElementById('calcMethod') as HTMLSelectElement).value;
+    let area: number;
+
+    if (method === 'lw') {
+      const length = parseFloat((document.getElementById('length') as HTMLInputElement).value) || 0;
+      const width = parseFloat((document.getElementById('width') as HTMLInputElement).value) || 0;
+      area = length * width;
+    } else {
+      area = parseFloat((document.getElementById('area') as HTMLInputElement).value) || 0;
+    }
+
+    const rate = parseFloat((document.getElementById('rate') as HTMLInputElement).value) || 0;
+    const bagSize = parseFloat((document.getElementById('bagSize') as HTMLSelectElement).value);
+    const costPerBag = parseFloat((document.getElementById('costPerBag') as HTMLInputElement).value) || 0;
+
+    const seedLbs = (area / 1000) * rate;
+    const bags = Math.ceil(seedLbs / bagSize);
+    const coveragePerBag = rate > 0 ? (bagSize / rate) * 1000 : 0;
+    const cost = bags * costPerBag;
+
+    document.getElementById('result-seed')!.textContent = seedLbs.toFixed(1);
+    document.getElementById('result-bags')!.textContent = bags.toString();
+    document.getElementById('result-coverage')!.textContent = Math.round(coveragePerBag).toLocaleString();
+    document.getElementById('result-cost')!.textContent = costPerBag > 0 ? '$' + cost.toFixed(0) : '--';
+  }
+
+  function updateRate() {
+    const seedType = (document.getElementById('seedType') as HTMLSelectElement).value;
+    const rate = seedRates[seedType] || 5;
+    (document.getElementById('rate') as HTMLInputElement).value = rate.toString();
+    calculate();
+  }
+
+  function toggleMethod() {
+    const method = (document.getElementById('calcMethod') as HTMLSelectElement).value;
+    document.getElementById('area-input')!.classList.toggle('hidden', method === 'lw');
+    document.getElementById('length-input')!.classList.toggle('hidden', method !== 'lw');
+    document.getElementById('width-input')!.classList.toggle('hidden', method !== 'lw');
+    calculate();
+  }
+
+  document.getElementById('calcMethod')?.addEventListener('change', toggleMethod);
+  document.getElementById('seedType')?.addEventListener('change', updateRate);
+  document.querySelectorAll('#seed-calc input, #seed-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

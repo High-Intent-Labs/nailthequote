@@ -1,0 +1,264 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/landscapingTools';
+
+const tool = getToolBySlug('plant-spacing-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I calculate plant spacing?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Divide your bed length by the on-center spacing to get plants per row, then divide the width by the same spacing for the number of rows. Multiply the two numbers together. For example, a 40 ft x 30 ft bed at 5 ft spacing gives 8 plants per row x 6 rows = 48 plants in a square pattern."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between square and triangular spacing?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Square spacing places plants in a grid pattern with equal distance in rows and columns. Triangular (staggered) spacing offsets every other row by half the spacing distance, which fits about 15% more plants in the same area and provides more uniform ground coverage. Triangular is preferred for groundcover and mass plantings."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What spacing should I use for shrubs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Spacing depends on mature plant size. Dwarf shrubs (1-3 ft mature) need 2-3 ft on-center spacing. Medium shrubs (3-8 ft) need 4-6 ft. Large shrubs (8-15 ft) need 8-12 ft. Always check the plant tag for the expected mature spread and use that as your minimum spacing distance."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many plants per square foot do I need for groundcover?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Groundcover plants are typically spaced 12-24 inches on-center. At 12-inch spacing, you need about 1 plant per square foot. At 18-inch spacing, you need about 0.44 plants per square foot (1 plant per 2.25 sq ft). At 24-inch spacing, you need 0.25 plants per square foot (1 plant per 4 sq ft)."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="plant-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="calcMethod">Measurement Method</label>
+        <select id="calcMethod" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="lw">Enter Length x Width</option>
+          <option value="area">Enter Total Area (sq ft)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="pattern">Planting Pattern</label>
+        <select id="pattern" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="square">Square Grid</option>
+          <option value="triangle">Triangular (Staggered)</option>
+        </select>
+      </div>
+      <div id="length-input">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="length">Bed Length (ft)</label>
+        <input type="number" id="length" value="40" min="1" max="10000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="width-input">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="width">Bed Width (ft)</label>
+        <input type="number" id="width" value="30" min="1" max="10000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="area-input" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="area">Total Area (sq ft)</label>
+        <input type="number" id="area" value="1200" min="1" max="500000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="spacing">Spacing On-Center (ft)</label>
+        <input type="number" id="spacing" value="5" min="0.5" max="100" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="costPerPlant">Cost per Plant ($)</label>
+        <input type="number" id="costPerPlant" value="0" min="0" max="5000" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Leave at 0 to skip cost estimate</p>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Plants</div>
+          <div id="result-total" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Plants per Row</div>
+          <div id="result-per-row" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Number of Rows</div>
+          <div id="result-rows" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Density</div>
+          <div id="result-density" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">plants per 100 sq ft</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Coverage per Plant</div>
+          <div id="result-coverage" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">sq ft each</div>
+        </div>
+      </div>
+
+      <!-- Recommended Spacing Reference -->
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Recommended Spacing by Plant Type</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+          <div class="flex justify-between"><span class="text-text-muted">Groundcover (0.5-2 ft):</span> <span class="text-text-primary font-semibold">1-2 ft OC</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Dwarf shrubs (1-3 ft):</span> <span class="text-text-primary font-semibold">2-3 ft OC</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Medium shrubs (3-8 ft):</span> <span class="text-text-primary font-semibold">4-6 ft OC</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Large shrubs (8-15 ft):</span> <span class="text-text-primary font-semibold">8-12 ft OC</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Small trees (15-25 ft):</span> <span class="text-text-primary font-semibold">15-20 ft OC</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Medium trees (25-40 ft):</span> <span class="text-text-primary font-semibold">25-35 ft OC</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Large trees (40+ ft):</span> <span class="text-text-primary font-semibold">35-50 ft OC</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your bed dimensions.</strong> Use length and width for rectangular beds, or switch to total area if you have already measured an irregular shape.</p>
+          <p><strong class="text-text-primary">2. Choose a planting pattern.</strong> Square grid places plants in straight rows and columns. Triangular (staggered) offsets every other row and fits about 15% more plants in the same space.</p>
+          <p><strong class="text-text-primary">3. Set the on-center spacing.</strong> This is the distance from the center of one plant to the center of the next. Use the reference table below the results if you are unsure what spacing to use for your plant type.</p>
+          <p><strong class="text-text-primary">4. Enter cost per plant (optional).</strong> Add the wholesale or retail price per plant to get a material cost estimate for the job.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Spacing Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator uses standard landscape design spacing formulas:</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>SQUARE PATTERN:</p>
+            <p>&nbsp; Plants_Per_Row = Ceiling(Length / Spacing)</p>
+            <p>&nbsp; Number_of_Rows = Ceiling(Width / Spacing)</p>
+            <p>&nbsp; Total = Plants_Per_Row x Number_of_Rows</p>
+            <p class="mt-2">TRIANGULAR PATTERN:</p>
+            <p>&nbsp; Row_Spacing = Spacing x 0.866</p>
+            <p>&nbsp; Plants_Per_Row = Ceiling(Length / Spacing)</p>
+            <p>&nbsp; Number_of_Rows = Ceiling(Width / Row_Spacing)</p>
+            <p>&nbsp; Total = Plants_Per_Row x Number_of_Rows</p>
+          </div>
+          <p>In triangular spacing, the row-to-row distance is reduced by a factor of 0.866 (the sine of 60 degrees). Each alternate row is offset by half the plant spacing, creating a more uniform coverage pattern. This is the preferred method for mass plantings and groundcover where full canopy closure is the goal.</p>
+          <p>On-center (OC) spacing is measured from the center of one plant to the center of the next, not from edge to edge. Always check the plant tag for the mature spread and use that as your minimum spacing distance.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When Landscape Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Estimating plant quantities for bids.</strong> Walk the property, measure the beds, and get an exact plant count before calling the nursery. Accurate counts mean fewer trips and no wasted material sitting on-site.</p>
+          <p><strong class="text-text-primary">Designing new landscape beds.</strong> Use the density output to compare different spacing options. Tighter spacing means faster fill-in but higher upfront cost. Wider spacing saves money but takes longer to fill in. Show the client both options.</p>
+          <p><strong class="text-text-primary">Ordering for commercial projects.</strong> Large commercial plantings can require hundreds or thousands of plants. Getting the count right prevents costly reorders and project delays. Switch between square and triangular patterns to optimize coverage for the design.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate plant spacing?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Divide your bed length by the on-center spacing to get plants per row, then divide the width by the same spacing for the number of rows. Multiply the two numbers together. For example, a 40 ft x 30 ft bed at 5 ft spacing gives 8 plants per row x 6 rows = 48 plants in a square pattern.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the difference between square and triangular spacing?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Square spacing places plants in a grid pattern with equal distance in rows and columns. Triangular (staggered) spacing offsets every other row by half the spacing distance, which fits about 15% more plants in the same area and provides more uniform ground coverage. Triangular is preferred for groundcover and mass plantings.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What spacing should I use for shrubs?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Spacing depends on mature plant size. Dwarf shrubs (1-3 ft mature) need 2-3 ft on-center spacing. Medium shrubs (3-8 ft) need 4-6 ft. Large shrubs (8-15 ft) need 8-12 ft. Always check the plant tag for the expected mature spread and use that as your minimum spacing distance.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many plants per square foot do I need for groundcover?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Groundcover plants are typically spaced 12-24 inches on-center. At 12-inch spacing, you need about 1 plant per square foot. At 18-inch spacing, you need about 0.44 plants per square foot (1 plant per 2.25 sq ft). At 24-inch spacing, you need 0.25 plants per square foot (1 plant per 4 sq ft).</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const method = (document.getElementById('calcMethod') as HTMLSelectElement).value;
+    const pattern = (document.getElementById('pattern') as HTMLSelectElement).value;
+    const spacing = parseFloat((document.getElementById('spacing') as HTMLInputElement).value) || 1;
+    const costPerPlant = parseFloat((document.getElementById('costPerPlant') as HTMLInputElement).value) || 0;
+
+    let length: number;
+    let width: number;
+
+    if (method === 'lw') {
+      length = parseFloat((document.getElementById('length') as HTMLInputElement).value) || 0;
+      width = parseFloat((document.getElementById('width') as HTMLInputElement).value) || 0;
+    } else {
+      const area = parseFloat((document.getElementById('area') as HTMLInputElement).value) || 0;
+      length = Math.sqrt(area);
+      width = Math.sqrt(area);
+    }
+
+    let plantsPerRow: number;
+    let numRows: number;
+
+    if (pattern === 'triangle') {
+      const rowSpacing = spacing * 0.866;
+      plantsPerRow = Math.ceil(length / spacing);
+      numRows = Math.ceil(width / rowSpacing);
+    } else {
+      plantsPerRow = Math.ceil(length / spacing);
+      numRows = Math.ceil(width / spacing);
+    }
+
+    const totalPlants = plantsPerRow * numRows;
+    const totalArea = length * width;
+    const density = totalArea > 0 ? (totalPlants / totalArea) * 100 : 0;
+    const coveragePerPlant = totalPlants > 0 ? totalArea / totalPlants : 0;
+    const cost = totalPlants * costPerPlant;
+
+    document.getElementById('result-total')!.textContent = totalPlants.toString();
+    document.getElementById('result-per-row')!.textContent = plantsPerRow.toString();
+    document.getElementById('result-rows')!.textContent = numRows.toString();
+    document.getElementById('result-density')!.textContent = density.toFixed(1);
+    document.getElementById('result-coverage')!.textContent = coveragePerPlant.toFixed(1);
+    document.getElementById('result-cost')!.textContent = costPerPlant > 0 ? '$' + cost.toLocaleString() : '--';
+  }
+
+  function toggleMethod() {
+    const method = (document.getElementById('calcMethod') as HTMLSelectElement).value;
+    document.getElementById('area-input')!.classList.toggle('hidden', method === 'lw');
+    document.getElementById('length-input')!.classList.toggle('hidden', method !== 'lw');
+    document.getElementById('width-input')!.classList.toggle('hidden', method !== 'lw');
+    calculate();
+  }
+
+  document.getElementById('calcMethod')?.addEventListener('change', toggleMethod);
+  document.querySelectorAll('#plant-calc input, #plant-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

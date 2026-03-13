@@ -1,0 +1,199 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/paintingTools';
+
+const tool = getToolBySlug('texture-coverage-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How does texture affect paint coverage?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Textured surfaces have more surface area than smooth walls, which means paint spreads thinner and covers fewer square feet per gallon. Light texture reduces coverage by about 5%, while heavy texture like popcorn ceilings can reduce coverage by 30%. Always account for texture when estimating paint quantities." }
+    },
+    {
+      "@type": "Question",
+      "name": "How much paint do I need for popcorn ceilings?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Popcorn ceilings reduce paint coverage by about 30% compared to smooth surfaces. If smooth drywall covers 400 sq ft per gallon, popcorn texture drops that to roughly 280 sq ft per gallon. Use a thick-nap roller (3/4 inch or more) or spray for best results on popcorn texture." }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I use a roller or sprayer on textured walls?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Sprayers are generally more efficient for textured surfaces because they push paint into crevices better than rollers. However, sprayers waste 15-25% of paint through overspray. For most textured walls, a 3/4-inch nap roller provides good coverage with less waste. Heavy textures like popcorn are best sprayed." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is knockdown texture?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Knockdown texture is created by spraying joint compound onto the wall and then flattening the peaks with a knockdown knife. It creates a mottled, Mediterranean-style finish that is smoother than orange peel but more textured than smooth drywall. It reduces paint coverage by about 12% compared to smooth surfaces." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="texture-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="area">Total Area (sq ft)</label>
+        <input type="number" id="area" value="500" min="1" max="100000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Use the <a href="/painting/wall-ceiling-area-calculator" class="text-accent hover:underline">Wall Area Calculator</a> if unsure.</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="baseCoverage">Base Coverage (sq ft/gal on smooth)</label>
+        <input type="number" id="baseCoverage" value="400" min="100" max="600" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">400 is standard for latex on smooth drywall.</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="textureType">Texture Type</label>
+        <select id="textureType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.95">Light Texture (5% reduction)</option>
+          <option value="0.90">Medium Texture (10% reduction)</option>
+          <option value="0.80">Heavy Texture (20% reduction)</option>
+          <option value="0.70">Popcorn Ceiling (30% reduction)</option>
+          <option value="0.85">Orange Peel (15% reduction)</option>
+          <option value="0.88">Knockdown (12% reduction)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="method">Application Method</label>
+        <select id="method" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.05" selected>Roller (5% waste)</option>
+          <option value="1.10">Brush (10% waste)</option>
+          <option value="1.15">Spray (15% waste)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="coats">Number of Coats</label>
+        <select id="coats" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1">1 Coat</option>
+          <option value="2" selected>2 Coats</option>
+          <option value="3">3 Coats</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="paintCost">Paint Cost per Gallon ($, optional)</label>
+        <input type="number" id="paintCost" value="45" min="0" max="500" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Adjusted Coverage</div>
+          <div id="result-coverage" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div class="text-text-muted text-xs mt-1">sq ft/gal</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Gallons</div>
+          <div id="result-gallons" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">vs. Smooth Surface</div>
+          <div id="result-extra" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">extra gallons needed</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Paint Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div class="bg-bg-dark rounded-xl p-5 mb-4">
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div class="flex justify-between"><span class="text-text-muted">Texture reduction</span><span id="detail-reduction" class="text-text-primary font-medium">--</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Wastage factor</span><span id="detail-waste" class="text-text-primary font-medium">--</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Smooth coverage would need</span><span id="detail-smooth" class="text-text-primary font-medium">--</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Textured coverage needs</span><span id="detail-textured" class="text-text-primary font-medium">--</span></div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Texture reduction factors are estimates. Actual coverage varies by texture depth and paint viscosity. Heavy textures benefit from thicker nap rollers or spray application.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your total area.</strong> This is the square footage you plan to paint. Use the Wall Area Calculator if you need to measure a room first.</p>
+          <p><strong class="text-text-primary">2. Set the base coverage rate.</strong> 400 sq ft/gal is standard for latex on smooth drywall. Check your paint can for the manufacturer's stated coverage rate.</p>
+          <p><strong class="text-text-primary">3. Select your texture type.</strong> Each texture reduces coverage differently. Popcorn ceilings absorb the most paint (30% reduction), while light texture only reduces coverage by 5%.</p>
+          <p><strong class="text-text-primary">4. Choose application method and coats.</strong> Sprayers work best for heavy texture but waste more paint. Two coats is standard for most jobs.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Texture Coverage Reduction Factors</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Adjusted_Coverage = Base_Coverage x Texture_Reduction_Factor</p>
+            <p>Gallons = (Area / Adjusted_Coverage) x Wastage_Factor x Coats</p>
+          </div>
+          <p>The reduction factors account for the increased surface area created by texture. A popcorn ceiling can have up to 30% more actual surface area than its measured footprint. Deeper textures trap paint in valleys, reducing effective spread rate.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How does texture affect paint coverage?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Textured surfaces have more surface area than smooth walls, which means paint spreads thinner and covers fewer square feet per gallon. Light texture reduces coverage by about 5%, while heavy texture like popcorn ceilings can reduce coverage by 30%. Always account for texture when estimating paint quantities.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much paint do I need for popcorn ceilings?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Popcorn ceilings reduce paint coverage by about 30% compared to smooth surfaces. If smooth drywall covers 400 sq ft per gallon, popcorn texture drops that to roughly 280 sq ft per gallon. Use a thick-nap roller (3/4 inch or more) or spray for best results on popcorn texture.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I use a roller or sprayer on textured walls?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Sprayers are generally more efficient for textured surfaces because they push paint into crevices better than rollers. However, sprayers waste 15-25% of paint through overspray. For most textured walls, a 3/4-inch nap roller provides good coverage with less waste. Heavy textures like popcorn are best sprayed.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is knockdown texture?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Knockdown texture is created by spraying joint compound onto the wall and then flattening the peaks with a knockdown knife. It creates a mottled, Mediterranean-style finish that is smoother than orange peel but more textured than smooth drywall. It reduces paint coverage by about 12% compared to smooth surfaces.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const area = parseFloat((document.getElementById('area') as HTMLInputElement).value) || 500;
+    const baseCoverage = parseFloat((document.getElementById('baseCoverage') as HTMLInputElement).value) || 400;
+    const textureReduction = parseFloat((document.getElementById('textureType') as HTMLSelectElement).value);
+    const wastage = parseFloat((document.getElementById('method') as HTMLSelectElement).value);
+    const coats = parseInt((document.getElementById('coats') as HTMLSelectElement).value);
+    const paintCost = parseFloat((document.getElementById('paintCost') as HTMLInputElement).value) || 0;
+
+    const adjustedCoverage = baseCoverage * textureReduction;
+    const gallonsPerCoatTextured = area / (adjustedCoverage / wastage);
+    const totalGallonsTextured = Math.ceil(gallonsPerCoatTextured * coats * 2) / 2;
+
+    const gallonsPerCoatSmooth = area / (baseCoverage / wastage);
+    const totalGallonsSmooth = Math.ceil(gallonsPerCoatSmooth * coats * 2) / 2;
+
+    const extraGallons = totalGallonsTextured - totalGallonsSmooth;
+    const cost = totalGallonsTextured * paintCost;
+
+    document.getElementById('result-coverage')!.textContent = Math.round(adjustedCoverage).toString();
+    document.getElementById('result-gallons')!.textContent = totalGallonsTextured.toFixed(1);
+    document.getElementById('result-extra')!.textContent = '+' + extraGallons.toFixed(1) + ' gal';
+    document.getElementById('result-cost')!.textContent = paintCost > 0 ? '$' + cost.toFixed(0) : '--';
+
+    document.getElementById('detail-reduction')!.textContent = Math.round((1 - textureReduction) * 100) + '% reduction';
+    document.getElementById('detail-waste')!.textContent = Math.round((wastage - 1) * 100) + '% waste';
+    document.getElementById('detail-smooth')!.textContent = totalGallonsSmooth.toFixed(1) + ' gal';
+    document.getElementById('detail-textured')!.textContent = totalGallonsTextured.toFixed(1) + ' gal';
+  }
+
+  document.querySelectorAll('#texture-calc input, #texture-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

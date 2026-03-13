@@ -1,0 +1,260 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/pestControlTools';
+
+const tool = getToolBySlug('fumigation-volume-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do you calculate cubic footage for fumigation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Multiply the structure's length by width by average height to eaves. For attic volume, calculate the pyramidal roof space as (length x width x attic height) divided by 3, then add it to the main volume. A typical 2,000 sq ft home with 8-foot ceilings and a 4-foot attic peak is approximately 18,600 cubic feet."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much fumigant gas is needed per cubic foot?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The standard dosage for sulfuryl fluoride (Vikane) is approximately 1 pound per 1,000 cubic feet for drywood termite fumigation. Actual dosage depends on target pest, temperature, exposure time, and product label requirements. Always follow the product label for exact dosage rates."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does structural fumigation take?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Structural fumigation typically takes 24 to 72 hours depending on the size of the structure, target pest, temperature conditions, and fumigant concentration used. Most residential fumigations are completed in 2-3 days including tenting, gas introduction, aeration, and clearance testing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What affects fumigation cost?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Fumigation cost is primarily driven by cubic volume of the structure, regional labor rates, fumigant costs, and complexity factors like multi-story buildings, attached garages, or unusual roof lines. Larger volumes require more gas and longer exposure times, directly increasing cost."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="fum-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="length">Structure Length (ft)</label>
+        <input type="number" id="length" value="50" min="1" max="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="width">Structure Width (ft)</label>
+        <input type="number" id="width" value="40" min="1" max="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="height">Average Height to Eaves (ft)</label>
+        <input type="number" id="height" value="8" min="6" max="30" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="attic">Include Attic?</label>
+        <select id="attic" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0" selected>No</option>
+          <option value="1">Yes</option>
+        </select>
+      </div>
+      <div id="attic-height-wrap" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="atticHeight">Attic Peak Height Above Eaves (ft)</label>
+        <input type="number" id="atticHeight" value="4" min="1" max="20" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="basement">Include Basement/Crawlspace?</label>
+        <select id="basement" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0" selected>No</option>
+          <option value="1">Yes</option>
+        </select>
+      </div>
+      <div id="basement-dims-wrap" class="hidden md:col-span-2">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs text-text-muted mb-1" for="basementL">Basement Length (ft)</label>
+            <input type="number" id="basementL" value="50" min="1" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="block text-xs text-text-muted mb-1" for="basementW">Basement Width (ft)</label>
+            <input type="number" id="basementW" value="40" min="1" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="block text-xs text-text-muted mb-1" for="basementH">Basement Height (ft)</label>
+            <input type="number" id="basementH" value="7" min="1" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+          </div>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="garage">Include Detached Garage?</label>
+        <select id="garage" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0" selected>No</option>
+          <option value="1">Yes</option>
+        </select>
+      </div>
+      <div id="garage-dims-wrap" class="hidden md:col-span-2">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs text-text-muted mb-1" for="garageL">Garage Length (ft)</label>
+            <input type="number" id="garageL" value="24" min="1" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="block text-xs text-text-muted mb-1" for="garageW">Garage Width (ft)</label>
+            <input type="number" id="garageW" value="24" min="1" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="block text-xs text-text-muted mb-1" for="garageH">Garage Height (ft)</label>
+            <input type="number" id="garageH" value="10" min="1" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Volume</div>
+          <div id="result-volume" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div class="text-text-muted text-xs mt-1">cubic feet</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Gas Dosage</div>
+          <div id="result-gas" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">lbs (sulfuryl fluoride)</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Duration</div>
+          <div id="result-duration" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Main Structure</div>
+          <div id="result-main" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">cubic feet</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Gas dosage is a reference estimate based on 1 lb per 1,000 cu ft (sulfuryl fluoride). Always follow product label for exact dosage rates, exposure times, and safety requirements.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the structure's length and width.</strong> Measure the exterior dimensions of the building footprint. For L-shaped or irregular buildings, estimate the bounding rectangle or calculate sections separately.</p>
+          <p><strong class="text-text-primary">2. Set the average height to eaves.</strong> This is the wall height from ground to the roofline. Standard single-story homes are 8-9 feet; two-story homes are 16-18 feet.</p>
+          <p><strong class="text-text-primary">3. Include the attic if applicable.</strong> For peaked roofs, enter the height from eaves to peak. The calculator uses a pyramidal formula (1/3 of the rectangular volume) to estimate attic space.</p>
+          <p><strong class="text-text-primary">4. Add basement, garage, or shed.</strong> Toggle each section on and enter dimensions. All volumes are summed for the total fumigation volume.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Fumigation Volume Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator uses standard geometric formulas to compute total enclosed volume.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Main_Volume = Length x Width x Height</p>
+            <p>Attic_Volume = (Length x Width x Attic_Height) / 3</p>
+            <p>Total = Main + Attic + Basement + Garage</p>
+            <p>Gas_Dosage = Total_Volume / 1,000 lbs</p>
+          </div>
+          <p>The attic calculation uses the pyramidal roof formula, which estimates the average enclosed space under a peaked roof as one-third of the full rectangular volume. This is a standard approximation used in the fumigation industry.</p>
+          <p>Gas dosage at 1 lb per 1,000 cubic feet is a reference rate for sulfuryl fluoride (Vikane). Actual dosage varies by target pest, temperature, and exposure duration. Always reference the product label and state regulations.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do you calculate cubic footage for fumigation?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Multiply the structure's length by width by average height to eaves. For attic volume, calculate the pyramidal roof space as (length x width x attic height) divided by 3, then add it to the main volume. A typical 2,000 sq ft home with 8-foot ceilings and a 4-foot attic peak is approximately 18,600 cubic feet.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much fumigant gas is needed per cubic foot?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The standard dosage for sulfuryl fluoride (Vikane) is approximately 1 pound per 1,000 cubic feet for drywood termite fumigation. Actual dosage depends on target pest, temperature, exposure time, and product label requirements. Always follow the product label for exact dosage rates.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does structural fumigation take?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Structural fumigation typically takes 24 to 72 hours depending on the size of the structure, target pest, temperature conditions, and fumigant concentration used. Most residential fumigations are completed in 2-3 days including tenting, gas introduction, aeration, and clearance testing.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What affects fumigation cost?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Fumigation cost is primarily driven by cubic volume of the structure, regional labor rates, fumigant costs, and complexity factors like multi-story buildings, attached garages, or unusual roof lines. Larger volumes require more gas and longer exposure times, directly increasing cost.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const length = parseFloat((document.getElementById('length') as HTMLInputElement).value) || 0;
+    const width = parseFloat((document.getElementById('width') as HTMLInputElement).value) || 0;
+    const height = parseFloat((document.getElementById('height') as HTMLInputElement).value) || 0;
+    const hasAttic = (document.getElementById('attic') as HTMLSelectElement).value === '1';
+    const atticHeight = parseFloat((document.getElementById('atticHeight') as HTMLInputElement).value) || 0;
+    const hasBasement = (document.getElementById('basement') as HTMLSelectElement).value === '1';
+    const hasGarage = (document.getElementById('garage') as HTMLSelectElement).value === '1';
+
+    // Show/hide conditional inputs
+    document.getElementById('attic-height-wrap')!.classList.toggle('hidden', !hasAttic);
+    document.getElementById('basement-dims-wrap')!.classList.toggle('hidden', !hasBasement);
+    document.getElementById('garage-dims-wrap')!.classList.toggle('hidden', !hasGarage);
+
+    // Main volume
+    const mainVolume = length * width * height;
+
+    // Attic (pyramidal: 1/3 of rectangular volume)
+    const atticVolume = hasAttic ? (length * width * atticHeight) / 3 : 0;
+
+    // Basement
+    let basementVolume = 0;
+    if (hasBasement) {
+      const bL = parseFloat((document.getElementById('basementL') as HTMLInputElement).value) || 0;
+      const bW = parseFloat((document.getElementById('basementW') as HTMLInputElement).value) || 0;
+      const bH = parseFloat((document.getElementById('basementH') as HTMLInputElement).value) || 0;
+      basementVolume = bL * bW * bH;
+    }
+
+    // Garage
+    let garageVolume = 0;
+    if (hasGarage) {
+      const gL = parseFloat((document.getElementById('garageL') as HTMLInputElement).value) || 0;
+      const gW = parseFloat((document.getElementById('garageW') as HTMLInputElement).value) || 0;
+      const gH = parseFloat((document.getElementById('garageH') as HTMLInputElement).value) || 0;
+      garageVolume = gL * gW * gH;
+    }
+
+    const totalVolume = Math.round(mainVolume + atticVolume + basementVolume + garageVolume);
+    const gasDosage = (totalVolume / 1000).toFixed(1);
+
+    // Duration estimate
+    let duration = '24-48 hours';
+    if (totalVolume > 30000) duration = '48-72 hours';
+    if (totalVolume > 60000) duration = '72+ hours';
+
+    document.getElementById('result-volume')!.textContent = totalVolume.toLocaleString();
+    document.getElementById('result-gas')!.textContent = gasDosage + ' lbs';
+    document.getElementById('result-duration')!.textContent = duration;
+    document.getElementById('result-main')!.textContent = Math.round(mainVolume + atticVolume).toLocaleString();
+  }
+
+  document.querySelectorAll('#fum-calc input, #fum-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

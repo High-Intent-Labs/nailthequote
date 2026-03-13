@@ -1,0 +1,209 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/gcTools';
+
+const tool = getToolBySlug('cost-per-sqft-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does construction cost per square foot?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "In 2026, new home construction averages $150-300 per square foot depending on region, finishes, and complexity. Kitchen remodels run $100-250/sqft, bathroom remodels $120-220/sqft, and additions $120-180/sqft. These are national averages that vary significantly by market."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I calculate cost per square foot?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Divide the total project cost by the total square footage. For example, a $72,000 project on 2,000 square feet = $36/sqft. For more useful analysis, break it down by phase: foundation at $6/sqft, framing at $12/sqft, and finishing at $18/sqft."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="cpsf-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="totalCost">Total Project Cost ($)</label>
+        <input type="number" id="totalCost" value="72000" min="0" step="1000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="totalSqft">Total Square Footage</label>
+        <input type="number" id="totalSqft" value="2000" min="1" max="100000" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="projectType">Project Type</label>
+        <select id="projectType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="new-home" selected>New Home Construction</option>
+          <option value="kitchen">Kitchen Remodel</option>
+          <option value="bathroom">Bathroom Remodel</option>
+          <option value="addition">Addition</option>
+          <option value="whole-house">Whole-House Remodel</option>
+          <option value="custom">Custom / Other</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="targetCpsf">Target $/sqft (optional)</label>
+        <input type="number" id="targetCpsf" value="" min="0" max="1000" step="5" placeholder="Enter target..." class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <h4 class="font-heading font-bold text-lg mb-3 text-text-primary">Phase Breakdown (optional)</h4>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+      <div>
+        <label class="block text-xs text-text-muted mb-1">Site Prep ($)</label>
+        <input type="number" id="phase1" value="0" min="0" step="500" class="phase-input w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1">Foundation ($)</label>
+        <input type="number" id="phase2" value="0" min="0" step="500" class="phase-input w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1">Framing ($)</label>
+        <input type="number" id="phase3" value="0" min="0" step="500" class="phase-input w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1">Mechanical (MEP) ($)</label>
+        <input type="number" id="phase4" value="0" min="0" step="500" class="phase-input w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1">Finishing ($)</label>
+        <input type="number" id="phase5" value="0" min="0" step="500" class="phase-input w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1">Other ($)</label>
+        <input type="number" id="phase6" value="0" min="0" step="500" class="phase-input w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cost per Sq Ft</div>
+          <div id="result-cpsf" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Industry Range</div>
+          <div id="result-range" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">vs. Target</div>
+          <div id="result-variance" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div id="phase-results" class="bg-bg-dark rounded-xl p-6 mb-6 hidden">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Phase Breakdown</h4>
+        <div id="phase-list" class="text-text-secondary text-sm space-y-2"></div>
+      </div>
+
+      <p class="text-text-muted text-sm italic">Industry benchmarks are 2026 US national averages. Actual costs vary significantly by region, material quality, and project complexity.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter total project cost and square footage.</strong> Use the actual or estimated total project cost and the total square footage of the project area.</p>
+          <p><strong class="text-text-primary">2. Select your project type.</strong> This determines which industry benchmark to compare against.</p>
+          <p><strong class="text-text-primary">3. Optionally enter phase costs.</strong> Break down costs by construction phase for a more detailed analysis.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does construction cost per square foot?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">In 2026, new home construction averages $150-300/sqft. Kitchen remodels run $100-250/sqft, bathroom remodels $120-220/sqft, and additions $120-180/sqft.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate cost per square foot?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Divide the total project cost by the total square footage. For more useful analysis, break it down by phase.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  const benchmarks: Record<string, [number, number]> = {
+    'new-home': [150, 300],
+    'kitchen': [100, 250],
+    'bathroom': [120, 220],
+    'addition': [120, 180],
+    'whole-house': [100, 200],
+    'custom': [0, 0],
+  };
+
+  function calculate() {
+    const totalCost = parseFloat((document.getElementById('totalCost') as HTMLInputElement).value) || 0;
+    const totalSqft = parseFloat((document.getElementById('totalSqft') as HTMLInputElement).value) || 1;
+    const projectType = (document.getElementById('projectType') as HTMLSelectElement).value;
+    const targetCpsf = parseFloat((document.getElementById('targetCpsf') as HTMLInputElement).value) || 0;
+
+    const cpsf = totalCost / totalSqft;
+    const [bLow, bHigh] = benchmarks[projectType] || [0, 0];
+
+    document.getElementById('result-cpsf')!.textContent = '$' + cpsf.toFixed(0);
+    document.getElementById('result-range')!.textContent = bLow > 0 ? `$${bLow} - $${bHigh}/sqft` : 'N/A';
+
+    const varEl = document.getElementById('result-variance')!;
+    if (targetCpsf > 0) {
+      const variance = cpsf - targetCpsf;
+      const varPct = ((variance / targetCpsf) * 100).toFixed(1);
+      varEl.textContent = (variance >= 0 ? '+' : '') + '$' + variance.toFixed(0) + ' (' + varPct + '%)';
+      varEl.className = 'font-heading font-extrabold text-2xl ' + (variance <= 0 ? 'text-[#34D399]' : 'text-[#EF4444]');
+    } else {
+      varEl.textContent = '--';
+      varEl.className = 'font-heading font-extrabold text-2xl text-text-primary';
+    }
+
+    // Phase breakdown
+    const phases = [
+      { name: 'Site Prep', el: 'phase1' },
+      { name: 'Foundation', el: 'phase2' },
+      { name: 'Framing', el: 'phase3' },
+      { name: 'Mechanical (MEP)', el: 'phase4' },
+      { name: 'Finishing', el: 'phase5' },
+      { name: 'Other', el: 'phase6' },
+    ];
+
+    const phaseData = phases.map(p => ({
+      name: p.name,
+      cost: parseFloat((document.getElementById(p.el) as HTMLInputElement).value) || 0,
+    })).filter(p => p.cost > 0);
+
+    const phaseResults = document.getElementById('phase-results')!;
+    const phaseList = document.getElementById('phase-list')!;
+
+    if (phaseData.length > 0) {
+      phaseResults.classList.remove('hidden');
+      phaseList.innerHTML = phaseData.map(p => {
+        const pCpsf = p.cost / totalSqft;
+        return `<div class="flex justify-between"><span>${p.name}</span><span class="text-text-primary font-medium">$${p.cost.toLocaleString()} ($${pCpsf.toFixed(0)}/sqft)</span></div>`;
+      }).join('') + `<div class="border-t border-border mt-3 pt-3 flex justify-between font-medium"><span>Phases Total</span><span class="text-accent">$${phaseData.reduce((s, p) => s + p.cost, 0).toLocaleString()}</span></div>`;
+    } else {
+      phaseResults.classList.add('hidden');
+    }
+  }
+
+  document.querySelectorAll('#cpsf-calc input, #cpsf-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

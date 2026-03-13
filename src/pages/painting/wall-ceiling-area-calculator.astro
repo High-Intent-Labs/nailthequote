@@ -1,0 +1,232 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/paintingTools';
+
+const tool = getToolBySlug('wall-ceiling-area-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I calculate wall area for painting?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Measure the room's length and width, then calculate the perimeter: 2 x (length + width). Multiply the perimeter by the ceiling height to get gross wall area. Subtract the area of all windows and doors to get the net paintable wall area."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I include the ceiling in my paint area calculation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Include the ceiling if you plan to paint it. Ceiling area is simply length times width. Many interior paint jobs include the ceiling, especially when changing colors or refreshing a room. Ceilings typically use flat paint, which has slightly different coverage rates."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much area does a standard door or window take up?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A standard interior door is approximately 3 ft x 7 ft (21 sq ft). A standard window is approximately 3 ft x 4 ft (12 sq ft). Deducting these from your wall area prevents you from overestimating paint needs."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need to calculate trim area separately?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, if you are painting baseboards, crown molding, or door/window trim, calculate that area separately. Trim paint is typically a different product (semi-gloss or gloss) and has different coverage rates than wall paint."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="area-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roomLength">Room Length (ft)</label>
+        <input type="number" id="roomLength" value="12" min="1" max="200" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roomWidth">Room Width (ft)</label>
+        <input type="number" id="roomWidth" value="10" min="1" max="200" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="ceilingHeight">Ceiling Height (ft)</label>
+        <input type="number" id="ceilingHeight" value="8" min="6" max="30" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="numWindows">Number of Windows</label>
+        <input type="number" id="numWindows" value="2" min="0" max="20" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="windowW">Window Width (ft)</label>
+        <input type="number" id="windowW" value="3" min="1" max="20" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="windowH">Window Height (ft)</label>
+        <input type="number" id="windowH" value="4" min="1" max="20" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="numDoors">Number of Doors</label>
+        <input type="number" id="numDoors" value="1" min="0" max="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="doorSize">Door Size</label>
+        <select id="doorSize" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="21">Standard (3 ft x 7 ft)</option>
+          <option value="28">Wide (4 ft x 7 ft)</option>
+          <option value="42">Double (6 ft x 7 ft)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="includeCeiling">Include Ceiling?</label>
+        <select id="includeCeiling" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1" selected>Yes</option>
+          <option value="0">No</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="includeTrim">Include Trim / Baseboards?</label>
+        <select id="includeTrim" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0" selected>No</option>
+          <option value="1">Yes</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Wall Area</div>
+          <div id="result-walls" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">sq ft</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Ceiling Area</div>
+          <div id="result-ceiling" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">sq ft</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Trim Area</div>
+          <div id="result-trim" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">sq ft</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Paintable</div>
+          <div id="result-total" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div class="text-text-muted text-xs mt-1">sq ft</div>
+        </div>
+      </div>
+      <div class="bg-bg-dark rounded-xl p-5 mb-4">
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div class="flex justify-between"><span class="text-text-muted">Gross wall area (before deductions)</span><span id="detail-gross" class="text-text-primary font-medium">--</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Windows deducted</span><span id="detail-windows" class="text-text-primary font-medium">--</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Doors deducted</span><span id="detail-doors" class="text-text-primary font-medium">--</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Perimeter</span><span id="detail-perimeter" class="text-text-primary font-medium">--</span></div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Use your total paintable area in the <a href="/painting/paint-coverage-calculator" class="text-accent hover:underline">Paint Coverage Calculator</a> to estimate gallons needed.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter room dimensions.</strong> Measure the length, width, and ceiling height. If the room is L-shaped, break it into two rectangles and run the calculator twice.</p>
+          <p><strong class="text-text-primary">2. Count windows and doors.</strong> Enter the number of windows and their average size. Select the door type from the dropdown. The calculator automatically deducts these from the wall area.</p>
+          <p><strong class="text-text-primary">3. Choose ceiling and trim options.</strong> Check "Include Ceiling" if you are painting it. Check "Include Trim" to add baseboard area (calculated at 4 inches high around the perimeter).</p>
+          <p><strong class="text-text-primary">4. Read your total.</strong> The total paintable area is what you need for paint quantity estimates. Use this number in the Paint Coverage Calculator next.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Wall Area Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator uses standard geometric formulas to determine paintable surface area:</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Perimeter = 2 x (Length + Width)</p>
+            <p>Gross_Wall_Area = Perimeter x Ceiling_Height</p>
+            <p>Net_Wall_Area = Gross_Wall_Area - Windows_Area - Doors_Area</p>
+            <p>Ceiling_Area = Length x Width (if selected)</p>
+            <p>Trim_Area = Perimeter x 0.33 ft (if selected)</p>
+            <p>Total = Net_Wall_Area + Ceiling_Area + Trim_Area</p>
+          </div>
+          <p>This gives you the net paintable area after deducting openings. Accurate area measurement is the foundation of every paint estimate -- wrong area means wrong paint amount and incorrect labor hours.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate wall area for painting?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Measure the room's length and width, then calculate the perimeter: 2 x (length + width). Multiply the perimeter by the ceiling height to get gross wall area. Subtract the area of all windows and doors to get the net paintable wall area.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I include the ceiling in my paint area calculation?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Include the ceiling if you plan to paint it. Ceiling area is simply length times width. Many interior paint jobs include the ceiling, especially when changing colors or refreshing a room. Ceilings typically use flat paint, which has slightly different coverage rates.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much area does a standard door or window take up?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard interior door is approximately 3 ft x 7 ft (21 sq ft). A standard window is approximately 3 ft x 4 ft (12 sq ft). Deducting these from your wall area prevents you from overestimating paint needs.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Do I need to calculate trim area separately?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes, if you are painting baseboards, crown molding, or door/window trim, calculate that area separately. Trim paint is typically a different product (semi-gloss or gloss) and has different coverage rates than wall paint.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const length = parseFloat((document.getElementById('roomLength') as HTMLInputElement).value) || 12;
+    const width = parseFloat((document.getElementById('roomWidth') as HTMLInputElement).value) || 10;
+    const height = parseFloat((document.getElementById('ceilingHeight') as HTMLInputElement).value) || 8;
+    const numWindows = parseInt((document.getElementById('numWindows') as HTMLInputElement).value) || 0;
+    const windowW = parseFloat((document.getElementById('windowW') as HTMLInputElement).value) || 3;
+    const windowH = parseFloat((document.getElementById('windowH') as HTMLInputElement).value) || 4;
+    const numDoors = parseInt((document.getElementById('numDoors') as HTMLInputElement).value) || 0;
+    const doorArea = parseFloat((document.getElementById('doorSize') as HTMLSelectElement).value) || 21;
+    const includeCeiling = parseInt((document.getElementById('includeCeiling') as HTMLSelectElement).value);
+    const includeTrim = parseInt((document.getElementById('includeTrim') as HTMLSelectElement).value);
+
+    const perimeter = 2 * (length + width);
+    const grossWallArea = perimeter * height;
+    const windowsArea = numWindows * windowW * windowH;
+    const doorsArea = numDoors * doorArea;
+    const netWallArea = Math.max(0, grossWallArea - windowsArea - doorsArea);
+
+    const ceilingArea = includeCeiling ? length * width : 0;
+    const trimArea = includeTrim ? perimeter * 0.33 : 0;
+    const totalArea = Math.round(netWallArea + ceilingArea + trimArea);
+
+    document.getElementById('result-walls')!.textContent = Math.round(netWallArea).toLocaleString();
+    document.getElementById('result-ceiling')!.textContent = Math.round(ceilingArea).toLocaleString();
+    document.getElementById('result-trim')!.textContent = Math.round(trimArea).toLocaleString();
+    document.getElementById('result-total')!.textContent = totalArea.toLocaleString();
+
+    document.getElementById('detail-gross')!.textContent = Math.round(grossWallArea) + ' sq ft';
+    document.getElementById('detail-windows')!.textContent = '-' + Math.round(windowsArea) + ' sq ft';
+    document.getElementById('detail-doors')!.textContent = '-' + Math.round(doorsArea) + ' sq ft';
+    document.getElementById('detail-perimeter')!.textContent = perimeter + ' ft';
+  }
+
+  document.querySelectorAll('#area-calc input, #area-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

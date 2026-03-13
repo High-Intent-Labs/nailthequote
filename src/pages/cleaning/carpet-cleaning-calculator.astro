@@ -1,0 +1,224 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/cleaningTools';
+
+const tool = getToolBySlug('carpet-cleaning-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does carpet cleaning cost per square foot?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Carpet cleaning costs $0.25-0.40/sqft for light soiling, $0.35-0.55/sqft for moderate, $0.50-0.80/sqft for heavy, and $0.80-1.50/sqft for extreme soiling. The extraction method, soil level, and number of stairs all affect the final price." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the best carpet cleaning method?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Truckmount hot water extraction is the gold standard for residential carpet cleaning, producing the deepest clean at 900-1100 sqft/hr. Encapsulation (1700 sqft/hr) is faster and better for commercial maintenance. Self-contained units (1300 sqft/hr) work well for apartments and high-rises where truckmount access is limited." }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does it take to clean 2000 sqft of carpet?",
+      "acceptedAnswer": { "@type": "Answer", "text": "With a truckmount wand at moderate soil, 2000 sqft takes about 2.5-3 hours including setup. Encapsulation is faster at about 1.5 hours. Heavy soiling doubles the time. Always add 10 minutes for setup/teardown and 2 minutes per stair if applicable." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="carpet-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="carpetSqft">Total Carpet Square Footage</label>
+        <input type="number" id="carpetSqft" value="2000" min="100" max="50000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="method">Extraction Method</label>
+        <select id="method" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="900">Truckmount Wand (900 sqft/hr)</option>
+          <option value="1100">Truckmount Rotary (1100 sqft/hr)</option>
+          <option value="800">Portable / Box Unit (800 sqft/hr)</option>
+          <option value="1300">Self-Contained Unit (1300 sqft/hr)</option>
+          <option value="1700">Encapsulation (1700 sqft/hr)</option>
+          <option value="9000">Dry Foam (9000 sqft/hr)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="soilLevel">Soil Level</label>
+        <select id="soilLevel" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0">Light (regular maintenance)</option>
+          <option value="1.2" selected>Moderate (visible traffic lanes)</option>
+          <option value="1.5">Heavy (stains, pet areas)</option>
+          <option value="2.0">Extremely Soiled (restoration)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="stairs">Number of Stairs</label>
+        <input type="number" id="stairs" value="0" min="0" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">+2 min per stair (manual cleaning)</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="billableRate">Billable Rate ($/hr)</label>
+        <input type="number" id="billableRate" value="65" min="20" max="200" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Time Estimate</div>
+          <div id="result-time" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Recommended Price</div>
+          <div id="result-price" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Per Sqft Rate</div>
+          <div id="result-persqft" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Effective Sqft/Hr</div>
+          <div id="result-sqfthr" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <!-- Method comparison -->
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Extraction Method Comparison</h4>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Truckmount Wand</span>
+              <span class="text-text-primary font-semibold">900 sqft/hr</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#60A5FA] h-2 rounded-full" style="width: 53%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Truckmount Rotary</span>
+              <span class="text-text-primary font-semibold">1100 sqft/hr</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#34D399] h-2 rounded-full" style="width: 65%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Portable / Box Unit</span>
+              <span class="text-text-primary font-semibold">800 sqft/hr</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#FBBF24] h-2 rounded-full" style="width: 47%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Self-Contained</span>
+              <span class="text-text-primary font-semibold">1300 sqft/hr</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#C084FC] h-2 rounded-full" style="width: 76%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Encapsulation</span>
+              <span class="text-text-primary font-semibold">1700 sqft/hr</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#F472B6] h-2 rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic mt-4">Rates based on ISSA and IICRC extraction standards. Soil level significantly impacts actual throughput. Dry foam (9000 sqft/hr) excluded from chart — commercial use only.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the total carpet area.</strong> Measure or estimate the square footage of carpet to be cleaned. Exclude hard floor areas.</p>
+          <p><strong class="text-text-primary">2. Select your extraction method.</strong> Each method has a different production rate. Truckmount wand is the most common residential method. Encapsulation is popular for commercial maintenance.</p>
+          <p><strong class="text-text-primary">3. Set the soil level.</strong> Light soiling runs at baseline speed. Heavy and extreme soiling cuts your effective rate significantly — plan accordingly.</p>
+          <p><strong class="text-text-primary">4. Add stairs if applicable.</strong> Each stair adds 2 minutes of manual cleaning time on top of the area-based estimate.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator uses ISSA and IICRC extraction rate data as a baseline, then adjusts for soil conditions.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Adjusted_Rate = Method_Rate / Soil_Multiplier</p>
+            <p>Cleaning_Time = (Carpet_Sqft / Adjusted_Rate) x 60 min</p>
+            <p>+ Stairs x 2 min each</p>
+            <p>+ 10 min setup/teardown</p>
+            <p>Price = (Total_Time / 60) x Billable_Rate</p>
+          </div>
+          <p>Soil multipliers: Light (1.0x), Moderate (1.2x), Heavy (1.5x), Extremely Soiled (2.0x). Heavy soiling effectively cuts your throughput in half compared to light maintenance cleaning.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does carpet cleaning cost per square foot?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Carpet cleaning costs $0.25-0.40/sqft for light soiling, $0.35-0.55/sqft for moderate, $0.50-0.80/sqft for heavy, and $0.80-1.50/sqft for extreme soiling. The extraction method, soil level, and number of stairs all affect the final price.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the best carpet cleaning method?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Truckmount hot water extraction is the gold standard for residential carpet cleaning, producing the deepest clean at 900-1100 sqft/hr. Encapsulation (1700 sqft/hr) is faster and better for commercial maintenance. Self-contained units (1300 sqft/hr) work well for apartments and high-rises where truckmount access is limited.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does it take to clean 2000 sqft of carpet?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">With a truckmount wand at moderate soil, 2000 sqft takes about 2.5-3 hours including setup. Encapsulation is faster at about 1.5 hours. Heavy soiling doubles the time. Always add 10 minutes for setup/teardown and 2 minutes per stair if applicable.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const carpetSqft = parseFloat((document.getElementById('carpetSqft') as HTMLInputElement).value) || 2000;
+    const methodRate = parseFloat((document.getElementById('method') as HTMLSelectElement).value);
+    const soilMultiplier = parseFloat((document.getElementById('soilLevel') as HTMLSelectElement).value);
+    const stairs = parseInt((document.getElementById('stairs') as HTMLInputElement).value) || 0;
+    const billableRate = parseFloat((document.getElementById('billableRate') as HTMLInputElement).value) || 65;
+
+    const adjustedRate = methodRate / soilMultiplier;
+    const cleaningMinutes = (carpetSqft / adjustedRate) * 60;
+    const stairsMinutes = stairs * 2;
+    const setupMinutes = 10;
+    const totalMinutes = cleaningMinutes + stairsMinutes + setupMinutes;
+
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = Math.round(totalMinutes % 60);
+    const price = (totalMinutes / 60) * billableRate;
+    const perSqft = price / carpetSqft;
+    const effectiveSqftHr = carpetSqft / (totalMinutes / 60);
+
+    document.getElementById('result-time')!.textContent = `${hours}h ${mins}m`;
+    document.getElementById('result-price')!.textContent = '$' + Math.round(price).toLocaleString();
+    document.getElementById('result-persqft')!.textContent = '$' + perSqft.toFixed(2) + '/sqft';
+    document.getElementById('result-sqfthr')!.textContent = Math.round(effectiveSqftHr).toLocaleString();
+  }
+
+  document.querySelectorAll('#carpet-calc input, #carpet-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

@@ -1,0 +1,322 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/electricalTools';
+
+const tool = getToolBySlug('box-fill-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do you calculate box fill per NEC 314.16?",
+      "acceptedAnswer": { "@type": "Answer", "text": "NEC 314.16 assigns a volume allowance to each item in the box based on the largest conductor size. Each conductor counts as one volume, each device (switch/outlet) counts as two volumes, internal cable clamps count as one volume total (regardless of number), and each equipment grounding conductor set counts as one volume. The total must not exceed the box volume from NEC Table 314.16(A)." }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the NEC box fill volumes by wire size?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Per NEC Table 314.16(B): #14 AWG = 2.00 cubic inches, #12 AWG = 2.25 cubic inches, #10 AWG = 2.50 cubic inches, #8 AWG = 3.00 cubic inches, #6 AWG = 5.00 cubic inches. These volumes apply to each conductor, device slot, clamp allowance, and ground wire allowance in the box." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does the ground wire count for box fill?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, but all equipment grounding conductors together count as only one volume allowance, based on the largest ground wire in the box. If you have four #12 grounds, they count as one #12 volume (2.25 cubic inches total), not four separate volumes." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="box-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="boxType">Box Type</label>
+        <select id="boxType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="single-18" selected>Single Gang — 18 cu in (3x2x3.5)</option>
+          <option value="single-20.3">Single Gang — 20.3 cu in (3x2x3.75)</option>
+          <option value="single-22.5">Single Gang, Deep — 22.5 cu in</option>
+          <option value="double-34">Double Gang — 34 cu in</option>
+          <option value="double-39">Double Gang, Deep — 39 cu in</option>
+          <option value="round-15.5">4" Round/Oct — 15.5 cu in (1.5" deep)</option>
+          <option value="round-21.5">4" Round/Oct — 21.5 cu in (2.125" deep)</option>
+          <option value="square-21">4" Square — 21 cu in (1.5" deep)</option>
+          <option value="square-30.3">4" Square — 30.3 cu in (2.125" deep)</option>
+          <option value="square-42">4-11/16" Square — 42 cu in (2.125" deep)</option>
+          <option value="custom">Custom Volume</option>
+        </select>
+      </div>
+      <div id="customVolumeWrap" style="display:none;">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="customVolume">Custom Box Volume (cu in)</label>
+        <input type="number" id="customVolume" value="25" min="1" max="200" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <h3 class="font-heading font-bold text-base mb-3 text-text-primary">Conductors</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="cond14">Number of #14 AWG</label>
+        <input type="number" id="cond14" value="0" min="0" max="20" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="cond12">Number of #12 AWG</label>
+        <input type="number" id="cond12" value="4" min="0" max="20" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="cond10">Number of #10 AWG</label>
+        <input type="number" id="cond10" value="0" min="0" max="20" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="cond8">Number of #8 AWG</label>
+        <input type="number" id="cond8" value="0" min="0" max="20" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="cond6">Number of #6 AWG</label>
+        <input type="number" id="cond6" value="0" min="0" max="20" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <h3 class="font-heading font-bold text-base mb-3 text-text-primary">Devices, Clamps &amp; Grounds</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="devices">Devices (switches/outlets)</label>
+        <input type="number" id="devices" value="1" min="0" max="10" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="clamps">Internal Clamps</label>
+        <select id="clamps" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors">
+          <option value="0">None / External</option>
+          <option value="1" selected>Yes (any number)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="grounds">Grounding Conductors</label>
+        <select id="grounds" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors">
+          <option value="0">None</option>
+          <option value="1" selected>Yes (any number)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="fittings">Support Fittings</label>
+        <select id="fittings" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors">
+          <option value="0" selected>None</option>
+          <option value="1">Yes (any number)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Fill</div>
+          <div id="result-fill" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Box Volume</div>
+          <div id="result-volume" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Fill %</div>
+          <div id="result-percent" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Status</div>
+          <div id="result-status" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-5 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-3">Fill Breakdown</h4>
+        <div id="breakdown" class="space-y-1 text-sm text-text-secondary"></div>
+      </div>
+
+      <div id="result-suggestion" class="mb-4"></div>
+      <p class="text-text-muted text-sm italic">Based on NEC 314.16 and Table 314.16(B). Verify with your local AHJ.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select the box type and size.</strong> Common residential boxes are single gang 18 cu in. Junction boxes are typically 4" square or round.</p>
+          <p><strong class="text-text-primary">2. Enter conductor counts by gauge.</strong> Count every wire entering the box. Pigtails made inside the box do not count unless they leave the box.</p>
+          <p><strong class="text-text-primary">3. Add devices, clamps, and grounds.</strong> Each device (switch/outlet) counts as 2 volumes. All clamps together count as 1 volume. All grounds together count as 1 volume.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">NEC 314.16 Volume Allowances</h2>
+        <div class="text-text-secondary leading-relaxed">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>#14 AWG: 2.00 cu in per conductor</p>
+            <p>#12 AWG: 2.25 cu in per conductor</p>
+            <p>#10 AWG: 2.50 cu in per conductor</p>
+            <p>#8 AWG: 3.00 cu in per conductor</p>
+            <p>#6 AWG: 5.00 cu in per conductor</p>
+            <p>Device: 2x volume of largest conductor connected</p>
+            <p>Clamps: 1x volume of largest conductor (total, not each)</p>
+            <p>Grounds: 1x volume of largest ground (total, not each)</p>
+            <p>Fittings: 1x volume of largest conductor (total)</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do you calculate box fill per NEC 314.16?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Each conductor counts as one volume allowance. Devices count as two volumes each. All clamps together count as one volume. All grounds together count as one volume. Use the volume allowance from NEC Table 314.16(B) based on the largest wire gauge.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What are the NEC box fill volumes by wire size?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">#14 AWG = 2.00 cu in, #12 AWG = 2.25 cu in, #10 AWG = 2.50 cu in, #8 AWG = 3.00 cu in, #6 AWG = 5.00 cu in per Table 314.16(B).</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Does the ground wire count for box fill?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes, but all grounding conductors together count as only one volume allowance, based on the largest ground wire in the box.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  // NEC Table 314.16(B) volume allowances (cu in)
+  const volumePerWire: Record<string, number> = {
+    '14': 2.00, '12': 2.25, '10': 2.50, '8': 3.00, '6': 5.00
+  };
+
+  // Box volumes
+  const boxVolumes: Record<string, number> = {
+    'single-18': 18, 'single-20.3': 20.3, 'single-22.5': 22.5,
+    'double-34': 34, 'double-39': 39,
+    'round-15.5': 15.5, 'round-21.5': 21.5,
+    'square-21': 21, 'square-30.3': 30.3, 'square-42': 42,
+  };
+
+  function calculate() {
+    const boxType = (document.getElementById('boxType') as HTMLSelectElement).value;
+    const customVolume = parseFloat((document.getElementById('customVolume') as HTMLInputElement).value) || 25;
+
+    document.getElementById('customVolumeWrap')!.style.display = boxType === 'custom' ? '' : 'none';
+
+    const boxVol = boxType === 'custom' ? customVolume : (boxVolumes[boxType] || 18);
+
+    const counts: Record<string, number> = {
+      '14': parseInt((document.getElementById('cond14') as HTMLInputElement).value) || 0,
+      '12': parseInt((document.getElementById('cond12') as HTMLInputElement).value) || 0,
+      '10': parseInt((document.getElementById('cond10') as HTMLInputElement).value) || 0,
+      '8': parseInt((document.getElementById('cond8') as HTMLInputElement).value) || 0,
+      '6': parseInt((document.getElementById('cond6') as HTMLInputElement).value) || 0,
+    };
+
+    const devices = parseInt((document.getElementById('devices') as HTMLInputElement).value) || 0;
+    const hasClamps = parseInt((document.getElementById('clamps') as HTMLSelectElement).value) || 0;
+    const hasGrounds = parseInt((document.getElementById('grounds') as HTMLSelectElement).value) || 0;
+    const hasFittings = parseInt((document.getElementById('fittings') as HTMLSelectElement).value) || 0;
+
+    // Find largest conductor gauge
+    const gauges = ['6', '8', '10', '12', '14'];
+    let largestGauge = '14';
+    for (const g of gauges) {
+      if (counts[g] > 0) { largestGauge = g; break; }
+    }
+    const largestVol = volumePerWire[largestGauge];
+
+    // Calculate fill
+    let totalFill = 0;
+    const breakdown: string[] = [];
+
+    // Conductor fill
+    for (const [gauge, count] of Object.entries(counts)) {
+      if (count > 0) {
+        const vol = volumePerWire[gauge] * count;
+        totalFill += vol;
+        breakdown.push(`<div class="flex justify-between"><span>${count}x #${gauge} AWG conductors</span><span class="font-mono text-text-primary">${vol.toFixed(2)} cu in</span></div>`);
+      }
+    }
+
+    // Device fill (2x largest per device)
+    if (devices > 0) {
+      const devVol = devices * 2 * largestVol;
+      totalFill += devVol;
+      breakdown.push(`<div class="flex justify-between"><span>${devices} device(s) @ 2x #${largestGauge}</span><span class="font-mono text-text-primary">${devVol.toFixed(2)} cu in</span></div>`);
+    }
+
+    // Clamp fill (1x largest, total)
+    if (hasClamps) {
+      totalFill += largestVol;
+      breakdown.push(`<div class="flex justify-between"><span>Internal clamps (1x #${largestGauge})</span><span class="font-mono text-text-primary">${largestVol.toFixed(2)} cu in</span></div>`);
+    }
+
+    // Ground fill (1x largest, total)
+    if (hasGrounds) {
+      totalFill += largestVol;
+      breakdown.push(`<div class="flex justify-between"><span>Grounding conductors (1x #${largestGauge})</span><span class="font-mono text-text-primary">${largestVol.toFixed(2)} cu in</span></div>`);
+    }
+
+    // Fitting fill (1x largest, total)
+    if (hasFittings) {
+      totalFill += largestVol;
+      breakdown.push(`<div class="flex justify-between"><span>Support fittings (1x #${largestGauge})</span><span class="font-mono text-text-primary">${largestVol.toFixed(2)} cu in</span></div>`);
+    }
+
+    const fillPercent = boxVol > 0 ? (totalFill / boxVol) * 100 : 0;
+    const pass = totalFill <= boxVol;
+
+    // Display
+    document.getElementById('result-fill')!.textContent = totalFill.toFixed(2) + ' cu in';
+    document.getElementById('result-volume')!.textContent = boxVol + ' cu in';
+    document.getElementById('result-percent')!.textContent = fillPercent.toFixed(0) + '%';
+
+    const statusEl = document.getElementById('result-status')!;
+    const percentEl = document.getElementById('result-percent')!;
+    percentEl.classList.remove('text-[#34D399]', 'text-[#EF4444]');
+
+    if (pass) {
+      statusEl.textContent = 'PASS';
+      statusEl.className = 'font-heading font-extrabold text-xl text-[#34D399]';
+      percentEl.classList.add('text-[#34D399]');
+    } else {
+      statusEl.textContent = 'FAIL';
+      statusEl.className = 'font-heading font-extrabold text-xl text-[#EF4444]';
+      percentEl.classList.add('text-[#EF4444]');
+    }
+
+    document.getElementById('breakdown')!.innerHTML = breakdown.join('');
+
+    // Suggest next size
+    const suggEl = document.getElementById('result-suggestion')!;
+    if (!pass) {
+      const allBoxes = [
+        { name: 'Single Gang 18 cu in', vol: 18 },
+        { name: 'Single Gang 20.3 cu in', vol: 20.3 },
+        { name: 'Single Gang Deep 22.5 cu in', vol: 22.5 },
+        { name: 'Double Gang 34 cu in', vol: 34 },
+        { name: 'Double Gang Deep 39 cu in', vol: 39 },
+        { name: '4" Round/Oct 21.5 cu in', vol: 21.5 },
+        { name: '4" Square 30.3 cu in', vol: 30.3 },
+        { name: '4-11/16" Square 42 cu in', vol: 42 },
+      ];
+      const suitable = allBoxes.filter(b => b.vol >= totalFill).sort((a, b) => a.vol - b.vol);
+      if (suitable.length > 0) {
+        suggEl.innerHTML = `<div class="bg-[rgba(251,191,36,0.1)] border border-[rgba(251,191,36,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCD34D]">Use a larger box: <strong>${suitable[0].name}</strong> (fill ${((totalFill / suitable[0].vol) * 100).toFixed(0)}%)</div>`;
+      } else {
+        suggEl.innerHTML = `<div class="bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCA5A5]">Exceeds all standard box sizes. Reduce conductors or use a pull box.</div>`;
+      }
+    } else {
+      suggEl.innerHTML = '';
+    }
+  }
+
+  document.querySelectorAll('#box-calc select, #box-calc input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+  calculate();
+</script>

@@ -1,0 +1,192 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/gcTools';
+
+const tool = getToolBySlug('drywall-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How many sheets of drywall do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Calculate the total square footage of walls and ceiling, then divide by the sheet size (32 sqft for 4x8, 40 sqft for 4x10, 48 sqft for 4x12). Round up and add 10% for waste. For a 12x12 room with 8-foot ceilings: 384 sqft walls + 144 sqft ceiling = 528 sqft / 32 = 17 sheets, plus 10% waste = 19 sheets."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much joint compound do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The rule of thumb is 0.9 gallons of joint compound per 100 square feet of drywall for three coats (tape, fill, and finish). A 500 sqft room needs approximately 4.5 gallons. Pre-mixed lightweight compound is recommended for most residential work."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What size drywall should I use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use 4x8 sheets for standard 8-foot walls. Use 4x12 sheets for 9 or 10-foot walls to eliminate horizontal seams. For ceilings, longer sheets (4x12) reduce joints. Thickness is typically 1/2 inch for walls and 5/8 inch for ceilings and fire-rated assemblies."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="dw-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roomLength">Room Length (ft)</label>
+        <input type="number" id="roomLength" value="12" min="1" max="200" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roomWidth">Room Width (ft)</label>
+        <input type="number" id="roomWidth" value="12" min="1" max="200" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roomHeight">Wall Height (ft)</label>
+        <input type="number" id="roomHeight" value="8" min="6" max="20" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="sheetSize">Sheet Size</label>
+        <select id="sheetSize" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="32" selected>4' x 8' (32 sqft)</option>
+          <option value="40">4' x 10' (40 sqft)</option>
+          <option value="48">4' x 12' (48 sqft)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="includeCeiling">Include Ceiling</label>
+        <select id="includeCeiling" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="yes" selected>Yes</option>
+          <option value="no">No (walls only)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="dwWaste">Waste Factor</label>
+        <select id="dwWaste" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.10" selected>10% (standard rooms)</option>
+          <option value="1.15">15% (complex layout)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Sheets Needed</div>
+          <div id="result-sheets" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Sq Ft</div>
+          <div id="result-sqft" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Tape (rolls)</div>
+          <div id="result-tape" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Joint Compound</div>
+          <div id="result-mud" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">gallons (3 coats)</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Material Order List</h4>
+        <div id="order-list" class="text-text-secondary text-sm space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter room dimensions.</strong> Measure the room length, width, and wall height. The calculator handles a standard rectangular room with 4 walls.</p>
+          <p><strong class="text-text-primary">2. Select sheet size.</strong> Use 4x8 for standard 8-foot walls. Use 4x12 for 9 or 10-foot ceilings to minimize horizontal seams.</p>
+          <p><strong class="text-text-primary">3. Include or exclude ceiling.</strong> Select whether you are drywalling the ceiling in addition to the walls.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Wall_SqFt = 2 x (Length x Height) + 2 x (Width x Height)</p>
+            <p>Ceiling_SqFt = Length x Width</p>
+            <p>Sheets = Total_SqFt / Sheet_SqFt x Waste_Factor</p>
+            <p>Joint_Compound_gal = Total_SqFt / 100 x 0.9</p>
+          </div>
+          <p>Tape is estimated based on total seam length. Each sheet creates approximately 12 linear feet of seam. Standard tape rolls are 500 feet. Joint compound follows the industry rule of 0.9 gallons per 100 square feet for three coats.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many sheets of drywall do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Calculate the total square footage of walls and ceiling, then divide by the sheet size (32 sqft for 4x8). Round up and add 10% for waste.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much joint compound do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The rule of thumb is 0.9 gallons of joint compound per 100 square feet of drywall for three coats (tape, fill, and finish).</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What size drywall should I use?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Use 4x8 sheets for standard 8-foot walls. Use 4x12 sheets for taller walls to eliminate horizontal seams. For ceilings, longer sheets reduce joints.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const roomL = parseFloat((document.getElementById('roomLength') as HTMLInputElement).value) || 12;
+    const roomW = parseFloat((document.getElementById('roomWidth') as HTMLInputElement).value) || 12;
+    const roomH = parseFloat((document.getElementById('roomHeight') as HTMLInputElement).value) || 8;
+    const sheetSqft = parseInt((document.getElementById('sheetSize') as HTMLSelectElement).value);
+    const incCeiling = (document.getElementById('includeCeiling') as HTMLSelectElement).value === 'yes';
+    const waste = parseFloat((document.getElementById('dwWaste') as HTMLSelectElement).value);
+
+    const wallSqft = 2 * (roomL * roomH) + 2 * (roomW * roomH);
+    const ceilingSqft = incCeiling ? roomL * roomW : 0;
+    const totalSqft = wallSqft + ceilingSqft;
+    const sheets = Math.ceil((totalSqft / sheetSqft) * waste);
+
+    const seamLF = sheets * 12;
+    const tapeRolls = Math.ceil(seamLF / 500);
+    const mudGal = (totalSqft / 100) * 0.9;
+
+    document.getElementById('result-sheets')!.textContent = sheets.toString();
+    document.getElementById('result-sqft')!.textContent = totalSqft.toFixed(0);
+    document.getElementById('result-tape')!.textContent = tapeRolls.toString();
+    document.getElementById('result-mud')!.textContent = mudGal.toFixed(1);
+
+    const sheetLabel = sheetSqft === 32 ? '4x8' : sheetSqft === 40 ? '4x10' : '4x12';
+    const orderList = document.getElementById('order-list')!;
+    orderList.innerHTML = `
+      <div class="flex justify-between"><span>Drywall sheets (${sheetLabel})</span><span class="text-text-primary font-medium">${sheets} sheets</span></div>
+      <div class="flex justify-between"><span>Joint tape (500 ft rolls)</span><span class="text-text-primary font-medium">${tapeRolls} rolls</span></div>
+      <div class="flex justify-between"><span>Joint compound (pre-mixed)</span><span class="text-text-primary font-medium">${mudGal.toFixed(1)} gal</span></div>
+      <div class="flex justify-between"><span>Drywall screws (1-5/8")</span><span class="text-text-primary font-medium">${Math.ceil(totalSqft * 0.032)} lbs</span></div>
+      <div class="border-t border-border mt-3 pt-3 flex justify-between font-medium"><span>Total Coverage</span><span class="text-accent">${totalSqft.toFixed(0)} sqft</span></div>
+    `;
+  }
+
+  document.querySelectorAll('#dw-calc input, #dw-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

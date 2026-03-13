@@ -1,0 +1,187 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/roofingTools';
+
+const tool = getToolBySlug('labor-rate-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does roofing labor cost per square?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "National averages for 2026: Asphalt shingles run $250-300 per square in labor (4-5 hours per square). Architectural shingles cost $300-350 per square (5-6 hours). Metal roofing runs $400-500 per square (6-8 hours). Tile is $600-900 per square (8-10 hours). These figures vary by region and complexity."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does it take to roof a house?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A typical 25-square residential roof takes a 4-person crew 2-3 days for asphalt shingles. Metal roofing takes 3-4 days. Tile can take 4-6 days. Complexity factors like steep pitch, multiple valleys, and dormers add significant time. Simple gable roofs go fastest; complex hip roofs with valleys take the longest."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a good hourly rate for roofing labor?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Regional hourly rates for 2026: Midwest $55-70/hr, Southeast $60-75/hr, Southwest $65-80/hr, Northeast $80-100/hr, Pacific $85-110/hr. These are burdened rates including wages, taxes, workers comp, and benefits. The national average is $65-80/hr."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="labor-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roofSquares">Roof Size (squares)</label>
+        <input type="number" id="roofSquares" value="25" min="1" max="200" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="materialType">Material Type</label>
+        <select id="materialType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="asphalt">Asphalt 3-Tab (4-5 hrs/sq)</option>
+          <option value="architectural" selected>Architectural (5-6 hrs/sq)</option>
+          <option value="metal">Metal Roofing (6-8 hrs/sq)</option>
+          <option value="tile">Tile (8-10 hrs/sq)</option>
+          <option value="removal">Removal Only (1-2 hrs/sq)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="complexity">Roof Complexity</label>
+        <select id="complexity" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0">Simple gable (1.0x)</option>
+          <option value="1.1" selected>Hip roof (1.1x)</option>
+          <option value="1.25">Multiple valleys/dormers (1.25x)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="hourlyRate">Hourly Rate ($)</label>
+        <input type="number" id="hourlyRate" value="70" min="20" max="200" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">National avg: $65-80/hr (burdened rate)</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="crewSize">Crew Size</label>
+        <input type="number" id="crewSize" value="4" min="1" max="12" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Labor Hours</div>
+          <div id="result-hours" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">man-hours</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center border border-accent/30">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Labor Cost</div>
+          <div id="result-total" class="font-heading font-extrabold text-4xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cost Per Square</div>
+          <div id="result-persq" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Days on Site</div>
+          <div id="result-days" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">8-hr days</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Hours per Square</div>
+          <div id="result-hrpersq" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div class="bg-bg-dark rounded-xl p-5">
+        <p class="text-text-secondary text-sm"><strong class="text-text-primary">Regional rates:</strong> Midwest $55-70/hr | Southeast $60-75/hr | Southwest $65-80/hr | Northeast $80-100/hr | Pacific $85-110/hr</p>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter roof size in squares.</strong> One square equals 100 sq ft. A typical residential roof is 20-30 squares.</p>
+          <p><strong class="text-text-primary">2. Select your material type.</strong> Different roofing materials take different amounts of time to install. Metal and tile take significantly longer than asphalt shingles.</p>
+          <p><strong class="text-text-primary">3. Set complexity.</strong> Hip roofs and roofs with valleys/dormers add labor time due to extra cuts, flashing, and careful fitting.</p>
+          <p><strong class="text-text-primary">4. Enter your hourly rate and crew size.</strong> Use your burdened rate (wages + taxes + benefits), not just the base wage. The calculator estimates total hours and job duration.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Labor Calculation Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Hours_per_Sq = Material_Base_Hours x Complexity_Mult</p>
+            <p>Total_Hours = Roof_Squares x Hours_per_Sq</p>
+            <p>Total_Cost = Total_Hours x Hourly_Rate</p>
+            <p>Days_on_Site = Total_Hours / (Crew_Size x 8)</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does roofing labor cost per square?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">National averages for 2026: Asphalt shingles run $250-300 per square in labor (4-5 hours per square). Architectural shingles cost $300-350 per square (5-6 hours). Metal roofing runs $400-500 per square (6-8 hours). Tile is $600-900 per square (8-10 hours).</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does it take to roof a house?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A typical 25-square residential roof takes a 4-person crew 2-3 days for asphalt shingles. Metal roofing takes 3-4 days. Tile can take 4-6 days. Complexity factors add significant time.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a good hourly rate for roofing labor?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Regional hourly rates for 2026: Midwest $55-70/hr, Southeast $60-75/hr, Southwest $65-80/hr, Northeast $80-100/hr, Pacific $85-110/hr. These are burdened rates. The national average is $65-80/hr.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const squares = parseFloat((document.getElementById('roofSquares') as HTMLInputElement).value) || 25;
+    const materialType = (document.getElementById('materialType') as HTMLSelectElement).value;
+    const complexityMult = parseFloat((document.getElementById('complexity') as HTMLSelectElement).value);
+    const hourlyRate = parseFloat((document.getElementById('hourlyRate') as HTMLInputElement).value) || 70;
+    const crewSize = parseInt((document.getElementById('crewSize') as HTMLInputElement).value) || 4;
+
+    const baseHours: Record<string, number> = {
+      asphalt: 4.5,
+      architectural: 5.5,
+      metal: 7,
+      tile: 9,
+      removal: 1.5,
+    };
+
+    const hrsPerSq = (baseHours[materialType] || 5.5) * complexityMult;
+    const totalHours = squares * hrsPerSq;
+    const totalCost = totalHours * hourlyRate;
+    const costPerSq = totalCost / squares;
+    const daysOnSite = totalHours / (crewSize * 8);
+
+    document.getElementById('result-hours')!.textContent = Math.round(totalHours).toLocaleString();
+    document.getElementById('result-total')!.textContent = '$' + Math.round(totalCost).toLocaleString();
+    document.getElementById('result-persq')!.textContent = '$' + Math.round(costPerSq).toLocaleString();
+    document.getElementById('result-days')!.textContent = daysOnSite.toFixed(1);
+    document.getElementById('result-hrpersq')!.textContent = hrsPerSq.toFixed(1);
+  }
+
+  document.querySelectorAll('#labor-calc input, #labor-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

@@ -1,0 +1,209 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/handymanTools';
+
+const tool = getToolBySlug('rough-opening-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is a rough opening for a door?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A rough opening is the framed opening in the wall that holds a door or window. For interior doors, the rough opening is typically 2 inches wider and 2.5 inches taller than the door slab. This extra space allows for the door frame, shims, and leveling adjustments."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much bigger should a rough opening be than the door?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For interior doors with drywall frames, add 2 inches to width and 2.5 inches to height. For exterior doors, add 2.5 inches to width and 2.25 inches to height. These tolerances allow room for the jamb, shims, insulation, and leveling."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the rough opening for a standard 36 inch door?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A standard 36 inch interior door needs a rough opening of 38 inches wide by 82.5 inches tall (assuming an 80 inch door height). For an exterior 36 inch door, the rough opening should be 38.5 inches wide by 82.25 inches tall."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the rough opening for a window?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For standard replacement windows in drywall frames, add 0.5 inches to both width and height. For new construction exterior windows, add 1 inch to both dimensions. Masonry openings require additional space — typically 1 inch extra on all sides beyond the standard tolerance."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="ro-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="openingType">Door or Window</label>
+        <select id="openingType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="door" selected>Door</option>
+          <option value="window">Window</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="location">Interior or Exterior</label>
+        <select id="location" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="interior" selected>Interior</option>
+          <option value="exterior">Exterior</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="unitWidth">Unit Width (inches)</label>
+        <input type="number" id="unitWidth" value="36" min="12" max="120" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="unitHeight">Unit Height (inches)</label>
+        <input type="number" id="unitHeight" value="80" min="12" max="120" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="frameType">Frame Type</label>
+        <select id="frameType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="drywall" selected>Drywall / Wood Stud</option>
+          <option value="masonry">Masonry / Concrete Block</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Rough Opening Dimensions</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">RO Width</div>
+          <div id="result-width" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">RO Height</div>
+          <div id="result-height" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Width Added</div>
+          <div id="result-wadded" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Height Added</div>
+          <div id="result-hadded" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div id="code-note" class="bg-bg-dark rounded-xl p-4 text-text-secondary text-sm mb-4"></div>
+      <p class="text-text-muted text-sm italic">Always verify local building codes. Some jurisdictions require additional tolerances.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select door or window.</strong> Doors and windows have different tolerance requirements.</p>
+          <p><strong class="text-text-primary">2. Choose interior or exterior.</strong> Exterior openings need slightly more tolerance for weatherstripping and flashing.</p>
+          <p><strong class="text-text-primary">3. Enter the finished unit size.</strong> This is the door slab or window unit size, not the frame size.</p>
+          <p><strong class="text-text-primary">4. Select frame type.</strong> Masonry openings require extra tolerance compared to standard drywall/wood stud construction.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a rough opening for a door?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A rough opening is the framed opening in the wall that holds a door or window. For interior doors, the rough opening is typically 2 inches wider and 2.5 inches taller than the door slab.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much bigger should a rough opening be?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For interior doors with drywall frames, add 2 inches to width and 2.5 inches to height. For exterior doors, add 2.5 inches to width and 2.25 inches to height.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the rough opening for a standard 36 inch door?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard 36 inch interior door needs a rough opening of 38 inches wide by 82.5 inches tall (assuming an 80 inch door height).</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the rough opening for a window?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For standard replacement windows in drywall frames, add 0.5 inches to both width and height. For exterior windows, add 1 inch to both dimensions.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const openingType = (document.getElementById('openingType') as HTMLSelectElement).value;
+    const location = (document.getElementById('location') as HTMLSelectElement).value;
+    const unitWidth = parseFloat((document.getElementById('unitWidth') as HTMLInputElement).value) || 36;
+    const unitHeight = parseFloat((document.getElementById('unitHeight') as HTMLInputElement).value) || 80;
+    const frameType = (document.getElementById('frameType') as HTMLSelectElement).value;
+
+    let addWidth = 0;
+    let addHeight = 0;
+    let note = '';
+
+    if (openingType === 'door') {
+      if (frameType === 'drywall') {
+        if (location === 'interior') {
+          addWidth = 2.0; addHeight = 2.5;
+          note = 'Interior door, drywall frame: +2" width, +2.5" height per IRC standards.';
+        } else {
+          addWidth = 2.5; addHeight = 2.25;
+          note = 'Exterior door, drywall frame: +2.5" width, +2.25" height for weatherstrip clearance.';
+        }
+      } else {
+        if (location === 'interior') {
+          addWidth = 4.0; addHeight = 4.5;
+          note = 'Interior door, masonry frame: +4" width, +4.5" height for masonry tolerances.';
+        } else {
+          addWidth = 4.5; addHeight = 4.25;
+          note = 'Exterior door, masonry frame: +4.5" width, +4.25" height for masonry tolerances.';
+        }
+      }
+    } else {
+      if (frameType === 'drywall') {
+        if (location === 'interior') {
+          addWidth = 0.5; addHeight = 0.5;
+          note = 'Interior window, drywall frame: +0.5" width, +0.5" height for shims.';
+        } else {
+          addWidth = 1.0; addHeight = 1.0;
+          note = 'Exterior window, drywall frame: +1" width, +1" height for flashing and shims.';
+        }
+      } else {
+        if (location === 'interior') {
+          addWidth = 1.5; addHeight = 1.5;
+          note = 'Interior window, masonry frame: +1.5" each side for masonry tolerances.';
+        } else {
+          addWidth = 2.0; addHeight = 2.0;
+          note = 'Exterior window, masonry frame: +2" each side for masonry and flashing.';
+        }
+      }
+    }
+
+    const roWidth = unitWidth + addWidth;
+    const roHeight = unitHeight + addHeight;
+
+    document.getElementById('result-width')!.textContent = roWidth.toFixed(1) + '"';
+    document.getElementById('result-height')!.textContent = roHeight.toFixed(1) + '"';
+    document.getElementById('result-wadded')!.textContent = '+' + addWidth.toFixed(1) + '"';
+    document.getElementById('result-hadded')!.textContent = '+' + addHeight.toFixed(1) + '"';
+    document.getElementById('code-note')!.textContent = note;
+  }
+
+  document.querySelectorAll('#ro-calc input, #ro-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

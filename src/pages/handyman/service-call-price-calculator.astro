@@ -1,0 +1,209 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/handymanTools';
+
+const tool = getToolBySlug('service-call-price-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much should a handyman charge for a service call?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A typical handyman service call fee is $60-100, which covers travel time and a basic assessment. Emergency calls command 1.5-2x the standard rate. Weekend calls are typically 1.5x. Some handymen include the first hour of labor in the service call fee to make it easier for customers to say yes."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I charge a travel fee?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Charge a minimum travel fee of $15-25 or $0.50 per mile, whichever is greater. Travel is a real cost — fuel, vehicle wear, and your time. Build it into your service call price or list it separately. Be transparent with customers so there are no surprises."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a diagnostic fee for handyman work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A diagnostic fee covers your time to assess the problem and provide a quote. For handyman work, $60-100 is standard. Many pros waive the diagnostic fee if the customer proceeds with the repair. This encourages conversion while still protecting your time if the customer declines."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="service-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="callType">Call Type</label>
+        <select id="callType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="inspection">Inspection / Assessment</option>
+          <option value="diagnosis" selected>Diagnosis</option>
+          <option value="simple-fix">Simple Fix</option>
+          <option value="emergency">Emergency</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="travelDistance">Travel Distance (miles)</label>
+        <input type="number" id="travelDistance" value="10" min="0" max="100" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="timeOfDay">Time of Day</label>
+        <select id="timeOfDay" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0" selected>Standard (M-F 8am-5pm)</option>
+          <option value="1.25">Evening (M-F 5pm-9pm)</option>
+          <option value="1.5">Weekend</option>
+          <option value="2.0">Holiday</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="complexity">Complexity Level</label>
+        <select id="complexity" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0">Simple</option>
+          <option value="1.25" selected>Moderate</option>
+          <option value="1.5">Complex</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="baseRate">Base Service Call ($)</label>
+        <input type="number" id="baseRate" value="75" min="25" max="250" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="includeLabor">Include First Hour of Labor?</label>
+        <select id="includeLabor" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="no" selected>No</option>
+          <option value="yes">Yes</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="hourlyRate">Hourly Rate ($)</label>
+        <input type="number" id="hourlyRate" value="72.50" min="25" max="200" step="2.50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Base Call</div>
+          <div id="result-base" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Travel Cost</div>
+          <div id="result-travel" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Adjustments</div>
+          <div id="result-adjustments" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Service Call Price</div>
+          <div id="result-total" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+      </div>
+      <div id="labor-note" class="hidden bg-bg-dark rounded-xl p-4 mb-6">
+        <p class="text-text-secondary text-sm"><span class="text-accent font-semibold">Includes first hour of labor.</span> <span id="labor-amount"></span> in labor added to the service call price.</p>
+      </div>
+      <p class="text-text-muted text-sm italic">Customize the base rate for your region. These are starting points based on industry averages.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select the call type.</strong> Inspections and diagnoses are assessment-only. Simple fixes include minor repairs. Emergency calls carry a premium multiplier.</p>
+          <p><strong class="text-text-primary">2. Enter travel distance.</strong> The calculator applies a per-mile rate with a minimum travel fee.</p>
+          <p><strong class="text-text-primary">3. Set time and complexity.</strong> Evening, weekend, and holiday calls get multipliers. Complex jobs get a higher assessment fee.</p>
+          <p><strong class="text-text-primary">4. Optionally include the first hour of labor.</strong> Many handymen bundle the first hour into the service call fee to encourage customers to proceed with work.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Service Call Pricing Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Travel_Cost = Max($15, Miles x $0.50)</p>
+            <p>Adjusted_Base = (Base_Rate + Travel_Cost) x Complexity x Time_Factor</p>
+            <p>If include_labor: Total = Adjusted_Base + Hourly_Rate</p>
+            <p>Else: Total = Adjusted_Base</p>
+          </div>
+          <p>Emergency calls automatically use a 2x time factor. Weekend calls use 1.5x. These multipliers reflect the real cost of being available outside standard hours.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much should a handyman charge for a service call?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A typical handyman service call fee is $60-100, which covers travel time and a basic assessment. Emergency calls command 1.5-2x the standard rate.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I charge a travel fee?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. Charge a minimum travel fee of $15-25 or $0.50 per mile, whichever is greater. Travel is a real cost. Be transparent with customers.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a diagnostic fee for handyman work?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A diagnostic fee covers your time to assess the problem and provide a quote. For handyman work, $60-100 is standard. Many pros waive the fee if the customer proceeds with the repair.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const callType = (document.getElementById('callType') as HTMLSelectElement).value;
+    const travelDistance = parseFloat((document.getElementById('travelDistance') as HTMLInputElement).value) || 0;
+    const timeFactor = parseFloat((document.getElementById('timeOfDay') as HTMLSelectElement).value);
+    const complexityFactor = parseFloat((document.getElementById('complexity') as HTMLSelectElement).value);
+    const baseRate = parseFloat((document.getElementById('baseRate') as HTMLInputElement).value) || 75;
+    const includeLabor = (document.getElementById('includeLabor') as HTMLSelectElement).value;
+    const hourlyRate = parseFloat((document.getElementById('hourlyRate') as HTMLInputElement).value) || 72.50;
+
+    // Emergency call type forces 2.0 time factor
+    const effectiveTimeFactor = callType === 'emergency' ? Math.max(timeFactor, 2.0) : timeFactor;
+
+    // Travel cost: min $15 or $0.50/mile
+    const travelCost = Math.max(15, travelDistance * 0.50);
+
+    // Adjusted price
+    const adjustedBase = (baseRate + travelCost) * complexityFactor * effectiveTimeFactor;
+
+    // Labor addition
+    const laborCost = includeLabor === 'yes' ? hourlyRate : 0;
+    const total = adjustedBase + laborCost;
+
+    // Adjustments amount (difference from base + travel)
+    const rawBase = baseRate + travelCost;
+    const adjustments = adjustedBase - rawBase;
+
+    document.getElementById('result-base')!.textContent = '$' + baseRate.toFixed(0);
+    document.getElementById('result-travel')!.textContent = '$' + travelCost.toFixed(0);
+    document.getElementById('result-adjustments')!.textContent = adjustments > 0 ? '+$' + adjustments.toFixed(0) : '$0';
+    document.getElementById('result-total')!.textContent = '$' + total.toFixed(0);
+
+    const laborNote = document.getElementById('labor-note')!;
+    if (includeLabor === 'yes') {
+      laborNote.classList.remove('hidden');
+      document.getElementById('labor-amount')!.textContent = '$' + hourlyRate.toFixed(0);
+    } else {
+      laborNote.classList.add('hidden');
+    }
+  }
+
+  document.querySelectorAll('#service-calc input, #service-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

@@ -1,0 +1,154 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/pestControlTools';
+
+const tool = getToolBySlug('service-call-price-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much should I charge for a pest control service call?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most pest control companies charge $150-$300 for a standard service call, which includes the trip charge, inspection, and initial treatment. The price depends on service duration, materials used, and your local market. Always set a minimum service charge to ensure profitability even on short calls."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a typical material markup for pest control?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pest control companies typically mark up materials 40-100%. Specialty products like termiticide or fumigants may carry higher markups (60-100%), while common general pest sprays are marked up 40-60%. The markup covers storage, handling, waste, and the expertise to apply the product correctly."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="svc-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="duration">Service Duration (hours)</label>
+        <input type="number" id="duration" value="1.5" min="0.25" max="24" step="0.25" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="hourlyRate">Technician Billing Rate ($/hr)</label>
+        <input type="number" id="hourlyRate" value="85" min="0" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="materialCost">Material Cost ($)</label>
+        <input type="number" id="materialCost" value="35" min="0" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="markupPct">Material Markup (%)</label>
+        <input type="number" id="markupPct" value="60" min="0" max="300" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="travelTime">Travel Time (hours)</label>
+        <input type="number" id="travelTime" value="0.5" min="0" max="4" step="0.25" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="minCharge">Minimum Service Charge ($)</label>
+        <input type="number" id="minCharge" value="175" min="0" step="25" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Service Call Price</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Recommended Price</div>
+          <div id="result-price" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Labor Component</div>
+          <div id="result-labor" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Material w/ Markup</div>
+          <div id="result-material" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Minimum Applied?</div>
+          <div id="result-min" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter service duration.</strong> Estimate how long the technician will be on-site performing the treatment or inspection.</p>
+          <p><strong class="text-text-primary">2. Set the billing rate.</strong> This is your fully loaded hourly rate (not the tech's wage). Use the Labor Rate Calculator to determine this if you are unsure.</p>
+          <p><strong class="text-text-primary">3. Add material cost and markup.</strong> Enter your wholesale cost for chemicals and materials, then set your markup percentage. Industry standard is 40-100%.</p>
+          <p><strong class="text-text-primary">4. Set your minimum charge.</strong> This ensures short service calls are still profitable. Most pest control companies set a $150-$300 minimum.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Labor_Charge = (Service_Duration + Travel_Time) x Hourly_Rate</p>
+            <p>Material_Charge = Material_Cost x (1 + Markup_Pct / 100)</p>
+            <p>Calculated_Price = Labor_Charge + Material_Charge</p>
+            <p>Final_Price = max(Calculated_Price, Minimum_Charge)</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much should I charge for a pest control service call?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most pest control companies charge $150-$300 for a standard service call, which includes the trip charge, inspection, and initial treatment. The price depends on service duration, materials used, and your local market. Always set a minimum service charge to ensure profitability even on short calls.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a typical material markup for pest control?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Pest control companies typically mark up materials 40-100%. Specialty products like termiticide or fumigants may carry higher markups (60-100%), while common general pest sprays are marked up 40-60%. The markup covers storage, handling, waste, and the expertise to apply the product correctly.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const duration = parseFloat((document.getElementById('duration') as HTMLInputElement).value) || 0;
+    const hourlyRate = parseFloat((document.getElementById('hourlyRate') as HTMLInputElement).value) || 0;
+    const materialCost = parseFloat((document.getElementById('materialCost') as HTMLInputElement).value) || 0;
+    const markupPct = parseFloat((document.getElementById('markupPct') as HTMLInputElement).value) || 0;
+    const travelTime = parseFloat((document.getElementById('travelTime') as HTMLInputElement).value) || 0;
+    const minCharge = parseFloat((document.getElementById('minCharge') as HTMLInputElement).value) || 0;
+
+    const laborCharge = (duration + travelTime) * hourlyRate;
+    const materialCharge = materialCost * (1 + markupPct / 100);
+    const calculatedPrice = laborCharge + materialCharge;
+    const finalPrice = Math.max(calculatedPrice, minCharge);
+    const minApplied = calculatedPrice < minCharge;
+
+    document.getElementById('result-price')!.textContent = '$' + finalPrice.toFixed(0);
+    document.getElementById('result-labor')!.textContent = '$' + laborCharge.toFixed(0);
+    document.getElementById('result-material')!.textContent = '$' + materialCharge.toFixed(0);
+
+    const minEl = document.getElementById('result-min')!;
+    minEl.textContent = minApplied ? 'Yes' : 'No';
+    minEl.style.color = minApplied ? '#FBBF24' : '#34D399';
+  }
+
+  document.querySelectorAll('#svc-calc input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

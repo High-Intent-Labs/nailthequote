@@ -1,0 +1,285 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/roofingTools';
+
+const tool = getToolBySlug('profit-margin-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is a good profit margin for roofing?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The industry average gross margin for roofing companies is around 25%. Well-run shops hit 30% or higher. Repair and service work typically targets 35-50% gross margin, while full roof replacements target 20-30%. If your gross margin is consistently below 20%, you are likely underpricing your work."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between margin and markup?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Margin is profit as a percentage of revenue (selling price). Markup is profit as a percentage of cost. For example, if a job costs $8,000 and you sell it for $12,000, your profit is $4,000. Your margin is 33% ($4,000 / $12,000) and your markup is 50% ($4,000 / $8,000). They describe the same profit from different reference points."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I calculate overhead for a roofing job?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Overhead includes all costs to run the business that are not tied to a specific job: rent, insurance, vehicle payments, office staff, software, marketing, and utilities. Most roofing companies allocate overhead as a percentage of revenue, typically 25-30%. To find yours, divide total annual overhead costs by total annual revenue."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is my roofing profit margin so low?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Common causes of low roofing margins include underpricing labor, insufficient material markup, not tracking overhead allocation, weather delays eating into labor budgets, and underestimating waste. Use this calculator to test different pricing scenarios and find where you are leaving money on the table."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="margin-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="revenue">Job Revenue ($)</label>
+        <input type="number" id="revenue" value="12000" min="0" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="materials">Materials (shingles, underlayment, flashing, nails, ridge cap)</label>
+        <input type="number" id="materials" value="4500" min="0" step="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div class="mb-6">
+      <p class="text-sm font-medium text-text-secondary mb-3">Labor</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-xs text-text-muted mb-1" for="crewSize">Crew Size</label>
+          <input type="number" id="crewSize" value="4" min="1" max="20" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        </div>
+        <div>
+          <label class="block text-xs text-text-muted mb-1" for="hours">Hours</label>
+          <input type="number" id="hours" value="16" min="0.5" max="200" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        </div>
+        <div>
+          <label class="block text-xs text-text-muted mb-1" for="hourlyRate">Hourly Rate ($)</label>
+          <input type="number" id="hourlyRate" value="30" min="0" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="disposal">Removal &amp; Disposal ($)</label>
+        <input type="number" id="disposal" value="800" min="0" step="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="overhead">Overhead (%)</label>
+        <input type="number" id="overhead" value="28" min="0" max="100" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">% of revenue allocated to overhead</p>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Gross Profit</div>
+          <div id="result-profit" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Gross Margin</div>
+          <div id="result-margin" class="font-heading font-extrabold text-3xl">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Markup</div>
+          <div id="result-markup" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cost per $1 Revenue</div>
+          <div id="result-costper" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Roofing Industry Benchmarks</h4>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Industry Avg Gross Margin</span>
+              <span class="text-text-primary font-semibold">25%</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#60A5FA] h-2 rounded-full" style="width: 25%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Top Performers</span>
+              <span class="text-text-primary font-semibold">30%+</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#34D399] h-2 rounded-full" style="width: 30%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Repair/Service Target</span>
+              <span class="text-text-primary font-semibold">35 &ndash; 50%</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#C084FC] h-2 rounded-full" style="width: 42%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Replacement Target</span>
+              <span class="text-text-primary font-semibold">20 &ndash; 30%</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#FBBF24] h-2 rounded-full" style="width: 25%"></div>
+            </div>
+          </div>
+          <div id="benchmark-warning" class="hidden mt-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCA5A5]">
+            Your margin is below 20%. You may be underpricing your work.
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-border">
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-text-secondary font-medium">Your Gross Margin</span>
+            <span id="benchmark-your-margin" class="font-heading font-bold">--</span>
+          </div>
+          <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2.5">
+            <div id="benchmark-bar" class="h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your job revenue.</strong> This is the total amount you charge the customer. Include all line items: materials, labor, removal, and any fees.</p>
+          <p><strong class="text-text-primary">2. Enter materials cost.</strong> Your wholesale cost for shingles, underlayment, flashing, nails, ridge cap, and any other materials. Use what you actually paid, not list price.</p>
+          <p><strong class="text-text-primary">3. Fill in labor details.</strong> Enter crew size, total hours on the job, and your hourly labor cost. This should be your burdened rate (wages + payroll taxes + workers comp), not the billing rate.</p>
+          <p><strong class="text-text-primary">4. Add removal and disposal costs.</strong> Include dumpster rental, dump fees, and labor for tear-off if applicable.</p>
+          <p><strong class="text-text-primary">5. Set your overhead percentage.</strong> Most roofing companies run 25-30% overhead. This covers rent, insurance, trucks, office staff, software, and marketing. If you do not know yours, 28% is a solid starting point.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Profit Margin Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Margin and markup describe the same profit from different angles.</strong> Margin is profit as a percentage of the selling price (revenue). Markup is profit as a percentage of your cost. Confusing the two is one of the most common pricing mistakes in the trades.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Labor_Cost = Crew x Hours x Hourly_Rate</p>
+            <p>Total_Cost = Materials + Labor + Disposal + (Revenue x Overhead%)</p>
+            <p>Profit = Revenue - Total_Cost</p>
+            <p>Gross_Margin = (Profit / Revenue) x 100</p>
+            <p>Markup = (Profit / Total_Cost) x 100</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a good profit margin for roofing?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The industry average gross margin for roofing companies is around 25%. Well-run shops hit 30% or higher. Repair and service work typically targets 35-50% gross margin, while full roof replacements target 20-30%. If your gross margin is consistently below 20%, you are likely underpricing your work.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the difference between margin and markup?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Margin is profit as a percentage of revenue (selling price). Markup is profit as a percentage of cost. For example, if a job costs $8,000 and you sell it for $12,000, your profit is $4,000. Your margin is 33% ($4,000 / $12,000) and your markup is 50% ($4,000 / $8,000). They describe the same profit from different reference points.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate overhead for a roofing job?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Overhead includes all costs to run the business that are not tied to a specific job: rent, insurance, vehicle payments, office staff, software, marketing, and utilities. Most roofing companies allocate overhead as a percentage of revenue, typically 25-30%. To find yours, divide total annual overhead costs by total annual revenue.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Why is my roofing profit margin so low?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Common causes of low roofing margins include underpricing labor, insufficient material markup, not tracking overhead allocation, weather delays eating into labor budgets, and underestimating waste. Use this calculator to test different pricing scenarios and find where you are leaving money on the table.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const revenue = parseFloat((document.getElementById('revenue') as HTMLInputElement).value) || 0;
+    const materials = parseFloat((document.getElementById('materials') as HTMLInputElement).value) || 0;
+    const crewSize = parseFloat((document.getElementById('crewSize') as HTMLInputElement).value) || 0;
+    const hours = parseFloat((document.getElementById('hours') as HTMLInputElement).value) || 0;
+    const hourlyRate = parseFloat((document.getElementById('hourlyRate') as HTMLInputElement).value) || 0;
+    const disposal = parseFloat((document.getElementById('disposal') as HTMLInputElement).value) || 0;
+    const overheadPct = parseFloat((document.getElementById('overhead') as HTMLInputElement).value) || 0;
+
+    const laborCost = crewSize * hours * hourlyRate;
+    const overheadCost = revenue * (overheadPct / 100);
+    const totalCost = materials + laborCost + disposal + overheadCost;
+    const profit = revenue - totalCost;
+    const grossMargin = revenue > 0 ? (profit / revenue) * 100 : 0;
+    const markup = totalCost > 0 ? (profit / totalCost) * 100 : 0;
+    const costPerDollar = revenue > 0 ? totalCost / revenue : 0;
+
+    const profitFormatted = profit >= 0
+      ? '$' + profit.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+      : '-$' + Math.abs(profit).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+    document.getElementById('result-profit')!.textContent = profitFormatted;
+    document.getElementById('result-margin')!.textContent = grossMargin.toFixed(1) + '%';
+    document.getElementById('result-markup')!.textContent = markup.toFixed(1) + '%';
+    document.getElementById('result-costper')!.textContent = '$' + costPerDollar.toFixed(2);
+
+    // Color the margin
+    const marginEl = document.getElementById('result-margin')!;
+    marginEl.classList.remove('text-[#34D399]', 'text-[#FBBF24]', 'text-[#EF4444]');
+    if (grossMargin >= 25) marginEl.classList.add('text-[#34D399]');
+    else if (grossMargin >= 20) marginEl.classList.add('text-[#FBBF24]');
+    else marginEl.classList.add('text-[#EF4444]');
+
+    // Color profit
+    const profitEl = document.getElementById('result-profit')!;
+    profitEl.classList.remove('text-accent', 'text-[#34D399]', 'text-[#EF4444]');
+    profitEl.classList.add(profit >= 0 ? 'text-[#34D399]' : 'text-[#EF4444]');
+
+    // Update benchmark bar
+    const clampedMargin = Math.max(0, Math.min(100, grossMargin));
+    const benchmarkBar = document.getElementById('benchmark-bar')!;
+    benchmarkBar.style.width = clampedMargin + '%';
+    benchmarkBar.classList.remove('bg-[#34D399]', 'bg-[#FBBF24]', 'bg-[#EF4444]');
+    if (grossMargin >= 25) benchmarkBar.classList.add('bg-[#34D399]');
+    else if (grossMargin >= 20) benchmarkBar.classList.add('bg-[#FBBF24]');
+    else benchmarkBar.classList.add('bg-[#EF4444]');
+
+    const yourMarginEl = document.getElementById('benchmark-your-margin')!;
+    yourMarginEl.textContent = grossMargin.toFixed(1) + '%';
+    yourMarginEl.classList.remove('text-[#34D399]', 'text-[#FBBF24]', 'text-[#EF4444]');
+    if (grossMargin >= 25) yourMarginEl.classList.add('text-[#34D399]');
+    else if (grossMargin >= 20) yourMarginEl.classList.add('text-[#FBBF24]');
+    else yourMarginEl.classList.add('text-[#EF4444]');
+
+    const warningEl = document.getElementById('benchmark-warning')!;
+    if (grossMargin < 20 && revenue > 0) warningEl.classList.remove('hidden');
+    else warningEl.classList.add('hidden');
+  }
+
+  document.querySelectorAll('#margin-calc input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

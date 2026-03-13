@@ -1,0 +1,202 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/gcTools';
+
+const tool = getToolBySlug('board-feet-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do you calculate board feet?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Board feet = (Thickness in inches x Width in inches x Length in feet) / 12. For example, a 2x4 that is 8 feet long = (2 x 4 x 8) / 12 = 5.33 board feet. Note that lumber dimensions are nominal — a 2x4 actually measures 1.5 x 3.5 inches, but board feet uses the nominal size."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many board feet are in a 2x4x8?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A 2x4 at 8 feet long contains 5.33 board feet. The calculation is (2 x 4 x 8) / 12 = 5.33 BF. Board feet always uses nominal dimensions (2x4), not actual dimensions (1.5 x 3.5)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between board feet and linear feet?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Linear feet measures only the length of a board. Board feet measures volume (thickness x width x length). A 10-foot 2x4 is 10 linear feet but 6.67 board feet. Board feet is the standard lumber industry measurement for pricing and ordering."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="bf-calc">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="dimension">Lumber Dimension</label>
+        <select id="dimension" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="2x4" selected>2 x 4</option>
+          <option value="2x6">2 x 6</option>
+          <option value="2x8">2 x 8</option>
+          <option value="2x10">2 x 10</option>
+          <option value="2x12">2 x 12</option>
+          <option value="4x4">4 x 4</option>
+          <option value="6x6">6 x 6</option>
+          <option value="1x4">1 x 4</option>
+          <option value="1x6">1 x 6</option>
+          <option value="1x8">1 x 8</option>
+          <option value="1x12">1 x 12</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="bfLength">Length (ft)</label>
+        <input type="number" id="bfLength" value="8" min="1" max="40" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="qty">Quantity (pieces)</label>
+        <input type="number" id="qty" value="10" min="1" max="10000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="custom-dims" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="customThick">Thickness (in)</label>
+        <input type="number" id="customThick" value="2" min="0.25" max="12" step="0.25" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="customWidth">Width (in)</label>
+        <input type="number" id="customWidth" value="4" min="0.5" max="24" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="wasteF">Waste Factor (%)</label>
+        <select id="wasteF" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0">0% (exact)</option>
+          <option value="1.10" selected>10% (standard)</option>
+          <option value="1.15">15% (complex framing)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="costBF">Cost per Board Foot ($)</label>
+        <input type="number" id="costBF" value="0.75" min="0" max="20" step="0.05" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Board Feet</div>
+          <div id="result-bf" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Linear Feet</div>
+          <div id="result-lf" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">BF per Piece</div>
+          <div id="result-bfper" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Estimated Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Board feet uses nominal lumber dimensions (2x4 = 2" x 4"), not actual dimensions (1.5" x 3.5"). This is the industry standard for lumber pricing.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select the lumber dimension.</strong> Choose from standard framing lumber (2x4, 2x6, etc.) or select Custom to enter any thickness and width.</p>
+          <p><strong class="text-text-primary">2. Enter the length and quantity.</strong> Length is per piece in feet. Quantity is the number of identical pieces you need.</p>
+          <p><strong class="text-text-primary">3. Set waste and cost.</strong> Add 10-15% waste for framing. Enter your local cost per board foot for accurate pricing.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Board Feet Are Calculated</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm">
+            <p>Board_Feet = (Thickness_in x Width_in x Length_ft) / 12</p>
+          </div>
+          <p>One board foot equals a piece of wood 1 inch thick, 12 inches wide, and 1 foot long (144 cubic inches). This is the standard measurement used by sawmills, lumber yards, and the construction industry for pricing and ordering.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do you calculate board feet?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Board feet = (Thickness in inches x Width in inches x Length in feet) / 12. For example, a 2x4 that is 8 feet long = (2 x 4 x 8) / 12 = 5.33 board feet.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many board feet are in a 2x4x8?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A 2x4 at 8 feet long contains 5.33 board feet. The calculation is (2 x 4 x 8) / 12 = 5.33 BF.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the difference between board feet and linear feet?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Linear feet measures only the length of a board. Board feet measures volume (thickness x width x length). A 10-foot 2x4 is 10 linear feet but 6.67 board feet.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  const dims: Record<string, [number, number]> = {
+    '2x4': [2, 4], '2x6': [2, 6], '2x8': [2, 8], '2x10': [2, 10], '2x12': [2, 12],
+    '4x4': [4, 4], '6x6': [6, 6], '1x4': [1, 4], '1x6': [1, 6], '1x8': [1, 8], '1x12': [1, 12],
+  };
+
+  function calculate() {
+    const dimKey = (document.getElementById('dimension') as HTMLSelectElement).value;
+    const length = parseFloat((document.getElementById('bfLength') as HTMLInputElement).value) || 8;
+    const qty = parseInt((document.getElementById('qty') as HTMLInputElement).value) || 1;
+    const wasteF = parseFloat((document.getElementById('wasteF') as HTMLSelectElement).value);
+    const costBF = parseFloat((document.getElementById('costBF') as HTMLInputElement).value) || 0;
+
+    document.getElementById('custom-dims')!.classList.toggle('hidden', dimKey !== 'custom');
+
+    let thick: number, width: number;
+    if (dimKey === 'custom') {
+      thick = parseFloat((document.getElementById('customThick') as HTMLInputElement).value) || 2;
+      width = parseFloat((document.getElementById('customWidth') as HTMLInputElement).value) || 4;
+    } else {
+      [thick, width] = dims[dimKey] || [2, 4];
+    }
+
+    const bfPerPiece = (thick * width * length) / 12;
+    const totalBF = bfPerPiece * qty * wasteF;
+    const linearFeet = length * qty;
+    const cost = totalBF * costBF;
+
+    document.getElementById('result-bf')!.textContent = totalBF.toFixed(1);
+    document.getElementById('result-lf')!.textContent = linearFeet.toLocaleString();
+    document.getElementById('result-bfper')!.textContent = bfPerPiece.toFixed(2);
+    document.getElementById('result-cost')!.textContent = '$' + cost.toFixed(2);
+  }
+
+  document.querySelectorAll('#bf-calc input, #bf-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

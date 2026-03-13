@@ -1,0 +1,248 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/electricalTools';
+
+const tool = getToolBySlug('service-size-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How many amps does my house need?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Most modern homes need 200A service. Older homes with gas appliances and no EV charger may get by with 100A or 150A. Homes with electric heating, an EV charger, a pool, or a hot tub typically need 200A minimum and may require 300A or 400A. Use this calculator to get a quick recommendation based on your specific loads." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the minimum service size per NEC?",
+      "acceptedAnswer": { "@type": "Answer", "text": "NEC 230.79 requires a minimum of 100A for single-family homes. However, 100A is rarely sufficient for modern homes with multiple high-draw appliances. Most new construction uses 200A as the standard, and homes with electric vehicles or all-electric appliances increasingly need 300A or 400A service." }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does a service upgrade cost?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A service upgrade from 100A to 200A typically costs $2,500 to $5,000 including the panel, meter base, service entrance cable, permits, and labor. Upgrading to 300A or 400A can cost $5,000 to $10,000 or more due to larger equipment and utility coordination requirements." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="svc-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="homeType">Home Type</label>
+        <select id="homeType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="single" selected>Single Family Home</option>
+          <option value="apartment">Apartment / Condo</option>
+          <option value="commercial">Small Commercial</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="sqft">Square Footage</label>
+        <input type="number" id="sqft" value="2000" min="200" max="10000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <h3 class="font-heading font-bold text-base mb-3 text-text-primary">Major Loads</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="heating">Heating</label>
+        <select id="heating" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors">
+          <option value="none">None / Gas / Oil</option>
+          <option value="electric5">Electric (5 kW)</option>
+          <option value="electric10" selected>Electric / Heat Pump (10 kW)</option>
+          <option value="electric15">Electric (15 kW)</option>
+          <option value="electric20">Electric (20 kW)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="cooling">Cooling</label>
+        <select id="cooling" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors">
+          <option value="none">None</option>
+          <option value="window">Window Units Only</option>
+          <option value="central2">Central AC (2 Ton)</option>
+          <option value="central3" selected>Central AC (3 Ton)</option>
+          <option value="central4">Central AC (4 Ton)</option>
+          <option value="central5">Central AC (5 Ton)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="range">Range / Oven</label>
+        <select id="range" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors">
+          <option value="none">None / Gas</option>
+          <option value="electric" selected>Electric Range</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="dryer">Dryer</label>
+        <select id="dryer" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors">
+          <option value="none">None / Gas</option>
+          <option value="electric" selected>Electric Dryer</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="waterHeater">Water Heater</label>
+        <select id="waterHeater" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors">
+          <option value="none">None / Gas</option>
+          <option value="tank" selected>Electric Tank</option>
+          <option value="tankless">Electric Tankless</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="ev">EV Charger</label>
+        <select id="ev" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors">
+          <option value="none" selected>None</option>
+          <option value="l1">Level 1 (120V / 12A)</option>
+          <option value="l2-30">Level 2 — 30A</option>
+          <option value="l2-50">Level 2 — 50A</option>
+          <option value="l2-80">Level 2 — 80A</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="pool">Pool / Hot Tub</label>
+        <select id="pool" class="w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors">
+          <option value="none" selected>None</option>
+          <option value="above">Above-Ground Pool</option>
+          <option value="inground">In-Ground Pool w/ Heater</option>
+          <option value="spa">Hot Tub / Spa</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Recommendation</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Calculated Amps</div>
+          <div id="result-calc" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Recommended Service</div>
+          <div id="result-service" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Future-Proof (125%)</div>
+          <div id="result-future" class="font-heading font-extrabold text-3xl text-[#34D399]">--</div>
+        </div>
+      </div>
+
+      <div id="load-items" class="bg-bg-dark rounded-xl p-5 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-3">Load Summary</h4>
+        <div id="load-list" class="space-y-1 text-sm"></div>
+      </div>
+
+      <div id="result-notes" class="mb-4"></div>
+      <p class="text-text-muted text-sm italic">Simplified estimate per NEC Article 220. For a detailed load calculation, use the <a href="/electrical/panel-load-calculator" class="text-accent hover:underline">Panel Load Calculator</a>.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select your home type and square footage.</strong> This sets the base load for the calculation.</p>
+          <p><strong class="text-text-primary">2. Check off your major electrical loads.</strong> Each appliance adds a specific amp load to the calculation. Gas appliances add zero electrical load.</p>
+          <p><strong class="text-text-primary">3. Review the recommendation.</strong> The calculator shows the minimum service size needed, plus a future-proofed recommendation with 25% headroom.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many amps does my house need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most modern homes need 200A service. Homes with electric heating, an EV charger, a pool, or a hot tub typically need 200A minimum and may require 300A or 400A.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the minimum service size per NEC?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">NEC 230.79 requires a minimum of 100A for single-family homes. Most new construction uses 200A as the standard.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a service upgrade cost?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A service upgrade from 100A to 200A typically costs $2,500 to $5,000 including the panel, meter base, service entrance cable, permits, and labor.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const heating = (document.getElementById('heating') as HTMLSelectElement).value;
+    const cooling = (document.getElementById('cooling') as HTMLSelectElement).value;
+    const range = (document.getElementById('range') as HTMLSelectElement).value;
+    const dryer = (document.getElementById('dryer') as HTMLSelectElement).value;
+    const waterHeater = (document.getElementById('waterHeater') as HTMLSelectElement).value;
+    const ev = (document.getElementById('ev') as HTMLSelectElement).value;
+    const pool = (document.getElementById('pool') as HTMLSelectElement).value;
+
+    let totalAmps = 100; // Base per NEC 230.79
+    const items: { label: string; amps: number }[] = [{ label: 'Base Service (NEC 230.79 minimum)', amps: 100 }];
+
+    // Heating
+    const heatingAmps: Record<string, number> = { 'none': 0, 'electric5': 25, 'electric10': 50, 'electric15': 65, 'electric20': 85 };
+    const hA = heatingAmps[heating] || 0;
+
+    // Cooling
+    const coolingAmps: Record<string, number> = { 'none': 0, 'window': 10, 'central2': 20, 'central3': 25, 'central4': 30, 'central5': 40 };
+    const cA = coolingAmps[cooling] || 0;
+
+    // Use larger of heating or cooling
+    if (hA >= cA && hA > 0) {
+      items.push({ label: 'Heating (' + heating.replace('electric', '') + ' kW)', amps: hA });
+      totalAmps += hA;
+    } else if (cA > 0) {
+      items.push({ label: 'Cooling (' + cooling.replace('central', '') + ' ton)', amps: cA });
+      totalAmps += cA;
+    }
+
+    if (range === 'electric') { totalAmps += 40; items.push({ label: 'Electric Range', amps: 40 }); }
+    if (dryer === 'electric') { totalAmps += 25; items.push({ label: 'Electric Dryer', amps: 25 }); }
+    if (waterHeater === 'tank') { totalAmps += 20; items.push({ label: 'Electric Water Heater (tank)', amps: 20 }); }
+    if (waterHeater === 'tankless') { totalAmps += 75; items.push({ label: 'Electric Tankless Water Heater', amps: 75 }); }
+
+    const evAmps: Record<string, number> = { 'none': 0, 'l1': 12, 'l2-30': 30, 'l2-50': 50, 'l2-80': 80 };
+    const eA = evAmps[ev] || 0;
+    if (eA > 0) { totalAmps += eA; items.push({ label: 'EV Charger', amps: eA }); }
+
+    const poolAmps: Record<string, number> = { 'none': 0, 'above': 30, 'inground': 60, 'spa': 50 };
+    const pA = poolAmps[pool] || 0;
+    if (pA > 0) { totalAmps += pA; items.push({ label: 'Pool / Spa', amps: pA }); }
+
+    // Round to standard sizes
+    const standardSizes = [100, 125, 150, 200, 225, 300, 400];
+    let recommended = 400;
+    for (const s of standardSizes) { if (s >= totalAmps) { recommended = s; break; } }
+    if (recommended < 100) recommended = 100;
+
+    const futureAmps = Math.ceil(totalAmps * 1.25);
+    let futureSize = 400;
+    for (const s of standardSizes) { if (s >= futureAmps) { futureSize = s; break; } }
+
+    document.getElementById('result-calc')!.textContent = totalAmps + 'A';
+    document.getElementById('result-service')!.textContent = recommended + 'A';
+    document.getElementById('result-future')!.textContent = futureSize + 'A';
+
+    // Load list
+    document.getElementById('load-list')!.innerHTML = items.map(i =>
+      `<div class="flex justify-between text-text-secondary"><span>${i.label}</span><span class="font-mono text-text-primary">+${i.amps}A</span></div>`
+    ).join('');
+
+    // Notes
+    const notesEl = document.getElementById('result-notes')!;
+    if (recommended >= 300) {
+      notesEl.innerHTML = `<div class="bg-[rgba(251,191,36,0.1)] border border-[rgba(251,191,36,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCD34D]">300A+ service requires utility coordination, a CT meter, and larger service entrance cable. Budget 2-4 weeks for utility approval.</div>`;
+    } else {
+      notesEl.innerHTML = '';
+    }
+  }
+
+  document.querySelectorAll('#svc-calc select, #svc-calc input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+  calculate();
+</script>

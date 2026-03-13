@@ -1,0 +1,229 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/cleaningTools';
+
+const tool = getToolBySlug('pressure-washing-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much should I charge for pressure washing per square foot?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Pressure washing rates vary by surface: concrete $0.08-0.35/sqft, deck/wood $0.15-0.30/sqft, vinyl siding $0.20-0.40/sqft, and roof $0.40-0.75/sqft. The national average is $0.42-0.52/sqft across all surfaces. Heavy soiling commands premium pricing." }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does pressure washing take?",
+      "acceptedAnswer": { "@type": "Answer", "text": "With a pro 4000 PSI unit, concrete cleans at about 800 sqft/hr, vinyl siding at 500 sqft/hr, and decks at 400 sqft/hr. A surface cleaner attachment boosts concrete rates to 1200 sqft/hr. Add 15 minutes for setup/teardown. A typical 2000 sqft driveway takes 2.5-3 hours." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the minimum charge for pressure washing?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Most pros set a minimum job charge of $150-200 to cover vehicle dispatch, fuel, equipment wear, and setup time. Even a small job (500 sqft concrete) takes 30+ minutes of setup and teardown plus drive time, so the minimum ensures profitability." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="pw-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="surfaceType">Surface Type</label>
+        <select id="surfaceType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="800" data-low="0.08" data-high="0.15">Concrete / Driveway (800 sqft/hr)</option>
+          <option value="600" data-low="0.12" data-high="0.25">Stamped Concrete (600 sqft/hr)</option>
+          <option value="400" data-low="0.15" data-high="0.30">Deck / Wood (400 sqft/hr)</option>
+          <option value="500" data-low="0.20" data-high="0.40">Vinyl Siding (500 sqft/hr)</option>
+          <option value="300" data-low="0.40" data-high="0.75">Roof (300 sqft/hr)</option>
+          <option value="450" data-low="0.12" data-high="0.25">Fence (450 sqft/hr)</option>
+          <option value="500" data-low="0.15" data-high="0.30">Brick / Stucco (500 sqft/hr)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="areaSqft">Area to Clean (sqft)</label>
+        <input type="number" id="areaSqft" value="2000" min="50" max="50000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="condition">Surface Condition</label>
+        <select id="condition" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0">Light (normal dirt)</option>
+          <option value="0.85" selected>Moderate (algae, some buildup)</option>
+          <option value="0.65">Heavy (thick algae, stains)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="equipment">Equipment</label>
+        <select id="equipment" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.8">Basic (2500 PSI) — 0.8x speed</option>
+          <option value="1.0" selected>Pro (4000 PSI) — baseline</option>
+          <option value="1.5">Surface Cleaner — 1.5x (concrete only)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="billableRate">Billable Rate ($/hr)</label>
+        <input type="number" id="billableRate" value="75" min="20" max="300" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Time Estimate</div>
+          <div id="result-time" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Recommended Price</div>
+          <div id="result-price" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Per Sqft Rate</div>
+          <div id="result-persqft" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Effective Sqft/Hr</div>
+          <div id="result-sqfthr" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div id="min-job-warning" class="hidden mb-6 bg-[rgba(251,191,36,0.1)] border border-[rgba(251,191,36,0.3)] rounded-lg px-4 py-3 text-sm text-[#FBBF24]">
+        This job falls below the typical minimum charge of $150-200. Consider setting a minimum call-out fee to cover vehicle and equipment costs.
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Surface Pricing Guide ($/sqft)</h4>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Concrete (light)</span>
+              <span class="text-text-primary font-semibold">$0.08 - $0.15</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#60A5FA] h-2 rounded-full" style="width: 20%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Deck / Wood</span>
+              <span class="text-text-primary font-semibold">$0.15 - $0.30</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#34D399] h-2 rounded-full" style="width: 40%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Vinyl Siding</span>
+              <span class="text-text-primary font-semibold">$0.20 - $0.40</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#FBBF24] h-2 rounded-full" style="width: 53%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Roof</span>
+              <span class="text-text-primary font-semibold">$0.40 - $0.75</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#EF4444] h-2 rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic mt-4">Coverage rates based on ISSA and 2026 pressure washing industry data. Minimum job: $150-200.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select the surface type.</strong> Each surface has a different base coverage rate. Concrete is the fastest; roof is the slowest due to safety and care requirements.</p>
+          <p><strong class="text-text-primary">2. Enter the area.</strong> Measure or estimate the square footage to be cleaned. For driveways, multiply length by width. For siding, estimate wall area.</p>
+          <p><strong class="text-text-primary">3. Set condition and equipment.</strong> Heavy algae and stains slow you down significantly. A surface cleaner attachment speeds up concrete work by 50%.</p>
+          <p><strong class="text-text-primary">4. Check the per-sqft rate.</strong> Compare your calculated rate against the industry guide to ensure competitive and profitable pricing.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator starts with surface-specific coverage rates, then adjusts for equipment and condition.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Adjusted_Rate = Base_Rate x Equipment_Multiplier x Condition_Factor</p>
+            <p>Time_Hours = Sqft / Adjusted_Rate</p>
+            <p>Total = Time_Hours + 0.25 hrs (setup/teardown)</p>
+            <p>Price = Total_Hours x Billable_Rate</p>
+          </div>
+          <p>Equipment multipliers: Basic 2500 PSI (0.8x), Pro 4000 PSI (1.0x baseline), Surface cleaner (1.5x, concrete only). Condition factors: Light (1.0x), Moderate (0.85x), Heavy (0.65x).</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much should I charge for pressure washing per square foot?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Pressure washing rates vary by surface: concrete $0.08-0.35/sqft, deck/wood $0.15-0.30/sqft, vinyl siding $0.20-0.40/sqft, and roof $0.40-0.75/sqft. The national average is $0.42-0.52/sqft across all surfaces. Heavy soiling commands premium pricing.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does pressure washing take?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">With a pro 4000 PSI unit, concrete cleans at about 800 sqft/hr, vinyl siding at 500 sqft/hr, and decks at 400 sqft/hr. A surface cleaner attachment boosts concrete rates to 1200 sqft/hr. Add 15 minutes for setup/teardown. A typical 2000 sqft driveway takes 2.5-3 hours.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the minimum charge for pressure washing?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most pros set a minimum job charge of $150-200 to cover vehicle dispatch, fuel, equipment wear, and setup time. Even a small job (500 sqft concrete) takes 30+ minutes of setup and teardown plus drive time, so the minimum ensures profitability.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const surfaceSelect = document.getElementById('surfaceType') as HTMLSelectElement;
+    const baseRate = parseFloat(surfaceSelect.value);
+    const areaSqft = parseFloat((document.getElementById('areaSqft') as HTMLInputElement).value) || 2000;
+    const conditionFactor = parseFloat((document.getElementById('condition') as HTMLSelectElement).value);
+    const equipmentMultiplier = parseFloat((document.getElementById('equipment') as HTMLSelectElement).value);
+    const billableRate = parseFloat((document.getElementById('billableRate') as HTMLInputElement).value) || 75;
+
+    const adjustedRate = baseRate * equipmentMultiplier * conditionFactor;
+    const timeHours = areaSqft / adjustedRate;
+    const setupHours = 0.25;
+    const totalHours = timeHours + setupHours;
+    const totalMinutes = totalHours * 60;
+
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = Math.round(totalMinutes % 60);
+    const price = totalHours * billableRate;
+    const perSqft = price / areaSqft;
+    const effectiveSqftHr = areaSqft / totalHours;
+
+    document.getElementById('result-time')!.textContent = `${hours}h ${mins}m`;
+    document.getElementById('result-price')!.textContent = '$' + Math.round(price).toLocaleString();
+    document.getElementById('result-persqft')!.textContent = '$' + perSqft.toFixed(2) + '/sqft';
+    document.getElementById('result-sqfthr')!.textContent = Math.round(effectiveSqftHr).toLocaleString();
+
+    // Show minimum job warning
+    const warningEl = document.getElementById('min-job-warning')!;
+    if (price < 150) {
+      warningEl.classList.remove('hidden');
+    } else {
+      warningEl.classList.add('hidden');
+    }
+  }
+
+  document.querySelectorAll('#pw-calc input, #pw-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

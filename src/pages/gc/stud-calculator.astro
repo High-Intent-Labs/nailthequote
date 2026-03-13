@@ -1,0 +1,207 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/gcTools';
+
+const tool = getToolBySlug('stud-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How many studs do I need for a wall?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Divide the wall length in inches by the stud spacing (16 or 24 inches), then add 1 for the end stud. A 20-foot wall at 16 inches on center needs (240 / 16) + 1 = 16 studs. Add 10% for waste to get 18 studs. You also need plates (3x the wall length in linear feet for double top plate)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is 16 inches on center?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "16 inches on center (16 OC) means the distance from the center of one stud to the center of the next stud is 16 inches. This is the standard spacing for load-bearing walls per IRC R602.3. Non-load-bearing walls can use 24 OC spacing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need a double top plate?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Per IRC R602.3, load-bearing walls require a double top plate. Non-load-bearing partition walls can use a single top plate. The double top plate ties intersecting walls together and distributes loads from above. All walls get a single bottom (sole) plate."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="stud-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="wallLength">Wall Length (ft)</label>
+        <input type="number" id="wallLength" value="20" min="1" max="200" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="wallHeight">Wall Height (ft)</label>
+        <input type="number" id="wallHeight" value="8" min="6" max="20" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="spacing">Stud Spacing</label>
+        <select id="spacing" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="16" selected>16" OC (load-bearing, standard)</option>
+          <option value="24">24" OC (non-load-bearing)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="studSize">Stud Size</label>
+        <select id="studSize" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="2x4" selected>2x4</option>
+          <option value="2x6">2x6</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="topPlate">Top Plate</label>
+        <select id="topPlate" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="2" selected>Double top plate (load-bearing)</option>
+          <option value="1">Single top plate (partition)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="studWaste">Waste Factor</label>
+        <select id="studWaste" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.10" selected>10% (standard)</option>
+          <option value="1.15">15% (complex, openings)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Studs Needed</div>
+          <div id="result-studs" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Plate LF</div>
+          <div id="result-plates" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Board Feet</div>
+          <div id="result-bf" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">IRC Compliant</div>
+          <div id="result-irc" class="font-heading font-extrabold text-2xl text-[#34D399]">--</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Material List</h4>
+        <div id="material-list" class="text-text-secondary text-sm space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter wall length and height.</strong> Measure the total wall length in feet. Standard wall height is 8 feet for residential.</p>
+          <p><strong class="text-text-primary">2. Select stud spacing.</strong> Load-bearing walls must be 16" OC per IRC R602.3. Non-load-bearing partitions can use 24" OC.</p>
+          <p><strong class="text-text-primary">3. Choose plate configuration.</strong> Load-bearing walls need a double top plate. Partitions can use a single top plate.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Studs = (Wall_Length_in / Spacing_in) + 1</p>
+            <p>Plate_LF = Wall_Length x (1 bottom + top plates)</p>
+            <p>Total_BF = Studs_BF + Plates_BF + Blocking_BF</p>
+          </div>
+          <p>The formula adds 1 stud for the end piece. Plates run the full length of the wall, with bottom plate x 1 and top plate x 1 or 2 depending on configuration. Blocking is estimated at 1 piece per 4 feet of wall length for drywall backing.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many studs do I need for a wall?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Divide the wall length in inches by the stud spacing (16 or 24 inches), then add 1 for the end stud. A 20-foot wall at 16 inches on center needs (240 / 16) + 1 = 16 studs. Add 10% for waste.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is 16 inches on center?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">16 inches on center (16 OC) means the distance from the center of one stud to the center of the next stud is 16 inches. This is the standard spacing for load-bearing walls per IRC R602.3.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Do I need a double top plate?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Per IRC R602.3, load-bearing walls require a double top plate. Non-load-bearing partition walls can use a single top plate. The double top plate ties intersecting walls together and distributes loads.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const wallLength = parseFloat((document.getElementById('wallLength') as HTMLInputElement).value) || 20;
+    const wallHeight = parseFloat((document.getElementById('wallHeight') as HTMLInputElement).value) || 8;
+    const spacing = parseInt((document.getElementById('spacing') as HTMLSelectElement).value);
+    const studSize = (document.getElementById('studSize') as HTMLSelectElement).value;
+    const topPlateCount = parseInt((document.getElementById('topPlate') as HTMLSelectElement).value);
+    const waste = parseFloat((document.getElementById('studWaste') as HTMLSelectElement).value);
+
+    const wallLengthIn = wallLength * 12;
+    const baseStuds = Math.ceil(wallLengthIn / spacing) + 1;
+    const studsWithWaste = Math.ceil(baseStuds * waste);
+
+    const plateCount = 1 + topPlateCount;
+    const plateLF = wallLength * plateCount;
+    const blockingPieces = Math.ceil(wallLength / 4);
+    const blockingLF = blockingPieces * (studSize === '2x6' ? 1.33 : 1.33);
+
+    const thick = studSize === '2x6' ? 2 : 2;
+    const wide = studSize === '2x6' ? 6 : 4;
+    const bfPerStud = (thick * wide * wallHeight) / 12;
+    const bfPerPlateLF = (thick * wide) / 12;
+
+    const studsBF = studsWithWaste * bfPerStud;
+    const platesBF = plateLF * bfPerPlateLF;
+    const blockingBF = blockingPieces * bfPerPlateLF * 1.33;
+    const totalBF = studsBF + platesBF + blockingBF;
+
+    const isCompliant = spacing <= 16 || topPlateCount === 1;
+
+    document.getElementById('result-studs')!.textContent = studsWithWaste.toString();
+    document.getElementById('result-plates')!.textContent = plateLF.toFixed(0) + ' LF';
+    document.getElementById('result-bf')!.textContent = totalBF.toFixed(0);
+
+    const ircEl = document.getElementById('result-irc')!;
+    ircEl.textContent = 'Yes';
+    ircEl.className = 'font-heading font-extrabold text-2xl text-[#34D399]';
+
+    const materialList = document.getElementById('material-list')!;
+    const studLen = wallHeight <= 8 ? 8 : wallHeight <= 10 ? 10 : 12;
+    const platePieces = Math.ceil(plateLF / (studSize === '2x6' ? 16 : 16));
+    materialList.innerHTML = `
+      <div class="flex justify-between"><span>${studsWithWaste} x ${studSize} x ${studLen}' (studs)</span><span class="text-text-primary font-medium">${studsWithWaste} pieces</span></div>
+      <div class="flex justify-between"><span>${studSize} x 16' (plates)</span><span class="text-text-primary font-medium">${platePieces} pieces</span></div>
+      <div class="flex justify-between"><span>${studSize} x 8' (blocking)</span><span class="text-text-primary font-medium">${blockingPieces} pieces</span></div>
+      <div class="border-t border-border mt-3 pt-3 flex justify-between font-medium"><span>Total Board Feet</span><span class="text-accent">${totalBF.toFixed(0)} BF</span></div>
+    `;
+  }
+
+  document.querySelectorAll('#stud-calc input, #stud-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

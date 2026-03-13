@@ -1,0 +1,188 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/handymanTools';
+
+const tool = getToolBySlug('shelving-load-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much weight can a shelf hold?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A 3/4 inch thick solid wood shelf spanning 24 inches between brackets can safely hold about 10 lbs. The same shelf at 12 inches span holds about 40 lbs. Capacity depends on material, thickness, span length, and bracket strength. Always apply a 25% safety margin."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How far apart should shelf brackets be?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For 3/4 inch wood shelves, space brackets every 16-24 inches for light loads and every 12-16 inches for heavier items like books. Steel shelves can span farther. The general rule is: the thinner the shelf, the closer the brackets need to be."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much weight can a floating shelf hold?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A properly installed floating shelf with a steel rod bracket system can hold 30-50 lbs depending on length and wall anchoring. Floating shelves attached to studs hold significantly more than those using drywall anchors alone. Always check the bracket manufacturer's rating."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="shelf-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="material">Shelf Material</label>
+        <select id="material" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="wood" selected>Solid Wood (Pine, Oak, Maple)</option>
+          <option value="plywood">Plywood / MDF</option>
+          <option value="steel">Steel</option>
+          <option value="composite">Composite / Particleboard</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="thickness">Shelf Thickness</label>
+        <select id="thickness" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.75" selected>3/4" (standard)</option>
+          <option value="1">1"</option>
+          <option value="1.5">1.5"</option>
+          <option value="2">2"</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="shelfLength">Shelf Length (inches)</label>
+        <input type="number" id="shelfLength" value="36" min="6" max="120" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="numBrackets">Number of Brackets</label>
+        <input type="number" id="numBrackets" value="2" min="1" max="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="bracketCapacity">Bracket Capacity (lbs each)</label>
+        <input type="number" id="bracketCapacity" value="50" min="10" max="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Safe Working Load</div>
+          <div id="result-load" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Bracket Total</div>
+          <div id="result-bracket" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Deflection Rating</div>
+          <div id="result-deflection" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Per Bracket Load</div>
+          <div id="result-per" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Safe working load includes a 25% safety margin. For heavy-load or safety-critical shelving, consult a structural engineer.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select shelf material.</strong> Solid wood is the strongest common shelf material. Plywood is nearly as strong. Particleboard is the weakest.</p>
+          <p><strong class="text-text-primary">2. Set thickness and length.</strong> Thicker shelves hold more weight. Longer spans hold less weight per linear foot.</p>
+          <p><strong class="text-text-primary">3. Enter bracket details.</strong> More brackets mean more support. Check bracket manufacturer specs for individual capacity.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much weight can a shelf hold?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A 3/4 inch thick solid wood shelf spanning 24 inches between brackets can safely hold about 10 lbs. Capacity depends on material, thickness, span length, and bracket strength.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How far apart should shelf brackets be?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For 3/4 inch wood shelves, space brackets every 16-24 inches for light loads and every 12-16 inches for heavier items like books.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much weight can a floating shelf hold?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A properly installed floating shelf with a steel rod bracket system can hold 30-50 lbs depending on length and wall anchoring.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const material = (document.getElementById('material') as HTMLSelectElement).value;
+    const thickness = parseFloat((document.getElementById('thickness') as HTMLSelectElement).value);
+    const shelfLength = parseFloat((document.getElementById('shelfLength') as HTMLInputElement).value) || 36;
+    const numBrackets = parseInt((document.getElementById('numBrackets') as HTMLInputElement).value) || 2;
+    const bracketCapacity = parseFloat((document.getElementById('bracketCapacity') as HTMLInputElement).value) || 50;
+
+    // Material strength factor (relative to solid wood = 1.0)
+    const materialFactor: Record<string, number> = {
+      wood: 1.0, plywood: 0.85, steel: 3.0, composite: 0.5
+    };
+    const mf = materialFactor[material] || 1.0;
+
+    // Span between brackets (assuming evenly spaced)
+    const span = shelfLength / Math.max(numBrackets - 1, 1);
+
+    // Shelf capacity (simplified deflection-limited: based on L/240 rule)
+    // Base: 3/4" solid wood at 12" span = 40 lbs
+    const baseLoad = 40;
+    const thicknessFactor = Math.pow(thickness / 0.75, 2);
+    const spanFactor = Math.pow(12 / span, 2);
+    const shelfCapacity = baseLoad * thicknessFactor * spanFactor * mf;
+
+    // Bracket-limited capacity
+    const bracketTotal = numBrackets * bracketCapacity;
+
+    // Limiting factor is whichever is lower
+    const rawCapacity = Math.min(shelfCapacity, bracketTotal);
+
+    // Apply 25% safety margin
+    const safeLoad = rawCapacity * 0.75;
+    const perBracket = safeLoad / numBrackets;
+
+    // Deflection rating
+    let deflectionRating = 'Good';
+    if (span > 32 && material !== 'steel') deflectionRating = 'At Risk — reduce span';
+    else if (span > 24 && thickness <= 0.75 && material !== 'steel') deflectionRating = 'Marginal';
+    else deflectionRating = 'Good';
+
+    document.getElementById('result-load')!.textContent = Math.round(safeLoad) + ' lbs';
+    document.getElementById('result-bracket')!.textContent = bracketTotal + ' lbs';
+    document.getElementById('result-deflection')!.textContent = deflectionRating;
+    document.getElementById('result-per')!.textContent = Math.round(perBracket) + ' lbs';
+
+    const deflEl = document.getElementById('result-deflection')!;
+    deflEl.classList.remove('text-[#34D399]', 'text-[#FBBF24]', 'text-[#EF4444]');
+    if (deflectionRating === 'Good') deflEl.classList.add('text-[#34D399]');
+    else if (deflectionRating === 'Marginal') deflEl.classList.add('text-[#FBBF24]');
+    else deflEl.classList.add('text-[#EF4444]');
+  }
+
+  document.querySelectorAll('#shelf-calc input, #shelf-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

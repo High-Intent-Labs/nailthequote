@@ -1,0 +1,192 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/roofingTools';
+
+const tool = getToolBySlug('ventilation-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much ventilation does my attic need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "IRC code requires 1 square foot of net free ventilation area (NFVA) for every 150 square feet of attic floor area (1:150 ratio). If you have a vapor barrier installed, the ratio drops to 1:300. A 1,200 sq ft attic without a vapor barrier needs 8 sq ft of total ventilation area."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the 1:150 ventilation rule?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The 1:150 rule means you need 1 square foot of net free ventilation area for every 150 square feet of attic space. This is the default requirement per IRC Section R806.1. With a qualifying vapor barrier, the requirement relaxes to 1:300. Ventilation should be balanced between intake (soffit) and exhaust (ridge)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many soffit vents do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Calculate your total required NFVA, divide by 2 for balanced ventilation, then divide by the net free area per vent. Continuous soffit vents provide about 10-18 sq in per linear foot. A 1,200 sq ft attic needs about 576 sq in of soffit intake, or roughly 38 linear feet of continuous soffit vent."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="vent-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="atticArea">Attic Floor Area (sq ft)</label>
+        <input type="number" id="atticArea" value="1200" min="100" max="50000" step="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="vaporBarrier">Vapor Barrier Present?</label>
+        <select id="vaporBarrier" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="150" selected>No — use 1:150 ratio</option>
+          <option value="300">Yes — use 1:300 ratio</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="ventType">Ventilation System</label>
+        <select id="ventType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="balanced" selected>Soffit + Ridge (balanced)</option>
+          <option value="soffit-only">Soffit Only</option>
+          <option value="gable-ridge">Gable + Ridge</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="ridgeNFA">Ridge Vent NFA (sq in/ft)</label>
+        <input type="number" id="ridgeNFA" value="18" min="10" max="25" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Typical: 18 sq in/ft. Check manufacturer specs.</p>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total NFVA Required</div>
+          <div id="result-nfva" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div id="result-nfva-sqin" class="text-text-muted text-xs mt-1">-- sq in</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Intake (Soffit)</div>
+          <div id="result-intake" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">sq in</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Exhaust (Ridge)</div>
+          <div id="result-exhaust" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">sq in</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Ridge Vent Needed</div>
+          <div id="result-ridge" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">linear feet</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Soffit Vent Needed</div>
+          <div id="result-soffit" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">linear feet</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Ventilation Ratio</div>
+          <div id="result-ratio" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Most roofs benefit from a balanced soffit + ridge system. Verify vent NFA ratings with the manufacturer. Local codes may have additional requirements.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your attic floor area.</strong> Measure the total attic footprint in square feet. For multi-level homes, calculate each attic space separately.</p>
+          <p><strong class="text-text-primary">2. Select vapor barrier status.</strong> If a proper vapor barrier is installed on the warm side of the ceiling, the code-required ventilation ratio drops from 1:150 to 1:300. Most newer homes have one; older homes often do not.</p>
+          <p><strong class="text-text-primary">3. Choose your ventilation system.</strong> A balanced soffit + ridge system is the gold standard. The calculator splits required ventilation 50/50 between intake and exhaust for balanced airflow.</p>
+          <p><strong class="text-text-primary">4. Check ridge vent NFA.</strong> The default is 18 sq in per linear foot, which is standard for most ridge vents. Check the manufacturer spec sheet for your specific product.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Ventilation Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The IRC requires a minimum net free ventilation area (NFVA) to prevent moisture buildup and heat accumulation in attic spaces. The calculator determines the total required NFVA and splits it between intake and exhaust vents.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Total_NFVA = Attic_Area / Ratio (150 or 300)</p>
+            <p>Intake_NFVA = Total_NFVA / 2</p>
+            <p>Exhaust_NFVA = Total_NFVA / 2</p>
+            <p>Ridge_Length = (Exhaust_NFVA x 144) / Ridge_NFA_per_ft</p>
+            <p>Soffit_Length = (Intake_NFVA x 144) / 15</p>
+          </div>
+          <p>The 144 multiplier converts square feet to square inches. Continuous soffit vents typically provide 10-18 sq in per linear foot; we use 15 sq in/ft as a conservative estimate. Always check the actual NFA rating on your specific vent product.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much ventilation does my attic need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">IRC code requires 1 square foot of net free ventilation area (NFVA) for every 150 square feet of attic floor area (1:150 ratio). If you have a vapor barrier installed, the ratio drops to 1:300. A 1,200 sq ft attic without a vapor barrier needs 8 sq ft of total ventilation area.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the 1:150 ventilation rule?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The 1:150 rule means you need 1 square foot of net free ventilation area for every 150 square feet of attic space. This is the default requirement per IRC Section R806.1. With a qualifying vapor barrier, the requirement relaxes to 1:300. Ventilation should be balanced between intake (soffit) and exhaust (ridge).</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many soffit vents do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Calculate your total required NFVA, divide by 2 for balanced ventilation, then divide by the net free area per vent. Continuous soffit vents provide about 10-18 sq in per linear foot. A 1,200 sq ft attic needs about 576 sq in of soffit intake, or roughly 38 linear feet of continuous soffit vent.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const atticArea = parseFloat((document.getElementById('atticArea') as HTMLInputElement).value) || 1200;
+    const ratio = parseFloat((document.getElementById('vaporBarrier') as HTMLSelectElement).value);
+    const ventType = (document.getElementById('ventType') as HTMLSelectElement).value;
+    const ridgeNFA = parseFloat((document.getElementById('ridgeNFA') as HTMLInputElement).value) || 18;
+
+    const totalNFVA = atticArea / ratio;
+    const totalNFVA_sqin = totalNFVA * 144;
+
+    let intakeNFVA: number;
+    let exhaustNFVA: number;
+
+    if (ventType === 'soffit-only') {
+      intakeNFVA = totalNFVA_sqin;
+      exhaustNFVA = 0;
+    } else {
+      intakeNFVA = totalNFVA_sqin / 2;
+      exhaustNFVA = totalNFVA_sqin / 2;
+    }
+
+    const ridgeLength = exhaustNFVA > 0 ? Math.ceil(exhaustNFVA / ridgeNFA) : 0;
+    const soffitLength = Math.ceil(intakeNFVA / 15);
+
+    document.getElementById('result-nfva')!.textContent = totalNFVA.toFixed(1) + ' sq ft';
+    document.getElementById('result-nfva-sqin')!.textContent = Math.round(totalNFVA_sqin).toLocaleString() + ' sq in';
+    document.getElementById('result-intake')!.textContent = Math.round(intakeNFVA).toLocaleString();
+    document.getElementById('result-exhaust')!.textContent = Math.round(exhaustNFVA).toLocaleString();
+    document.getElementById('result-ridge')!.textContent = ridgeLength.toString();
+    document.getElementById('result-soffit')!.textContent = soffitLength.toString();
+    document.getElementById('result-ratio')!.textContent = '1:' + ratio;
+  }
+
+  document.querySelectorAll('#vent-calc input, #vent-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

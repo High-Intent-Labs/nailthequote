@@ -1,0 +1,223 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/handymanTools';
+
+const tool = getToolBySlug('flat-rate-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I convert hourly rate to flat rate?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Multiply your hourly rate by estimated job hours, add marked-up material costs, then add your desired profit margin. For example, at $75/hr for a 3-hour job with $50 in materials at 40% markup, the flat rate would be about $365. Flat rates reward efficiency and eliminate customer anxiety about the clock."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should handymen charge hourly or flat rate?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Flat rate is better for most handyman jobs because it gives customers price certainty and rewards your speed and experience. Hourly billing penalizes efficiency — the faster you work, the less you earn. Use hourly only for open-ended diagnostic work or jobs where the scope is truly unknown."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a typical handyman markup on materials?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most handymen mark up materials 35-50%. This covers your time purchasing, transporting, and managing inventory. Specialty items or items that require a special trip may warrant a higher markup. Always include material markup in your flat-rate price so customers see one clean number."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much profit margin should a handyman make?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A healthy handyman business targets 25-40% net profit margin after all costs. On individual jobs, aim for at least 30% gross margin. If you are consistently below 20%, you are likely undercharging. Use a flat-rate calculator to build profit into every quote."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="flat-rate-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="hourlyRate">Hourly Labor Rate ($)</label>
+        <input type="number" id="hourlyRate" value="72.50" min="25" max="200" step="2.50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="jobHours">Estimated Job Duration (hours)</label>
+        <input type="number" id="jobHours" value="3" min="0.5" max="40" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="materialsCost">Materials Cost ($)</label>
+        <input type="number" id="materialsCost" value="50" min="0" max="10000" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="materialMarkup">Material Markup (%)</label>
+        <input type="number" id="materialMarkup" value="40" min="0" max="200" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Industry standard: 35-50%</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="profitMargin">Desired Profit Margin (%)</label>
+        <input type="number" id="profitMargin" value="30" min="0" max="100" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Target: 25-40%</p>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Labor Cost</div>
+          <div id="result-labor" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Materials (w/ markup)</div>
+          <div id="result-materials" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Profit</div>
+          <div id="result-profit" class="font-heading font-extrabold text-3xl text-[#34D399]">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Flat Rate Price</div>
+          <div id="result-price" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+      </div>
+
+      <!-- Breakdown -->
+      <div class="bg-bg-dark rounded-xl p-6 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Cost Breakdown</h4>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Labor</span>
+              <span id="breakdown-labor" class="text-text-primary font-semibold">--</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div id="bar-labor" class="bg-[#60A5FA] h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Materials</span>
+              <span id="breakdown-materials" class="text-text-primary font-semibold">--</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div id="bar-materials" class="bg-[#C084FC] h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Profit</span>
+              <span id="breakdown-profit" class="text-text-primary font-semibold">--</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div id="bar-profit" class="bg-[#34D399] h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-text-muted text-sm italic">Adjust job hours for your skill level and conditions. This is a pricing template, not a guarantee.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your hourly labor rate.</strong> This should be your fully burdened rate including wages, payroll taxes, and worker's comp. Most handymen charge $60-85/hr.</p>
+          <p><strong class="text-text-primary">2. Estimate job duration.</strong> Be realistic about how long the job will take including setup, cleanup, and travel. Over time, you will build a library of standard job times.</p>
+          <p><strong class="text-text-primary">3. Add materials cost and markup.</strong> Enter your wholesale cost for materials, then set your markup percentage. The industry standard is 35-50%.</p>
+          <p><strong class="text-text-primary">4. Set your profit margin.</strong> This is the additional profit on top of your labor and material costs. A healthy margin is 25-40%.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Flat Rate Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Labor_Cost = Hourly_Rate x Job_Hours</p>
+            <p>Materials_With_Markup = Materials_Cost x (1 + Markup%)</p>
+            <p>Total_Cost = Labor_Cost + Materials_With_Markup</p>
+            <p>Profit = Total_Cost x Profit_Margin%</p>
+            <p>Flat_Rate_Price = Total_Cost + Profit</p>
+          </div>
+          <p>The flat rate gives your customer one clean number. It rewards your expertise and speed because the faster you complete the job, the higher your effective hourly rate becomes.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I convert hourly rate to flat rate?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Multiply your hourly rate by estimated job hours, add marked-up material costs, then add your desired profit margin. Flat rates reward efficiency and eliminate customer anxiety about the clock.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should handymen charge hourly or flat rate?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Flat rate is better for most handyman jobs because it gives customers price certainty and rewards your speed and experience. Use hourly only for open-ended diagnostic work.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a typical handyman markup on materials?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most handymen mark up materials 35-50%. This covers your time purchasing, transporting, and managing inventory.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much profit margin should a handyman make?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A healthy handyman business targets 25-40% net profit margin after all costs. On individual jobs, aim for at least 30% gross margin.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const hourlyRate = parseFloat((document.getElementById('hourlyRate') as HTMLInputElement).value) || 72.50;
+    const jobHours = parseFloat((document.getElementById('jobHours') as HTMLInputElement).value) || 3;
+    const materialsCost = parseFloat((document.getElementById('materialsCost') as HTMLInputElement).value) || 0;
+    const materialMarkup = parseFloat((document.getElementById('materialMarkup') as HTMLInputElement).value) || 40;
+    const profitMargin = parseFloat((document.getElementById('profitMargin') as HTMLInputElement).value) || 30;
+
+    const laborCost = hourlyRate * jobHours;
+    const materialsWithMarkup = materialsCost * (1 + materialMarkup / 100);
+    const totalCost = laborCost + materialsWithMarkup;
+    const profit = totalCost * (profitMargin / 100);
+    const flatRatePrice = totalCost + profit;
+
+    document.getElementById('result-labor')!.textContent = '$' + laborCost.toFixed(0);
+    document.getElementById('result-materials')!.textContent = '$' + materialsWithMarkup.toFixed(0);
+    document.getElementById('result-profit')!.textContent = '$' + profit.toFixed(0);
+    document.getElementById('result-price')!.textContent = '$' + flatRatePrice.toFixed(0);
+
+    // Breakdown percentages
+    const laborPct = flatRatePrice > 0 ? (laborCost / flatRatePrice) * 100 : 0;
+    const matPct = flatRatePrice > 0 ? (materialsWithMarkup / flatRatePrice) * 100 : 0;
+    const profitPct = flatRatePrice > 0 ? (profit / flatRatePrice) * 100 : 0;
+
+    document.getElementById('breakdown-labor')!.textContent = laborPct.toFixed(0) + '%';
+    document.getElementById('breakdown-materials')!.textContent = matPct.toFixed(0) + '%';
+    document.getElementById('breakdown-profit')!.textContent = profitPct.toFixed(0) + '%';
+
+    (document.getElementById('bar-labor') as HTMLElement).style.width = laborPct + '%';
+    (document.getElementById('bar-materials') as HTMLElement).style.width = matPct + '%';
+    (document.getElementById('bar-profit') as HTMLElement).style.width = profitPct + '%';
+  }
+
+  document.querySelectorAll('#flat-rate-calc input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

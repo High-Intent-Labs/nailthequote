@@ -1,0 +1,209 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/handymanTools';
+
+const tool = getToolBySlug('paint-coverage-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much paint do I need per square foot?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "One gallon of latex paint covers about 350 square feet on smooth drywall. For textured surfaces, plan on 300 sqft per gallon. Rough or masonry surfaces may only get 200 sqft per gallon. These rates assume one coat — multiply by the number of coats needed."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many coats of paint do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most jobs need 2 coats for full coverage. If painting over a similar color, 1 coat may suffice. Going from dark to light or light to dark typically needs 2-3 coats. Using a tinted primer reduces the number of topcoats needed."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need primer before painting?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use primer on bare drywall, new wood, stained surfaces, and when making drastic color changes. Self-priming paints work for repaints over similar colors. Primer costs less per gallon than paint, so using it saves money when multiple coats would otherwise be needed."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does it cost to paint a room?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For a handyman, a typical 12x12 room (about 400 sqft of wall area) costs $150-300 in materials and $200-500 in labor. Total customer price ranges from $500-1,100 depending on paint quality, number of coats, prep work needed, and ceiling inclusion."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="paint-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="areaSqft">Area to Paint (sq ft)</label>
+        <input type="number" id="areaSqft" value="400" min="10" max="50000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="surfaceType">Surface Type</label>
+        <select id="surfaceType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="350" selected>Smooth Drywall</option>
+          <option value="300">Textured Drywall</option>
+          <option value="200">Rough / Stucco</option>
+          <option value="200">Masonry</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="numCoats">Number of Coats</label>
+        <select id="numCoats" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1">1 Coat</option>
+          <option value="2" selected>2 Coats</option>
+          <option value="3">3 Coats</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="primerNeeded">Primer Needed</label>
+        <select id="primerNeeded" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="yes">Yes</option>
+          <option value="no" selected>No</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="paintCost">Paint Cost ($/gallon)</label>
+        <select id="paintCost" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="25">Contractor Grade ($25/gal)</option>
+          <option value="40" selected>Mid-Range ($40/gal)</option>
+          <option value="60">Premium ($60/gal)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="hourlyRate">Hourly Rate ($)</label>
+        <input type="number" id="hourlyRate" value="72.50" min="25" max="200" step="2.50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Paint Gallons</div>
+          <div id="result-gallons" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Primer Gallons</div>
+          <div id="result-primer" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Material Cost</div>
+          <div id="result-material" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Customer Price</div>
+          <div id="result-price" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Labor Hours</div>
+          <div id="result-hours" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Job Cost</div>
+          <div id="result-total" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Coverage rates from industry standards. Actual coverage varies by paint quality, application method, and surface porosity.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the area to paint.</strong> For walls, multiply room perimeter by wall height and subtract window/door areas. For a 12x12 room with 8-foot ceilings, that is about 384 sqft of wall area.</p>
+          <p><strong class="text-text-primary">2. Select surface type.</strong> Smooth drywall gives the best coverage. Textured or rough surfaces absorb more paint and need more product.</p>
+          <p><strong class="text-text-primary">3. Set coats and primer.</strong> Most repaints need 2 coats. New drywall or color changes benefit from a primer coat first.</p>
+          <p><strong class="text-text-primary">4. Choose paint quality and hourly rate.</strong> The calculator shows total material cost, labor hours, and customer price.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Paint Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Paint_Gallons = ceil((Area / Coverage_Rate) x Coats)</p>
+            <p>Primer_Gallons = ceil(Area / 300)</p>
+            <p>Labor_Hours = (Area / 350) x Coats</p>
+            <p>Customer_Price = (Material + Labor) x 1.35</p>
+          </div>
+          <p>Coverage rates are based on industry standards: 350 sqft/gal for smooth drywall, 300 for textured, and 200 for rough surfaces. Labor rate assumes 350 sqft per hour for an experienced painter.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much paint do I need per square foot?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">One gallon of latex paint covers about 350 square feet on smooth drywall. For textured surfaces, plan on 300 sqft per gallon. Rough or masonry surfaces may only get 200 sqft per gallon.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many coats of paint do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most jobs need 2 coats for full coverage. Going from dark to light or light to dark typically needs 2-3 coats. Using a tinted primer reduces the number of topcoats needed.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Do I need primer before painting?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Use primer on bare drywall, new wood, stained surfaces, and when making drastic color changes. Self-priming paints work for repaints over similar colors.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does it cost to paint a room?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For a handyman, a typical 12x12 room costs $150-300 in materials and $200-500 in labor. Total customer price ranges from $500-1,100 depending on paint quality, prep work, and number of coats.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const areaSqft = parseFloat((document.getElementById('areaSqft') as HTMLInputElement).value) || 400;
+    const coverageRate = parseFloat((document.getElementById('surfaceType') as HTMLSelectElement).value);
+    const numCoats = parseInt((document.getElementById('numCoats') as HTMLSelectElement).value);
+    const primerNeeded = (document.getElementById('primerNeeded') as HTMLSelectElement).value;
+    const paintCostPerGal = parseFloat((document.getElementById('paintCost') as HTMLSelectElement).value);
+    const hourlyRate = parseFloat((document.getElementById('hourlyRate') as HTMLInputElement).value) || 72.50;
+
+    const paintGallons = Math.ceil((areaSqft / coverageRate) * numCoats);
+    const primerGallons = primerNeeded === 'yes' ? Math.ceil(areaSqft / 300) : 0;
+    const primerCostPerGal = 20;
+
+    const materialCost = (paintGallons * paintCostPerGal) + (primerGallons * primerCostPerGal);
+    const laborHours = (areaSqft / 350) * numCoats + (primerNeeded === 'yes' ? areaSqft / 350 : 0);
+    const laborCost = laborHours * hourlyRate;
+    const totalCost = materialCost + laborCost;
+    const customerPrice = totalCost * 1.35;
+
+    document.getElementById('result-gallons')!.textContent = paintGallons + ' gal';
+    document.getElementById('result-primer')!.textContent = primerGallons > 0 ? primerGallons + ' gal' : 'None';
+    document.getElementById('result-material')!.textContent = '$' + materialCost.toFixed(0);
+    document.getElementById('result-hours')!.textContent = laborHours.toFixed(1) + ' hrs';
+    document.getElementById('result-total')!.textContent = '$' + totalCost.toFixed(0);
+    document.getElementById('result-price')!.textContent = '$' + customerPrice.toFixed(0);
+  }
+
+  document.querySelectorAll('#paint-calc input, #paint-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

@@ -1,0 +1,178 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/gcTools';
+
+const tool = getToolBySlug('subcontractor-markup-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much should a GC mark up subcontractor work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "General contractors typically mark up subcontractor invoices 15-30%. This covers overhead (managing the sub, coordinating schedules, handling quality control) and profit. A common structure is 10-15% for overhead recovery plus 10-15% for profit, totaling 20-30% markup. The exact amount depends on your overhead costs and the level of sub management required."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it fair for a GC to mark up subcontractor work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The GC markup covers real costs: finding and vetting subs, coordinating schedules, managing quality, handling insurance requirements, processing payments, and taking responsibility for the sub's work under the prime contract. Without markup, the GC would lose money managing subcontracted scopes."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I mark up materials the same as labor?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Many GCs use a lower markup on material pass-throughs (5-15%) compared to labor-heavy sub work (15-30%). The rationale is that material purchases require less management oversight than labor coordination. However, if you handle procurement, delivery coordination, and returns, a higher markup is justified."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="sub-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="subInvoice">Subcontractor Invoice ($)</label>
+        <input type="number" id="subInvoice" value="5000" min="0" step="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="overheadType">Overhead Allocation</label>
+        <select id="overheadType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="percent" selected>Percentage of Invoice</option>
+          <option value="fixed">Fixed Dollar Amount</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="overheadVal" id="overheadLabel">Overhead (%)</label>
+        <input type="number" id="overheadVal" value="15" min="0" max="100" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="profitPct">Desired Profit (%)</label>
+        <input type="number" id="profitPct" value="10" min="0" max="50" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Applied to (sub invoice + overhead)</p>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Billed to Client</div>
+          <div id="result-billed" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Markup</div>
+          <div id="result-markup" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Markup %</div>
+          <div id="result-markuppct" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Effective Margin</div>
+          <div id="result-margin" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-6 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Markup Breakdown</h4>
+        <div id="markup-breakdown" class="text-text-secondary text-sm space-y-2"></div>
+      </div>
+
+      <p class="text-text-muted text-sm italic">Standard GC overhead on subcontracted work is 10-20%. Profit on subs is typically 10-15%. Total markup of 20-30% is common in the industry.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the subcontractor invoice amount.</strong> This is what the sub charges you for the completed work.</p>
+          <p><strong class="text-text-primary">2. Set your overhead allocation.</strong> Choose either a percentage of the invoice or a fixed dollar amount. This covers your cost of managing the sub.</p>
+          <p><strong class="text-text-primary">3. Set your desired profit.</strong> This is applied to the sub invoice plus overhead, giving you the final billed amount to your client.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Overhead_$ = Sub_Invoice x Overhead_% (or fixed $)</p>
+            <p>Profit_$ = (Sub_Invoice + Overhead) x Profit_%</p>
+            <p>Total_Markup = Overhead + Profit</p>
+            <p>Billed_Amount = Sub_Invoice + Total_Markup</p>
+            <p>Markup_% = Total_Markup / Sub_Invoice x 100</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much should a GC mark up subcontractor work?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">GCs typically mark up sub work 15-30%, split between overhead recovery (10-15%) and profit (10-15%).</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Is it fair for a GC to mark up subcontractor work?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. The markup covers real costs: finding and vetting subs, coordinating schedules, managing quality, handling insurance, and taking responsibility under the prime contract.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I mark up materials the same as labor?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Many GCs use a lower markup on material pass-throughs (5-15%) compared to labor-heavy sub work (15-30%). If you handle procurement and delivery coordination, a higher markup is justified.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const subInvoice = parseFloat((document.getElementById('subInvoice') as HTMLInputElement).value) || 0;
+    const overheadType = (document.getElementById('overheadType') as HTMLSelectElement).value;
+    const overheadVal = parseFloat((document.getElementById('overheadVal') as HTMLInputElement).value) || 0;
+    const profitPct = parseFloat((document.getElementById('profitPct') as HTMLInputElement).value) || 0;
+
+    // Update label
+    const label = document.getElementById('overheadLabel')!;
+    label.textContent = overheadType === 'percent' ? 'Overhead (%)' : 'Overhead ($)';
+
+    const overheadDollars = overheadType === 'percent' ? subInvoice * (overheadVal / 100) : overheadVal;
+    const profitDollars = (subInvoice + overheadDollars) * (profitPct / 100);
+    const totalMarkup = overheadDollars + profitDollars;
+    const billedAmount = subInvoice + totalMarkup;
+    const markupPct = subInvoice > 0 ? (totalMarkup / subInvoice) * 100 : 0;
+    const marginPct = billedAmount > 0 ? (totalMarkup / billedAmount) * 100 : 0;
+
+    document.getElementById('result-billed')!.textContent = '$' + billedAmount.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    document.getElementById('result-markup')!.textContent = '$' + totalMarkup.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    document.getElementById('result-markuppct')!.textContent = markupPct.toFixed(1) + '%';
+    document.getElementById('result-margin')!.textContent = marginPct.toFixed(1) + '%';
+
+    document.getElementById('markup-breakdown')!.innerHTML = `
+      <div class="flex justify-between"><span>Subcontractor Invoice</span><span class="text-text-primary font-medium">$${subInvoice.toLocaleString()}</span></div>
+      <div class="flex justify-between"><span>Overhead Recovery${overheadType === 'percent' ? ' (' + overheadVal + '%)' : ''}</span><span class="text-text-primary font-medium">+$${overheadDollars.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span></div>
+      <div class="flex justify-between"><span>Profit (${profitPct}% of sub + overhead)</span><span class="text-text-primary font-medium">+$${profitDollars.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span></div>
+      <div class="border-t border-border mt-3 pt-3 flex justify-between font-medium"><span>Billed to Client</span><span class="text-accent">$${billedAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span></div>
+      <div class="flex justify-between text-xs text-text-muted mt-2"><span>Effective Markup</span><span>${markupPct.toFixed(1)}%</span></div>
+      <div class="flex justify-between text-xs text-text-muted"><span>Effective Margin</span><span>${marginPct.toFixed(1)}%</span></div>
+    `;
+  }
+
+  document.querySelectorAll('#sub-calc input, #sub-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

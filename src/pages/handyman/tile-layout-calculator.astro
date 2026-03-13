@@ -1,0 +1,224 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/handymanTools';
+
+const tool = getToolBySlug('tile-layout-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How many tiles do I need per square foot?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The number of tiles per square foot depends on tile size. A 12x12 inch tile covers 1 square foot, so you need 1 tile per sqft. A 6x6 tile covers 0.25 sqft, so you need 4 tiles per sqft. Always add 8-10% for cuts and waste."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much grout do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Grout quantity depends on tile size, grout joint width, and total area. For standard 12x12 tiles with 1/8 inch joints, plan on about 1 gallon per 60 square feet. Larger joints or smaller tiles require significantly more grout. This calculator handles the math automatically."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the standard grout joint width?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Standard grout joint width is 1/8 inch for rectified (precision-cut) tiles and 3/16 inch for standard tiles. Larger format tiles (18 inch and above) often use 1/16 inch joints. Rustic or handmade tiles may use 1/4 inch or wider joints for a traditional look."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does it take to tile per square foot?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An experienced handyman can tile about 1.3 square feet per hour including layout, mortar application, tile setting, and grouting. A simple backsplash of 20 sqft takes roughly 15-16 hours. Complex patterns or large-format tiles take longer due to more precise cutting and handling."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="tile-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="areaWidth">Area Width (feet)</label>
+        <input type="number" id="areaWidth" value="10" min="1" max="100" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="areaLength">Area Length (feet)</label>
+        <input type="number" id="areaLength" value="8" min="1" max="100" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="tileWidth">Tile Width (inches)</label>
+        <input type="number" id="tileWidth" value="12" min="1" max="48" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="tileHeight">Tile Height (inches)</label>
+        <input type="number" id="tileHeight" value="12" min="1" max="48" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="groutWidth">Grout Joint Width</label>
+        <select id="groutWidth" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.0625">1/16"</option>
+          <option value="0.125" selected>1/8"</option>
+          <option value="0.1875">3/16"</option>
+          <option value="0.25">1/4"</option>
+          <option value="0.375">3/8"</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="tileCost">Tile Cost ($/each)</label>
+        <input type="number" id="tileCost" value="2.50" min="0.10" max="50" step="0.10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Area</div>
+          <div id="result-area" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Tiles Needed</div>
+          <div id="result-tiles" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Grout Needed</div>
+          <div id="result-grout" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Material Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Labor Hours</div>
+          <div id="result-hours" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Job Cost</div>
+          <div id="result-total" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Customer Price</div>
+          <div id="result-price" class="font-heading font-extrabold text-2xl text-accent">--</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Tile count includes 8% waste factor. Grout amounts are estimates; actual need varies by application method.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the area dimensions.</strong> Measure the width and length of the surface to be tiled in feet.</p>
+          <p><strong class="text-text-primary">2. Enter the tile size.</strong> Set the tile width and height in inches. Common sizes include 12x12, 6x6, 12x24, and 4x4.</p>
+          <p><strong class="text-text-primary">3. Select grout joint width.</strong> Standard is 1/8 inch for most tiles. Larger joints need more grout.</p>
+          <p><strong class="text-text-primary">4. Set your tile cost.</strong> Enter the per-tile cost from your supplier. The calculator handles the rest.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Tile Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator divides the total area by the area of each tile to get the base tile count, then adds 8% for cuts and waste. Grout quantity is estimated based on joint width and total joint linear footage.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Total_Area = Width_ft x Length_ft</p>
+            <p>Tiles_per_SqFt = 144 / (Tile_W x Tile_H)</p>
+            <p>Total_Tiles = Area x Tiles_per_SqFt x 1.08</p>
+            <p>Labor = Area x 0.75 + 1.0 (setup)</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many tiles do I need per square foot?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The number of tiles per square foot depends on tile size. A 12x12 inch tile covers 1 square foot, so you need 1 tile per sqft. A 6x6 tile covers 0.25 sqft, so you need 4 tiles per sqft. Always add 8-10% for cuts and waste.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much grout do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Grout quantity depends on tile size, grout joint width, and total area. For standard 12x12 tiles with 1/8 inch joints, plan on about 1 gallon per 60 square feet. Larger joints or smaller tiles require significantly more grout.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the standard grout joint width?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Standard grout joint width is 1/8 inch for rectified tiles and 3/16 inch for standard tiles. Larger format tiles often use 1/16 inch joints. Rustic or handmade tiles may use 1/4 inch or wider joints for a traditional look.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does it take to tile per square foot?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">An experienced handyman can tile about 1.3 square feet per hour including layout, mortar application, tile setting, and grouting. A simple backsplash of 20 sqft takes roughly 15-16 hours.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const areaWidth = parseFloat((document.getElementById('areaWidth') as HTMLInputElement).value) || 10;
+    const areaLength = parseFloat((document.getElementById('areaLength') as HTMLInputElement).value) || 8;
+    const tileWidth = parseFloat((document.getElementById('tileWidth') as HTMLInputElement).value) || 12;
+    const tileHeight = parseFloat((document.getElementById('tileHeight') as HTMLInputElement).value) || 12;
+    const groutWidth = parseFloat((document.getElementById('groutWidth') as HTMLSelectElement).value);
+    const tileCost = parseFloat((document.getElementById('tileCost') as HTMLInputElement).value) || 2.50;
+
+    const totalArea = areaWidth * areaLength;
+    const tileAreaSqIn = tileWidth * tileHeight;
+    const tilesPerSqFt = 144 / tileAreaSqIn;
+    const totalTiles = Math.ceil(totalArea * tilesPerSqFt * 1.08);
+
+    // Grout calculation: coverage lookup by joint width (linear feet per gallon)
+    let coverageLfPerGal = 60;
+    if (groutWidth <= 0.0625) coverageLfPerGal = 80;
+    else if (groutWidth <= 0.125) coverageLfPerGal = 60;
+    else if (groutWidth <= 0.1875) coverageLfPerGal = 45;
+    else if (groutWidth <= 0.25) coverageLfPerGal = 35;
+    else coverageLfPerGal = 18;
+
+    // Approximate linear feet of grout joints
+    const tilePerimeter = 2 * (tileWidth + tileHeight);
+    const groutLinearFt = (totalTiles * tilePerimeter / 2) / 12;
+    const groutGallons = Math.ceil(groutLinearFt / coverageLfPerGal * 10) / 10;
+
+    // Cost
+    const tileMaterialCost = totalTiles * tileCost;
+    const groutCost = groutGallons * 20;
+    const mortarCost = totalArea * 0.08;
+    const materialCost = tileMaterialCost + groutCost + mortarCost;
+
+    // Labor: 0.75 hrs/sqft + 1 hr setup
+    const laborHours = totalArea * 0.75 + 1.0;
+    const laborCost = laborHours * 72.50;
+    const totalCost = materialCost + laborCost;
+    const customerPrice = totalCost * 1.35;
+
+    document.getElementById('result-area')!.textContent = totalArea.toFixed(0) + ' sqft';
+    document.getElementById('result-tiles')!.textContent = totalTiles.toLocaleString();
+    document.getElementById('result-grout')!.textContent = groutGallons.toFixed(1) + ' gal';
+    document.getElementById('result-cost')!.textContent = '$' + materialCost.toFixed(0);
+    document.getElementById('result-hours')!.textContent = laborHours.toFixed(1) + ' hrs';
+    document.getElementById('result-total')!.textContent = '$' + totalCost.toFixed(0);
+    document.getElementById('result-price')!.textContent = '$' + customerPrice.toFixed(0);
+  }
+
+  document.querySelectorAll('#tile-calc input, #tile-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

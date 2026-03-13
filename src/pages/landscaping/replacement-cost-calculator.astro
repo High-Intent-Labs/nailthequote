@@ -1,0 +1,281 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/landscapingTools';
+
+const tool = getToolBySlug('replacement-cost-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does a new HVAC system cost?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A new HVAC system typically costs between $5,000 and $15,000 installed, depending on system type, efficiency level, home size, and region. A standard efficiency AC and furnace for a 3-ton home averages around $6,500, while a high-efficiency heat pump system can run $11,500 or more before regional and complexity adjustments."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What size HVAC system do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "System size is measured in tons and depends on your home's square footage, insulation, climate, and layout. A rough rule of thumb is 1 ton per 500-600 square feet, but a proper Manual J load calculation is required for accurate sizing. Oversized systems short-cycle and waste energy, while undersized systems can't keep up on extreme days."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are there tax credits for new HVAC systems?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The federal 25C energy efficiency tax credit offers up to $2,000 for qualifying heat pump systems installed in your primary residence. The system must meet specific efficiency requirements (CEE Tier 1 or higher). Standard air conditioners and furnaces may qualify for a smaller $600 credit. Check with your tax advisor for current eligibility details."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does HVAC installation take?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A straightforward like-for-like replacement typically takes 1 day (6-10 hours). If new ductwork is required, expect 2-3 days. Converting from one system type to another (e.g., furnace to heat pump) may take 1-2 days. Complex multi-zone mini-split installations can take 2-4 days depending on the number of indoor units and line set routing."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="cost-calc">
+    <!-- Input Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="systemType">System Type</label>
+        <select id="systemType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="ac-furnace">AC + Furnace</option>
+          <option value="heat-pump">Heat Pump</option>
+          <option value="mini-1">Mini-Split 1-Zone</option>
+          <option value="mini-2">Mini-Split 2-Zone</option>
+          <option value="mini-3">Mini-Split 3-Zone</option>
+          <option value="mini-4">Mini-Split 4-Zone</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="efficiency">Efficiency Level</label>
+        <select id="efficiency" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="standard">Standard (14 SEER / 80% AFUE)</option>
+          <option value="mid" selected>Mid-Range (16 SEER / 96% AFUE)</option>
+          <option value="high">High Efficiency (20 SEER / 98% AFUE)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="tons">System Size (Tons)</label>
+        <select id="tons" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.5">1.5 Ton</option>
+          <option value="2">2 Ton</option>
+          <option value="2.5">2.5 Ton</option>
+          <option value="3" selected>3 Ton</option>
+          <option value="3.5">3.5 Ton</option>
+          <option value="4">4 Ton</option>
+          <option value="5">5 Ton</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="region">Region</label>
+        <select id="region" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.85">Southeast</option>
+          <option value="0.90">Midwest</option>
+          <option value="0.95">South</option>
+          <option value="1.00" selected>National Average</option>
+          <option value="1.05">Mountain</option>
+          <option value="1.10">Northeast</option>
+          <option value="1.10">Pacific NW</option>
+          <option value="1.15">West</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="homeType">Home Type</label>
+        <select id="homeType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0" selected>Single Story</option>
+          <option value="1.1">Multi-Story</option>
+          <option value="1.15">Attic Installation</option>
+          <option value="1.1">Crawlspace</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="ductwork">Ductwork</label>
+        <select id="ductwork" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0" selected>Existing (good condition)</option>
+          <option value="1.15">Partial Modification Needed</option>
+          <option value="1.5">New Ductwork Required</option>
+        </select>
+      </div>
+    </div>
+
+
+    <!-- Results -->
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Your Estimated Cost</h3>
+
+      <!-- Cost Range Bar -->
+      <div class="bg-bg-dark rounded-xl p-6 mb-6">
+        <div class="flex justify-between items-end mb-3">
+          <div class="text-center">
+            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Low</div>
+            <div id="result-low" class="font-heading font-extrabold text-xl text-text-secondary">--</div>
+          </div>
+          <div class="text-center">
+            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Mid Estimate</div>
+            <div id="result-mid" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          </div>
+          <div class="text-center">
+            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">High</div>
+            <div id="result-high" class="font-heading font-extrabold text-xl text-text-secondary">--</div>
+          </div>
+        </div>
+        <!-- Visual range bar -->
+        <div class="relative h-3 bg-bg-card rounded-full overflow-hidden mt-4">
+          <div id="range-bar" class="absolute inset-y-0 left-[10%] right-[10%] rounded-full bg-gradient-to-r from-accent/40 via-accent to-accent/40"></div>
+          <div id="range-marker" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-accent rounded-full border-2 border-white shadow-lg"></div>
+        </div>
+      </div>
+
+      <!-- Monthly Financing + Tax Credit -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">60-Month Financing</div>
+          <div id="result-monthly60" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">per month</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">120-Month Financing</div>
+          <div id="result-monthly120" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">per month</div>
+        </div>
+        <div id="tax-credit-card" class="hidden bg-bg-dark rounded-xl p-5 text-center border border-green-500/30">
+          <div class="text-green-400 text-xs font-medium uppercase tracking-wider mb-2">Federal Tax Credit</div>
+          <div class="font-heading font-extrabold text-2xl text-green-400">Up to $2,000</div>
+          <div class="text-text-muted text-xs mt-1">25C credit for qualifying heat pumps</div>
+        </div>
+      </div>
+
+      <p class="text-text-muted text-sm italic">This is a ballpark estimate based on national averages. Actual costs vary by contractor, equipment brand, and job-specific conditions. Get exact pricing from a licensed HVAC contractor in your area.</p>
+    </div>
+  </div>
+
+  <!-- Content sections -->
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <!-- How to Use -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Estimator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select your system type.</strong> Choose between a traditional AC and furnace combo, a heat pump, or a ductless mini-split system. Mini-splits are priced by the number of indoor zones.</p>
+          <p><strong class="text-text-primary">2. Pick your efficiency level.</strong> Standard efficiency costs less upfront but more to operate. High-efficiency systems cost more to install but lower monthly energy bills and may qualify for federal tax credits.</p>
+          <p><strong class="text-text-primary">3. Set the system size and your region.</strong> Tonnage should match your home's load calculation. Regional labor and material costs vary significantly, with the Southeast being most affordable and the West Coast being most expensive.</p>
+          <p><strong class="text-text-primary">4. Adjust for home complexity and ductwork.</strong> Multi-story homes, attic installations, and crawlspaces add labor time. New ductwork can add 50% to the total project cost.</p>
+        </div>
+      </section>
+
+      <!-- What Affects Cost -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">What Affects HVAC Replacement Cost</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">System type and efficiency.</strong> The biggest cost driver is the equipment itself. A basic 14 SEER air conditioner with an 80% furnace is the most affordable option. Heat pumps cost slightly less for the equipment but provide both heating and cooling. High-efficiency units (20 SEER / 98% AFUE) can cost double the standard models.</p>
+          <p><strong class="text-text-primary">System size.</strong> Larger homes need larger systems. The cost scales roughly proportionally with tonnage. A 5-ton system costs significantly more than a 2-ton system in both equipment and labor.</p>
+          <p><strong class="text-text-primary">Regional pricing.</strong> Labor rates, permit costs, and material availability vary by region. Southeastern states tend to have the lowest installation costs, while the West Coast and Northeast are the most expensive markets.</p>
+          <p><strong class="text-text-primary">Home complexity.</strong> Multi-story homes require more refrigerant line, longer duct runs, and scaffolding or ladder work. Attic installations in hot climates add difficulty and time. Crawlspace work is physically demanding and slows the job down.</p>
+          <p><strong class="text-text-primary">Ductwork condition.</strong> If your existing ductwork is in good shape, the contractor simply connects the new system. Partial modifications (adding a return, resizing a trunk line) add moderate cost. A full duct replacement is a major project that can increase the total price by 50%.</p>
+        </div>
+      </section>
+
+      <!-- When To Use This -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">During sales visits.</strong> Pull this up on your tablet while sitting at the kitchen table with a homeowner. Walk through the options together, show them how efficiency level and ductwork condition affect the price, and set realistic expectations before running your detailed proposal.</p>
+          <p><strong class="text-text-primary">Phone estimates.</strong> When a homeowner calls asking "how much for a new AC?" you can walk them through a few questions and give a ballpark range on the spot. This builds trust and qualifies the lead before scheduling an in-home visit.</p>
+          <p><strong class="text-text-primary">Website lead generation.</strong> Embed this calculator on your website so homeowners can self-educate on pricing. Visitors who use the tool and then call you are better-informed and more likely to convert because they already have realistic price expectations.</p>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a new HVAC system cost?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A new HVAC system typically costs between $5,000 and $15,000 installed, depending on system type, efficiency level, home size, and region. A standard efficiency AC and furnace for a 3-ton home averages around $6,500, while a high-efficiency heat pump system can run $11,500 or more before regional and complexity adjustments.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What size HVAC system do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">System size is measured in tons and depends on your home's square footage, insulation, climate, and layout. A rough rule of thumb is 1 ton per 500-600 square feet, but a proper Manual J load calculation is required for accurate sizing. Oversized systems short-cycle and waste energy, while undersized systems can't keep up on extreme days.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Are there tax credits for new HVAC systems?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. The federal 25C energy efficiency tax credit offers up to $2,000 for qualifying heat pump systems installed in your primary residence. The system must meet specific efficiency requirements (CEE Tier 1 or higher). Standard air conditioners and furnaces may qualify for a smaller $600 credit. Check with your tax advisor for current eligibility details.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does HVAC installation take?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A straightforward like-for-like replacement typically takes 1 day (6-10 hours). If new ductwork is required, expect 2-3 days. Converting from one system type to another (e.g., furnace to heat pump) may take 1-2 days. Complex multi-zone mini-split installations can take 2-4 days depending on the number of indoor units and line set routing.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const systemType = (document.getElementById('systemType') as HTMLSelectElement).value;
+    const efficiency = (document.getElementById('efficiency') as HTMLSelectElement).value;
+    const tons = parseFloat((document.getElementById('tons') as HTMLSelectElement).value);
+    const region = parseFloat((document.getElementById('region') as HTMLSelectElement).value);
+    const homeType = parseFloat((document.getElementById('homeType') as HTMLSelectElement).value);
+    const ductwork = parseFloat((document.getElementById('ductwork') as HTMLSelectElement).value);
+
+    // Base prices by system type and efficiency
+    const basePrices: Record<string, Record<string, number>> = {
+      'ac-furnace': { standard: 6500, mid: 9000, high: 13000 },
+      'heat-pump': { standard: 5500, mid: 8000, high: 11500 },
+      'mini-1': { standard: 4500, mid: 4500, high: 4500 },
+      'mini-2': { standard: 7000, mid: 7000, high: 7000 },
+      'mini-3': { standard: 10000, mid: 10000, high: 10000 },
+      'mini-4': { standard: 13000, mid: 13000, high: 13000 },
+    };
+
+    const basePrice = basePrices[systemType]?.[efficiency] ?? 9000;
+
+    // Formula: Base_Price x Regional x (Tons/3.0) x Complexity x Ductwork
+    const estimatedCost = basePrice * region * (tons / 3.0) * homeType * ductwork;
+
+    const low = Math.round(estimatedCost * 0.8);
+    const mid = Math.round(estimatedCost);
+    const high = Math.round(estimatedCost * 1.2);
+    const monthly60 = Math.round(mid / 60);
+    const monthly120 = Math.round(mid / 120);
+
+    // Format currency
+    const fmt = (n: number) => '$' + n.toLocaleString();
+
+    document.getElementById('result-low')!.textContent = fmt(low);
+    document.getElementById('result-mid')!.textContent = fmt(mid);
+    document.getElementById('result-high')!.textContent = fmt(high);
+    document.getElementById('result-monthly60')!.textContent = fmt(monthly60);
+    document.getElementById('result-monthly120')!.textContent = fmt(monthly120);
+
+    // Show/hide tax credit for heat pump and mini-split systems
+    const taxCreditCard = document.getElementById('tax-credit-card')!;
+    const isHeatPump = systemType === 'heat-pump' || systemType.startsWith('mini-');
+    taxCreditCard.classList.toggle('hidden', !isHeatPump);
+
+  }
+
+
+  // Auto-calculate on input change
+  document.querySelectorAll('#cost-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+  });
+
+  // Calculate on load with defaults
+  calculate();
+</script>

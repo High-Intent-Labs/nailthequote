@@ -1,0 +1,148 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/pestControlTools';
+
+const tool = getToolBySlug('exclusion-estimator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I estimate exclusion materials for pest control?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Measure the total linear feet of gaps and cracks to seal, then divide by the coverage per unit of material. A standard 10 oz caulk tube covers about 30-40 linear feet for 1/4-inch gaps. Add 10% waste factor. For screen and sheet metal, measure actual opening dimensions and add waste."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much caulk do I need for pest exclusion?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A standard 10 oz caulk tube covers approximately 40 linear feet of 1/4-inch gaps, 30 linear feet of 1/2-inch gaps, or 20 linear feet of 1-inch gaps. Measure all gaps at the foundation, soffits, doors, windows, and utility penetrations, total the footage, and divide by the per-tube coverage."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="excl-calc">
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Gap Measurements</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="foundationGaps">Foundation Cracks (linear ft)</label>
+        <input type="number" id="foundationGaps" value="50" min="0" max="5000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="soffitGaps">Soffit/Eave Gaps (linear ft)</label>
+        <input type="number" id="soffitGaps" value="30" min="0" max="5000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="doorWindowGaps">Door/Window Gaps (linear ft)</label>
+        <input type="number" id="doorWindowGaps" value="40" min="0" max="5000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="utilityPens">Utility Penetrations (count)</label>
+        <input type="number" id="utilityPens" value="6" min="0" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="ventScreens">Vent Screens Needed (count)</label>
+        <input type="number" id="ventScreens" value="4" min="0" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="caulkWidth">Typical Gap Width</label>
+        <select id="caulkWidth" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="40" selected>1/4 inch (40 ft per tube)</option>
+          <option value="30">1/2 inch (30 ft per tube)</option>
+          <option value="20">1 inch (20 ft per tube)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="waste">Waste Factor (%)</label>
+        <input type="number" id="waste" value="10" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Material Estimate</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Caulk Tubes</div>
+          <div id="result-caulk" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Linear Ft</div>
+          <div id="result-linft" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Screen Material</div>
+          <div id="result-screen" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Sheet Metal</div>
+          <div id="result-metal" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Estimator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Walk the property and measure all gaps.</strong> Check the foundation, soffits/eaves, door and window frames, and utility penetrations (pipes, conduit, cable). Record linear feet for each area.</p>
+          <p><strong class="text-text-primary">2. Count utility penetrations and vents.</strong> Each pipe or cable entry needs sealing. Each vent opening needs screening.</p>
+          <p><strong class="text-text-primary">3. Select the typical gap width.</strong> Narrower gaps stretch caulk further. A 1/4-inch gap gets ~40 ft per tube; 1-inch gaps only ~20 ft per tube.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I estimate exclusion materials for pest control?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Measure the total linear feet of gaps and cracks to seal, then divide by the coverage per unit of material. A standard 10 oz caulk tube covers about 30-40 linear feet for 1/4-inch gaps. Add 10% waste factor. For screen and sheet metal, measure actual opening dimensions and add waste.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much caulk do I need for pest exclusion?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard 10 oz caulk tube covers approximately 40 linear feet of 1/4-inch gaps, 30 linear feet of 1/2-inch gaps, or 20 linear feet of 1-inch gaps. Measure all gaps at the foundation, soffits, doors, windows, and utility penetrations, total the footage, and divide by the per-tube coverage.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const foundation = parseFloat((document.getElementById('foundationGaps') as HTMLInputElement).value) || 0;
+    const soffit = parseFloat((document.getElementById('soffitGaps') as HTMLInputElement).value) || 0;
+    const doorWindow = parseFloat((document.getElementById('doorWindowGaps') as HTMLInputElement).value) || 0;
+    const utilPens = parseInt((document.getElementById('utilityPens') as HTMLInputElement).value) || 0;
+    const ventScreens = parseInt((document.getElementById('ventScreens') as HTMLInputElement).value) || 0;
+    const caulkCoverage = parseFloat((document.getElementById('caulkWidth') as HTMLSelectElement).value);
+    const wastePct = parseFloat((document.getElementById('waste') as HTMLInputElement).value) || 0;
+
+    const totalLinFt = foundation + soffit + doorWindow;
+    const wasteFactor = 1 + wastePct / 100;
+    const caulkTubes = Math.ceil((totalLinFt / caulkCoverage) * wasteFactor);
+    const screenLinFt = Math.round((ventScreens * 2 + soffit * 0.2) * wasteFactor);
+    const sheetMetalSqft = Math.round((utilPens * 1.5) * wasteFactor);
+
+    document.getElementById('result-caulk')!.textContent = caulkTubes.toString();
+    document.getElementById('result-linft')!.textContent = Math.round(totalLinFt).toLocaleString() + ' ft';
+    document.getElementById('result-screen')!.textContent = screenLinFt + ' lin ft';
+    document.getElementById('result-metal')!.textContent = sheetMetalSqft + ' sq ft';
+  }
+
+  document.querySelectorAll('#excl-calc input, #excl-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

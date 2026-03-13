@@ -1,0 +1,205 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/cleaningTools';
+
+const tool = getToolBySlug('window-cleaning-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much should I charge per window for cleaning?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Window cleaning rates range from $4-8 per pane or $10-15 per window. Interior-only cleaning is cheaper (3 min/pane), while interior + exterior runs about 6 min/pane. Two-story homes add $1-2 per window for ladder setup time. Most pros charge $45-75/hr as an alternative to per-window pricing." }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does window cleaning take?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A single worker cleaning both sides of a 2-pane window takes about 12 minutes (6 min/pane). For a typical home with 20 double-pane windows on 2 stories, expect 4-5 hours including setup and ladder time. Interior-only is about 40% faster." }
+    },
+    {
+      "@type": "Question",
+      "name": "How many windows can a cleaner do per hour?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A single worker averages 10 windows/hr for exterior 2-story work, 15 windows/hr for interior only, and about 8 windows/hr for both sides on multi-story homes. A 2-person team can handle 25+ windows/hr when splitting interior and exterior duties." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="window-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="numWindows">Number of Windows</label>
+        <input type="number" id="numWindows" value="20" min="1" max="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="panesPerWindow">Panes Per Window</label>
+        <select id="panesPerWindow" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1">Single Pane</option>
+          <option value="2" selected>Double Pane</option>
+          <option value="3">Triple Pane</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="storyHeight">Story Height</label>
+        <select id="storyHeight" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0">1 Story (ground level)</option>
+          <option value="1" selected>2 Story (ladder needed)</option>
+          <option value="2">3+ Story (extended reach)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="cleanType">Cleaning Type</label>
+        <select id="cleanType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="3">Interior Only (3 min/pane)</option>
+          <option value="4">Exterior Only (4 min/pane)</option>
+          <option value="6" selected>Interior + Exterior (6 min/pane)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="frameCondition">Frame Condition</label>
+        <select id="frameCondition" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0" selected>Standard</option>
+          <option value="1">Very Dirty / Oxidized (+1 min/pane)</option>
+          <option value="2">Heavy Buildup (+2 min/pane)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="billableRate">Billable Rate ($/hr)</label>
+        <input type="number" id="billableRate" value="60" min="20" max="200" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Time Estimate</div>
+          <div id="result-time" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Panes</div>
+          <div id="result-panes" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Price (Hourly)</div>
+          <div id="result-price-hourly" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Per Window Rate</div>
+          <div id="result-per-window" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Pricing Model Comparison</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="text-center">
+            <div class="text-text-muted text-xs uppercase tracking-wider mb-1">Per Window</div>
+            <div id="compare-per-window" class="font-heading font-bold text-xl text-text-primary">--</div>
+            <div class="text-text-muted text-xs mt-1">Industry: $10-15/window</div>
+          </div>
+          <div class="text-center">
+            <div class="text-text-muted text-xs uppercase tracking-wider mb-1">Per Pane</div>
+            <div id="compare-per-pane" class="font-heading font-bold text-xl text-text-primary">--</div>
+            <div class="text-text-muted text-xs mt-1">Industry: $4-8/pane</div>
+          </div>
+          <div class="text-center">
+            <div class="text-text-muted text-xs uppercase tracking-wider mb-1">Hourly</div>
+            <div id="compare-hourly" class="font-heading font-bold text-xl text-text-primary">--</div>
+            <div class="text-text-muted text-xs mt-1">Industry: $45-75/hr</div>
+          </div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic mt-4">Time per pane based on industry averages. Actual times vary with window accessibility, screen removal, and detail level.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Count the windows.</strong> Walk the property and count every window that needs cleaning. Note the pane type (most residential windows are double-pane).</p>
+          <p><strong class="text-text-primary">2. Set story height.</strong> Ground-level windows are the fastest. Each additional story adds ladder setup and repositioning time per window.</p>
+          <p><strong class="text-text-primary">3. Choose interior, exterior, or both.</strong> Interior + exterior takes roughly double the time of one side alone. Most residential customers want both sides cleaned.</p>
+          <p><strong class="text-text-primary">4. Adjust for frame condition.</strong> Oxidized or dirty frames and sills add 1-2 minutes per pane for detailed cleaning.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator multiplies total panes by time per pane, then adds climbing time and setup.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Total_Panes = Windows x Panes_Per_Window</p>
+            <p>Pane_Time = Base_Time + Condition_Add</p>
+            <p>Climbing_Add = Windows x Climbing_Factor</p>
+            <p>Total = (Panes x Pane_Time) + Climbing_Add + 10 min setup</p>
+          </div>
+          <p>Climbing factors: 1-story adds 0 min, 2-story adds 1 min per window (ladder setup), 3+ story adds 2 min per window (safety repositioning). Setup time includes staging equipment, filling buckets, and cleanup.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much should I charge per window for cleaning?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Window cleaning rates range from $4-8 per pane or $10-15 per window. Interior-only cleaning is cheaper (3 min/pane), while interior + exterior runs about 6 min/pane. Two-story homes add $1-2 per window for ladder setup time. Most pros charge $45-75/hr as an alternative to per-window pricing.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does window cleaning take?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A single worker cleaning both sides of a 2-pane window takes about 12 minutes (6 min/pane). For a typical home with 20 double-pane windows on 2 stories, expect 4-5 hours including setup and ladder time. Interior-only is about 40% faster.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many windows can a cleaner do per hour?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A single worker averages 10 windows/hr for exterior 2-story work, 15 windows/hr for interior only, and about 8 windows/hr for both sides on multi-story homes. A 2-person team can handle 25+ windows/hr when splitting interior and exterior duties.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const numWindows = parseInt((document.getElementById('numWindows') as HTMLInputElement).value) || 20;
+    const panesPerWindow = parseInt((document.getElementById('panesPerWindow') as HTMLSelectElement).value);
+    const climbingFactor = parseInt((document.getElementById('storyHeight') as HTMLSelectElement).value);
+    const baseTimePerPane = parseInt((document.getElementById('cleanType') as HTMLSelectElement).value);
+    const conditionAdd = parseInt((document.getElementById('frameCondition') as HTMLSelectElement).value);
+    const billableRate = parseFloat((document.getElementById('billableRate') as HTMLInputElement).value) || 60;
+
+    const totalPanes = numWindows * panesPerWindow;
+    const timePerPane = baseTimePerPane + conditionAdd;
+    const paneMinutes = totalPanes * timePerPane;
+    const climbingMinutes = numWindows * climbingFactor;
+    const setupMinutes = 10;
+    const totalMinutes = paneMinutes + climbingMinutes + setupMinutes;
+
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = Math.round(totalMinutes % 60);
+    const priceHourly = (totalMinutes / 60) * billableRate;
+    const perWindow = priceHourly / numWindows;
+    const perPane = priceHourly / totalPanes;
+
+    document.getElementById('result-time')!.textContent = `${hours}h ${mins}m`;
+    document.getElementById('result-panes')!.textContent = totalPanes.toString();
+    document.getElementById('result-price-hourly')!.textContent = '$' + Math.round(priceHourly).toLocaleString();
+    document.getElementById('result-per-window')!.textContent = '$' + perWindow.toFixed(2);
+
+    document.getElementById('compare-per-window')!.textContent = '$' + perWindow.toFixed(2) + '/window';
+    document.getElementById('compare-per-pane')!.textContent = '$' + perPane.toFixed(2) + '/pane';
+    document.getElementById('compare-hourly')!.textContent = '$' + billableRate + '/hr';
+  }
+
+  document.querySelectorAll('#window-calc input, #window-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

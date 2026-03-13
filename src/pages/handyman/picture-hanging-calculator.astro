@@ -1,0 +1,185 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/handymanTools';
+
+const tool = getToolBySlug('picture-hanging-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What height should pictures be hung?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The standard hanging height is 57 inches from the floor to the center of the artwork. This places the center at average eye level. Above furniture, hang art 6-8 inches above the top of the furniture piece."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How far apart should pictures be spaced on a wall?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The standard spacing between frames is 2-3 inches for gallery walls and 3-5 inches for a more open look. For a cohesive gallery wall, keep spacing consistent at 2-3 inches. The ideal spacing also depends on frame sizes and wall width."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I hang a gallery wall evenly?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "First, calculate the total width of all frames plus spacing. Subtract from wall width and divide by 2 for equal margins. Use this calculator to get exact measurements, then mark positions with painter's tape before drilling. Start from the center and work outward."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="pic-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="wallWidth">Wall Width (inches)</label>
+        <input type="number" id="wallWidth" value="120" min="12" max="600" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="numFrames">Number of Frames</label>
+        <input type="number" id="numFrames" value="3" min="1" max="20" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="frameWidth">Frame Width (inches each)</label>
+        <input type="number" id="frameWidth" value="16" min="4" max="60" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="frameHeight">Frame Height (inches each)</label>
+        <input type="number" id="frameHeight" value="20" min="4" max="60" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="hangHeight">Hanging Center Height</label>
+        <select id="hangHeight" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="57" selected>57" — Standard Eye Level</option>
+          <option value="60">60" — Above Average Eye Level</option>
+          <option value="48">48" — Above Furniture</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="customHeight">Custom Height (inches)</label>
+        <input type="number" id="customHeight" value="57" min="24" max="96" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Layout Guide</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Spacing Between</div>
+          <div id="result-spacing" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Nail Height</div>
+          <div id="result-nail" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Top of Frame</div>
+          <div id="result-top" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-6 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Frame Positions (from left wall edge)</h4>
+        <div id="positions-list" class="space-y-2 text-text-secondary text-sm"></div>
+      </div>
+      <p class="text-text-muted text-sm italic">Measurements assume equal-sized frames. For mixed sizes, enter the average frame width and adjust individually on site.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Measure the wall width.</strong> Measure the usable wall space in inches where frames will be hung.</p>
+          <p><strong class="text-text-primary">2. Enter frame details.</strong> Set the number of frames and their width and height. For mixed sizes, use average dimensions.</p>
+          <p><strong class="text-text-primary">3. Choose hanging height.</strong> 57 inches is the standard eye-level center point used by galleries and interior designers.</p>
+          <p><strong class="text-text-primary">4. Read the layout guide.</strong> The tool gives exact measurements for spacing, nail height, and each frame position from the left wall edge.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Spacing Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator evenly distributes frames across the wall by dividing the remaining space equally on both sides and between frames.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Spacing = (Wall_width - (Frames x Frame_width)) / (Frames + 1)</p>
+            <p>Nail_height = Center_height + (Frame_height / 2) - wire_offset</p>
+            <p>Top_of_frame = Center_height + (Frame_height / 2)</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What height should pictures be hung?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The standard hanging height is 57 inches from the floor to the center of the artwork. This places the center at average eye level. Above furniture, hang art 6-8 inches above the top of the furniture piece.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How far apart should pictures be spaced?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The standard spacing between frames is 2-3 inches for gallery walls and 3-5 inches for a more open look. For a cohesive gallery wall, keep spacing consistent at 2-3 inches.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I hang a gallery wall evenly?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Calculate the total width of all frames plus spacing. Subtract from wall width and divide by 2 for equal margins. Use this calculator to get exact measurements, then mark positions with painter's tape before drilling.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const wallWidth = parseFloat((document.getElementById('wallWidth') as HTMLInputElement).value) || 120;
+    const numFrames = parseInt((document.getElementById('numFrames') as HTMLInputElement).value) || 3;
+    const frameWidth = parseFloat((document.getElementById('frameWidth') as HTMLInputElement).value) || 16;
+    const frameHeight = parseFloat((document.getElementById('frameHeight') as HTMLInputElement).value) || 20;
+    const hangSelect = (document.getElementById('hangHeight') as HTMLSelectElement).value;
+    const customHeight = parseFloat((document.getElementById('customHeight') as HTMLInputElement).value) || 57;
+
+    const centerHeight = hangSelect === 'custom' ? customHeight : parseFloat(hangSelect);
+    const totalFrameWidth = numFrames * frameWidth;
+    const spacing = (wallWidth - totalFrameWidth) / (numFrames + 1);
+    const nailHeight = centerHeight + (frameHeight / 2) - 2; // 2" wire offset
+    const topOfFrame = centerHeight + (frameHeight / 2);
+
+    document.getElementById('result-spacing')!.textContent = spacing > 0 ? spacing.toFixed(1) + '"' : 'Too tight';
+    document.getElementById('result-nail')!.textContent = nailHeight.toFixed(1) + '"';
+    document.getElementById('result-top')!.textContent = topOfFrame.toFixed(1) + '"';
+
+    // Generate positions list
+    const positionsList = document.getElementById('positions-list')!;
+    positionsList.innerHTML = '';
+    if (spacing > 0) {
+      for (let i = 0; i < numFrames; i++) {
+        const leftEdge = spacing + i * (frameWidth + spacing);
+        const center = leftEdge + frameWidth / 2;
+        const div = document.createElement('div');
+        div.className = 'flex justify-between items-center py-2 px-3 bg-bg-card rounded-lg';
+        div.innerHTML = `<span class="text-text-primary font-medium">Frame ${i + 1}</span><span>Left edge: <strong class="text-text-primary">${leftEdge.toFixed(1)}"</strong> &nbsp;|&nbsp; Center: <strong class="text-accent">${center.toFixed(1)}"</strong></span>`;
+        positionsList.appendChild(div);
+      }
+    } else {
+      positionsList.innerHTML = '<p class="text-[#FCA5A5]">Frames are too wide for this wall. Reduce frame count or width.</p>';
+    }
+  }
+
+  document.querySelectorAll('#pic-calc input, #pic-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

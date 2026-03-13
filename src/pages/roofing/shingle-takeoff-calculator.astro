@@ -1,0 +1,199 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/roofingTools';
+
+const tool = getToolBySlug('shingle-takeoff-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How many shingles do I need for my roof?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Calculate your roof area in squares (area / 100), add your waste factor (8-17% depending on complexity), then multiply by 3 bundles per square. A 25-square simple gable roof with 8% waste needs about 81 bundles of standard shingles."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a good waste factor for roofing?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For a simple gable roof, 8% waste is standard. Hip roofs need 12%. Complex roofs with multiple valleys and dormers need 15-17%. These factors account for starter courses, cap shingles, cuts around penetrations, and material damaged during install."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much underlayment do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "One roll of standard synthetic underlayment covers approximately 400 square feet (4 squares). Divide your total roof area by 400 and round up. A 2,500 sq ft roof needs about 7 rolls of synthetic underlayment."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many roofing nails per square?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Standard installation uses about 320 nails per square (100 sq ft). That works out to roughly 2.5 pounds of roofing nails per square. High-wind zones require 6 nails per shingle instead of 4, increasing usage to about 480 nails per square."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="takeoff-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roofArea">Roof Area (sq ft)</label>
+        <input type="number" id="roofArea" value="2500" min="100" max="100000" step="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="complexity">Roof Complexity</label>
+        <select id="complexity" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.08">Simple gable (8% waste)</option>
+          <option value="0.11" selected>Gable with 1-2 valleys (11% waste)</option>
+          <option value="0.12">Hip roof (12% waste)</option>
+          <option value="0.17">Complex — 4+ valleys, dormers (17% waste)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="shingleType">Shingle Type</label>
+        <select id="shingleType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="3tab">Asphalt 3-Tab</option>
+          <option value="arch" selected>Architectural</option>
+          <option value="premium">Premium / Designer</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="ridgeLength">Ridge/Hip Length (ft)</label>
+        <input type="number" id="ridgeLength" value="50" min="0" max="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Total combined ridge + hip length for ridge cap estimate</p>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Material Takeoff</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Shingle Bundles</div>
+          <div id="result-bundles" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div id="result-squares" class="text-text-muted text-xs mt-1">-- squares</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Underlayment Rolls</div>
+          <div id="result-underlay" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">synthetic (400 sq ft/roll)</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Ridge Cap Bundles</div>
+          <div id="result-ridgecap" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">35 linear ft/bundle</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Roofing Nails</div>
+          <div id="result-nails" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">lbs</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Waste Added</div>
+          <div id="result-waste" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">sq ft</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Material Area</div>
+          <div id="result-total" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">sq ft (incl. waste)</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Verify quantities with your supplier for your specific shingle product. Waste factors are industry best practice but may vary by manufacturer and installer experience.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your roof area.</strong> Use the actual sloped area, not the building footprint. If you need to convert, use the <a href="/roofing/roof-area-calculator" class="text-accent hover:underline">Roof Area Calculator</a> first.</p>
+          <p><strong class="text-text-primary">2. Select roof complexity.</strong> Simple gable roofs waste the least material. Each valley, dormer, and hip adds cuts that increase waste. Be honest about complexity to avoid coming up short on materials.</p>
+          <p><strong class="text-text-primary">3. Choose your shingle type.</strong> This affects the bundles-per-square calculation. Standard 3-tab and architectural shingles use 3 bundles per square.</p>
+          <p><strong class="text-text-primary">4. Enter total ridge and hip length.</strong> This determines how many ridge cap bundles you need. One bundle covers about 35 linear feet of ridge or hip.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Takeoff Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>Material takeoff starts with the roof area and adds a waste factor based on complexity. Simple gable roofs add 8% waste. Complex roofs with multiple valleys and dormers add up to 17%.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Total_Material = Roof_Area x (1 + Waste_Factor)</p>
+            <p>Squares = Total_Material / 100</p>
+            <p>Bundles = ceil(Squares) x 3</p>
+            <p>Underlayment_Rolls = ceil(Squares / 4)</p>
+            <p>Ridge_Cap_Bundles = ceil(Ridge_Length / 35)</p>
+            <p>Nails_lbs = ceil(Squares) x 2.5</p>
+          </div>
+          <p>The waste factor accounts for starter courses along eaves, cuts around valleys and penetrations, damaged pieces during handling, and the fact that partial bundles still count as full bundles when ordering.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many shingles do I need for my roof?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Calculate your roof area in squares (area / 100), add your waste factor (8-17% depending on complexity), then multiply by 3 bundles per square. A 25-square simple gable roof with 8% waste needs about 81 bundles of standard shingles.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a good waste factor for roofing?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For a simple gable roof, 8% waste is standard. Hip roofs need 12%. Complex roofs with multiple valleys and dormers need 15-17%. These factors account for starter courses, cap shingles, cuts around penetrations, and material damaged during install.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much underlayment do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">One roll of standard synthetic underlayment covers approximately 400 square feet (4 squares). Divide your total roof area by 400 and round up. A 2,500 sq ft roof needs about 7 rolls of synthetic underlayment.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many roofing nails per square?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Standard installation uses about 320 nails per square (100 sq ft). That works out to roughly 2.5 pounds of roofing nails per square. High-wind zones require 6 nails per shingle instead of 4, increasing usage to about 480 nails per square.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const area = parseFloat((document.getElementById('roofArea') as HTMLInputElement).value) || 2500;
+    const wasteFactor = parseFloat((document.getElementById('complexity') as HTMLSelectElement).value);
+    const ridgeLength = parseFloat((document.getElementById('ridgeLength') as HTMLInputElement).value) || 0;
+
+    const wasteArea = Math.round(area * wasteFactor);
+    const totalArea = area + wasteArea;
+    const squares = totalArea / 100;
+    const roundedSquares = Math.ceil(squares);
+    const bundles = roundedSquares * 3;
+    const underlayRolls = Math.ceil(squares / 4);
+    const ridgeCapBundles = ridgeLength > 0 ? Math.ceil(ridgeLength / 35) : 0;
+    const nailsLbs = Math.ceil(roundedSquares * 2.5);
+
+    document.getElementById('result-bundles')!.textContent = bundles.toString();
+    document.getElementById('result-squares')!.textContent = roundedSquares + ' squares';
+    document.getElementById('result-underlay')!.textContent = underlayRolls.toString();
+    document.getElementById('result-ridgecap')!.textContent = ridgeCapBundles.toString();
+    document.getElementById('result-nails')!.textContent = nailsLbs.toString();
+    document.getElementById('result-waste')!.textContent = wasteArea.toLocaleString();
+    document.getElementById('result-total')!.textContent = totalArea.toLocaleString();
+  }
+
+  document.querySelectorAll('#takeoff-calc input, #takeoff-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

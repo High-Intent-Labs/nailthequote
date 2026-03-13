@@ -1,0 +1,898 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/electricalTools';
+const tool = getToolBySlug('service-checklist')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What should an HVAC maintenance visit include?", "acceptedAnswer": { "@type": "Answer", "text": "A complete HVAC maintenance visit should include thermostat calibration, filter replacement, electrical component testing (capacitor, contactor, amp draws), refrigerant pressure checks with superheat and subcooling calculations, condenser and evaporator coil cleaning, condensate drain clearing, and a full temperature split measurement. For heating, add heat exchanger inspection, CO testing, burner cleaning, and safety control verification." } },
+    { "@type": "Question", "name": "How often should HVAC be serviced?", "acceptedAnswer": { "@type": "Answer", "text": "HVAC systems should be serviced twice a year — once in spring before cooling season and once in fall before heating season. Cooling maintenance focuses on the AC and refrigerant system. Heating maintenance focuses on the furnace, heat exchanger, and gas components. Systems older than 10 years or in harsh climates may benefit from quarterly check-ins." } },
+    { "@type": "Question", "name": "What is a normal superheat and subcooling?", "acceptedAnswer": { "@type": "Answer", "text": "For a standard TXV system, target superheat is 10-15 degrees F and target subcooling is 10-12 degrees F. For fixed orifice systems, superheat varies by indoor and outdoor conditions — use the manufacturer charging chart. Readings outside these ranges indicate issues: low superheat suggests flooding, high superheat suggests starved evaporator, low subcooling suggests undercharge, and high subcooling suggests overcharge or restriction." } },
+    { "@type": "Question", "name": "What is a safe CO level for a furnace?", "acceptedAnswer": { "@type": "Answer", "text": "A properly operating furnace should produce less than 9 PPM of carbon monoxide in the flue gas when measured in the undiluted air-free sample. Readings above 9 PPM indicate combustion problems such as a cracked heat exchanger, dirty burners, or improper gas pressure. Any CO above 35 PPM in ambient air is an immediate safety hazard requiring system shutdown." } }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="checklist-app">
+    <!-- Progress Bar -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-medium text-text-secondary">Progress</span>
+        <span id="progress-text" class="text-sm font-bold text-accent">0 of 0 items checked</span>
+      </div>
+      <div class="w-full bg-bg-dark rounded-full h-3 overflow-hidden">
+        <div id="progress-bar" class="bg-accent h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <!-- Tab Toggle -->
+    <div class="flex gap-2 mb-8">
+      <button id="tab-cooling" class="flex-1 py-3 px-4 rounded-lg font-heading font-bold text-sm uppercase tracking-wider transition-all bg-accent text-white" data-tab="cooling">
+        Cooling Season
+      </button>
+      <button id="tab-heating" class="flex-1 py-3 px-4 rounded-lg font-heading font-bold text-sm uppercase tracking-wider transition-all bg-bg-dark text-text-muted border border-border hover:border-accent hover:text-text-primary" data-tab="heating">
+        Heating Season
+      </button>
+    </div>
+
+    <!-- ============ COOLING SEASON ============ -->
+    <div id="panel-cooling">
+
+      <!-- Thermostat -->
+      <div class="mb-8">
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block"></span> Thermostat
+        </h3>
+        <div class="space-y-3">
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Test all modes (heat, cool, auto, fan)</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Verify calibration (&plusmn;1&deg;F)</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Check programming / schedule</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Air Distribution -->
+      <div class="mb-8">
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block"></span> Air Distribution
+        </h3>
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-start gap-3">
+            <label class="flex items-start gap-3 cursor-pointer group shrink-0">
+              <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+              <span class="text-text-secondary group-hover:text-text-primary transition-colors">Replace / clean filter</span>
+            </label>
+            <div class="flex flex-wrap items-center gap-2 ml-8">
+              <label class="text-xs text-text-muted">Size:</label>
+              <input type="text" data-field="filter-size-cool" placeholder="e.g. 20x25x1" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-28 focus:border-accent focus:outline-none" />
+              <label class="text-xs text-text-muted">Condition:</label>
+              <select data-field="filter-condition-cool" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm focus:border-accent focus:outline-none">
+                <option value="">Select</option>
+                <option value="New">New</option>
+                <option value="Clean">Clean</option>
+                <option value="Dirty">Dirty</option>
+                <option value="Clogged">Clogged</option>
+              </select>
+            </div>
+          </div>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Inspect ductwork for damage / disconnections</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Check supply and return registers (open, clean)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Electrical -->
+      <div class="mb-8">
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block"></span> Electrical
+        </h3>
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-start gap-3">
+            <label class="flex items-start gap-3 cursor-pointer group shrink-0">
+              <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+              <span class="text-text-secondary group-hover:text-text-primary transition-colors">Test capacitor</span>
+            </label>
+            <div class="flex flex-wrap items-center gap-2 ml-8">
+              <label class="text-xs text-text-muted">Reading:</label>
+              <input type="number" data-field="cap-reading" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-20 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">&mu;F</span>
+              <label class="text-xs text-text-muted ml-2">Rated:</label>
+              <input type="number" data-field="cap-rated" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-20 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">&mu;F</span>
+            </div>
+          </div>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Inspect contactor (pitting, arcing)</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Check all electrical connections</span>
+          </label>
+          <div class="flex flex-wrap items-start gap-3">
+            <label class="flex items-start gap-3 cursor-pointer group shrink-0">
+              <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+              <span class="text-text-secondary group-hover:text-text-primary transition-colors">Measure amp draws</span>
+            </label>
+            <div class="flex flex-wrap items-center gap-2 ml-8">
+              <label class="text-xs text-text-muted">Compressor:</label>
+              <input type="number" data-field="amp-compressor" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-20 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">A</span>
+              <label class="text-xs text-text-muted ml-2">Blower:</label>
+              <input type="number" data-field="amp-blower" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-20 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">A</span>
+              <label class="text-xs text-text-muted ml-2">Condenser fan:</label>
+              <input type="number" data-field="amp-condenser" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-20 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">A</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Refrigerant System -->
+      <div class="mb-8">
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block"></span> Refrigerant System
+        </h3>
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-start gap-3">
+            <label class="flex items-start gap-3 cursor-pointer group shrink-0">
+              <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+              <span class="text-text-secondary group-hover:text-text-primary transition-colors">Suction Pressure</span>
+            </label>
+            <div class="flex items-center gap-2 ml-8">
+              <input type="number" data-field="suction-psi" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-24 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">PSI</span>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-start gap-3">
+            <label class="flex items-start gap-3 cursor-pointer group shrink-0">
+              <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+              <span class="text-text-secondary group-hover:text-text-primary transition-colors">Liquid / Head Pressure</span>
+            </label>
+            <div class="flex items-center gap-2 ml-8">
+              <input type="number" data-field="head-psi" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-24 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">PSI</span>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-start gap-3">
+            <label class="flex items-start gap-3 cursor-pointer group shrink-0">
+              <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+              <span class="text-text-secondary group-hover:text-text-primary transition-colors">Superheat</span>
+            </label>
+            <div class="flex items-center gap-2 ml-8">
+              <input type="number" data-field="superheat" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-20 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">&deg;F</span>
+              <span class="text-xs text-text-muted ml-1">Target: 10-15&deg;F</span>
+              <span id="ind-superheat" class="w-3 h-3 rounded-full bg-border inline-block ml-1"></span>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-start gap-3">
+            <label class="flex items-start gap-3 cursor-pointer group shrink-0">
+              <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+              <span class="text-text-secondary group-hover:text-text-primary transition-colors">Subcooling</span>
+            </label>
+            <div class="flex items-center gap-2 ml-8">
+              <input type="number" data-field="subcooling" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-20 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">&deg;F</span>
+              <span class="text-xs text-text-muted ml-1">Target: 10-12&deg;F</span>
+              <span id="ind-subcooling" class="w-3 h-3 rounded-full bg-border inline-block ml-1"></span>
+            </div>
+          </div>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Leak inspection performed</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Outdoor Unit -->
+      <div class="mb-8">
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block"></span> Outdoor Unit
+        </h3>
+        <div class="space-y-3">
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Clean condenser coil</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Clear debris (2 ft clearance)</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Level check</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Fan blade condition</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Service valves accessible</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Indoor Unit -->
+      <div class="mb-8">
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block"></span> Indoor Unit
+        </h3>
+        <div class="space-y-3">
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Clean evaporator coil</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Clear condensate drain</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Test float switch</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Inspect blower wheel</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Performance (Cooling) -->
+      <div class="mb-8">
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block"></span> Performance
+        </h3>
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-start gap-3">
+            <label class="flex items-start gap-3 cursor-pointer group shrink-0">
+              <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+              <span class="text-text-secondary group-hover:text-text-primary transition-colors">Supply Air Temp</span>
+            </label>
+            <div class="flex items-center gap-2 ml-8">
+              <input type="number" data-field="supply-temp" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-20 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">&deg;F</span>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-start gap-3">
+            <label class="flex items-start gap-3 cursor-pointer group shrink-0">
+              <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="cooling" />
+              <span class="text-text-secondary group-hover:text-text-primary transition-colors">Return Air Temp</span>
+            </label>
+            <div class="flex items-center gap-2 ml-8">
+              <input type="number" data-field="return-temp" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-20 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">&deg;F</span>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-3 ml-8">
+            <span class="text-text-secondary text-sm">Temperature Split:</span>
+            <span id="temp-split" class="font-heading font-bold text-lg text-text-primary">--</span>
+            <span class="text-xs text-text-muted">&deg;F</span>
+            <span class="text-xs text-text-muted ml-1">Target: 15-20&deg;F</span>
+            <span id="ind-split" class="w-3 h-3 rounded-full bg-border inline-block ml-1"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============ HEATING SEASON ============ -->
+    <div id="panel-heating" class="hidden">
+
+      <!-- Heat Exchanger -->
+      <div class="mb-8">
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block"></span> Heat Exchanger
+        </h3>
+        <div class="space-y-3">
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Visual inspection (cracks, rust, holes)</span>
+          </label>
+          <div class="flex flex-wrap items-start gap-3">
+            <label class="flex items-start gap-3 cursor-pointer group shrink-0">
+              <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+              <span class="text-text-secondary group-hover:text-text-primary transition-colors">CO test</span>
+            </label>
+            <div class="flex items-center gap-2 ml-8">
+              <label class="text-xs text-text-muted">Reading:</label>
+              <input type="number" data-field="co-reading" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-20 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">PPM</span>
+              <span class="text-xs text-text-muted ml-1">Must be &lt; 9 PPM</span>
+              <span id="ind-co" class="w-3 h-3 rounded-full bg-border inline-block ml-1"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Burner Assembly -->
+      <div class="mb-8">
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block"></span> Burner Assembly
+        </h3>
+        <div class="space-y-3">
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Inspect burners (clean, aligned)</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Clean flame sensor</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Test igniter</span>
+          </label>
+          <div class="flex flex-wrap items-start gap-3">
+            <label class="flex items-start gap-3 cursor-pointer group shrink-0">
+              <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+              <span class="text-text-secondary group-hover:text-text-primary transition-colors">Gas pressure</span>
+            </label>
+            <div class="flex items-center gap-2 ml-8">
+              <input type="number" data-field="gas-pressure" step="0.1" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-20 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">"WC</span>
+              <span class="text-xs text-text-muted ml-1">Target: 3.5" WC</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Safety Controls -->
+      <div class="mb-8">
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block"></span> Safety Controls
+        </h3>
+        <div class="space-y-3">
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">High-limit switch</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Pressure switch</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Rollout switch</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Flue pipe condition</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">CO detector present</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Electrical (Heating) -->
+      <div class="mb-8">
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block"></span> Electrical
+        </h3>
+        <div class="space-y-3">
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Wiring condition</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">All connections tight</span>
+          </label>
+          <div class="flex flex-wrap items-start gap-3">
+            <label class="flex items-start gap-3 cursor-pointer group shrink-0">
+              <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+              <span class="text-text-secondary group-hover:text-text-primary transition-colors">Amp draw</span>
+            </label>
+            <div class="flex items-center gap-2 ml-8">
+              <input type="number" data-field="heat-amp" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-20 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">A</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Air Distribution (Heating) -->
+      <div class="mb-8">
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block"></span> Air Distribution
+        </h3>
+        <div class="space-y-3">
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Filter replaced / cleaned</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Blower motor condition</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Ductwork inspection</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Performance (Heating) -->
+      <div class="mb-8">
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block"></span> Performance
+        </h3>
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-start gap-3">
+            <label class="flex items-start gap-3 cursor-pointer group shrink-0">
+              <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+              <span class="text-text-secondary group-hover:text-text-primary transition-colors">Temperature rise</span>
+            </label>
+            <div class="flex items-center gap-2 ml-8">
+              <input type="number" data-field="temp-rise" placeholder="0" class="bg-bg-dark border border-border rounded px-3 py-1.5 text-text-primary text-sm w-20 focus:border-accent focus:outline-none" /> <span class="text-xs text-text-muted">&deg;F</span>
+              <span class="text-xs text-text-muted ml-1 italic">Check nameplate for range</span>
+            </div>
+          </div>
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input type="checkbox" class="cl-check mt-1 w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent shrink-0" data-season="heating" />
+            <span class="text-text-secondary group-hover:text-text-primary transition-colors">Verify proper cycling</span>
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Results Summary -->
+    <div id="results-summary" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">System Health Summary</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Items Checked</div>
+          <div id="summary-checked" class="font-heading font-extrabold text-3xl text-accent">0 / 0</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Completion</div>
+          <div id="summary-pct" class="font-heading font-extrabold text-3xl text-text-primary">0%</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Flagged Readings</div>
+          <div id="summary-flags" class="font-heading font-extrabold text-3xl text-text-primary">0</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Health Grade</div>
+          <div id="summary-grade" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div id="flag-list" class="hidden mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-3">Flagged Items</h4>
+        <div id="flag-items" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap gap-3 mt-6">
+      <button id="generate-report" class="bg-accent text-white font-heading font-bold text-sm uppercase tracking-wider px-8 py-3.5 rounded-lg hover:bg-accent-hover hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,107,43,0.3)] transition-all cursor-pointer">
+        Generate Report &rarr;
+      </button>
+      <button id="reset-checklist" class="bg-bg-dark text-text-secondary border border-border font-heading font-bold text-sm uppercase tracking-wider px-8 py-3.5 rounded-lg hover:border-accent hover:text-text-primary transition-all cursor-pointer">
+        Reset Checklist
+      </button>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Checklist</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Choose your season.</strong> Toggle between Cooling and Heating tabs at the top. Each tab has its own checklist tailored to the equipment and procedures for that season.</p>
+          <p><strong class="text-text-primary">2. Work through each section.</strong> Check off items as you complete them. Enter readings directly into the fields — superheat, subcooling, amp draws, CO levels — and the tool will flag anything outside normal range.</p>
+          <p><strong class="text-text-primary">3. Monitor your progress.</strong> The progress bar updates in real time. The summary section shows your completion percentage and a health grade based on items checked and flagged readings.</p>
+          <p><strong class="text-text-primary">4. Generate a report.</strong> When finished, hit Generate Report to create a printable summary of everything checked, every reading recorded, and any items that need attention. Your progress auto-saves so you never lose work.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">What a Complete HVAC Tune-Up Covers</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Thermostat verification.</strong> A miscalibrated thermostat wastes energy and causes comfort complaints. Testing all modes confirms the system responds correctly to every call for heating, cooling, and fan operation.</p>
+          <p><strong class="text-text-primary">Air distribution.</strong> Dirty filters and disconnected ductwork are the most common causes of poor performance. A clogged filter alone can drop system efficiency by 15% and cause frozen coils or heat exchanger overheating.</p>
+          <p><strong class="text-text-primary">Electrical components.</strong> Capacitors weaken over time and contactors pit from arcing. Measuring actual amp draws against rated values catches motors that are overworking before they fail, saving the customer an emergency call.</p>
+          <p><strong class="text-text-primary">Refrigerant system.</strong> Superheat and subcooling are the two most important measurements in cooling diagnostics. They reveal charge level, metering device function, and airflow problems that pressures alone cannot identify.</p>
+          <p><strong class="text-text-primary">Heat exchanger and combustion.</strong> A cracked heat exchanger can leak carbon monoxide into living spaces. CO testing is not optional — it is the single most important safety check on any gas furnace maintenance visit.</p>
+          <p><strong class="text-text-primary">Safety controls.</strong> High-limit switches, pressure switches, and rollout switches exist to prevent fires and CO poisoning. Verifying each one operates correctly protects both the homeowner and your liability.</p>
+          <p><strong class="text-text-primary">Performance verification.</strong> Temperature split (return minus supply) confirms the system is actually doing its job. A split outside the 15-20 degree range on cooling points to airflow, charge, or equipment problems.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Routine maintenance visits.</strong> Use this as your standard operating procedure for every tune-up. It ensures nothing gets skipped, readings get recorded, and the customer sees a professional report documenting every step.</p>
+          <p><strong class="text-text-primary">New technician training.</strong> Hand this checklist to every new hire. It teaches them the complete process for a thorough maintenance visit and builds consistent habits from day one. The reading targets and color indicators help them learn what normal looks like.</p>
+          <p><strong class="text-text-primary">Maintenance agreement visits.</strong> If you sell maintenance plans, this checklist is your proof of value. Customers paying for a plan expect thoroughness. Generate the report, hand it to them, and show exactly what their money bought.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What should an HVAC maintenance visit include?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A complete visit should include thermostat calibration, filter replacement, electrical component testing (capacitor, contactor, amp draws), refrigerant pressure checks with superheat and subcooling, coil cleaning, condensate drain clearing, and a temperature split measurement. For heating, add heat exchanger inspection, CO testing, burner cleaning, and safety control verification.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How often should HVAC be serviced?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Twice a year — once in spring before cooling season and once in fall before heating season. Systems older than 10 years or in harsh climates may benefit from quarterly check-ins. At minimum, filters should be checked monthly during heavy use seasons.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a normal superheat and subcooling?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For a standard TXV system, target superheat is 10-15 degrees F and target subcooling is 10-12 degrees F. Readings outside these ranges indicate charge problems, metering device issues, or airflow restrictions. For fixed orifice systems, use the manufacturer charging chart as superheat varies by conditions.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a safe CO level for a furnace?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A properly operating furnace should produce less than 9 PPM of carbon monoxide in the flue gas. Readings above 9 PPM indicate combustion problems. Any ambient CO above 35 PPM is an immediate safety hazard requiring system shutdown and investigation. Common causes include cracked heat exchangers, dirty burners, and improper gas pressure.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  // ===== STATE =====
+  const STORAGE_KEY = 'hvac-maintenance-checklist';
+  let activeTab: 'cooling' | 'heating' = 'cooling';
+
+  interface SavedState {
+    activeTab: string;
+    checks: Record<string, boolean>;
+    fields: Record<string, string>;
+  }
+
+  // ===== PERSISTENCE =====
+  function saveState(): void {
+    const checks: Record<string, boolean> = {};
+    document.querySelectorAll('.cl-check').forEach((cb, i) => {
+      checks[`check-${i}`] = (cb as HTMLInputElement).checked;
+    });
+    const fields: Record<string, string> = {};
+    document.querySelectorAll('[data-field]').forEach(el => {
+      const key = (el as HTMLElement).dataset.field!;
+      fields[key] = (el as HTMLInputElement | HTMLSelectElement).value;
+    });
+    const state: SavedState = { activeTab, checks, fields };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+  }
+
+  function loadState(): void {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const state: SavedState = JSON.parse(raw);
+      if (state.activeTab === 'heating') switchTab('heating');
+      if (state.checks) {
+        document.querySelectorAll('.cl-check').forEach((cb, i) => {
+          (cb as HTMLInputElement).checked = !!state.checks[`check-${i}`];
+        });
+      }
+      if (state.fields) {
+        document.querySelectorAll('[data-field]').forEach(el => {
+          const key = (el as HTMLElement).dataset.field!;
+          if (state.fields[key] !== undefined) {
+            (el as HTMLInputElement | HTMLSelectElement).value = state.fields[key];
+          }
+        });
+      }
+    } catch {}
+  }
+
+  // ===== TABS =====
+  function switchTab(tab: 'cooling' | 'heating'): void {
+    activeTab = tab;
+    const coolingPanel = document.getElementById('panel-cooling')!;
+    const heatingPanel = document.getElementById('panel-heating')!;
+    const coolingBtn = document.getElementById('tab-cooling')!;
+    const heatingBtn = document.getElementById('tab-heating')!;
+
+    if (tab === 'cooling') {
+      coolingPanel.classList.remove('hidden');
+      heatingPanel.classList.add('hidden');
+      coolingBtn.className = 'flex-1 py-3 px-4 rounded-lg font-heading font-bold text-sm uppercase tracking-wider transition-all bg-accent text-white';
+      heatingBtn.className = 'flex-1 py-3 px-4 rounded-lg font-heading font-bold text-sm uppercase tracking-wider transition-all bg-bg-dark text-text-muted border border-border hover:border-accent hover:text-text-primary';
+    } else {
+      coolingPanel.classList.add('hidden');
+      heatingPanel.classList.remove('hidden');
+      heatingBtn.className = 'flex-1 py-3 px-4 rounded-lg font-heading font-bold text-sm uppercase tracking-wider transition-all bg-accent text-white';
+      coolingBtn.className = 'flex-1 py-3 px-4 rounded-lg font-heading font-bold text-sm uppercase tracking-wider transition-all bg-bg-dark text-text-muted border border-border hover:border-accent hover:text-text-primary';
+    }
+    updateProgress();
+    saveState();
+  }
+
+  document.getElementById('tab-cooling')?.addEventListener('click', () => switchTab('cooling'));
+  document.getElementById('tab-heating')?.addEventListener('click', () => switchTab('heating'));
+
+  // ===== PROGRESS & SUMMARY =====
+  function getActiveChecks(): NodeListOf<HTMLInputElement> {
+    const panel = activeTab === 'cooling' ? '#panel-cooling' : '#panel-heating';
+    return document.querySelectorAll(`${panel} .cl-check`);
+  }
+
+  function evaluateFlags(): { count: number; items: string[] } {
+    const flags: string[] = [];
+    const sh = parseFloat((document.querySelector('[data-field="superheat"]') as HTMLInputElement)?.value);
+    if (!isNaN(sh) && sh > 0 && (sh < 10 || sh > 15)) flags.push(`Superheat: ${sh}\u00B0F (target 10-15\u00B0F)`);
+    const sc = parseFloat((document.querySelector('[data-field="subcooling"]') as HTMLInputElement)?.value);
+    if (!isNaN(sc) && sc > 0 && (sc < 10 || sc > 12)) flags.push(`Subcooling: ${sc}\u00B0F (target 10-12\u00B0F)`);
+    const supply = parseFloat((document.querySelector('[data-field="supply-temp"]') as HTMLInputElement)?.value);
+    const ret = parseFloat((document.querySelector('[data-field="return-temp"]') as HTMLInputElement)?.value);
+    if (!isNaN(supply) && !isNaN(ret) && supply > 0 && ret > 0) {
+      const split = Math.abs(ret - supply);
+      if (split < 15 || split > 20) flags.push(`Temp Split: ${split.toFixed(1)}\u00B0F (target 15-20\u00B0F)`);
+    }
+    const co = parseFloat((document.querySelector('[data-field="co-reading"]') as HTMLInputElement)?.value);
+    if (!isNaN(co) && co > 0 && co >= 9) flags.push(`CO Reading: ${co} PPM (must be < 9 PPM)`);
+    return { count: flags.length, items: flags };
+  }
+
+  function getGrade(pct: number, flagCount: number): string {
+    if (pct === 0) return '--';
+    const penalty = flagCount * 10;
+    const score = Math.max(0, pct - penalty);
+    if (score >= 90) return 'A';
+    if (score >= 80) return 'B';
+    if (score >= 70) return 'C';
+    if (score >= 60) return 'D';
+    return 'F';
+  }
+
+  function gradeColor(grade: string): string {
+    if (grade === 'A') return 'text-[#34D399]';
+    if (grade === 'B') return 'text-[#60A5FA]';
+    if (grade === 'C') return 'text-[#FBBF24]';
+    if (grade === 'D') return 'text-[#FB923C]';
+    if (grade === 'F') return 'text-[#F87171]';
+    return 'text-text-primary';
+  }
+
+  function updateProgress(): void {
+    const checks = getActiveChecks();
+    const total = checks.length;
+    const checked = Array.from(checks).filter(c => c.checked).length;
+    const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
+
+    document.getElementById('progress-text')!.textContent = `${checked} of ${total} items checked`;
+    (document.getElementById('progress-bar') as HTMLElement).style.width = `${pct}%`;
+
+    const flags = evaluateFlags();
+    const grade = getGrade(pct, flags.count);
+
+    document.getElementById('summary-checked')!.textContent = `${checked} / ${total}`;
+    document.getElementById('summary-pct')!.textContent = `${pct}%`;
+    document.getElementById('summary-flags')!.textContent = flags.count.toString();
+
+    const gradeEl = document.getElementById('summary-grade')!;
+    gradeEl.textContent = grade;
+    gradeEl.className = `font-heading font-extrabold text-3xl ${gradeColor(grade)}`;
+
+    if (flags.count > 0) {
+      document.getElementById('summary-flags')!.className = 'font-heading font-extrabold text-3xl text-[#FBBF24]';
+    } else {
+      document.getElementById('summary-flags')!.className = 'font-heading font-extrabold text-3xl text-[#34D399]';
+    }
+
+    const flagList = document.getElementById('flag-list')!;
+    const flagItems = document.getElementById('flag-items')!;
+    if (flags.count > 0) {
+      flagList.classList.remove('hidden');
+      flagItems.innerHTML = flags.items.map(f => `<div class="bg-[rgba(251,191,36,0.1)] border border-[rgba(251,191,36,0.3)] rounded-lg px-4 py-2 text-sm text-[#FBBF24]">${f}</div>`).join('');
+    } else {
+      flagList.classList.add('hidden');
+      flagItems.innerHTML = '';
+    }
+  }
+
+  // ===== COLOR INDICATORS =====
+  function updateIndicators(): void {
+    const sh = parseFloat((document.querySelector('[data-field="superheat"]') as HTMLInputElement)?.value);
+    const indSH = document.getElementById('ind-superheat');
+    if (indSH) {
+      if (isNaN(sh) || sh === 0) indSH.className = 'w-3 h-3 rounded-full bg-border inline-block ml-1';
+      else if (sh >= 10 && sh <= 15) indSH.className = 'w-3 h-3 rounded-full bg-[#34D399] inline-block ml-1';
+      else if (sh >= 7 && sh <= 18) indSH.className = 'w-3 h-3 rounded-full bg-[#FBBF24] inline-block ml-1';
+      else indSH.className = 'w-3 h-3 rounded-full bg-[#F87171] inline-block ml-1';
+    }
+
+    const sc = parseFloat((document.querySelector('[data-field="subcooling"]') as HTMLInputElement)?.value);
+    const indSC = document.getElementById('ind-subcooling');
+    if (indSC) {
+      if (isNaN(sc) || sc === 0) indSC.className = 'w-3 h-3 rounded-full bg-border inline-block ml-1';
+      else if (sc >= 10 && sc <= 12) indSC.className = 'w-3 h-3 rounded-full bg-[#34D399] inline-block ml-1';
+      else if (sc >= 7 && sc <= 15) indSC.className = 'w-3 h-3 rounded-full bg-[#FBBF24] inline-block ml-1';
+      else indSC.className = 'w-3 h-3 rounded-full bg-[#F87171] inline-block ml-1';
+    }
+
+    const supply = parseFloat((document.querySelector('[data-field="supply-temp"]') as HTMLInputElement)?.value);
+    const ret = parseFloat((document.querySelector('[data-field="return-temp"]') as HTMLInputElement)?.value);
+    const splitEl = document.getElementById('temp-split');
+    const indSplit = document.getElementById('ind-split');
+    if (splitEl && indSplit) {
+      if (!isNaN(supply) && !isNaN(ret) && supply > 0 && ret > 0) {
+        const split = Math.abs(ret - supply);
+        splitEl.textContent = split.toFixed(1);
+        if (split >= 15 && split <= 20) indSplit.className = 'w-3 h-3 rounded-full bg-[#34D399] inline-block ml-1';
+        else if (split >= 12 && split <= 23) indSplit.className = 'w-3 h-3 rounded-full bg-[#FBBF24] inline-block ml-1';
+        else indSplit.className = 'w-3 h-3 rounded-full bg-[#F87171] inline-block ml-1';
+      } else {
+        splitEl.textContent = '--';
+        indSplit.className = 'w-3 h-3 rounded-full bg-border inline-block ml-1';
+      }
+    }
+
+    const co = parseFloat((document.querySelector('[data-field="co-reading"]') as HTMLInputElement)?.value);
+    const indCO = document.getElementById('ind-co');
+    if (indCO) {
+      if (isNaN(co) || co === 0) indCO.className = 'w-3 h-3 rounded-full bg-border inline-block ml-1';
+      else if (co < 9) indCO.className = 'w-3 h-3 rounded-full bg-[#34D399] inline-block ml-1';
+      else indCO.className = 'w-3 h-3 rounded-full bg-[#F87171] inline-block ml-1';
+    }
+  }
+
+  // ===== EVENT LISTENERS =====
+  document.querySelectorAll('.cl-check').forEach(cb => {
+    cb.addEventListener('change', () => {
+      updateProgress();
+      saveState();
+    });
+  });
+
+  document.querySelectorAll('[data-field]').forEach(el => {
+    el.addEventListener('input', () => {
+      updateIndicators();
+      updateProgress();
+      saveState();
+    });
+    el.addEventListener('change', () => {
+      updateIndicators();
+      updateProgress();
+      saveState();
+    });
+  });
+
+  // ===== RESET =====
+  document.getElementById('reset-checklist')?.addEventListener('click', () => {
+    if (!confirm('Reset all checked items and readings? This cannot be undone.')) return;
+    document.querySelectorAll('.cl-check').forEach(cb => { (cb as HTMLInputElement).checked = false; });
+    document.querySelectorAll('[data-field]').forEach(el => { (el as HTMLInputElement | HTMLSelectElement).value = ''; });
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
+    updateIndicators();
+    updateProgress();
+  });
+
+  // ===== REPORT GENERATION =====
+  document.getElementById('generate-report')?.addEventListener('click', () => {
+    const seasonLabel = activeTab === 'cooling' ? 'Cooling Season' : 'Heating Season';
+    const panel = activeTab === 'cooling' ? '#panel-cooling' : '#panel-heating';
+    const checks = document.querySelectorAll(`${panel} .cl-check`);
+    const total = checks.length;
+    const checked = Array.from(checks).filter(c => (c as HTMLInputElement).checked).length;
+    const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
+    const flags = evaluateFlags();
+    const grade = getGrade(pct, flags.count);
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    // Gather field readings
+    const fields: Record<string, string> = {};
+    document.querySelectorAll('[data-field]').forEach(el => {
+      const key = (el as HTMLElement).dataset.field!;
+      const val = (el as HTMLInputElement | HTMLSelectElement).value;
+      if (val) fields[key] = val;
+    });
+
+    // Build sections from the active panel
+    const sections: { title: string; items: { text: string; checked: boolean }[] }[] = [];
+    const sectionEls = document.querySelectorAll(`${panel} > .mb-8`);
+    sectionEls.forEach(sec => {
+      const h3 = sec.querySelector('h3');
+      if (!h3) return;
+      const title = h3.textContent?.trim().replace(/^\u25CF\s*/, '') || '';
+      const items: { text: string; checked: boolean }[] = [];
+      sec.querySelectorAll('.cl-check').forEach(cb => {
+        const label = (cb as HTMLElement).closest('label') || (cb as HTMLElement).closest('.flex');
+        const span = label?.querySelector('span');
+        const text = span?.textContent?.trim() || '';
+        items.push({ text, checked: (cb as HTMLInputElement).checked });
+      });
+      sections.push({ title, items });
+    });
+
+    // Build HTML for print
+    let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>HVAC Maintenance Report - ${seasonLabel}</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1a1a1a; padding: 40px; max-width: 800px; margin: 0 auto; font-size: 13px; line-height: 1.5; }
+      h1 { font-size: 22px; margin-bottom: 4px; }
+      h2 { font-size: 16px; margin: 20px 0 8px; border-bottom: 2px solid #e5e7eb; padding-bottom: 4px; }
+      .meta { color: #6b7280; font-size: 12px; margin-bottom: 20px; }
+      .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+      .summary-box { border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; text-align: center; }
+      .summary-box .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #6b7280; margin-bottom: 4px; }
+      .summary-box .value { font-size: 22px; font-weight: 700; }
+      .grade-A { color: #10b981; } .grade-B { color: #3b82f6; } .grade-C { color: #f59e0b; } .grade-D { color: #f97316; } .grade-F { color: #ef4444; }
+      .item { padding: 3px 0; display: flex; align-items: center; gap: 8px; }
+      .check { width: 14px; height: 14px; border: 1.5px solid #d1d5db; border-radius: 3px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+      .check.done { background: #10b981; border-color: #10b981; color: white; }
+      .readings { margin: 8px 0 8px 22px; padding: 8px 12px; background: #f9fafb; border-radius: 6px; font-size: 12px; }
+      .readings span { margin-right: 16px; }
+      .flag { background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; padding: 6px 12px; margin: 4px 0; font-size: 12px; color: #92400e; }
+      @media print { body { padding: 20px; } }
+    </style></head><body>`;
+
+    html += `<h1>HVAC Maintenance Report</h1>`;
+    html += `<div class="meta">${seasonLabel} &mdash; ${dateStr} at ${timeStr}</div>`;
+
+    html += `<div class="summary-grid">`;
+    html += `<div class="summary-box"><div class="label">Checked</div><div class="value">${checked}/${total}</div></div>`;
+    html += `<div class="summary-box"><div class="label">Completion</div><div class="value">${pct}%</div></div>`;
+    html += `<div class="summary-box"><div class="label">Flags</div><div class="value">${flags.count}</div></div>`;
+    html += `<div class="summary-box"><div class="label">Grade</div><div class="value grade-${grade}">${grade}</div></div>`;
+    html += `</div>`;
+
+    if (flags.count > 0) {
+      html += `<h2>Flagged Readings</h2>`;
+      flags.items.forEach(f => { html += `<div class="flag">${f}</div>`; });
+    }
+
+    sections.forEach(sec => {
+      html += `<h2>${sec.title}</h2>`;
+      sec.items.forEach(item => {
+        html += `<div class="item"><span class="check ${item.checked ? 'done' : ''}">${item.checked ? '&#10003;' : ''}</span> ${item.text}</div>`;
+      });
+    });
+
+    // Add readings section if any
+    const readingLabels: Record<string, string> = {
+      'filter-size-cool': 'Filter Size', 'filter-condition-cool': 'Filter Condition',
+      'cap-reading': 'Capacitor Reading (\u00B5F)', 'cap-rated': 'Capacitor Rated (\u00B5F)',
+      'amp-compressor': 'Compressor Amps', 'amp-blower': 'Blower Amps', 'amp-condenser': 'Condenser Fan Amps',
+      'suction-psi': 'Suction Pressure (PSI)', 'head-psi': 'Head Pressure (PSI)',
+      'superheat': 'Superheat (\u00B0F)', 'subcooling': 'Subcooling (\u00B0F)',
+      'supply-temp': 'Supply Air Temp (\u00B0F)', 'return-temp': 'Return Air Temp (\u00B0F)',
+      'co-reading': 'CO Reading (PPM)', 'gas-pressure': 'Gas Pressure ("WC)',
+      'heat-amp': 'Amp Draw (A)', 'temp-rise': 'Temperature Rise (\u00B0F)',
+    };
+    const activeFields = Object.entries(fields).filter(([_, v]) => v);
+    if (activeFields.length > 0) {
+      html += `<h2>Recorded Readings</h2><div class="readings">`;
+      activeFields.forEach(([k, v]) => {
+        const label = readingLabels[k] || k;
+        html += `<span><strong>${label}:</strong> ${v}</span>`;
+      });
+
+      const supply = parseFloat(fields['supply-temp']);
+      const ret = parseFloat(fields['return-temp']);
+      if (!isNaN(supply) && !isNaN(ret) && supply > 0 && ret > 0) {
+        html += `<span><strong>Temperature Split:</strong> ${Math.abs(ret - supply).toFixed(1)}\u00B0F</span>`;
+      }
+      html += `</div>`;
+    }
+
+    html += `</body></html>`;
+
+    const printWin = window.open('', '_blank');
+    if (printWin) {
+      printWin.document.write(html);
+      printWin.document.close();
+      setTimeout(() => printWin.print(), 400);
+    }
+  });
+
+  // ===== INIT =====
+  loadState();
+  updateIndicators();
+  updateProgress();
+</script>

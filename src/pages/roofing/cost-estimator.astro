@@ -1,0 +1,285 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/roofingTools';
+
+const tool = getToolBySlug('cost-estimator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does a new roof cost per square?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "National averages for 2026: Asphalt 3-tab shingles cost $750-775 per square installed (material + labor + removal). Architectural shingles run $925-1,075 per square. Metal roofing costs $1,225-1,525 per square. Tile is $1,925-2,825 per square. These include material, labor, removal, and disposal but not overhead or profit margin."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the average cost of a roof replacement?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For a typical 25-square (2,500 sq ft) home with architectural shingles in the Midwest, expect $15,000-$20,000 including material, labor, removal, disposal, and overhead. Costs vary significantly by region, material type, roof complexity, and whether the old roof needs removal."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does roof complexity affect the price?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, significantly. A simple gable roof with clean geometry costs the baseline rate. A moderate roof with 1-2 valleys adds about 15% to labor. Complex roofs with 3+ valleys, dormers, and multiple sections add 35% to labor costs due to extra cuts, flashing, and time."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do regional costs affect roofing prices?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Labor costs vary dramatically by region. Pacific states (CA, WA, OR) average 30% higher than the Midwest baseline. Northeast states run 25% higher. Southeast is about 5% above baseline. Southwest averages 15% higher. These multipliers reflect local cost of living and labor market conditions."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="cost-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roofSquares">Roof Size (squares)</label>
+        <input type="number" id="roofSquares" value="25" min="1" max="500" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">1 square = 100 sq ft. Use <a href="/roofing/roof-area-calculator" class="text-accent hover:underline">Roof Area Calculator</a> if needed.</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="materialType">Material Type</label>
+        <select id="materialType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="asphalt">Asphalt 3-Tab</option>
+          <option value="architectural" selected>Architectural Shingles</option>
+          <option value="metal">Metal Roofing</option>
+          <option value="tile">Tile Roofing</option>
+          <option value="flat">Flat Roof (TPO/EPDM)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="region">Region</label>
+        <select id="region" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0" selected>Midwest (baseline)</option>
+          <option value="1.05">Southeast</option>
+          <option value="1.05">Mountain</option>
+          <option value="1.15">Southwest</option>
+          <option value="1.25">Northeast</option>
+          <option value="1.30">Pacific (CA, WA, OR)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="complexity">Roof Complexity</label>
+        <select id="complexity" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0">Simple (no valleys)</option>
+          <option value="1.15" selected>Moderate (1-2 valleys)</option>
+          <option value="1.35">Complex (3+ valleys, dormers)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="jobType">Job Type</label>
+        <select id="jobType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="replacement" selected>Full Replacement (remove + install)</option>
+          <option value="install">Install Only (no removal)</option>
+          <option value="repair">Repair (partial roof)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="overheadPct">Overhead + Profit (%)</label>
+        <input type="number" id="overheadPct" value="25" min="0" max="60" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Industry standard: 25%</p>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Cost Breakdown</h3>
+
+      <!-- Itemized Breakdown -->
+      <div class="bg-bg-dark rounded-xl p-5 mb-6 space-y-2 font-mono text-sm">
+        <div class="flex justify-between text-text-secondary">
+          <span>Material</span>
+          <span id="line-material" class="text-text-primary">--</span>
+        </div>
+        <div class="flex justify-between text-text-secondary">
+          <span>Labor</span>
+          <span id="line-labor" class="text-text-primary">--</span>
+        </div>
+        <div id="line-removal-row" class="flex justify-between text-text-secondary">
+          <span>Removal</span>
+          <span id="line-removal" class="text-text-primary">--</span>
+        </div>
+        <div id="line-disposal-row" class="flex justify-between text-text-secondary">
+          <span>Disposal</span>
+          <span id="line-disposal" class="text-text-primary">--</span>
+        </div>
+        <div class="flex justify-between text-text-secondary border-t border-border pt-2">
+          <span>Subtotal</span>
+          <span id="line-subtotal" class="text-text-primary">--</span>
+        </div>
+        <div class="flex justify-between text-text-secondary">
+          <span>Overhead + Profit</span>
+          <span id="line-overhead" class="text-text-primary">--</span>
+        </div>
+        <div class="flex justify-between text-text-secondary border-t border-border pt-2">
+          <span class="font-bold">Total Estimate</span>
+          <span id="line-total" class="text-accent font-bold">--</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Estimate</div>
+          <div id="result-total" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Per Square</div>
+          <div id="result-persq" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Per Sq Ft</div>
+          <div id="result-persqft" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Price Range</div>
+          <div id="result-range" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">&plusmn;10%</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">This is an estimate based on 2026 national averages. Actual price depends on access, weather, existing conditions, and local market rates. Get multiple bids.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your roof size in squares.</strong> One square equals 100 sq ft. If you only know the footprint, use the <a href="/roofing/roof-area-calculator" class="text-accent hover:underline">Roof Area Calculator</a> to convert.</p>
+          <p><strong class="text-text-primary">2. Select your material type.</strong> Asphalt shingles are the most common and affordable. Architectural shingles offer better appearance and durability. Metal and tile cost more but last longer.</p>
+          <p><strong class="text-text-primary">3. Choose your region.</strong> Labor costs vary significantly by location. Pacific states are the most expensive; Midwest is the baseline.</p>
+          <p><strong class="text-text-primary">4. Set complexity and job type.</strong> Complex roofs with valleys and dormers cost more in labor. Full replacements include removal and disposal costs.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Cost Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator builds a cost estimate from four components: material, labor, removal, and disposal. Each is priced per square with regional and complexity adjustments.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Material = Squares x Material_per_Sq</p>
+            <p>Labor = Squares x Labor_per_Sq x Regional_Mult x Complexity_Mult</p>
+            <p>Removal = Squares x $75 x Complexity_Mult</p>
+            <p>Disposal = Squares x $50</p>
+            <p>Subtotal = Material + Labor + Removal + Disposal</p>
+            <p>Total = Subtotal x (1 + Overhead%)</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a new roof cost per square?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">National averages for 2026: Asphalt 3-tab shingles cost $750-775 per square installed (material + labor + removal). Architectural shingles run $925-1,075 per square. Metal roofing costs $1,225-1,525 per square. Tile is $1,925-2,825 per square. These include material, labor, removal, and disposal but not overhead or profit margin.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the average cost of a roof replacement?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For a typical 25-square (2,500 sq ft) home with architectural shingles in the Midwest, expect $15,000-$20,000 including material, labor, removal, disposal, and overhead. Costs vary significantly by region, material type, roof complexity, and whether the old roof needs removal.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Does roof complexity affect the price?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes, significantly. A simple gable roof with clean geometry costs the baseline rate. A moderate roof with 1-2 valleys adds about 15% to labor. Complex roofs with 3+ valleys, dormers, and multiple sections add 35% to labor costs due to extra cuts, flashing, and time.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do regional costs affect roofing prices?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Labor costs vary dramatically by region. Pacific states (CA, WA, OR) average 30% higher than the Midwest baseline. Northeast states run 25% higher. Southeast is about 5% above baseline. Southwest averages 15% higher. These multipliers reflect local cost of living and labor market conditions.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const squares = parseFloat((document.getElementById('roofSquares') as HTMLInputElement).value) || 25;
+    const materialType = (document.getElementById('materialType') as HTMLSelectElement).value;
+    const regionalMult = parseFloat((document.getElementById('region') as HTMLSelectElement).value);
+    const complexityMult = parseFloat((document.getElementById('complexity') as HTMLSelectElement).value);
+    const jobType = (document.getElementById('jobType') as HTMLSelectElement).value;
+    const overheadPct = parseFloat((document.getElementById('overheadPct') as HTMLInputElement).value) || 25;
+
+    // Base pricing per square (national average 2026)
+    const pricing: Record<string, { material: number; labor: number }> = {
+      asphalt:        { material: 375, labor: 275 },
+      architectural:  { material: 525, labor: 325 },
+      metal:          { material: 800, labor: 450 },
+      tile:           { material: 1500, labor: 750 },
+      flat:           { material: 350, labor: 225 },
+    };
+
+    const p = pricing[materialType] || pricing.architectural;
+
+    const materialCost = squares * p.material;
+    const laborCost = squares * p.labor * regionalMult * complexityMult;
+
+    let removalCost = 0;
+    let disposalCost = 0;
+    let laborMult = 1;
+
+    if (jobType === 'replacement') {
+      removalCost = squares * 75 * complexityMult;
+      disposalCost = squares * 50;
+    } else if (jobType === 'repair') {
+      laborMult = 1.2; // repairs cost more per square in labor
+    }
+
+    const adjustedLabor = laborCost * laborMult;
+    const subtotal = materialCost + adjustedLabor + removalCost + disposalCost;
+    const overhead = subtotal * (overheadPct / 100);
+    const total = subtotal + overhead;
+    const perSquare = total / squares;
+    const perSqFt = total / (squares * 100);
+    const low = Math.round(total * 0.9);
+    const high = Math.round(total * 1.1);
+
+    const fmt = (n: number) => '$' + Math.round(n).toLocaleString();
+
+    document.getElementById('line-material')!.textContent = fmt(materialCost);
+    document.getElementById('line-labor')!.textContent = fmt(adjustedLabor);
+    document.getElementById('line-removal')!.textContent = fmt(removalCost);
+    document.getElementById('line-disposal')!.textContent = fmt(disposalCost);
+    document.getElementById('line-subtotal')!.textContent = fmt(subtotal);
+    document.getElementById('line-overhead')!.textContent = fmt(overhead);
+    document.getElementById('line-total')!.textContent = fmt(total);
+
+    // Show/hide removal rows
+    const removalRow = document.getElementById('line-removal-row')!;
+    const disposalRow = document.getElementById('line-disposal-row')!;
+    if (jobType === 'replacement') {
+      removalRow.classList.remove('hidden');
+      disposalRow.classList.remove('hidden');
+    } else {
+      removalRow.classList.add('hidden');
+      disposalRow.classList.add('hidden');
+    }
+
+    document.getElementById('result-total')!.textContent = fmt(total);
+    document.getElementById('result-persq')!.textContent = fmt(perSquare);
+    document.getElementById('result-persqft')!.textContent = '$' + perSqFt.toFixed(2);
+    document.getElementById('result-range')!.textContent = fmt(low) + ' - ' + fmt(high);
+  }
+
+  document.querySelectorAll('#cost-calc input, #cost-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

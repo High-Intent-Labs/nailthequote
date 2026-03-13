@@ -1,0 +1,272 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/gcTools';
+
+const tool = getToolBySlug('project-budget-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I create a construction project budget?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Break the project into phases: site work, foundation, framing, mechanical (plumbing/electrical/HVAC), finishing, and contingency. Estimate costs for each phase including materials, labor, and subcontractors. Add 5-10% contingency for unexpected costs. Track actual costs against budget as the project progresses."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What contingency should I include in a construction budget?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Standard contingency is 5-10% of the total project budget. New construction on vacant land typically needs 5-7%. Remodeling projects need 10-15% because hidden conditions (rot, outdated wiring, structural issues) are common. Complex or phased projects may warrant 15-20%."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I track budget vs actual costs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Enter actual costs as invoices come in and compare to budgeted amounts. Track variance in both dollars and percentage. Flag any line item that exceeds budget by more than 10%. Review the budget weekly on active projects and update the at-completion forecast based on actual spending trends."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="budget-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="projectName">Project Name</label>
+        <input type="text" id="projectName" placeholder="123 Main St Remodel" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="contingencyPct">Contingency (%)</label>
+        <select id="contingencyPct" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="5">5% (new construction)</option>
+          <option value="10" selected>10% (standard remodel)</option>
+          <option value="15">15% (complex remodel)</option>
+          <option value="20">20% (high risk)</option>
+        </select>
+      </div>
+    </div>
+
+    <h4 class="font-heading font-bold text-lg mb-3 text-text-primary">Budget Line Items</h4>
+    <div class="mb-2">
+      <div class="hidden md:grid grid-cols-[1fr_130px_130px_100px] gap-3 mb-2 px-1">
+        <span class="text-text-muted text-xs font-medium uppercase tracking-wider">Phase / Category</span>
+        <span class="text-text-muted text-xs font-medium uppercase tracking-wider">Budget ($)</span>
+        <span class="text-text-muted text-xs font-medium uppercase tracking-wider">Actual ($)</span>
+        <span class="text-text-muted text-xs font-medium uppercase tracking-wider">Variance</span>
+      </div>
+    </div>
+    <div id="budget-lines" class="space-y-3 mb-4"></div>
+
+    <button id="add-line-btn" class="bg-bg-dark border border-border text-text-primary text-sm font-medium px-4 py-2 rounded-lg hover:border-accent hover:text-accent transition-colors cursor-pointer mb-8">
+      + Add Line Item
+    </button>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Budget Summary</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Budget</div>
+          <div id="result-budget" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Contingency</div>
+          <div id="result-contingency" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Actual Spent</div>
+          <div id="result-actual" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Variance</div>
+          <div id="result-variance" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-6 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Variance Report</h4>
+        <div id="variance-report" class="text-text-secondary text-sm space-y-2"></div>
+      </div>
+
+      <p class="text-text-muted text-sm italic">Track actual costs weekly on active projects. Flag any line item that exceeds budget by more than 10%.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Add budget line items.</strong> Break your project into phases or cost categories. Pre-loaded defaults cover typical construction phases.</p>
+          <p><strong class="text-text-primary">2. Enter budgeted amounts.</strong> Fill in estimated costs for each phase based on your bid or estimate.</p>
+          <p><strong class="text-text-primary">3. Track actual costs.</strong> As invoices come in, enter actual costs to see variance against budget in real time.</p>
+          <p><strong class="text-text-primary">4. Set contingency.</strong> Choose a contingency percentage appropriate to your project type and risk level.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I create a construction project budget?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Break the project into phases, estimate costs for each, add 5-10% contingency, and track actual costs against budget as the project progresses.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What contingency should I include in a construction budget?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">New construction: 5-7%. Remodeling: 10-15%. Complex or phased projects: 15-20%.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I track budget vs actual costs?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Enter actual costs as invoices come in. Track variance in dollars and percentage. Flag any line exceeding 10% over budget. Review weekly on active projects.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  interface BudgetLine {
+    id: number;
+    name: string;
+    budget: number;
+    actual: number;
+  }
+
+  let lines: BudgetLine[] = [
+    { id: 1, name: 'Site Work / Demolition', budget: 5000, actual: 0 },
+    { id: 2, name: 'Foundation', budget: 12000, actual: 0 },
+    { id: 3, name: 'Framing', budget: 18000, actual: 0 },
+    { id: 4, name: 'Plumbing', budget: 8000, actual: 0 },
+    { id: 5, name: 'Electrical', budget: 7000, actual: 0 },
+    { id: 6, name: 'HVAC', budget: 6000, actual: 0 },
+    { id: 7, name: 'Insulation / Drywall', budget: 5000, actual: 0 },
+    { id: 8, name: 'Finishing / Trim', budget: 10000, actual: 0 },
+    { id: 9, name: 'Permits / Fees', budget: 2000, actual: 0 },
+  ];
+  let nextId = 10;
+
+  function escapeHtml(str: string): string {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderLines() {
+    const container = document.getElementById('budget-lines')!;
+    container.innerHTML = '';
+
+    lines.forEach(line => {
+      const variance = line.actual - line.budget;
+      const varianceClass = line.actual === 0 ? 'text-text-muted' : variance > 0 ? 'text-[#EF4444]' : 'text-[#34D399]';
+      const varianceText = line.actual === 0 ? '--' : (variance >= 0 ? '+' : '') + '$' + variance.toLocaleString();
+
+      const row = document.createElement('div');
+      row.className = 'grid grid-cols-1 md:grid-cols-[1fr_130px_130px_100px_30px] gap-3 items-center bg-bg-dark rounded-lg p-3 md:p-2 md:bg-transparent';
+      row.innerHTML = `
+        <div>
+          <label class="md:hidden block text-text-muted text-xs mb-1">Phase</label>
+          <input type="text" data-id="${line.id}" data-field="name" value="${escapeHtml(line.name)}" class="line-input w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
+        </div>
+        <div>
+          <label class="md:hidden block text-text-muted text-xs mb-1">Budget</label>
+          <input type="number" data-id="${line.id}" data-field="budget" value="${line.budget}" min="0" step="500" class="line-input w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm text-right focus:border-accent focus:outline-none transition-colors" />
+        </div>
+        <div>
+          <label class="md:hidden block text-text-muted text-xs mb-1">Actual</label>
+          <input type="number" data-id="${line.id}" data-field="actual" value="${line.actual}" min="0" step="100" class="line-input w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm text-right focus:border-accent focus:outline-none transition-colors" />
+        </div>
+        <div class="text-sm font-medium text-right px-2 ${varianceClass}">${varianceText}</div>
+        <div class="flex justify-end">
+          ${lines.length > 1 ? `<button data-remove="${line.id}" class="remove-btn text-text-muted hover:text-red-400 transition-colors cursor-pointer text-lg">&times;</button>` : '<span></span>'}
+        </div>
+      `;
+      container.appendChild(row);
+    });
+
+    container.querySelectorAll('.line-input').forEach(input => {
+      input.addEventListener('input', handleInput);
+    });
+    container.querySelectorAll('.remove-btn').forEach(btn => {
+      btn.addEventListener('click', handleRemove);
+    });
+
+    recalculate();
+  }
+
+  function handleInput(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const id = parseInt(input.dataset.id!);
+    const field = input.dataset.field!;
+    const line = lines.find(l => l.id === id);
+    if (!line) return;
+
+    if (field === 'name') line.name = input.value;
+    else if (field === 'budget') line.budget = parseFloat(input.value) || 0;
+    else if (field === 'actual') line.actual = parseFloat(input.value) || 0;
+
+    recalculate();
+  }
+
+  function handleRemove(e: Event) {
+    const btn = e.currentTarget as HTMLElement;
+    const id = parseInt(btn.dataset.remove!);
+    lines = lines.filter(l => l.id !== id);
+    renderLines();
+  }
+
+  function recalculate() {
+    const contingencyPct = parseFloat((document.getElementById('contingencyPct') as HTMLSelectElement).value) || 10;
+    const totalBudget = lines.reduce((s, l) => s + l.budget, 0);
+    const contingency = totalBudget * (contingencyPct / 100);
+    const budgetWithContingency = totalBudget + contingency;
+    const totalActual = lines.reduce((s, l) => s + l.actual, 0);
+    const variance = totalActual - totalBudget;
+
+    document.getElementById('result-budget')!.textContent = '$' + budgetWithContingency.toLocaleString();
+    document.getElementById('result-contingency')!.textContent = '$' + contingency.toLocaleString();
+    document.getElementById('result-actual')!.textContent = '$' + totalActual.toLocaleString();
+
+    const varEl = document.getElementById('result-variance')!;
+    if (totalActual === 0) {
+      varEl.textContent = '--';
+      varEl.className = 'font-heading font-extrabold text-3xl text-text-primary';
+    } else {
+      varEl.textContent = (variance >= 0 ? '+' : '') + '$' + variance.toLocaleString();
+      varEl.className = 'font-heading font-extrabold text-3xl ' + (variance <= 0 ? 'text-[#34D399]' : 'text-[#EF4444]');
+    }
+
+    // Variance report
+    const hasActuals = lines.some(l => l.actual > 0);
+    if (hasActuals) {
+      document.getElementById('variance-report')!.innerHTML = lines
+        .filter(l => l.actual > 0)
+        .map(l => {
+          const v = l.actual - l.budget;
+          const vPct = l.budget > 0 ? ((v / l.budget) * 100).toFixed(1) : '0';
+          const cls = v > 0 ? 'text-[#EF4444]' : 'text-[#34D399]';
+          const flag = v > l.budget * 0.1 ? ' ⚠' : '';
+          return `<div class="flex justify-between"><span>${escapeHtml(l.name)}</span><span class="${cls} font-medium">${v >= 0 ? '+' : ''}$${v.toLocaleString()} (${vPct}%)${flag}</span></div>`;
+        }).join('') +
+        `<div class="border-t border-border mt-3 pt-3 flex justify-between font-medium"><span>Net Variance</span><span class="${variance <= 0 ? 'text-[#34D399]' : 'text-[#EF4444]'}">${variance >= 0 ? '+' : ''}$${variance.toLocaleString()}</span></div>`;
+    } else {
+      document.getElementById('variance-report')!.innerHTML = '<p class="text-text-muted">Enter actual costs to see variance report.</p>';
+    }
+  }
+
+  document.getElementById('add-line-btn')?.addEventListener('click', () => {
+    lines.push({ id: nextId++, name: '', budget: 0, actual: 0 });
+    renderLines();
+  });
+
+  document.getElementById('contingencyPct')?.addEventListener('change', recalculate);
+
+  renderLines();
+</script>

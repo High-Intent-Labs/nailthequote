@@ -1,0 +1,184 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/cleaningTools';
+
+const tool = getToolBySlug('commercial-janitorial-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does commercial cleaning cost per square foot?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Commercial cleaning rates per visit range from $0.08-0.15/sqft for light industrial to $0.20-0.35/sqft for restaurants. General office cleaning averages $0.10-0.18/sqft per cleaning. Medical facilities command $0.15-0.25/sqft due to sanitization requirements. Monthly contracts multiply the per-visit rate by cleaning frequency." }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I price a janitorial contract?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Start with the per-sqft rate for the facility type, multiply by square footage, adjust for cleaning frequency, and add any service extras (window cleaning, carpet care, high-touch sanitizing). Daily contracts use baseline pricing; weekly and bi-weekly contracts get 15-25% discounts due to reduced frequency." }
+    },
+    {
+      "@type": "Question",
+      "name": "How many square feet can a janitor clean per hour?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The standard rate is about 3000-4000 sqft per hour for general office janitorial (floors, trash, restrooms, dusting). This translates to roughly 0.008 hours per sqft per cleaning session. A 5000 sqft office takes about 1.5 hours for a single cleaner at standard pace." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="janitorial-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="facilSqft">Facility Square Footage</label>
+        <input type="number" id="facilSqft" value="5000" min="500" max="200000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="facilType">Facility Type</label>
+        <select id="facilType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.14" selected>Office ($0.10-0.18/sqft)</option>
+          <option value="0.16">Retail ($0.12-0.20/sqft)</option>
+          <option value="0.115">Light Industrial ($0.08-0.15/sqft)</option>
+          <option value="0.20">Medical ($0.15-0.25/sqft)</option>
+          <option value="0.275">Restaurant ($0.20-0.35/sqft)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="frequency">Cleaning Frequency</label>
+        <select id="frequency" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.0" data-visits="22">Daily (22 visits/mo) — 1.0x</option>
+          <option value="1.05" data-visits="13">3x / Week (13 visits/mo) — 1.05x</option>
+          <option value="0.95" data-visits="9" selected>2x / Week (9 visits/mo) — 0.95x</option>
+          <option value="0.85" data-visits="4">Weekly (4 visits/mo) — 0.85x</option>
+          <option value="0.75" data-visits="2">Bi-Weekly (2 visits/mo) — 0.75x</option>
+        </select>
+      </div>
+    </div>
+
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Service Add-Ons (monthly cost)</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+        <input type="checkbox" id="addonWindows" value="0.02" class="addon-check accent-[#FF6B2B] w-4 h-4" />
+        <span class="text-text-secondary text-sm">Window Cleaning (+$0.02/sqft/mo)</span>
+      </label>
+      <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+        <input type="checkbox" id="addonCarpet" value="0.01" class="addon-check accent-[#FF6B2B] w-4 h-4" />
+        <span class="text-text-secondary text-sm">Carpet Cleaning (+$0.01/sqft/mo)</span>
+      </label>
+      <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+        <input type="checkbox" id="addonSanitize" value="0.03" class="addon-check accent-[#FF6B2B] w-4 h-4" />
+        <span class="text-text-secondary text-sm">High-Touch Sanitizing (+$0.03/sqft/mo)</span>
+      </label>
+      <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+        <input type="checkbox" id="addonSupplies" value="0.02" class="addon-check accent-[#FF6B2B] w-4 h-4" />
+        <span class="text-text-secondary text-sm">Restroom Supplies (+$0.02/sqft/mo)</span>
+      </label>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Monthly Price</div>
+          <div id="result-monthly" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Annual Contract</div>
+          <div id="result-annual" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Per Visit Time</div>
+          <div id="result-visit-time" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Per Visit Price</div>
+          <div id="result-visit-price" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Commercial cleaning rates from Angi, BigLeagueClean, and BuildingStars 2026 data. Frequency discounts reflect contract predictability value.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the facility size.</strong> Measure the total cleanable area. For multi-floor buildings, add all floors together.</p>
+          <p><strong class="text-text-primary">2. Select the facility type.</strong> Different facility types have different cleaning requirements and pricing. Restaurants and medical offices command higher rates due to sanitization standards.</p>
+          <p><strong class="text-text-primary">3. Set the cleaning frequency.</strong> Daily contracts price at baseline. Less frequent schedules get discounts because the contract commitment is still predictable revenue.</p>
+          <p><strong class="text-text-primary">4. Add service extras.</strong> Window cleaning, carpet care, high-touch sanitizing, and restroom supplies are common add-ons that increase the monthly contract value.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator multiplies facility size by the per-sqft rate, adjusts for frequency, and adds service extras.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Per_Visit = Sqft x Base_Rate x Frequency_Multiplier</p>
+            <p>Monthly_Add_Ons = Sqft x Sum(Add_On_Rates)</p>
+            <p>Monthly = (Per_Visit x Visits_Per_Month) + Monthly_Add_Ons</p>
+            <p>Annual = Monthly x 12</p>
+            <p>Visit_Time = Sqft x 0.008 hours (standard rate)</p>
+          </div>
+          <p>Frequency multipliers reflect contract value: daily (1.0x baseline), 3x/week (1.05x slight premium), 2x/week (0.95x), weekly (0.85x), bi-weekly (0.75x). Less frequent = larger discount.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does commercial cleaning cost per square foot?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Commercial cleaning rates per visit range from $0.08-0.15/sqft for light industrial to $0.20-0.35/sqft for restaurants. General office cleaning averages $0.10-0.18/sqft per cleaning. Medical facilities command $0.15-0.25/sqft due to sanitization requirements. Monthly contracts multiply the per-visit rate by cleaning frequency.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I price a janitorial contract?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Start with the per-sqft rate for the facility type, multiply by square footage, adjust for cleaning frequency, and add any service extras (window cleaning, carpet care, high-touch sanitizing). Daily contracts use baseline pricing; weekly and bi-weekly contracts get 15-25% discounts due to reduced frequency.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many square feet can a janitor clean per hour?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The standard rate is about 3000-4000 sqft per hour for general office janitorial (floors, trash, restrooms, dusting). This translates to roughly 0.008 hours per sqft per cleaning session. A 5000 sqft office takes about 1.5 hours for a single cleaner at standard pace.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const sqft = parseFloat((document.getElementById('facilSqft') as HTMLInputElement).value) || 5000;
+    const baseRate = parseFloat((document.getElementById('facilType') as HTMLSelectElement).value);
+    const freqSelect = document.getElementById('frequency') as HTMLSelectElement;
+    const freqMultiplier = parseFloat(freqSelect.value);
+    const visitsPerMonth = parseInt(freqSelect.selectedOptions[0].dataset.visits || '9');
+
+    let addonRate = 0;
+    document.querySelectorAll('.addon-check:checked').forEach(cb => {
+      addonRate += parseFloat((cb as HTMLInputElement).value);
+    });
+
+    const perVisitPrice = sqft * baseRate * freqMultiplier;
+    const monthlyAddOns = sqft * addonRate;
+    const monthlyPrice = (perVisitPrice * visitsPerMonth) + monthlyAddOns;
+    const annualPrice = monthlyPrice * 12;
+    const visitTimeHours = sqft * 0.008;
+    const visitHrs = Math.floor(visitTimeHours);
+    const visitMins = Math.round((visitTimeHours - visitHrs) * 60);
+
+    document.getElementById('result-monthly')!.textContent = '$' + Math.round(monthlyPrice).toLocaleString();
+    document.getElementById('result-annual')!.textContent = '$' + Math.round(annualPrice).toLocaleString();
+    document.getElementById('result-visit-time')!.textContent = visitHrs > 0 ? `${visitHrs}h ${visitMins}m` : `${visitMins}m`;
+    document.getElementById('result-visit-price')!.textContent = '$' + Math.round(perVisitPrice).toLocaleString();
+  }
+
+  document.querySelectorAll('#janitorial-calc input, #janitorial-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

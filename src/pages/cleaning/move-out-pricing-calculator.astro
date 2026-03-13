@@ -1,0 +1,184 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/cleaningTools';
+
+const tool = getToolBySlug('move-out-pricing-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does move-out cleaning cost?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Move-out cleaning typically costs $0.18-0.35 per square foot, or roughly 2.2x a maintenance clean. For a 2000 sq ft home, expect $440-600. Extras like carpet shampooing, appliance detail, and wall washing add $50-100 each." }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does a move-out clean take?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A move-out clean takes approximately 2.2x longer than maintenance. For a 2000 sq ft home, expect 5.5-7 hours for a single cleaner or 3-4 hours for a 2-person team. Add-ons like carpet shampooing or wall washing extend this further." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is included in a move-out clean?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A move-out clean includes everything in a deep clean plus inside all cabinets and drawers, baseboards, detailed oven and fridge cleaning, light fixtures, windowsills, and closet interiors. Optional extras include carpet shampooing, wall washing, and appliance interior detail." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="moveout-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="sqft">Home Square Footage</label>
+        <input type="number" id="sqft" value="2000" min="200" max="15000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="bathrooms">Number of Bathrooms</label>
+        <input type="number" id="bathrooms" value="2" min="1" max="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="bedrooms">Number of Bedrooms</label>
+        <input type="number" id="bedrooms" value="3" min="1" max="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="teamSize">Team Size</label>
+        <select id="teamSize" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1">1 Person</option>
+          <option value="2" selected>2 People</option>
+          <option value="3">3 People</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="billableRate">Billable Rate ($/hr)</label>
+        <input type="number" id="billableRate" value="55" min="20" max="200" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Optional Add-Ons</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+        <input type="checkbox" id="carpet" value="30" class="addon-check accent-[#FF6B2B] w-4 h-4" />
+        <span class="text-text-secondary text-sm">Carpet Shampoo (+30 min)</span>
+      </label>
+      <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+        <input type="checkbox" id="appliance" value="15" class="addon-check accent-[#FF6B2B] w-4 h-4" />
+        <span class="text-text-secondary text-sm">Appliance Detail (+15 min)</span>
+      </label>
+      <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+        <input type="checkbox" id="walls" value="15" class="addon-check accent-[#FF6B2B] w-4 h-4" />
+        <span class="text-text-secondary text-sm">Wall Washing (+15 min)</span>
+      </label>
+      <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+        <input type="checkbox" id="fridge" value="15" class="addon-check accent-[#FF6B2B] w-4 h-4" />
+        <span class="text-text-secondary text-sm">Deep Fridge Clean (+15 min)</span>
+      </label>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Time Estimate</div>
+          <div id="result-time" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Recommended Price</div>
+          <div id="result-price" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Per Sqft Rate</div>
+          <div id="result-persqft" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">vs Maintenance</div>
+          <div id="result-multiplier" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic">Move-out cleans average 2.0-2.5x the cost of a maintenance clean. Per-sqft pricing: $0.18-0.35/sqft depending on home size and extras.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the home details.</strong> Square footage, bathrooms, and bedrooms drive the base time estimate.</p>
+          <p><strong class="text-text-primary">2. Select your team size and rate.</strong> Move-out cleans are long jobs — a 2-person team is the most common approach.</p>
+          <p><strong class="text-text-primary">3. Check any add-ons.</strong> Carpet shampooing, appliance detail, wall washing, and deep fridge cleaning are common extras for move-outs. Each adds 15-30 minutes.</p>
+          <p><strong class="text-text-primary">4. Review the per-sqft rate.</strong> Compare your rate to the industry range ($0.18-0.35/sqft) to make sure you are competitive but profitable.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does move-out cleaning cost?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Move-out cleaning typically costs $0.18-0.35 per square foot, or roughly 2.2x a maintenance clean. For a 2000 sq ft home, expect $440-600. Extras like carpet shampooing, appliance detail, and wall washing add $50-100 each.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does a move-out clean take?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A move-out clean takes approximately 2.2x longer than maintenance. For a 2000 sq ft home, expect 5.5-7 hours for a single cleaner or 3-4 hours for a 2-person team. Add-ons like carpet shampooing or wall washing extend this further.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is included in a move-out clean?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A move-out clean includes everything in a deep clean plus inside all cabinets and drawers, baseboards, detailed oven and fridge cleaning, light fixtures, windowsills, and closet interiors. Optional extras include carpet shampooing, wall washing, and appliance interior detail.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const sqft = parseFloat((document.getElementById('sqft') as HTMLInputElement).value) || 2000;
+    const bathrooms = parseInt((document.getElementById('bathrooms') as HTMLInputElement).value) || 2;
+    const bedrooms = parseInt((document.getElementById('bedrooms') as HTMLInputElement).value) || 3;
+    const teamSize = parseInt((document.getElementById('teamSize') as HTMLSelectElement).value);
+    const billableRate = parseFloat((document.getElementById('billableRate') as HTMLInputElement).value) || 55;
+
+    // Maintenance baseline (solo)
+    const baseTime = (sqft / 1000) * 30;
+    const soloMaintMinutes = baseTime + (bathrooms * 15) + (bedrooms * 5) + 10;
+
+    // Move-out multiplier
+    const moveOutMinutes = soloMaintMinutes * 2.2;
+
+    // Add-ons
+    let addonMinutes = 0;
+    document.querySelectorAll('.addon-check:checked').forEach(cb => {
+      addonMinutes += parseInt((cb as HTMLInputElement).value);
+    });
+    const totalSoloMinutes = moveOutMinutes + addonMinutes;
+
+    // Team adjustment
+    const teamMultipliers: Record<number, number> = { 1: 1.0, 2: 0.85, 3: 0.75 };
+    const multiplier = teamMultipliers[teamSize] || 1.0;
+    const adjustedMinutes = totalSoloMinutes / (teamSize * multiplier);
+
+    // Maintenance team time for comparison
+    const maintAdjusted = soloMaintMinutes / (teamSize * multiplier);
+
+    const hours = Math.floor(adjustedMinutes / 60);
+    const mins = Math.round(adjustedMinutes % 60);
+    const price = (adjustedMinutes / 60) * billableRate;
+    const perSqft = price / sqft;
+    const actualMultiplier = adjustedMinutes / maintAdjusted;
+
+    document.getElementById('result-time')!.textContent = `${hours}h ${mins}m`;
+    document.getElementById('result-price')!.textContent = '$' + Math.round(price).toLocaleString();
+    document.getElementById('result-persqft')!.textContent = '$' + perSqft.toFixed(2) + '/sqft';
+    document.getElementById('result-multiplier')!.textContent = actualMultiplier.toFixed(1) + 'x';
+  }
+
+  document.querySelectorAll('#moveout-calc input, #moveout-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

@@ -1,0 +1,249 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/gcTools';
+
+const tool = getToolBySlug('roofing-materials-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How many bundles of shingles do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "One bundle of standard asphalt shingles covers approximately 33 square feet. Three bundles make one square (100 sqft). Divide your roof area by 33 and round up. For a 2,000 sqft roof: 2,000 / 33 = 61 bundles. Add 10-15% for waste and ridge caps."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I calculate roof area from ground measurements?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Multiply the footprint area by the slope factor. A house that is 30x40 feet with a 6:12 pitch has a footprint of 1,200 sqft. The slope factor for 6:12 is 1.118. Actual roof area = 1,200 x 1.118 = 1,342 sqft. Each side of a gable roof is half the footprint times the slope factor."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a roofing square?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A roofing square is 100 square feet. It is the standard unit for ordering roofing materials. Three bundles of standard asphalt shingles equal one square. A 2,000 sqft roof is 20 squares."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="roof-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roofInput">Input Method</label>
+        <select id="roofInput" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="area" selected>Known Roof Area (sqft)</option>
+          <option value="footprint">House Footprint + Slope</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roofType">Roofing Material</label>
+        <select id="roofType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="asphalt" selected>Asphalt Shingles</option>
+          <option value="metal">Standing Seam Metal</option>
+          <option value="tile">Tile</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="area-inputs">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-text-secondary mb-2" for="roofArea">Roof Area (sqft)</label>
+          <input type="number" id="roofArea" value="2000" min="100" max="100000" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        </div>
+      </div>
+    </div>
+
+    <div id="footprint-inputs" class="hidden">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-text-secondary mb-2" for="houseLength">House Length (ft)</label>
+          <input type="number" id="houseLength" value="40" min="10" max="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-text-secondary mb-2" for="houseWidth">House Width (ft)</label>
+          <input type="number" id="houseWidth" value="30" min="10" max="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-text-secondary mb-2" for="pitch">Roof Pitch</label>
+          <select id="pitch" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+            <option value="1.014">2:12 (low slope)</option>
+            <option value="1.031">3:12</option>
+            <option value="1.054">4:12</option>
+            <option value="1.083">5:12</option>
+            <option value="1.118" selected>6:12 (standard)</option>
+            <option value="1.158">7:12</option>
+            <option value="1.202">8:12</option>
+            <option value="1.250">9:12</option>
+            <option value="1.302">10:12</option>
+            <option value="1.414">12:12 (45 degrees)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roofWaste">Waste Factor</label>
+        <select id="roofWaste" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1.10" selected>10% (simple roof)</option>
+          <option value="1.15">15% (hip roof, valleys)</option>
+          <option value="1.20">20% (complex roof)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="replaceSheathing">Replace Plywood Sheathing?</label>
+        <select id="replaceSheathing" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="no" selected>No</option>
+          <option value="yes">Yes (full replacement)</option>
+          <option value="partial">Partial (estimate 25%)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Roof Area</div>
+          <div id="result-area" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div class="text-text-muted text-xs mt-1">sqft (with waste)</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Squares</div>
+          <div id="result-squares" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Bundles</div>
+          <div id="result-bundles" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Underlayment Rolls</div>
+          <div id="result-under" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-6 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Materials Order List</h4>
+        <div id="materials-list" class="text-text-secondary text-sm space-y-2"></div>
+      </div>
+
+      <p class="text-text-muted text-sm italic">Material quantities include waste factor. Actual shingle counts may vary by brand and style. Consult manufacturer specs for exact coverage.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Choose your input method.</strong> Enter the known roof area directly, or enter the house footprint dimensions and pitch to calculate the roof area.</p>
+          <p><strong class="text-text-primary">2. Select roofing material.</strong> Different materials have different coverage rates and ordering units.</p>
+          <p><strong class="text-text-primary">3. Set waste factor.</strong> Simple gable roofs need 10%. Hip roofs with valleys need 15-20%.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Slope_Factor = SQRT(Rise^2 + Run^2) / Run</p>
+            <p>Roof_Area = Footprint x Slope_Factor</p>
+            <p>Bundles = Roof_Area / 33 (asphalt)</p>
+            <p>Squares = Roof_Area / 100</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many bundles of shingles do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">One bundle covers approximately 33 sqft. Three bundles make one square (100 sqft). Divide your roof area by 33 and round up, then add 10-15% for waste.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate roof area from ground measurements?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Multiply the footprint area by the slope factor for your roof pitch. A 6:12 pitch has a factor of 1.118.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a roofing square?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A roofing square is 100 square feet, the standard unit for ordering roofing materials.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const inputMethod = (document.getElementById('roofInput') as HTMLSelectElement).value;
+    const roofType = (document.getElementById('roofType') as HTMLSelectElement).value;
+    const waste = parseFloat((document.getElementById('roofWaste') as HTMLSelectElement).value);
+    const sheathing = (document.getElementById('replaceSheathing') as HTMLSelectElement).value;
+
+    document.getElementById('area-inputs')!.classList.toggle('hidden', inputMethod !== 'area');
+    document.getElementById('footprint-inputs')!.classList.toggle('hidden', inputMethod !== 'footprint');
+
+    let baseArea: number;
+    if (inputMethod === 'footprint') {
+      const houseL = parseFloat((document.getElementById('houseLength') as HTMLInputElement).value) || 40;
+      const houseW = parseFloat((document.getElementById('houseWidth') as HTMLInputElement).value) || 30;
+      const slopeFactor = parseFloat((document.getElementById('pitch') as HTMLSelectElement).value);
+      baseArea = houseL * houseW * slopeFactor;
+    } else {
+      baseArea = parseFloat((document.getElementById('roofArea') as HTMLInputElement).value) || 2000;
+    }
+
+    const totalArea = baseArea * waste;
+    const squares = totalArea / 100;
+    const bundles = Math.ceil(totalArea / 33);
+    const underlayRolls = Math.ceil(totalArea * 1.1 / 400);
+    const flashingLF = Math.ceil(totalArea * 0.018);
+    const nailsLbs = Math.ceil(totalArea * 0.01);
+
+    let plywoodSheets = 0;
+    if (sheathing === 'yes') {
+      plywoodSheets = Math.ceil(totalArea / 32 * 1.1);
+    } else if (sheathing === 'partial') {
+      plywoodSheets = Math.ceil(totalArea * 0.25 / 32 * 1.1);
+    }
+
+    document.getElementById('result-area')!.textContent = totalArea.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    document.getElementById('result-squares')!.textContent = squares.toFixed(1);
+    document.getElementById('result-bundles')!.textContent = bundles.toString();
+    document.getElementById('result-under')!.textContent = underlayRolls.toString();
+
+    let materials = `
+      <div class="flex justify-between"><span>Shingle bundles (3/square)</span><span class="text-text-primary font-medium">${bundles} bundles</span></div>
+      <div class="flex justify-between"><span>Underlayment rolls (4 sqft per roll)</span><span class="text-text-primary font-medium">${underlayRolls} rolls</span></div>
+      <div class="flex justify-between"><span>Drip edge / flashing</span><span class="text-text-primary font-medium">${flashingLF} LF</span></div>
+      <div class="flex justify-between"><span>Roofing nails</span><span class="text-text-primary font-medium">${nailsLbs} lbs</span></div>
+    `;
+    if (plywoodSheets > 0) {
+      materials += `<div class="flex justify-between"><span>Plywood sheathing (4x8 sheets)</span><span class="text-text-primary font-medium">${plywoodSheets} sheets</span></div>`;
+    }
+    materials += `<div class="border-t border-border mt-3 pt-3 flex justify-between font-medium"><span>Total Roof Area (with waste)</span><span class="text-accent">${totalArea.toLocaleString(undefined, { maximumFractionDigits: 0 })} sqft</span></div>`;
+
+    document.getElementById('materials-list')!.innerHTML = materials;
+  }
+
+  document.querySelectorAll('#roof-calc input, #roof-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

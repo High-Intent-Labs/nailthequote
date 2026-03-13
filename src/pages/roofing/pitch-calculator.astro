@@ -1,0 +1,235 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/roofingTools';
+
+const tool = getToolBySlug('pitch-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I convert roof pitch to degrees?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use the formula: Degrees = arctan(Rise / 12) x (180 / pi). For a 6/12 pitch: arctan(6/12) = arctan(0.5) = 26.57 degrees. Common conversions: 4/12 = 18.4 degrees, 6/12 = 26.6 degrees, 8/12 = 33.7 degrees, 12/12 = 45 degrees."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does 6/12 roof pitch mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A 6/12 pitch means the roof rises 6 inches for every 12 inches of horizontal run. This is one of the most common residential pitches. It translates to a 26.57-degree angle and a 50% slope. It provides good water runoff while still being walkable for most roofers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a walkable roof pitch?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most roofers consider pitches up to 6/12 (26.6 degrees) walkable without special equipment. Pitches from 7/12 to 9/12 require roof brackets and are considered moderately steep. Pitches 10/12 and above (40+ degrees) typically require scaffolding or specialized steep-roof gear."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="pitch-calc">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="inputType">Convert From</label>
+        <select id="inputType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="pitch" selected>Pitch (X/12)</option>
+          <option value="degrees">Degrees</option>
+          <option value="percent">Slope %</option>
+        </select>
+      </div>
+      <div id="pitch-input-group">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="riseValue">Rise (per 12 inches run)</label>
+        <input type="number" id="riseValue" value="6" min="0.5" max="24" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="degree-input-group" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="degreeValue">Angle (degrees)</label>
+        <input type="number" id="degreeValue" value="26.57" min="1" max="75" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="percent-input-group" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="percentValue">Slope Percentage</label>
+        <input type="number" id="percentValue" value="50" min="1" max="200" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Conversions</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Pitch</div>
+          <div id="result-pitch" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Degrees</div>
+          <div id="result-degrees" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Slope %</div>
+          <div id="result-percent" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Rise:Run</div>
+          <div id="result-ratio" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Pitch Factor</div>
+          <div id="result-factor" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">area multiplier</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Steepness</div>
+          <div id="result-steepness" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <!-- Quick Reference Table -->
+      <div class="bg-bg-dark rounded-xl p-5 overflow-x-auto">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Common Pitch Reference</h4>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-text-muted text-xs uppercase tracking-wider">
+              <th class="pb-2 text-left">Pitch</th>
+              <th class="pb-2 text-right">Degrees</th>
+              <th class="pb-2 text-right">Slope %</th>
+              <th class="pb-2 text-right">Factor</th>
+              <th class="pb-2 text-left pl-4">Class</th>
+            </tr>
+          </thead>
+          <tbody class="text-text-secondary">
+            <tr><td class="py-1">2/12</td><td class="text-right">9.5&deg;</td><td class="text-right">16.7%</td><td class="text-right">1.0138</td><td class="pl-4">Nearly flat</td></tr>
+            <tr><td class="py-1">3/12</td><td class="text-right">14.0&deg;</td><td class="text-right">25.0%</td><td class="text-right">1.0308</td><td class="pl-4">Low slope</td></tr>
+            <tr><td class="py-1">4/12</td><td class="text-right">18.4&deg;</td><td class="text-right">33.3%</td><td class="text-right">1.0541</td><td class="pl-4">Standard low</td></tr>
+            <tr><td class="py-1">5/12</td><td class="text-right">22.6&deg;</td><td class="text-right">41.7%</td><td class="text-right">1.0833</td><td class="pl-4">Moderate</td></tr>
+            <tr class="text-text-primary font-medium"><td class="py-1">6/12</td><td class="text-right">26.6&deg;</td><td class="text-right">50.0%</td><td class="text-right">1.1180</td><td class="pl-4">Standard</td></tr>
+            <tr><td class="py-1">7/12</td><td class="text-right">30.3&deg;</td><td class="text-right">58.3%</td><td class="text-right">1.1577</td><td class="pl-4">Moderate steep</td></tr>
+            <tr><td class="py-1">8/12</td><td class="text-right">33.7&deg;</td><td class="text-right">66.7%</td><td class="text-right">1.2019</td><td class="pl-4">Steep</td></tr>
+            <tr><td class="py-1">10/12</td><td class="text-right">39.8&deg;</td><td class="text-right">83.3%</td><td class="text-right">1.3017</td><td class="pl-4">Very steep</td></tr>
+            <tr><td class="py-1">12/12</td><td class="text-right">45.0&deg;</td><td class="text-right">100.0%</td><td class="text-right">1.4142</td><td class="pl-4">45 degrees</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Choose your input format.</strong> If you know the pitch (like 6/12), enter the rise. If you measured the angle with a tool, enter degrees. If you have a percentage from a survey, enter the slope percentage.</p>
+          <p><strong class="text-text-primary">2. Enter the value.</strong> The calculator instantly converts to all other formats. It also shows the pitch correction factor used for area calculations and a steepness classification.</p>
+          <p><strong class="text-text-primary">3. Use the reference table.</strong> The quick reference shows all common pitches with their conversions for easy comparison.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Pitch Conversion Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>Roof pitch, degrees, and slope percentage are three ways to describe the same angle. The calculator uses standard trigonometry to convert between them.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Degrees = arctan(Rise / 12) x (180 / pi)</p>
+            <p>Slope_Pct = (Rise / 12) x 100</p>
+            <p>Pitch_Factor = sqrt((Rise^2 + 144) / 144)</p>
+            <p>Rise (from degrees) = 12 x tan(Degrees x pi / 180)</p>
+            <p>Rise (from %) = Percentage x 12 / 100</p>
+          </div>
+          <p>The pitch factor is particularly useful because it converts flat footprint area to actual sloped roof area. A 6/12 pitch has a factor of 1.118 — meaning the sloped area is about 11.8% larger than the footprint.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I convert roof pitch to degrees?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Use the formula: Degrees = arctan(Rise / 12) x (180 / pi). For a 6/12 pitch: arctan(6/12) = arctan(0.5) = 26.57 degrees. Common conversions: 4/12 = 18.4 degrees, 6/12 = 26.6 degrees, 8/12 = 33.7 degrees, 12/12 = 45 degrees.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What does 6/12 roof pitch mean?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A 6/12 pitch means the roof rises 6 inches for every 12 inches of horizontal run. This is one of the most common residential pitches. It translates to a 26.57-degree angle and a 50% slope. It provides good water runoff while still being walkable for most roofers.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a walkable roof pitch?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most roofers consider pitches up to 6/12 (26.6 degrees) walkable without special equipment. Pitches from 7/12 to 9/12 require roof brackets and are considered moderately steep. Pitches 10/12 and above (40+ degrees) typically require scaffolding or specialized steep-roof gear.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const inputType = (document.getElementById('inputType') as HTMLSelectElement).value;
+
+    let rise: number;
+
+    if (inputType === 'pitch') {
+      rise = parseFloat((document.getElementById('riseValue') as HTMLInputElement).value) || 6;
+    } else if (inputType === 'degrees') {
+      const deg = parseFloat((document.getElementById('degreeValue') as HTMLInputElement).value) || 26.57;
+      rise = 12 * Math.tan(deg * Math.PI / 180);
+    } else {
+      const pct = parseFloat((document.getElementById('percentValue') as HTMLInputElement).value) || 50;
+      rise = pct * 12 / 100;
+    }
+
+    const degrees = Math.atan(rise / 12) * (180 / Math.PI);
+    const slopePct = (rise / 12) * 100;
+    const pitchFactor = Math.sqrt((rise * rise + 144) / 144);
+
+    // Steepness classification
+    let steepness: string;
+    if (rise <= 2) steepness = 'Nearly flat';
+    else if (rise <= 3) steepness = 'Low slope';
+    else if (rise <= 4) steepness = 'Standard low';
+    else if (rise <= 5) steepness = 'Moderate';
+    else if (rise <= 6) steepness = 'Standard';
+    else if (rise <= 7) steepness = 'Moderate steep';
+    else if (rise <= 9) steepness = 'Steep';
+    else if (rise <= 12) steepness = 'Very steep';
+    else steepness = 'Extreme';
+
+    // Rise:Run ratio simplified
+    const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
+    const riseRound = Math.round(rise * 10);
+    const runRound = 120;
+    const g = gcd(riseRound, runRound);
+    const ratioStr = (riseRound / g) + ':' + (runRound / g);
+
+    document.getElementById('result-pitch')!.textContent = rise.toFixed(1) + '/12';
+    document.getElementById('result-degrees')!.textContent = degrees.toFixed(1) + '\u00B0';
+    document.getElementById('result-percent')!.textContent = slopePct.toFixed(1) + '%';
+    document.getElementById('result-ratio')!.textContent = ratioStr;
+    document.getElementById('result-factor')!.textContent = pitchFactor.toFixed(4);
+    document.getElementById('result-steepness')!.textContent = steepness;
+  }
+
+  function toggleInputs() {
+    const inputType = (document.getElementById('inputType') as HTMLSelectElement).value;
+    document.getElementById('pitch-input-group')!.classList.toggle('hidden', inputType !== 'pitch');
+    document.getElementById('degree-input-group')!.classList.toggle('hidden', inputType !== 'degrees');
+    document.getElementById('percent-input-group')!.classList.toggle('hidden', inputType !== 'percent');
+    calculate();
+  }
+
+  document.getElementById('inputType')!.addEventListener('change', toggleInputs);
+  document.querySelectorAll('#pitch-calc input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

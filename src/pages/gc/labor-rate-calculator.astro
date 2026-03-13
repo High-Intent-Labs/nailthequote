@@ -1,0 +1,191 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/gcTools';
+
+const tool = getToolBySlug('labor-rate-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I calculate a billable labor rate for construction?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Start with the hourly wage, add burden costs (payroll taxes, workers comp, benefits — typically 35-45% of wage), add overhead per hour, then multiply by your desired profit margin. Example: $25/hr wage + $10 burden + $8 overhead = $43 fully loaded cost. At 30% margin: $43 x 1.30 = $55.90/hr billable rate."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a labor burden rate?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Labor burden is the additional cost beyond the base wage that an employer pays. It includes FICA taxes (7.65%), federal and state unemployment taxes (3-6%), workers compensation insurance (5-15% for construction), health insurance, and other benefits. For construction workers, burden typically adds 35-45% on top of the base wage."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the average construction labor rate?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "In 2026, construction labor rates vary widely by trade and region. General laborers earn $18-28/hr, skilled carpenters $25-45/hr, and foremen $30-55/hr. The fully loaded cost (with burden and overhead) is typically 1.8-2.2x the base wage. Billable rates charged to customers range from $50-125/hr depending on the trade and market."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="labor-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="hourlyWage">Hourly Wage ($/hr)</label>
+        <input type="number" id="hourlyWage" value="25" min="0" max="200" step="0.50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">What you pay the worker (before taxes/benefits)</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="burdenRate">Burden Rate (%)</label>
+        <input type="number" id="burdenRate" value="40" min="0" max="100" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Payroll taxes, workers comp, benefits (35-45% typical)</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="overheadPerHour">Overhead per Hour ($)</label>
+        <input type="number" id="overheadPerHour" value="8" min="0" max="100" step="0.50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Rent, insurance, trucks, office staff allocated per hour</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="desiredMargin">Desired Profit Margin (%)</label>
+        <input type="number" id="desiredMargin" value="25" min="0" max="80" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="annualHours">Annual Billable Hours</label>
+        <input type="number" id="annualHours" value="1800" min="500" max="3000" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Typical: 1,800-2,000 hrs/year per field worker</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="crewSize">Crew Size</label>
+        <input type="number" id="crewSize" value="1" min="1" max="20" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Fully Loaded Cost</div>
+          <div id="result-loaded" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">per hour</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Billable Rate</div>
+          <div id="result-billable" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div class="text-text-muted text-xs mt-1">per hour</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Profit per Hour</div>
+          <div id="result-profithour" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Annual Margin</div>
+          <div id="result-annual" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-6 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Rate Breakdown</h4>
+        <div id="rate-breakdown" class="text-text-secondary text-sm space-y-2"></div>
+      </div>
+
+      <p class="text-text-muted text-sm italic">Burden rates vary by state (workers comp rates differ significantly). Verify your actual burden costs with your accountant or payroll provider.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter the base hourly wage.</strong> This is what you pay the worker before any taxes, insurance, or benefits.</p>
+          <p><strong class="text-text-primary">2. Set the burden rate.</strong> This covers FICA (7.65%), unemployment taxes (3-6%), workers comp (5-15% for construction), and benefits. For construction, 35-45% is typical.</p>
+          <p><strong class="text-text-primary">3. Add your overhead per hour.</strong> Divide your total annual overhead by your total annual billable hours. If you do not know this, the overhead calculator on this site can help.</p>
+          <p><strong class="text-text-primary">4. Set your desired profit margin.</strong> This determines the final billable rate you charge customers. Most GCs target 20-30% margin on labor.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Burden_Cost = Hourly_Wage x (Burden_Rate / 100)</p>
+            <p>Fully_Loaded = Hourly_Wage + Burden_Cost + Overhead_per_Hour</p>
+            <p>Billable_Rate = Fully_Loaded / (1 - Desired_Margin / 100)</p>
+            <p>Profit_per_Hour = Billable_Rate - Fully_Loaded</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate a billable labor rate for construction?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Start with the hourly wage, add burden costs (35-45%), add overhead per hour, then divide by (1 - desired margin). This gives you a billable rate that covers all costs and delivers your target profit.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a labor burden rate?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Labor burden is the additional cost beyond the base wage: FICA taxes, unemployment taxes, workers comp insurance, health insurance, and other benefits. For construction workers, burden typically adds 35-45% on top of the base wage.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the average construction labor rate?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">General laborers earn $18-28/hr, skilled carpenters $25-45/hr, and foremen $30-55/hr. Billable rates charged to customers range from $50-125/hr depending on trade and market.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const wage = parseFloat((document.getElementById('hourlyWage') as HTMLInputElement).value) || 0;
+    const burdenPct = parseFloat((document.getElementById('burdenRate') as HTMLInputElement).value) || 0;
+    const overheadHr = parseFloat((document.getElementById('overheadPerHour') as HTMLInputElement).value) || 0;
+    const marginPct = parseFloat((document.getElementById('desiredMargin') as HTMLInputElement).value) || 0;
+    const annualHours = parseFloat((document.getElementById('annualHours') as HTMLInputElement).value) || 1800;
+    const crewSize = parseFloat((document.getElementById('crewSize') as HTMLInputElement).value) || 1;
+
+    const burdenCost = wage * (burdenPct / 100);
+    const fullyLoaded = wage + burdenCost + overheadHr;
+    const billableRate = marginPct < 100 ? fullyLoaded / (1 - marginPct / 100) : fullyLoaded;
+    const profitPerHour = billableRate - fullyLoaded;
+    const annualProfit = profitPerHour * annualHours * crewSize;
+
+    document.getElementById('result-loaded')!.textContent = '$' + fullyLoaded.toFixed(2);
+    document.getElementById('result-billable')!.textContent = '$' + billableRate.toFixed(0);
+    document.getElementById('result-profithour')!.textContent = '$' + profitPerHour.toFixed(2);
+    document.getElementById('result-annual')!.textContent = '$' + annualProfit.toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+    const annualRevenue = billableRate * annualHours * crewSize;
+    const annualCost = fullyLoaded * annualHours * crewSize;
+
+    document.getElementById('rate-breakdown')!.innerHTML = `
+      <div class="flex justify-between"><span>Base Wage</span><span class="text-text-primary font-medium">$${wage.toFixed(2)}/hr</span></div>
+      <div class="flex justify-between"><span>Burden (${burdenPct}%)</span><span class="text-text-primary font-medium">+$${burdenCost.toFixed(2)}/hr</span></div>
+      <div class="flex justify-between"><span>Overhead Allocation</span><span class="text-text-primary font-medium">+$${overheadHr.toFixed(2)}/hr</span></div>
+      <div class="border-t border-border mt-2 pt-2 flex justify-between font-medium"><span>Fully Loaded Cost</span><span class="text-text-primary">$${fullyLoaded.toFixed(2)}/hr</span></div>
+      <div class="flex justify-between"><span>Profit Margin (${marginPct}%)</span><span class="text-text-primary font-medium">+$${profitPerHour.toFixed(2)}/hr</span></div>
+      <div class="border-t border-border mt-2 pt-2 flex justify-between font-medium"><span>Billable Rate</span><span class="text-accent">$${billableRate.toFixed(0)}/hr</span></div>
+      <div class="mt-3 pt-3 border-t border-border flex justify-between text-xs text-text-muted"><span>Annual Revenue (${crewSize} worker${crewSize > 1 ? 's' : ''} x ${annualHours} hrs)</span><span>$${annualRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span></div>
+      <div class="flex justify-between text-xs text-text-muted"><span>Annual Cost</span><span>$${annualCost.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span></div>
+      <div class="flex justify-between text-xs font-medium"><span>Annual Profit</span><span class="text-[#34D399]">$${annualProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span></div>
+    `;
+  }
+
+  document.querySelectorAll('#labor-calc input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

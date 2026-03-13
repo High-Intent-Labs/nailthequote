@@ -1,0 +1,280 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/electricalTools';
+
+const tool = getToolBySlug('conduit-fill-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is the NEC conduit fill limit?", "acceptedAnswer": { "@type": "Answer", "text": "Per NEC Chapter 9 Table 1: 1 conductor = 53% fill, 2 conductors = 31% fill, 3 or more conductors = 40% fill. For nipples 24 inches or less, the limit is 60%. These percentages are based on the internal cross-sectional area of the conduit." } },
+    { "@type": "Question", "name": "How many #12 THHN wires fit in 3/4 inch EMT?", "acceptedAnswer": { "@type": "Answer", "text": "A 3/4 inch EMT conduit has an internal area of 0.533 square inches. At 40% fill (3+ conductors), the allowable area is 0.213 square inches. Each #12 THHN wire has an area of 0.0133 square inches. So 0.213 / 0.0133 = 16 wires maximum. This is a common field question." } },
+    { "@type": "Question", "name": "Does the ground wire count for conduit fill?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, the equipment grounding conductor does count toward the total area for conduit fill calculations. However, it does NOT count as a current-carrying conductor for ampacity derating purposes. Both calculations are separate — fill is about physical space, derating is about heat." } }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="conduit-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="conduitType">Conduit Type</label>
+        <select id="conduitType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="EMT" selected>EMT</option>
+          <option value="PVC40">PVC Schedule 40</option>
+          <option value="PVC80">PVC Schedule 80</option>
+          <option value="RMC">RMC (Rigid Metal)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="conduitSize">Conduit Size</label>
+        <select id="conduitSize" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0.5">1/2"</option>
+          <option value="0.75" selected>3/4"</option>
+          <option value="1">1"</option>
+          <option value="1.25">1-1/4"</option>
+          <option value="1.5">1-1/2"</option>
+          <option value="2">2"</option>
+          <option value="2.5">2-1/2"</option>
+          <option value="3">3"</option>
+          <option value="3.5">3-1/2"</option>
+          <option value="4">4"</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mb-6">
+      <label class="block text-sm font-medium text-text-secondary mb-2">Wire Type</label>
+      <select id="wireType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors mb-4">
+        <option value="THHN" selected>THHN / THWN</option>
+        <option value="XHHW">XHHW</option>
+      </select>
+
+      <div class="space-y-3" id="wire-rows">
+        <!-- Wire rows injected by JS -->
+      </div>
+      <button id="add-wire-btn" class="mt-3 bg-bg-dark border border-border text-text-primary text-sm font-medium px-4 py-2 rounded-lg hover:border-accent hover:text-accent transition-colors cursor-pointer">+ Add Wire</button>
+    </div>
+
+    <div class="mb-6">
+      <label class="flex items-center gap-3">
+        <input type="checkbox" id="isNipple" class="rounded border-border bg-bg-dark text-accent focus:ring-accent" />
+        <span class="text-sm text-text-secondary">Nipple (&le;24") &mdash; 60% fill allowed</span>
+      </label>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Fill %</div>
+          <div id="result-fill" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Status</div>
+          <div id="result-status" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Wire Area</div>
+          <div id="result-wireArea" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Max Allowed</div>
+          <div id="result-maxArea" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div id="result-suggestion" class="mb-4"></div>
+      <p class="text-text-muted text-sm italic">Based on NEC Chapter 9, Tables 1, 4, and 5. Verify with your local AHJ.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select the conduit type and size.</strong> EMT is the most common for commercial work. PVC Schedule 40 is used for underground and exposed runs.</p>
+          <p><strong class="text-text-primary">2. Add your wires.</strong> Select the gauge and quantity for each conductor group. The calculator sums the total cross-sectional area automatically.</p>
+          <p><strong class="text-text-primary">3. Check the nipple box if applicable.</strong> Conduit nipples (24 inches or less) are allowed 60% fill instead of the standard 40%.</p>
+          <p><strong class="text-text-primary">4. Read the result.</strong> If it fails, the calculator suggests the next conduit size up that will pass.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the NEC conduit fill limit?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Per NEC Chapter 9 Table 1: 1 conductor = 53% fill, 2 conductors = 31% fill, 3 or more conductors = 40% fill. For nipples 24 inches or less, the limit is 60%.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many #12 THHN wires fit in 3/4 inch EMT?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A 3/4 inch EMT conduit has an internal area of 0.533 square inches. At 40% fill (3+ conductors), the allowable area is 0.213 sq in. Each #12 THHN = 0.0133 sq in. That allows up to 16 wires maximum.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Does the ground wire count for conduit fill?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes, the equipment grounding conductor counts toward the total area for conduit fill calculations. However, it does NOT count as a current-carrying conductor for ampacity derating purposes.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  // NEC Table 4: Conduit internal areas (sq in)
+  const conduitAreas: Record<string, Record<string, number>> = {
+    EMT: {'0.5':0.304,'0.75':0.533,'1':0.864,'1.25':1.496,'1.5':1.946,'2':3.356,'2.5':5.858,'3':8.846,'3.5':11.545,'4':14.753},
+    PVC40: {'0.5':0.285,'0.75':0.508,'1':0.832,'1.25':1.453,'1.5':1.904,'2':3.291,'2.5':5.453,'3':8.091,'3.5':10.584,'4':13.631},
+    PVC80: {'0.5':0.217,'0.75':0.409,'1':0.688,'1.25':1.237,'1.5':1.636,'2':2.874,'2.5':4.768,'3':7.142,'3.5':9.376,'4':12.143},
+    RMC: {'0.5':0.314,'0.75':0.533,'1':0.887,'1.25':1.526,'1.5':2.071,'2':3.408,'2.5':4.866,'3':7.499,'3.5':9.521,'4':12.566},
+  };
+
+  // NEC Table 5: Wire areas THHN/THWN (sq in)
+  const wireAreasTHHN: Record<string, number> = {
+    '14':0.0097,'12':0.0133,'10':0.0211,'8':0.0366,'6':0.0507,'4':0.0824,
+    '3':0.0973,'2':0.1158,'1':0.1562,'1/0':0.1855,'2/0':0.2223,'3/0':0.2679,
+    '4/0':0.3237,'250':0.3970,'300':0.4608,'350':0.5242,'400':0.5863,'500':0.7073,
+  };
+  const wireAreasXHHW: Record<string, number> = {
+    '14':0.0139,'12':0.0181,'10':0.0243,'8':0.0437,'6':0.0590,'4':0.0814,
+    '3':0.0962,'2':0.1146,'1':0.1534,'1/0':0.1825,'2/0':0.2190,'3/0':0.2642,
+    '4/0':0.3197,'250':0.3904,'300':0.4536,'350':0.5166,'400':0.5782,'500':0.6984,
+  };
+
+  interface WireRow { id: number; gauge: string; qty: number; }
+  let wireRows: WireRow[] = [{ id: 1, gauge: '12', qty: 4 }];
+  let nextWireId = 2;
+
+  function renderWireRows() {
+    const container = document.getElementById('wire-rows')!;
+    container.innerHTML = '';
+    wireRows.forEach(row => {
+      const div = document.createElement('div');
+      div.className = 'grid grid-cols-[1fr_100px_40px] gap-3 items-center';
+      div.innerHTML = `
+        <select data-id="${row.id}" data-field="gauge" class="wire-input w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors">
+          <option value="14" ${row.gauge==='14'?'selected':''} >#14</option>
+          <option value="12" ${row.gauge==='12'?'selected':''} >#12</option>
+          <option value="10" ${row.gauge==='10'?'selected':''} >#10</option>
+          <option value="8" ${row.gauge==='8'?'selected':''} >#8</option>
+          <option value="6" ${row.gauge==='6'?'selected':''} >#6</option>
+          <option value="4" ${row.gauge==='4'?'selected':''} >#4</option>
+          <option value="3" ${row.gauge==='3'?'selected':''} >#3</option>
+          <option value="2" ${row.gauge==='2'?'selected':''} >#2</option>
+          <option value="1" ${row.gauge==='1'?'selected':''} >#1</option>
+          <option value="1/0" ${row.gauge==='1/0'?'selected':''} >1/0</option>
+          <option value="2/0" ${row.gauge==='2/0'?'selected':''} >2/0</option>
+          <option value="3/0" ${row.gauge==='3/0'?'selected':''} >3/0</option>
+          <option value="4/0" ${row.gauge==='4/0'?'selected':''} >4/0</option>
+        </select>
+        <input type="number" data-id="${row.id}" data-field="qty" value="${row.qty}" min="1" max="100" class="wire-input w-full bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm text-center focus:border-accent focus:outline-none transition-colors" />
+        <button data-remove="${row.id}" class="remove-wire text-text-muted hover:text-red-400 transition-colors cursor-pointer text-lg">&times;</button>
+      `;
+      container.appendChild(div);
+    });
+
+    container.querySelectorAll('.wire-input').forEach(el => el.addEventListener('change', handleWireChange));
+    container.querySelectorAll('.wire-input').forEach(el => el.addEventListener('input', handleWireChange));
+    container.querySelectorAll('.remove-wire').forEach(el => el.addEventListener('click', handleRemoveWire));
+    calculate();
+  }
+
+  function handleWireChange(e: Event) {
+    const el = e.target as HTMLInputElement | HTMLSelectElement;
+    const id = parseInt(el.dataset.id!);
+    const field = el.dataset.field!;
+    const row = wireRows.find(r => r.id === id);
+    if (!row) return;
+    if (field === 'gauge') row.gauge = el.value;
+    if (field === 'qty') row.qty = parseInt(el.value) || 1;
+    calculate();
+  }
+
+  function handleRemoveWire(e: Event) {
+    const id = parseInt((e.currentTarget as HTMLElement).dataset.remove!);
+    wireRows = wireRows.filter(r => r.id !== id);
+    if (wireRows.length === 0) wireRows.push({ id: nextWireId++, gauge: '12', qty: 1 });
+    renderWireRows();
+  }
+
+  function calculate() {
+    const conduitType = (document.getElementById('conduitType') as HTMLSelectElement).value;
+    const conduitSize = (document.getElementById('conduitSize') as HTMLSelectElement).value;
+    const wireType = (document.getElementById('wireType') as HTMLSelectElement).value;
+    const isNipple = (document.getElementById('isNipple') as HTMLInputElement).checked;
+
+    const csa = conduitAreas[conduitType]?.[conduitSize] || 0.533;
+    const wireTable = wireType === 'THHN' ? wireAreasTHHN : wireAreasXHHW;
+
+    let totalWireArea = 0;
+    let totalWireCount = 0;
+    wireRows.forEach(row => {
+      const area = wireTable[row.gauge] || 0;
+      totalWireArea += area * row.qty;
+      totalWireCount += row.qty;
+    });
+
+    let fillLimit: number;
+    if (isNipple) fillLimit = 0.60;
+    else if (totalWireCount === 1) fillLimit = 0.53;
+    else if (totalWireCount === 2) fillLimit = 0.31;
+    else fillLimit = 0.40;
+
+    const maxArea = csa * fillLimit;
+    const fillPercent = (totalWireArea / csa) * 100;
+    const pass = totalWireArea <= maxArea;
+
+    document.getElementById('result-fill')!.textContent = fillPercent.toFixed(1) + '%';
+    document.getElementById('result-wireArea')!.textContent = totalWireArea.toFixed(4) + ' sq in';
+    document.getElementById('result-maxArea')!.textContent = maxArea.toFixed(4) + ' sq in';
+
+    const statusEl = document.getElementById('result-status')!;
+    const fillEl = document.getElementById('result-fill')!;
+    fillEl.classList.remove('text-[#34D399]', 'text-[#EF4444]');
+    if (pass) {
+      statusEl.textContent = 'PASS';
+      statusEl.className = 'font-heading font-extrabold text-xl text-[#34D399]';
+      fillEl.classList.add('text-[#34D399]');
+    } else {
+      statusEl.textContent = 'FAIL';
+      statusEl.className = 'font-heading font-extrabold text-xl text-[#EF4444]';
+      fillEl.classList.add('text-[#EF4444]');
+    }
+
+    // Suggest next size
+    const suggEl = document.getElementById('result-suggestion')!;
+    if (!pass) {
+      const sizes = ['0.5','0.75','1','1.25','1.5','2','2.5','3','3.5','4'];
+      const curIdx = sizes.indexOf(conduitSize);
+      let suggested = '';
+      for (let i = curIdx + 1; i < sizes.length; i++) {
+        const a = conduitAreas[conduitType]?.[sizes[i]] || 0;
+        if (totalWireArea <= a * fillLimit) {
+          const sizeLabels: Record<string,string> = {'0.5':'1/2"','0.75':'3/4"','1':'1"','1.25':'1-1/4"','1.5':'1-1/2"','2':'2"','2.5':'2-1/2"','3':'3"','3.5':'3-1/2"','4':'4"'};
+          suggested = sizeLabels[sizes[i]] || sizes[i];
+          const newFill = (totalWireArea / a) * 100;
+          suggEl.innerHTML = `<div class="bg-[rgba(251,191,36,0.1)] border border-[rgba(251,191,36,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCD34D]">Recommended: <strong>${suggested} ${conduitType}</strong> (fill ${newFill.toFixed(1)}%)</div>`;
+          break;
+        }
+      }
+      if (!suggested) {
+        suggEl.innerHTML = `<div class="bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCA5A5]">Too many conductors — consider multiple conduit runs.</div>`;
+      }
+    } else {
+      suggEl.innerHTML = '';
+    }
+  }
+
+  document.getElementById('add-wire-btn')?.addEventListener('click', () => {
+    wireRows.push({ id: nextWireId++, gauge: '12', qty: 1 });
+    renderWireRows();
+  });
+
+  document.querySelectorAll('#conduit-calc select, #conduit-calc input[type="checkbox"]').forEach(el => {
+    el.addEventListener('change', calculate);
+  });
+
+  renderWireRows();
+</script>

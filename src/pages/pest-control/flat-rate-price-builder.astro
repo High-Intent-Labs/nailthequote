@@ -1,0 +1,179 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/pestControlTools';
+
+const tool = getToolBySlug('flat-rate-price-builder')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I set flat rate prices for pest control?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Calculate your total cost (labor hours x rate + materials x markup + overhead allocation), then add your desired profit margin. Compare against competitor pricing and adjust within 15%. Common flat rates: quarterly perimeter spray $80-150, annual termite inspection $100-200, monthly general pest $40-80."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are typical pest control service prices?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Quarterly perimeter spray: $80-150 per visit. Annual termite inspection: $100-200. Monthly general pest service: $40-80. Termite fumigation (tenting): $1,200-3,000 depending on structure size. Rodent exclusion: $300-1,500 depending on scope. Bed bug treatment: $300-1,500 per room."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="flat-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="serviceType">Service Type</label>
+        <select id="serviceType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="quarterly" selected>Quarterly Perimeter Spray</option>
+          <option value="annual-termite">Annual Termite Inspection</option>
+          <option value="monthly">Monthly General Pest Service</option>
+          <option value="fumigation">Fumigation (Tenting)</option>
+          <option value="rodent">Rodent Exclusion</option>
+          <option value="bedbug">Bed Bug Treatment</option>
+          <option value="custom">Custom Service</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="laborHours">Labor Hours</label>
+        <input type="number" id="laborHours" value="1.5" min="0.25" max="100" step="0.25" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="hourlyRate">Hourly Rate ($)</label>
+        <input type="number" id="hourlyRate" value="85" min="0" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="materialCost">Material Cost ($)</label>
+        <input type="number" id="materialCost" value="25" min="0" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="markupPct">Material Markup (%)</label>
+        <input type="number" id="markupPct" value="60" min="0" max="300" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="desiredMargin">Desired Profit Margin (%)</label>
+        <input type="number" id="desiredMargin" value="40" min="0" max="80" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="competitorPrice">Competitor Avg Price ($, optional)</label>
+        <input type="number" id="competitorPrice" value="" min="0" step="10" placeholder="Leave blank to skip" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Flat Rate Price</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Suggested Flat Rate</div>
+          <div id="result-flatrate" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Profit per Job</div>
+          <div id="result-profit" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Market Benchmark</div>
+          <div id="result-benchmark" class="font-heading font-extrabold text-xl text-text-primary">--</div>
+        </div>
+      </div>
+      <div id="competitor-note" class="hidden bg-bg-dark rounded-xl p-5">
+        <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Competitor Comparison</div>
+        <div id="result-competitor" class="text-text-secondary text-sm">--</div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Select the service type.</strong> This pre-fills typical labor hours and shows the market benchmark for that service. Choose "Custom Service" for non-standard work.</p>
+          <p><strong class="text-text-primary">2. Enter your costs.</strong> Set the labor hours, billing rate, and material costs. The calculator adds your markup and profit margin to arrive at a flat rate.</p>
+          <p><strong class="text-text-primary">3. Compare to market.</strong> If you enter a competitor's average price, the tool shows how your calculated rate compares and suggests an adjusted range.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I set flat rate prices for pest control?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Calculate your total cost (labor hours x rate + materials x markup + overhead allocation), then add your desired profit margin. Compare against competitor pricing and adjust within 15%. Common flat rates: quarterly perimeter spray $80-150, annual termite inspection $100-200, monthly general pest $40-80.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What are typical pest control service prices?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Quarterly perimeter spray: $80-150 per visit. Annual termite inspection: $100-200. Monthly general pest service: $40-80. Termite fumigation (tenting): $1,200-3,000 depending on structure size. Rodent exclusion: $300-1,500 depending on scope. Bed bug treatment: $300-1,500 per room.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  const benchmarks: Record<string, { low: number; high: number; label: string }> = {
+    'quarterly': { low: 80, high: 150, label: '$80-$150/visit' },
+    'annual-termite': { low: 100, high: 200, label: '$100-$200' },
+    'monthly': { low: 40, high: 80, label: '$40-$80/visit' },
+    'fumigation': { low: 1200, high: 3000, label: '$1,200-$3,000' },
+    'rodent': { low: 300, high: 1500, label: '$300-$1,500' },
+    'bedbug': { low: 300, high: 1500, label: '$300-$1,500/room' },
+    'custom': { low: 0, high: 0, label: 'N/A' },
+  };
+
+  function calculate() {
+    const serviceType = (document.getElementById('serviceType') as HTMLSelectElement).value;
+    const laborHours = parseFloat((document.getElementById('laborHours') as HTMLInputElement).value) || 0;
+    const hourlyRate = parseFloat((document.getElementById('hourlyRate') as HTMLInputElement).value) || 0;
+    const materialCost = parseFloat((document.getElementById('materialCost') as HTMLInputElement).value) || 0;
+    const markupPct = parseFloat((document.getElementById('markupPct') as HTMLInputElement).value) || 0;
+    const desiredMargin = parseFloat((document.getElementById('desiredMargin') as HTMLInputElement).value) || 0;
+    const competitorPrice = (document.getElementById('competitorPrice') as HTMLInputElement).value;
+
+    const laborCharge = laborHours * hourlyRate;
+    const materialCharge = materialCost * (1 + markupPct / 100);
+    const totalCost = laborCharge + materialCharge;
+    const flatRate = totalCost / (1 - desiredMargin / 100);
+    const profit = flatRate - totalCost;
+
+    const benchmark = benchmarks[serviceType] || benchmarks['custom'];
+
+    document.getElementById('result-flatrate')!.textContent = '$' + Math.round(flatRate).toLocaleString();
+    document.getElementById('result-cost')!.textContent = '$' + Math.round(totalCost).toLocaleString();
+    document.getElementById('result-profit')!.textContent = '$' + Math.round(profit).toLocaleString();
+    document.getElementById('result-benchmark')!.textContent = benchmark.label;
+
+    const compNote = document.getElementById('competitor-note')!;
+    const compResult = document.getElementById('result-competitor')!;
+    if (competitorPrice && parseFloat(competitorPrice) > 0) {
+      const comp = parseFloat(competitorPrice);
+      const diff = ((flatRate - comp) / comp * 100).toFixed(0);
+      const direction = flatRate > comp ? 'above' : 'below';
+      compNote.classList.remove('hidden');
+      compResult.textContent = `Your calculated rate ($${Math.round(flatRate)}) is ${Math.abs(parseFloat(diff))}% ${direction} the competitor average ($${Math.round(comp)}). Consider pricing within ±15% of market to stay competitive.`;
+    } else {
+      compNote.classList.add('hidden');
+    }
+  }
+
+  document.querySelectorAll('#flat-calc input, #flat-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

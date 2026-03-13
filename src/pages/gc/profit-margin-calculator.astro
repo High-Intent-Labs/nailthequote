@@ -1,0 +1,318 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/gcTools';
+
+const tool = getToolBySlug('profit-margin-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is a good profit margin for a general contractor?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "General contractors should target a net profit margin of 15-25% on most projects. Remodeling contractors typically aim for 20-30% because of higher overhead and complexity. Large production builders often operate on thinner margins of 10-15% due to volume. If your margin is consistently below 15%, you are likely underpricing or overspending."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between margin and markup for contractors?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Margin is profit as a percentage of revenue (the selling price). Markup is profit as a percentage of cost. For example, a $50,000 project that costs $35,000 has a $15,000 profit. The margin is 30% ($15,000 / $50,000) and the markup is 42.9% ($15,000 / $35,000). Confusing the two is one of the most common pricing mistakes in construction."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I calculate overhead for a construction project?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Overhead includes all costs to run the business that are not tied to a specific project: office rent, insurance, vehicle payments, admin staff, software, marketing, and utilities. Most GCs allocate overhead as a percentage of revenue, typically 15-30%. To find yours, divide total annual overhead costs by total annual revenue."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is my contractor profit margin so low?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Common causes of low margins include underpricing labor (not accounting for full burden cost with taxes, insurance, and benefits), insufficient materials markup, not tracking overhead allocation per project, scope creep without change orders, and underestimating subcontractor management costs. Use this calculator to test different pricing scenarios."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="margin-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="revenue">Project Revenue ($)</label>
+        <input type="number" id="revenue" value="50000" min="0" step="1000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <p class="text-sm font-medium text-text-secondary mb-3">Project Costs</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="materials">Materials ($)</label>
+        <input type="number" id="materials" value="12000" min="0" step="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="labor">Labor ($)</label>
+        <input type="number" id="labor" value="10000" min="0" step="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="subs">Subcontractors ($)</label>
+        <input type="number" id="subs" value="8000" min="0" step="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="equipment">Equipment Rental ($)</label>
+        <input type="number" id="equipment" value="2000" min="0" step="250" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="permits">Permits &amp; Fees ($)</label>
+        <input type="number" id="permits" value="1500" min="0" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-xs text-text-muted mb-1" for="overhead">Overhead Allocation ($)</label>
+        <input type="number" id="overhead" value="3500" min="0" step="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Net Profit</div>
+          <div id="result-profit" class="font-heading font-extrabold text-3xl text-accent">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Profit Margin</div>
+          <div id="result-margin" class="font-heading font-extrabold text-3xl">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Markup</div>
+          <div id="result-markup" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cost per $1 Revenue</div>
+          <div id="result-costper" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-6 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Cost Breakdown</h4>
+        <div id="cost-breakdown" class="text-text-secondary text-sm space-y-2"></div>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">GC Industry Benchmarks</h4>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">GC Target Margin</span>
+              <span class="text-text-primary font-semibold">15 &ndash; 25%</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#60A5FA] h-2 rounded-full" style="width: 20%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Remodeling Contractors</span>
+              <span class="text-text-primary font-semibold">20 &ndash; 30%</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#34D399] h-2 rounded-full" style="width: 25%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Large Builders</span>
+              <span class="text-text-primary font-semibold">10 &ndash; 15%</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#FBBF24] h-2 rounded-full" style="width: 12%"></div>
+            </div>
+          </div>
+          <div id="benchmark-warning" class="hidden mt-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg px-4 py-3 text-sm text-[#FCA5A5]">
+            Your margin is below 15%. You may be underpricing your work or overspending on costs.
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-border">
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-text-secondary font-medium">Your Profit Margin</span>
+            <span id="benchmark-your-margin" class="font-heading font-bold">--</span>
+          </div>
+          <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2.5">
+            <div id="benchmark-bar" class="h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your project revenue.</strong> This is the total amount you charge the customer or the contract value. Include everything: materials, labor, subcontractors, permits, and your fee.</p>
+          <p><strong class="text-text-primary">2. Break down your project costs.</strong> Enter materials (lumber, concrete, drywall, etc.), labor (your crew's burdened cost), subcontractor invoices, equipment rental, permits, and overhead allocation for this project.</p>
+          <p><strong class="text-text-primary">3. Review your margin.</strong> The calculator shows your net profit in dollars and as a percentage of revenue. Compare it to the GC industry benchmarks below the results.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Profit Margin Works for GCs</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Margin and markup describe the same profit from different angles.</strong> Margin is profit as a percentage of the selling price (revenue). Markup is profit as a percentage of your cost. Confusing the two is one of the most common pricing mistakes in construction.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Total_Cost = Materials + Labor + Subs + Equipment + Permits + Overhead</p>
+            <p>Profit = Revenue - Total_Cost</p>
+            <p>Margin% = (Profit / Revenue) x 100</p>
+            <p>Markup% = (Profit / Total_Cost) x 100</p>
+          </div>
+          <p>The "Cost per dollar of revenue" metric tells you how much of every dollar goes to costs. If it is $0.74, you keep $0.26 in profit for every $1 collected.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">After completing a project.</strong> Plug in the actual numbers once the final invoice is paid. Compare your real margin to what you estimated during the bid. If there is a gap, figure out whether it was labor overrun, unexpected materials, scope creep, or sub overages.</p>
+          <p><strong class="text-text-primary">When bidding new work.</strong> Before you submit a proposal, run the numbers here to make sure you are hitting your target margin. Adjust the revenue up or down until you land in the 15-25% range.</p>
+          <p><strong class="text-text-primary">During annual business review.</strong> Pull your average project revenue, typical cost breakdown, and see where your overall margin lands relative to industry benchmarks.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a good profit margin for a general contractor?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">General contractors should target a net profit margin of 15-25% on most projects. Remodeling contractors typically aim for 20-30%. Large production builders often operate on thinner margins of 10-15% due to volume.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the difference between margin and markup for contractors?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Margin is profit as a percentage of revenue. Markup is profit as a percentage of cost. A $50,000 project costing $35,000 has a 30% margin and a 42.9% markup. They describe the same profit from different reference points.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate overhead for a construction project?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Overhead includes all costs not tied to a specific project: office rent, insurance, vehicles, admin staff, software, marketing, and utilities. Most GCs allocate overhead as a percentage of revenue, typically 15-30%.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Why is my contractor profit margin so low?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Common causes include underpricing labor, insufficient materials markup, untracked overhead allocation, scope creep without change orders, and underestimating subcontractor management costs.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const revenue = parseFloat((document.getElementById('revenue') as HTMLInputElement).value) || 0;
+    const materials = parseFloat((document.getElementById('materials') as HTMLInputElement).value) || 0;
+    const labor = parseFloat((document.getElementById('labor') as HTMLInputElement).value) || 0;
+    const subs = parseFloat((document.getElementById('subs') as HTMLInputElement).value) || 0;
+    const equipment = parseFloat((document.getElementById('equipment') as HTMLInputElement).value) || 0;
+    const permits = parseFloat((document.getElementById('permits') as HTMLInputElement).value) || 0;
+    const overhead = parseFloat((document.getElementById('overhead') as HTMLInputElement).value) || 0;
+
+    const totalCost = materials + labor + subs + equipment + permits + overhead;
+    const profit = revenue - totalCost;
+    const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
+    const markup = totalCost > 0 ? (profit / totalCost) * 100 : 0;
+    const costPerDollar = revenue > 0 ? totalCost / revenue : 0;
+
+    const profitFormatted = profit >= 0
+      ? '$' + profit.toLocaleString(undefined, { maximumFractionDigits: 0 })
+      : '-$' + Math.abs(profit).toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+    document.getElementById('result-profit')!.textContent = profitFormatted;
+    document.getElementById('result-margin')!.textContent = margin.toFixed(1) + '%';
+    document.getElementById('result-markup')!.textContent = markup.toFixed(1) + '%';
+    document.getElementById('result-costper')!.textContent = '$' + costPerDollar.toFixed(2);
+
+    // Color the margin result
+    const marginEl = document.getElementById('result-margin')!;
+    marginEl.classList.remove('text-[#34D399]', 'text-[#FBBF24]', 'text-[#EF4444]');
+    if (margin >= 20) {
+      marginEl.classList.add('text-[#34D399]');
+    } else if (margin >= 15) {
+      marginEl.classList.add('text-[#FBBF24]');
+    } else {
+      marginEl.classList.add('text-[#EF4444]');
+    }
+
+    // Color the profit result
+    const profitEl = document.getElementById('result-profit')!;
+    profitEl.classList.remove('text-accent', 'text-[#34D399]', 'text-[#EF4444]');
+    if (profit >= 0) {
+      profitEl.classList.add('text-[#34D399]');
+    } else {
+      profitEl.classList.add('text-[#EF4444]');
+    }
+
+    // Cost breakdown
+    const costs = [
+      { name: 'Materials', value: materials },
+      { name: 'Labor', value: labor },
+      { name: 'Subcontractors', value: subs },
+      { name: 'Equipment Rental', value: equipment },
+      { name: 'Permits & Fees', value: permits },
+      { name: 'Overhead', value: overhead },
+    ];
+
+    document.getElementById('cost-breakdown')!.innerHTML = costs
+      .filter(c => c.value > 0)
+      .map(c => {
+        const pct = totalCost > 0 ? ((c.value / totalCost) * 100).toFixed(1) : '0';
+        return `<div class="flex justify-between"><span>${c.name}</span><span class="text-text-primary font-medium">$${c.value.toLocaleString()} (${pct}%)</span></div>`;
+      }).join('') +
+      `<div class="border-t border-border mt-3 pt-3 flex justify-between font-medium"><span>Total Cost</span><span class="text-accent">$${totalCost.toLocaleString()}</span></div>`;
+
+    // Benchmark bar
+    const clampedMargin = Math.max(0, Math.min(50, margin));
+    const benchmarkBar = document.getElementById('benchmark-bar')!;
+    benchmarkBar.style.width = (clampedMargin * 2) + '%';
+    benchmarkBar.classList.remove('bg-[#34D399]', 'bg-[#FBBF24]', 'bg-[#EF4444]');
+    if (margin >= 20) {
+      benchmarkBar.classList.add('bg-[#34D399]');
+    } else if (margin >= 15) {
+      benchmarkBar.classList.add('bg-[#FBBF24]');
+    } else {
+      benchmarkBar.classList.add('bg-[#EF4444]');
+    }
+
+    const yourMarginEl = document.getElementById('benchmark-your-margin')!;
+    yourMarginEl.textContent = margin.toFixed(1) + '%';
+    yourMarginEl.classList.remove('text-[#34D399]', 'text-[#FBBF24]', 'text-[#EF4444]');
+    if (margin >= 20) {
+      yourMarginEl.classList.add('text-[#34D399]');
+    } else if (margin >= 15) {
+      yourMarginEl.classList.add('text-[#FBBF24]');
+    } else {
+      yourMarginEl.classList.add('text-[#EF4444]');
+    }
+
+    // Warning
+    const warningEl = document.getElementById('benchmark-warning')!;
+    if (margin < 15 && revenue > 0) {
+      warningEl.classList.remove('hidden');
+    } else {
+      warningEl.classList.add('hidden');
+    }
+  }
+
+  document.querySelectorAll('#margin-calc input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

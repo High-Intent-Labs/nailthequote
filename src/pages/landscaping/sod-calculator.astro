@@ -1,0 +1,225 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/landscapingTools';
+
+const tool = getToolBySlug('sod-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much sod do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Measure your lawn area in square feet (length x width). Divide by 10 to get the number of standard rolls, or divide by 450 for pallets. Add 5-10% for waste depending on layout complexity. For example, 2,000 sq ft with 10% waste needs 220 rolls or about 4.9 pallets."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many square feet does a pallet of sod cover?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A standard pallet of sod covers approximately 450 square feet. Each pallet contains about 45 rolls, with each roll covering 10 square feet (16 inches wide by 24 inches long). Pallet sizes can vary by supplier, so confirm coverage with your sod farm."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does sod weigh?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A single roll of sod weighs approximately 10-15 pounds when freshly cut. A full pallet weighs between 1,500 and 2,500 pounds depending on moisture content and soil type. Plan for delivery access and have enough crew to move pallets quickly — sod should be installed within 24-48 hours of delivery."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much waste factor should I add for sod?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For simple rectangular areas, add 5% waste. For curved edges and angled cuts, add 10%. For complex landscapes with many obstacles, islands, and tight curves, add 15%. It is better to have a few extra rolls than to run short and delay the job."
+      }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="sod-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="calcMethod">Measurement Method</label>
+        <select id="calcMethod" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="area">Enter Total Area (sq ft)</option>
+          <option value="lw">Enter Length x Width</option>
+        </select>
+      </div>
+      <div id="area-input">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="area">Lawn Area (sq ft)</label>
+        <input type="number" id="area" value="2000" min="1" max="500000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="length-input" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="length">Length (ft)</label>
+        <input type="number" id="length" value="50" min="1" max="10000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div id="width-input" class="hidden">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="width">Width (ft)</label>
+        <input type="number" id="width" value="40" min="1" max="10000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="waste">Waste / Buffer (%)</label>
+        <select id="waste" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="5">5% — Rectangular layout</option>
+          <option value="10" selected>10% — Curved edges</option>
+          <option value="15">15% — Complex landscape</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="costPerRoll">Sod Cost per Roll ($)</label>
+        <input type="number" id="costPerRoll" value="6" min="0" max="50" step="0.50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Leave at 0 to skip cost estimate</p>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Results</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Rolls Needed</div>
+          <div id="result-rolls" class="font-heading font-extrabold text-3xl text-accent">—</div>
+          <div class="text-text-muted text-xs mt-1">10 sq ft each</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Pallets</div>
+          <div id="result-pallets" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+          <div class="text-text-muted text-xs mt-1">450 sq ft each</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Weight</div>
+          <div id="result-weight" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+          <div class="text-text-muted text-xs mt-1">lbs total</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Cost</div>
+          <div id="result-cost" class="font-heading font-extrabold text-3xl text-text-primary">—</div>
+        </div>
+      </div>
+
+      <!-- Coverage Reference -->
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Sod Coverage Reference</h4>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div><span class="text-text-muted">1 roll:</span> <span class="text-text-primary font-semibold">10 sq ft</span></div>
+          <div><span class="text-text-muted">1 pallet:</span> <span class="text-text-primary font-semibold">450 sq ft</span></div>
+          <div><span class="text-text-muted">1 piece:</span> <span class="text-text-primary font-semibold">2.67 sq ft</span></div>
+          <div><span class="text-text-muted">Weight/roll:</span> <span class="text-text-primary font-semibold">10-15 lbs</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Choose your measurement method.</strong> Enter the total lawn area in square feet, or enter length and width separately if the area is rectangular.</p>
+          <p><strong class="text-text-primary">2. Set your waste buffer.</strong> Use 5% for simple rectangular lawns, 10% for curved edges and typical residential lots, and 15% for complex landscapes with islands, tree rings, and tight curves.</p>
+          <p><strong class="text-text-primary">3. Enter sod cost (optional).</strong> Enter the price per roll from your sod supplier to get a material cost estimate for the job.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Sod Formula Works</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p>The calculator uses standard sod industry coverage rates:</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Area_With_Waste = Area (sq ft) x (1 + Waste% / 100)</p>
+            <p>Rolls = Ceiling(Area_With_Waste / 10)</p>
+            <p>Pallets = Area_With_Waste / 450</p>
+            <p>Weight = Rolls x 12.5 lbs (average)</p>
+          </div>
+          <p>One standard sod roll is 16 inches wide by 24 inches long, covering approximately 2.67 square feet per piece. Rolls are typically bundled at 10 square feet each. A pallet holds about 45 rolls covering 450 square feet.</p>
+          <p>Sod should be installed within 24-48 hours of delivery. Order based on your installation schedule and have enough crew to lay it quickly, especially in hot weather.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">When Landscape Pros Use This</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">Estimating new lawn installations.</strong> Walk the property, measure the areas, and get an accurate pallet count before calling the sod farm. No more guessing and paying for extra delivery trips.</p>
+          <p><strong class="text-text-primary">Building customer quotes.</strong> Show the homeowner exactly how much sod is needed and what it costs. Transparent material quantities build trust and close jobs faster.</p>
+          <p><strong class="text-text-primary">Coordinating delivery logistics.</strong> Knowing the total weight helps plan equipment needs. A full pallet weighs 1,500-2,500 lbs and requires a forklift or the sod farm's delivery truck with a built-in unloader.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much sod do I need?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Measure your lawn area in square feet (length x width). Divide by 10 to get the number of standard rolls, or divide by 450 for pallets. Add 5-10% for waste depending on layout complexity. For example, 2,000 sq ft with 10% waste needs 220 rolls or about 4.9 pallets.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many square feet does a pallet of sod cover?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard pallet of sod covers approximately 450 square feet. Each pallet contains about 45 rolls, with each roll covering 10 square feet (16 inches wide by 24 inches long). Pallet sizes can vary by supplier, so confirm coverage with your sod farm.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does sod weigh?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A single roll of sod weighs approximately 10-15 pounds when freshly cut. A full pallet weighs between 1,500 and 2,500 pounds depending on moisture content and soil type. Plan for delivery access and have enough crew to move pallets quickly.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much waste factor should I add for sod?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For simple rectangular areas, add 5% waste. For curved edges and angled cuts, add 10%. For complex landscapes with many obstacles, islands, and tight curves, add 15%. It is better to have a few extra rolls than to run short and delay the job.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const method = (document.getElementById('calcMethod') as HTMLSelectElement).value;
+    let area: number;
+
+    if (method === 'lw') {
+      const length = parseFloat((document.getElementById('length') as HTMLInputElement).value) || 0;
+      const width = parseFloat((document.getElementById('width') as HTMLInputElement).value) || 0;
+      area = length * width;
+    } else {
+      area = parseFloat((document.getElementById('area') as HTMLInputElement).value) || 0;
+    }
+
+    const waste = parseFloat((document.getElementById('waste') as HTMLSelectElement).value);
+    const costPerRoll = parseFloat((document.getElementById('costPerRoll') as HTMLInputElement).value) || 0;
+
+    const areaWithWaste = area * (1 + waste / 100);
+    const rolls = Math.ceil(areaWithWaste / 10);
+    const pallets = areaWithWaste / 450;
+    const weight = rolls * 12.5;
+    const cost = rolls * costPerRoll;
+
+    document.getElementById('result-rolls')!.textContent = rolls.toString();
+    document.getElementById('result-pallets')!.textContent = pallets.toFixed(1);
+    document.getElementById('result-weight')!.textContent = Math.round(weight).toLocaleString();
+    document.getElementById('result-cost')!.textContent = costPerRoll > 0 ? '$' + cost.toFixed(0) : '—';
+  }
+
+  function toggleMethod() {
+    const method = (document.getElementById('calcMethod') as HTMLSelectElement).value;
+    document.getElementById('area-input')!.classList.toggle('hidden', method === 'lw');
+    document.getElementById('length-input')!.classList.toggle('hidden', method !== 'lw');
+    document.getElementById('width-input')!.classList.toggle('hidden', method !== 'lw');
+    calculate();
+  }
+
+  document.getElementById('calcMethod')?.addEventListener('change', toggleMethod);
+  document.querySelectorAll('#sod-calc input, #sod-calc select').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>

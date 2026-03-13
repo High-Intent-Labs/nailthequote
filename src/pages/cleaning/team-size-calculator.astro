@@ -1,0 +1,283 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { getToolBySlug } from '../../data/cleaningTools';
+
+const tool = getToolBySlug('team-size-calculator')!;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Should I hire another cleaner for my team?",
+      "acceptedAnswer": { "@type": "Answer", "text": "If your daily revenue consistently exceeds $800 as a solo operator, a 2-person team can increase capacity to 6-7 jobs/day and $1,200-1,400/day. But you need 10-15 jobs/week minimum at $200/job to break even on the added payroll and overhead. If you are below $800/day, stay solo and focus on route density first." }
+    },
+    {
+      "@type": "Question",
+      "name": "What are diminishing returns in cleaning team size?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Each additional team member adds less value due to coordination overhead. A 2-person team achieves 85% of two solo workers combined efficiency (15% lost to coordination). A 3-person team drops to 75%, and 4-person to 65%. This means per-person revenue decreases as team size grows." }
+    },
+    {
+      "@type": "Question",
+      "name": "How many cleaning jobs can a 2-person team do per day?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A 2-person team can realistically handle 5-7 maintenance cleans per day with tight routing (averaging 1.5-2 hours each with travel). This compares to 3-4 jobs/day for a solo cleaner. The increase comes from faster job completion per team, not from doubled capacity." }
+    }
+  ]
+};
+---
+
+<ToolLayout tool={tool} extraSchema={[faqSchema]}>
+  <div id="team-calc">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="jobsPerDay">Jobs Per Day (current)</label>
+        <input type="number" id="jobsPerDay" value="4" min="1" max="20" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="avgJobPrice">Average Job Price ($)</label>
+        <input type="number" id="avgJobPrice" value="250" min="50" max="2000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="avgJobHours">Average Job Duration (hrs)</label>
+        <input type="number" id="avgJobHours" value="2.5" min="0.5" max="10" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="hourlyWage">Employee Hourly Wage ($)</label>
+        <input type="number" id="hourlyWage" value="18" min="10" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="workDays">Work Days Per Week</label>
+        <input type="number" id="workDays" value="5" min="1" max="7" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="travelTime">Avg Travel Between Jobs (min)</label>
+        <input type="number" id="travelTime" value="30" min="5" max="120" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <div id="results" class="mt-8 border-t border-border pt-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Team Size Comparison</h3>
+
+      <!-- Comparison Table -->
+      <div class="overflow-x-auto mb-8">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-border">
+              <th class="text-left text-text-muted text-xs font-medium uppercase tracking-wider py-3 px-4">Metric</th>
+              <th class="text-center text-text-muted text-xs font-medium uppercase tracking-wider py-3 px-4">Solo</th>
+              <th class="text-center text-text-muted text-xs font-medium uppercase tracking-wider py-3 px-4">2-Person</th>
+              <th class="text-center text-text-muted text-xs font-medium uppercase tracking-wider py-3 px-4">3-Person</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-border/50">
+              <td class="py-3 px-4 text-text-secondary">Productivity Factor</td>
+              <td class="py-3 px-4 text-center text-text-primary font-semibold">100%</td>
+              <td class="py-3 px-4 text-center text-text-primary font-semibold">85%</td>
+              <td class="py-3 px-4 text-center text-text-primary font-semibold">75%</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="py-3 px-4 text-text-secondary">Time Per Job</td>
+              <td id="t-solo-time" class="py-3 px-4 text-center text-text-primary font-semibold">--</td>
+              <td id="t-2p-time" class="py-3 px-4 text-center text-text-primary font-semibold">--</td>
+              <td id="t-3p-time" class="py-3 px-4 text-center text-text-primary font-semibold">--</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="py-3 px-4 text-text-secondary">Jobs Per Day</td>
+              <td id="t-solo-jobs" class="py-3 px-4 text-center text-text-primary font-semibold">--</td>
+              <td id="t-2p-jobs" class="py-3 px-4 text-center text-text-primary font-semibold">--</td>
+              <td id="t-3p-jobs" class="py-3 px-4 text-center text-text-primary font-semibold">--</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="py-3 px-4 text-text-secondary">Daily Revenue</td>
+              <td id="t-solo-rev" class="py-3 px-4 text-center text-accent font-bold">--</td>
+              <td id="t-2p-rev" class="py-3 px-4 text-center text-accent font-bold">--</td>
+              <td id="t-3p-rev" class="py-3 px-4 text-center text-accent font-bold">--</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="py-3 px-4 text-text-secondary">Daily Payroll Cost</td>
+              <td id="t-solo-payroll" class="py-3 px-4 text-center text-text-primary font-semibold">--</td>
+              <td id="t-2p-payroll" class="py-3 px-4 text-center text-text-primary font-semibold">--</td>
+              <td id="t-3p-payroll" class="py-3 px-4 text-center text-text-primary font-semibold">--</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="py-3 px-4 text-text-secondary">Daily Gross Profit</td>
+              <td id="t-solo-profit" class="py-3 px-4 text-center font-bold">--</td>
+              <td id="t-2p-profit" class="py-3 px-4 text-center font-bold">--</td>
+              <td id="t-3p-profit" class="py-3 px-4 text-center font-bold">--</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 text-text-secondary">Weekly Revenue</td>
+              <td id="t-solo-weekly" class="py-3 px-4 text-center text-text-primary font-semibold">--</td>
+              <td id="t-2p-weekly" class="py-3 px-4 text-center text-text-primary font-semibold">--</td>
+              <td id="t-3p-weekly" class="py-3 px-4 text-center text-text-primary font-semibold">--</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Recommendation -->
+      <div id="recommendation" class="bg-bg-dark rounded-xl p-6 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-3">Recommendation</h4>
+        <p id="rec-text" class="text-text-primary text-base leading-relaxed">--</p>
+      </div>
+
+      <div class="bg-bg-dark rounded-xl p-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Break-Even Thresholds</h4>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">Solo: Stay solo below</span>
+              <span class="text-text-primary font-semibold">$800/day</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#60A5FA] h-2 rounded-full" style="width: 33%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">2-Person: Break-even zone</span>
+              <span class="text-text-primary font-semibold">$800 - $1,500/day</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#34D399] h-2 rounded-full" style="width: 63%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-text-secondary">3-Person: Profitable above</span>
+              <span class="text-text-primary font-semibold">$1,500+/day</span>
+            </div>
+            <div class="w-full bg-[rgba(255,255,255,0.05)] rounded-full h-2">
+              <div class="bg-[#FBBF24] h-2 rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="text-text-muted text-sm italic mt-4">Diminishing returns data from ZenMaid and HouseCallPro case studies. Actual results depend on route density, job mix, and overhead control.</p>
+    </div>
+  </div>
+
+  <Fragment slot="content">
+    <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
+        <div class="text-text-secondary leading-relaxed space-y-3">
+          <p><strong class="text-text-primary">1. Enter your current workload.</strong> How many jobs do you do per day, what is the average price, and how long does each job take?</p>
+          <p><strong class="text-text-primary">2. Set your employee wage.</strong> This is the hourly wage you would pay an employee (not the billable rate). Include a rough burden estimate or use the raw wage.</p>
+          <p><strong class="text-text-primary">3. Compare the scenarios.</strong> The table shows how solo, 2-person, and 3-person teams compare on jobs per day, revenue, payroll, and gross profit.</p>
+          <p><strong class="text-text-primary">4. Read the recommendation.</strong> Based on your numbers, the calculator tells you whether adding a team member makes financial sense.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I hire another cleaner for my team?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">If your daily revenue consistently exceeds $800 as a solo operator, a 2-person team can increase capacity to 6-7 jobs/day and $1,200-1,400/day. But you need 10-15 jobs/week minimum at $200/job to break even on the added payroll and overhead. If you are below $800/day, stay solo and focus on route density first.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What are diminishing returns in cleaning team size?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Each additional team member adds less value due to coordination overhead. A 2-person team achieves 85% of two solo workers combined efficiency (15% lost to coordination). A 3-person team drops to 75%, and 4-person to 65%. This means per-person revenue decreases as team size grows.</div>
+          </details>
+          <details class="bg-bg-card border border-border rounded-lg">
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many cleaning jobs can a 2-person team do per day?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A 2-person team can realistically handle 5-7 maintenance cleans per day with tight routing (averaging 1.5-2 hours each with travel). This compares to 3-4 jobs/day for a solo cleaner. The increase comes from faster job completion per team, not from doubled capacity.</div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  function calculate() {
+    const jobsPerDay = parseInt((document.getElementById('jobsPerDay') as HTMLInputElement).value) || 4;
+    const avgJobPrice = parseFloat((document.getElementById('avgJobPrice') as HTMLInputElement).value) || 250;
+    const avgJobHours = parseFloat((document.getElementById('avgJobHours') as HTMLInputElement).value) || 2.5;
+    const hourlyWage = parseFloat((document.getElementById('hourlyWage') as HTMLInputElement).value) || 18;
+    const workDays = parseInt((document.getElementById('workDays') as HTMLInputElement).value) || 5;
+    const travelMin = parseFloat((document.getElementById('travelTime') as HTMLInputElement).value) || 30;
+
+    const availableHours = 8;
+    const travelHours = travelMin / 60;
+
+    // Team multipliers (diminishing returns)
+    const efficiencies: Record<number, number> = { 1: 1.0, 2: 0.85, 3: 0.75 };
+
+    function calcTeam(size: number) {
+      const eff = efficiencies[size];
+      const jobTime = avgJobHours / (size * eff); // time per job for this team
+      const totalTimePerJob = jobTime + travelHours;
+      const maxJobs = Math.floor(availableHours / totalTimePerJob);
+      const dailyRev = maxJobs * avgJobPrice;
+      const dailyPayroll = (size > 1) ? (size - 1) * hourlyWage * availableHours * 1.3 : 0; // burden 30%
+      const dailyProfit = dailyRev - dailyPayroll;
+      const weeklyRev = dailyRev * workDays;
+      return { jobTime, maxJobs, dailyRev, dailyPayroll, dailyProfit, weeklyRev };
+    }
+
+    const solo = calcTeam(1);
+    const team2 = calcTeam(2);
+    const team3 = calcTeam(3);
+
+    function fmtTime(hrs: number) {
+      const h = Math.floor(hrs);
+      const m = Math.round((hrs - h) * 60);
+      return h > 0 ? `${h}h ${m}m` : `${m}m`;
+    }
+    const fmt = (n: number) => '$' + Math.round(n).toLocaleString();
+
+    // Solo
+    document.getElementById('t-solo-time')!.textContent = fmtTime(solo.jobTime);
+    document.getElementById('t-solo-jobs')!.textContent = solo.maxJobs.toString();
+    document.getElementById('t-solo-rev')!.textContent = fmt(solo.dailyRev);
+    document.getElementById('t-solo-payroll')!.textContent = '$0';
+    document.getElementById('t-solo-profit')!.textContent = fmt(solo.dailyProfit);
+    document.getElementById('t-solo-weekly')!.textContent = fmt(solo.weeklyRev);
+
+    // 2-person
+    document.getElementById('t-2p-time')!.textContent = fmtTime(team2.jobTime);
+    document.getElementById('t-2p-jobs')!.textContent = team2.maxJobs.toString();
+    document.getElementById('t-2p-rev')!.textContent = fmt(team2.dailyRev);
+    document.getElementById('t-2p-payroll')!.textContent = fmt(team2.dailyPayroll);
+    document.getElementById('t-2p-profit')!.textContent = fmt(team2.dailyProfit);
+    document.getElementById('t-2p-weekly')!.textContent = fmt(team2.weeklyRev);
+
+    // 3-person
+    document.getElementById('t-3p-time')!.textContent = fmtTime(team3.jobTime);
+    document.getElementById('t-3p-jobs')!.textContent = team3.maxJobs.toString();
+    document.getElementById('t-3p-rev')!.textContent = fmt(team3.dailyRev);
+    document.getElementById('t-3p-payroll')!.textContent = fmt(team3.dailyPayroll);
+    document.getElementById('t-3p-profit')!.textContent = fmt(team3.dailyProfit);
+    document.getElementById('t-3p-weekly')!.textContent = fmt(team3.weeklyRev);
+
+    // Color profit cells
+    [['t-solo-profit', solo.dailyProfit], ['t-2p-profit', team2.dailyProfit], ['t-3p-profit', team3.dailyProfit]].forEach(([id, val]) => {
+      const el = document.getElementById(id as string)!;
+      el.classList.remove('text-[#34D399]', 'text-[#EF4444]');
+      el.classList.add((val as number) >= 0 ? 'text-[#34D399]' : 'text-[#EF4444]');
+    });
+
+    // Recommendation
+    const recEl = document.getElementById('rec-text')!;
+    if (solo.dailyRev < 800) {
+      recEl.textContent = `At ${fmt(solo.dailyRev)}/day, stay solo. Focus on increasing your route density and job count before adding payroll. Target $800+/day before considering a second person.`;
+    } else if (solo.dailyRev >= 800 && team2.dailyProfit > solo.dailyProfit) {
+      recEl.textContent = `At ${fmt(solo.dailyRev)}/day solo, a 2-person team could generate ${fmt(team2.dailyRev)}/day with ${fmt(team2.dailyProfit)}/day gross profit. The math supports hiring. Make sure you have enough demand to fill the extra capacity.`;
+    } else if (team2.dailyRev >= 1500 && team3.dailyProfit > team2.dailyProfit) {
+      recEl.textContent = `A 3-person team could generate ${fmt(team3.dailyRev)}/day. At this volume, the 3-person configuration is profitable. However, the per-person revenue drops significantly — make sure your overhead stays controlled.`;
+    } else {
+      recEl.textContent = `Based on your current numbers, a 2-person team makes sense if you can consistently fill ${team2.maxJobs}+ jobs/day. The gross profit advantage is ${fmt(team2.dailyProfit - solo.dailyProfit)}/day over solo. Focus on route density to maximize this benefit.`;
+    }
+  }
+
+  document.querySelectorAll('#team-calc input').forEach(el => {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  });
+
+  calculate();
+</script>
