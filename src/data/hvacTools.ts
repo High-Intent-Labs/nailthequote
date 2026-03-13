@@ -1,31 +1,10 @@
-export interface HvacTool {
-  id: string;
-  slug: string;
-  name: string;
-  shortName: string;
-  category: 'technical' | 'business' | 'template' | 'sales';
-  categoryLabel: string;
-  description: string;
-  shortDescription: string;
-  seoTitle: string;
-  metaDescription: string;
-  primaryKeyword: string;
-  secondaryKeywords: string[];
-  monthlySV: number;
-  difficulty: 1 | 2;
-  layer: string;
-  cluster: string;
-  relatedTools: string[];
-}
+import { type Tool, categoryColors, createToolUtils } from './types';
 
-export const categoryColors = {
-  technical: { text: 'text-[#60A5FA]', bg: 'bg-[rgba(96,165,250,0.1)]', label: 'Technical' },
-  business: { text: 'text-[#34D399]', bg: 'bg-[rgba(52,211,153,0.1)]', label: 'Business' },
-  template: { text: 'text-[#C084FC]', bg: 'bg-[rgba(192,132,252,0.1)]', label: 'Template' },
-  sales: { text: 'text-[#FBBF24]', bg: 'bg-[rgba(251,191,36,0.1)]', label: 'Sales' },
-} as const;
+// Re-export shared items for backwards compatibility
+export { categoryColors } from './types';
+export type HvacTool = Tool;
 
-export const hvacTools: HvacTool[] = [
+export const hvacTools: Tool[] = [
   // SECTION A: Technical Calculators
   {
     id: 'A1',
@@ -45,6 +24,8 @@ export const hvacTools: HvacTool[] = [
     layer: '3',
     cluster: 'sizing-airflow',
     relatedTools: ['cfm-calculator', 'duct-size-calculator', 'btu-calculator', 'static-pressure-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'A2',
@@ -64,6 +45,8 @@ export const hvacTools: HvacTool[] = [
     layer: '3',
     cluster: 'sizing-airflow',
     relatedTools: ['load-calculator', 'duct-size-calculator', 'ach-calculator', 'static-pressure-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'A3',
@@ -83,6 +66,8 @@ export const hvacTools: HvacTool[] = [
     layer: '3',
     cluster: 'sizing-airflow',
     relatedTools: ['cfm-calculator', 'load-calculator', 'ach-calculator', 'static-pressure-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'A4',
@@ -102,6 +87,8 @@ export const hvacTools: HvacTool[] = [
     layer: '3',
     cluster: 'sizing-airflow',
     relatedTools: ['cfm-calculator', 'duct-size-calculator', 'load-calculator', 'static-pressure-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'A5',
@@ -121,6 +108,8 @@ export const hvacTools: HvacTool[] = [
     layer: '3',
     cluster: 'sizing-airflow',
     relatedTools: ['btu-calculator', 'load-calculator', 'seer-savings-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'A6',
@@ -140,6 +129,8 @@ export const hvacTools: HvacTool[] = [
     layer: '3',
     cluster: 'energy-equipment',
     relatedTools: ['btu-calculator', 'energy-savings-comparison', 'replacement-cost-calculator', 'load-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'A7',
@@ -159,6 +150,8 @@ export const hvacTools: HvacTool[] = [
     layer: '3',
     cluster: 'energy-equipment',
     relatedTools: ['load-calculator', 'seer-savings-calculator', 'replacement-cost-calculator', 'cfm-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'A8',
@@ -178,6 +171,8 @@ export const hvacTools: HvacTool[] = [
     layer: '3',
     cluster: 'sizing-airflow',
     relatedTools: ['duct-size-calculator', 'cfm-calculator', 'ach-calculator', 'load-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
 
   // SECTION B: Business Calculators
@@ -199,6 +194,8 @@ export const hvacTools: HvacTool[] = [
     layer: '1+2',
     cluster: 'business-financials',
     relatedTools: ['labor-rate-calculator', 'parts-markup-calculator', 'overhead-calculator', 'service-call-price-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'B2',
@@ -218,6 +215,8 @@ export const hvacTools: HvacTool[] = [
     layer: '1+2',
     cluster: 'business-financials',
     relatedTools: ['profit-margin-calculator', 'service-call-price-calculator', 'overhead-calculator', 'flat-rate-price-builder'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'B3',
@@ -237,6 +236,8 @@ export const hvacTools: HvacTool[] = [
     layer: '1+2',
     cluster: 'business-financials',
     relatedTools: ['flat-rate-price-builder', 'parts-markup-calculator', 'labor-rate-calculator', 'profit-margin-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'B4',
@@ -256,6 +257,8 @@ export const hvacTools: HvacTool[] = [
     layer: '1+2',
     cluster: 'business-financials',
     relatedTools: ['service-call-price-calculator', 'parts-markup-calculator', 'labor-rate-calculator', 'profit-margin-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'B5',
@@ -275,6 +278,8 @@ export const hvacTools: HvacTool[] = [
     layer: '1+2',
     cluster: 'business-financials',
     relatedTools: ['profit-margin-calculator', 'service-call-price-calculator', 'flat-rate-price-builder', 'install-pricing-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'B6',
@@ -294,6 +299,8 @@ export const hvacTools: HvacTool[] = [
     layer: '1+2',
     cluster: 'business-financials',
     relatedTools: ['profit-margin-calculator', 'parts-markup-calculator', 'labor-rate-calculator', 'replacement-cost-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'B7',
@@ -313,6 +320,8 @@ export const hvacTools: HvacTool[] = [
     layer: '1+2',
     cluster: 'business-financials',
     relatedTools: ['profit-margin-calculator', 'overhead-calculator', 'labor-rate-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'B8',
@@ -332,6 +341,8 @@ export const hvacTools: HvacTool[] = [
     layer: '1+2',
     cluster: 'business-financials',
     relatedTools: ['labor-rate-calculator', 'profit-margin-calculator', 'business-valuation-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
 
   // SECTION C: Templates
@@ -353,6 +364,8 @@ export const hvacTools: HvacTool[] = [
     layer: '1+2',
     cluster: 'documents',
     relatedTools: ['estimate-template', 'work-order-template', 'service-agreement-template', 'profit-margin-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'C2',
@@ -372,6 +385,8 @@ export const hvacTools: HvacTool[] = [
     layer: '1+2',
     cluster: 'documents',
     relatedTools: ['invoice-generator', 'install-pricing-calculator', 'replacement-cost-calculator', 'seer-savings-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'C3',
@@ -391,6 +406,8 @@ export const hvacTools: HvacTool[] = [
     layer: '1+2',
     cluster: 'documents',
     relatedTools: ['invoice-generator', 'maintenance-checklist', 'inspection-report-template', 'service-call-price-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'C4',
@@ -410,6 +427,8 @@ export const hvacTools: HvacTool[] = [
     layer: '1+2',
     cluster: 'documents',
     relatedTools: ['inspection-report-template', 'work-order-template', 'service-agreement-template'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'C5',
@@ -429,6 +448,8 @@ export const hvacTools: HvacTool[] = [
     layer: '1+2',
     cluster: 'documents',
     relatedTools: ['maintenance-checklist', 'invoice-generator', 'estimate-template'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'C6',
@@ -448,6 +469,8 @@ export const hvacTools: HvacTool[] = [
     layer: '1+2',
     cluster: 'documents',
     relatedTools: ['maintenance-checklist', 'work-order-template', 'estimate-template'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
 
   // SECTION D: Sales Tools
@@ -469,6 +492,8 @@ export const hvacTools: HvacTool[] = [
     layer: '2+3',
     cluster: 'energy-equipment',
     relatedTools: ['seer-savings-calculator', 'energy-savings-comparison', 'btu-calculator', 'install-pricing-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
   {
     id: 'D2',
@@ -488,34 +513,10 @@ export const hvacTools: HvacTool[] = [
     layer: '2+3',
     cluster: 'energy-equipment',
     relatedTools: ['seer-savings-calculator', 'replacement-cost-calculator', 'btu-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
   },
 ];
 
-export const trades = [
-  { name: 'HVAC', slug: 'hvac', icon: '❄️', toolCount: 24, status: 'live' as const },
-  { name: 'Plumbing', slug: 'plumbing', icon: '🔧', toolCount: 0, status: 'coming' as const },
-  { name: 'Electrical', slug: 'electrical', icon: '⚡', toolCount: 0, status: 'coming' as const },
-  { name: 'Roofing', slug: 'roofing', icon: '🏠', toolCount: 0, status: 'coming' as const },
-  { name: 'Painting', slug: 'painting', icon: '🖌️', toolCount: 0, status: 'coming' as const },
-  { name: 'Landscaping', slug: 'landscaping', icon: '🌿', toolCount: 0, status: 'coming' as const },
-  { name: 'General Contractor', slug: 'gc', icon: '🛠️', toolCount: 0, status: 'coming' as const },
-  { name: 'Handyman', slug: 'handyman', icon: '🧰', toolCount: 0, status: 'coming' as const },
-  { name: 'Pest Control', slug: 'pest-control', icon: '🐛', toolCount: 0, status: 'coming' as const },
-  { name: 'Cleaning', slug: 'cleaning', icon: '✨', toolCount: 0, status: 'coming' as const },
-];
-
-export function getToolBySlug(slug: string): HvacTool | undefined {
-  return hvacTools.find(t => t.slug === slug);
-}
-
-export function getToolsByCategory(category: HvacTool['category']): HvacTool[] {
-  return hvacTools.filter(t => t.category === category);
-}
-
-export function getRelatedTools(slug: string): HvacTool[] {
-  const tool = getToolBySlug(slug);
-  if (!tool) return [];
-  return tool.relatedTools
-    .map(s => getToolBySlug(s))
-    .filter((t): t is HvacTool => t !== undefined);
-}
+const { getToolBySlug, getToolsByCategory, getRelatedTools } = createToolUtils(hvacTools);
+export { getToolBySlug, getToolsByCategory, getRelatedTools };

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { hvacTools, categoryColors, getToolsByCategory } from '../../data/hvacTools';
+import { hvacTools, getToolsByCategory } from '../../data/hvacTools';
+import { categoryColors } from '../../data/types';
 
 const technical = getToolsByCategory('technical');
 const business = getToolsByCategory('business');
