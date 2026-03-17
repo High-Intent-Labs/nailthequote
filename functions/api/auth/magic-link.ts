@@ -1,18 +1,16 @@
-import type { APIRoute } from 'astro';
-import { getSupabaseAdmin } from '../../../lib/supabase';
-import { getResend, getAudienceId } from '../../../lib/resend';
+import type { Env } from '../../_lib/env';
+import { getSupabaseAdmin } from '../../_lib/supabase';
+import { getResend, getAudienceId } from '../../_lib/resend';
 
-export const prerender = false;
-
-export const POST: APIRoute = async ({ request }) => {
+export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
-    const { email, marketingConsent, trigger } = await request.json();
+    const { email, marketingConsent, trigger }: any = await context.request.json();
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return new Response(JSON.stringify({ error: 'Invalid email' }), { status: 400 });
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseAdmin(context.env);
 
     // Send magic link via Supabase Auth
     const { error } = await supabase.auth.signInWithOtp({
@@ -33,8 +31,8 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Add to Resend Audience if consented
     if (marketingConsent) {
-      const resend = getResend();
-      const audienceId = getAudienceId();
+      const resend = getResend(context.env);
+      const audienceId = getAudienceId(context.env);
       if (audienceId) {
         await resend.contacts.create({
           audienceId,

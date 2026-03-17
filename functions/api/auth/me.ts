@@ -1,19 +1,9 @@
-import type { APIRoute } from 'astro';
-import { getSupabaseAdmin } from '../../../lib/supabase';
+import type { Env } from '../../_lib/env';
+import { getSupabaseAdmin } from '../../_lib/supabase';
 
-export const prerender = false;
-
-export const POST: APIRoute = async ({ request }) => {
-  return handleMe(request);
-};
-
-export const GET: APIRoute = async ({ request }) => {
-  return handleMe(request);
-};
-
-async function handleMe(request: Request) {
+async function handleMe(request: Request, env: Env) {
   try {
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseAdmin(env);
     const authHeader = request.headers.get('Authorization');
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 });
@@ -47,3 +37,11 @@ async function handleMe(request: Request) {
     return new Response(JSON.stringify({ error: 'Internal error' }), { status: 500 });
   }
 }
+
+export const onRequestPost: PagesFunction<Env> = async (context) => {
+  return handleMe(context.request, context.env);
+};
+
+export const onRequestGet: PagesFunction<Env> = async (context) => {
+  return handleMe(context.request, context.env);
+};

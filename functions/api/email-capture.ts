@@ -1,20 +1,18 @@
-import type { APIRoute } from 'astro';
-import { getResend, getAudienceId } from '../../lib/resend';
-import { getSupabaseAdmin } from '../../lib/supabase';
+import type { Env } from '../_lib/env';
+import { getSupabaseAdmin } from '../_lib/supabase';
+import { getResend, getAudienceId } from '../_lib/resend';
 
-export const prerender = false;
-
-export const POST: APIRoute = async ({ request }) => {
+export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
-    const body = await request.json();
+    const body: any = await context.request.json();
     const { email, toolSlug, toolName, tradeSlug, tradeName, marketingConsent, sourceUrl } = body;
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return new Response(JSON.stringify({ error: 'Invalid email' }), { status: 400 });
     }
 
-    const resend = getResend();
-    const supabase = getSupabaseAdmin();
+    const resend = getResend(context.env);
+    const supabase = getSupabaseAdmin(context.env);
 
     // 1. Send results email with link back to tool
     const toolUrl = `https://nailthequote.com/${tradeSlug}/${toolSlug}`;
@@ -27,7 +25,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // 2. Add to Resend Audience (if marketing consent)
     if (marketingConsent) {
-      const audienceId = getAudienceId();
+      const audienceId = getAudienceId(context.env);
       if (audienceId) {
         await resend.contacts.create({
           audienceId,

@@ -1,12 +1,10 @@
-import type { APIRoute } from 'astro';
-import { getSupabaseAdmin } from '../../../lib/supabase';
+import type { Env } from '../../_lib/env';
+import { getSupabaseAdmin } from '../../_lib/supabase';
 
-export const prerender = false;
-
-export const GET: APIRoute = async ({ request }) => {
+export const onRequestGet: PagesFunction<Env> = async (context) => {
   try {
-    const supabase = getSupabaseAdmin();
-    const authHeader = request.headers.get('Authorization');
+    const supabase = getSupabaseAdmin(context.env);
+    const authHeader = context.request.headers.get('Authorization');
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 });
     }
@@ -18,7 +16,7 @@ export const GET: APIRoute = async ({ request }) => {
     }
 
     const { data, error } = await supabase
-      .from('saved_documents')
+      .from('saved_calculations')
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })

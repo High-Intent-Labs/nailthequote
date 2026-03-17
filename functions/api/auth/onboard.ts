@@ -1,15 +1,12 @@
-import type { APIRoute } from 'astro';
-import { getSupabaseAdmin } from '../../../lib/supabase';
+import type { Env } from '../../_lib/env';
+import { getSupabaseAdmin } from '../../_lib/supabase';
 
-export const prerender = false;
-
-export const POST: APIRoute = async ({ request }) => {
+export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
-    const { businessName, trade, zipCode } = await request.json();
+    const { businessName, trade, zipCode }: any = await context.request.json();
 
-    // Get user from auth header/cookie
-    const supabase = getSupabaseAdmin();
-    const authHeader = request.headers.get('Authorization');
+    const supabase = getSupabaseAdmin(context.env);
+    const authHeader = context.request.headers.get('Authorization');
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 });
     }

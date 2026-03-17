@@ -1,14 +1,10 @@
-import type { APIRoute } from 'astro';
-import { getResend, getAudienceId } from '../../../lib/resend';
-import { getSupabaseAdmin } from '../../../lib/supabase';
+import type { Env } from '../../_lib/env';
+import { getSupabaseAdmin } from '../../_lib/supabase';
+import { getResend, getAudienceId } from '../../_lib/resend';
 
-export const prerender = false;
-
-// Supabase Auth webhook — called on user signup
-// Configure in Supabase Dashboard > Auth > Hooks > POST https://nailthequote.com/api/auth/webhook
-export const POST: APIRoute = async ({ request }) => {
+export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
-    const body = await request.json();
+    const body: any = await context.request.json();
     const { type, record } = body;
 
     // Only handle new signups
@@ -21,8 +17,8 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ ok: true }), { status: 200 });
     }
 
-    const resend = getResend();
-    const supabase = getSupabaseAdmin();
+    const resend = getResend(context.env);
+    const supabase = getSupabaseAdmin(context.env);
 
     // 1. Send welcome email
     await resend.emails.send({
@@ -33,7 +29,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     // 2. Add to Resend Audience with account holder tag
-    const audienceId = getAudienceId();
+    const audienceId = getAudienceId(context.env);
     if (audienceId) {
       await resend.contacts.create({
         audienceId,

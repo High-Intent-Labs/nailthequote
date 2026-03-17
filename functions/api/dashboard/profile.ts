@@ -1,12 +1,10 @@
-import type { APIRoute } from 'astro';
-import { getSupabaseAdmin } from '../../../lib/supabase';
+import type { Env } from '../../_lib/env';
+import { getSupabaseAdmin } from '../../_lib/supabase';
 
-export const prerender = false;
-
-export const POST: APIRoute = async ({ request }) => {
+export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
-    const supabase = getSupabaseAdmin();
-    const authHeader = request.headers.get('Authorization');
+    const supabase = getSupabaseAdmin(context.env);
+    const authHeader = context.request.headers.get('Authorization');
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 });
     }
@@ -17,7 +15,7 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 });
     }
 
-    const body = await request.json();
+    const body: any = await context.request.json();
 
     const { error } = await supabase.from('profiles').upsert({
       id: user.id,

@@ -1,13 +1,10 @@
-import type { APIRoute } from 'astro';
-import { getSupabaseAdmin } from '../../../lib/supabase';
+import type { Env } from '../../_lib/env';
+import { getSupabaseAdmin } from '../../_lib/supabase';
 
-export const prerender = false;
-
-export const POST: APIRoute = async ({ request }) => {
+export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
-    const { redirectTo } = await request.json();
-
-    const supabase = getSupabaseAdmin();
+    const { redirectTo }: any = await context.request.json();
+    const supabase = getSupabaseAdmin(context.env);
 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
