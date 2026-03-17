@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sendthebid.com/sitemap-index.xml
+Sitemap: https://nailthequote.com/sitemap-index.xml

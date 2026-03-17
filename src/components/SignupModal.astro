@@ -1,0 +1,313 @@
+---
+// Trigger messages for contextual prompts
+// Trigger types: template_save, pdf_download, repeat_visit, tier1_upsell
+---
+
+<div id="signup-modal" class="hidden fixed inset-0 z-50" data-trigger="">
+  <!-- Backdrop -->
+  <div id="signup-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+  <!-- Modal -->
+  <div class="absolute inset-0 flex items-center justify-center p-4">
+    <div class="bg-bg-card border border-border rounded-2xl w-full max-w-md relative overflow-hidden">
+      <!-- Accent top border -->
+      <div class="absolute top-0 left-0 right-0 h-1 bg-accent"></div>
+
+      <!-- Close button -->
+      <button id="signup-close" class="absolute top-4 right-4 text-text-muted hover:text-text-primary transition-colors" aria-label="Close">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 5L5 15M5 5l10 10"/>
+        </svg>
+      </button>
+
+      <div class="p-8">
+        <!-- Context banner (changes per trigger) -->
+        <div id="signup-context" class="hidden bg-accent/10 border border-accent/20 rounded-lg px-4 py-3 mb-6 text-sm text-accent"></div>
+
+        <!-- Heading -->
+        <h2 class="font-heading font-bold text-2xl text-text-primary mb-2">Create your free account</h2>
+        <p class="text-text-secondary text-sm mb-6">Save your work, pre-fill your details, and access your calculations from any device.</p>
+
+        <!-- Signup form state -->
+        <div id="signup-form">
+          <!-- Magic Link -->
+          <div class="mb-4">
+            <input
+              type="email"
+              id="signup-email"
+              placeholder="you@company.com"
+              class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-base focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted"
+            />
+          </div>
+          <button
+            id="signup-magic-link"
+            type="button"
+            class="w-full bg-accent hover:bg-accent-hover text-white font-semibold py-3 rounded-lg transition-colors mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Send me a login link
+          </button>
+
+          <!-- Divider -->
+          <div class="flex items-center gap-3 my-4">
+            <div class="flex-1 border-t border-border"></div>
+            <span class="text-text-muted text-xs">or</span>
+            <div class="flex-1 border-t border-border"></div>
+          </div>
+
+          <!-- Google OAuth -->
+          <button
+            id="signup-google"
+            type="button"
+            class="w-full bg-bg-dark border border-border hover:border-text-muted text-text-primary font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-3"
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18">
+              <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+              <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+              <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+              <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+            </svg>
+            Continue with Google
+          </button>
+
+          <!-- Consent -->
+          <label class="flex items-start gap-2 cursor-pointer select-none mt-4">
+            <input type="checkbox" id="signup-consent" checked class="mt-0.5 w-4 h-4 rounded border-border bg-bg-dark accent-accent" />
+            <span class="text-text-muted text-xs leading-relaxed">
+              Also send me free tools, updates, and tips for pros. Unsubscribe anytime.
+            </span>
+          </label>
+
+          <div id="signup-error" class="hidden mt-3 text-sm text-[#EF4444]"></div>
+
+          <!-- Skip -->
+          <div class="text-center mt-4">
+            <button id="signup-skip" type="button" class="text-text-muted text-sm hover:text-text-secondary transition-colors">
+              Skip for now
+            </button>
+          </div>
+        </div>
+
+        <!-- Magic link sent state -->
+        <div id="signup-link-sent" class="hidden text-center py-4">
+          <div class="w-14 h-14 rounded-full bg-[rgba(52,211,153,0.15)] flex items-center justify-center mx-auto mb-4">
+            <svg width="24" height="24" viewBox="0 0 20 20" fill="none" class="text-[#34D399]">
+              <path d="M2.5 6.667L9.025 11.05a1.667 1.667 0 001.95 0L17.5 6.667M4.167 15h11.666A1.667 1.667 0 0017.5 13.333V6.667A1.667 1.667 0 0015.833 5H4.167A1.667 1.667 0 002.5 6.667v6.666A1.667 1.667 0 004.167 15z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 class="font-heading font-bold text-xl text-text-primary mb-2">Check your email</h3>
+          <p class="text-text-secondary text-sm mb-1">We sent a login link to</p>
+          <p id="signup-sent-email" class="text-text-primary font-semibold text-sm mb-4"></p>
+          <p class="text-text-muted text-xs">No password needed. Click the link in your email to log in.</p>
+        </div>
+
+        <!-- Onboarding state (post-signup) -->
+        <div id="signup-onboarding" class="hidden">
+          <h3 class="font-heading font-bold text-xl text-text-primary mb-2">Almost done!</h3>
+          <p class="text-text-secondary text-sm mb-6">Help us personalize your experience. All fields are optional.</p>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-text-secondary mb-1">Business name</label>
+              <input type="text" id="onboard-business" placeholder="Mike's Plumbing" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-text-secondary mb-1">Your trade</label>
+              <select id="onboard-trade" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary focus:border-accent focus:outline-none transition-colors">
+                <option value="">Select a trade</option>
+                <option value="hvac">HVAC</option>
+                <option value="plumbing">Plumbing</option>
+                <option value="electrical">Electrical</option>
+                <option value="roofing">Roofing</option>
+                <option value="painting">Painting</option>
+                <option value="landscaping">Landscaping</option>
+                <option value="gc">General Contractor</option>
+                <option value="handyman">Handyman</option>
+                <option value="pest-control">Pest Control</option>
+                <option value="cleaning">Cleaning</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-text-secondary mb-1">ZIP code</label>
+              <input type="text" id="onboard-zip" placeholder="90210" maxlength="5" pattern="[0-9]{5}" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted" />
+            </div>
+          </div>
+
+          <button id="onboard-save" type="button" class="w-full bg-accent hover:bg-accent-hover text-white font-semibold py-3 rounded-lg transition-colors mt-6">
+            Save &amp; Continue
+          </button>
+          <div class="text-center mt-3">
+            <button id="onboard-skip" type="button" class="text-text-muted text-sm hover:text-text-secondary transition-colors">
+              Skip for now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('signup-modal')!;
+  const backdrop = document.getElementById('signup-backdrop')!;
+  const closeBtn = document.getElementById('signup-close')!;
+  const skipBtn = document.getElementById('signup-skip')!;
+  const signupForm = document.getElementById('signup-form')!;
+  const linkSent = document.getElementById('signup-link-sent')!;
+  const onboarding = document.getElementById('signup-onboarding')!;
+  const contextBanner = document.getElementById('signup-context')!;
+  const emailInput = document.getElementById('signup-email') as HTMLInputElement;
+  const magicLinkBtn = document.getElementById('signup-magic-link') as HTMLButtonElement;
+  const googleBtn = document.getElementById('signup-google') as HTMLButtonElement;
+  const consentCheckbox = document.getElementById('signup-consent') as HTMLInputElement;
+  const signupError = document.getElementById('signup-error')!;
+
+  const triggerMessages: Record<string, string> = {
+    template_save: 'Create a free account to save this document and pre-fill your business details next time.',
+    pdf_download: 'Create a free account to download branded PDFs with your company logo.',
+    repeat_visit: 'Welcome back! Create a free account to save your calculation history.',
+    tier1_upsell: 'Want to save all your calculations? Create a free account.',
+  };
+
+  function openModal(trigger?: string) {
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    if (trigger && triggerMessages[trigger]) {
+      contextBanner.textContent = triggerMessages[trigger];
+      contextBanner.classList.remove('hidden');
+      modal.setAttribute('data-trigger', trigger);
+    } else {
+      contextBanner.classList.add('hidden');
+    }
+
+    // Reset to form state
+    signupForm.classList.remove('hidden');
+    linkSent.classList.add('hidden');
+    onboarding.classList.add('hidden');
+  }
+
+  function closeModal() {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+  skipBtn.addEventListener('click', closeModal);
+  backdrop.addEventListener('click', closeModal);
+
+  // Escape key closes modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+      closeModal();
+    }
+  });
+
+  // Magic link signup
+  magicLinkBtn.addEventListener('click', async () => {
+    const email = emailInput.value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      signupError.textContent = 'Please enter a valid email address.';
+      signupError.classList.remove('hidden');
+      return;
+    }
+
+    signupError.classList.add('hidden');
+    magicLinkBtn.disabled = true;
+    magicLinkBtn.textContent = 'Sending...';
+
+    try {
+      const res = await fetch('/api/auth/magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          marketingConsent: consentCheckbox.checked,
+          trigger: modal.getAttribute('data-trigger') || 'direct',
+        }),
+      });
+
+      if (!res.ok) throw new Error('Failed');
+
+      document.getElementById('signup-sent-email')!.textContent = email;
+      signupForm.classList.add('hidden');
+      linkSent.classList.remove('hidden');
+    } catch {
+      signupError.textContent = 'Something went wrong. Please try again.';
+      signupError.classList.remove('hidden');
+      magicLinkBtn.disabled = false;
+      magicLinkBtn.textContent = 'Send me a login link';
+    }
+  });
+
+  // Google OAuth
+  googleBtn.addEventListener('click', async () => {
+    try {
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          redirectTo: window.location.href,
+          marketingConsent: consentCheckbox.checked,
+        }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      signupError.textContent = 'Could not connect to Google. Please try the email option.';
+      signupError.classList.remove('hidden');
+    }
+  });
+
+  // Enter key on email input
+  emailInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') magicLinkBtn.click();
+  });
+
+  // Onboarding save
+  document.getElementById('onboard-save')?.addEventListener('click', async () => {
+    const business = (document.getElementById('onboard-business') as HTMLInputElement).value.trim();
+    const trade = (document.getElementById('onboard-trade') as HTMLSelectElement).value;
+    const zip = (document.getElementById('onboard-zip') as HTMLInputElement).value.trim();
+
+    await fetch('/api/auth/onboard', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ businessName: business, trade, zipCode: zip }),
+    });
+
+    closeModal();
+    window.location.reload();
+  });
+
+  document.getElementById('onboard-skip')?.addEventListener('click', () => {
+    closeModal();
+    window.location.reload();
+  });
+
+  // Expose openModal globally for trigger points
+  (window as any).openSignupModal = openModal;
+
+  // Repeat visit detection
+  const visitCount = parseInt(localStorage.getItem('ntq_visit_count') || '0', 10) + 1;
+  localStorage.setItem('ntq_visit_count', String(visitCount));
+  const toolsUsed = JSON.parse(localStorage.getItem('ntq_tools_used') || '[]') as string[];
+  const currentSlug = window.location.pathname.split('/').filter(Boolean).pop() || '';
+  if (currentSlug && !toolsUsed.includes(currentSlug)) {
+    toolsUsed.push(currentSlug);
+    localStorage.setItem('ntq_tools_used', JSON.stringify(toolsUsed));
+  }
+
+  // Show repeat visit prompt if second tool and no account
+  if (toolsUsed.length >= 2 && !localStorage.getItem('ntq_has_account')) {
+    const dismissed = sessionStorage.getItem('ntq_repeat_dismissed');
+    if (!dismissed) {
+      setTimeout(() => {
+        if (modal.classList.contains('hidden')) {
+          openModal('repeat_visit');
+          sessionStorage.setItem('ntq_repeat_dismissed', '1');
+        }
+      }, 5000);
+    }
+  }
+</script>

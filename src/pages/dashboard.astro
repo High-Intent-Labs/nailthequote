@@ -1,0 +1,394 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+export const prerender = false;
+---
+
+<BaseLayout
+  title="Dashboard — NailTheQuote"
+  description="Your saved calculations, documents, and business profile."
+  currentPath="/dashboard"
+>
+  <div class="max-w-[1080px] mx-auto px-6 md:px-12 py-8">
+    <!-- Loading state -->
+    <div id="dash-loading" class="flex items-center justify-center py-24">
+      <div class="w-8 h-8 border-3 border-border border-t-accent rounded-full animate-spin"></div>
+    </div>
+
+    <!-- Not logged in state -->
+    <div id="dash-guest" class="hidden text-center py-24">
+      <div class="w-16 h-16 rounded-full bg-accent/15 flex items-center justify-center mx-auto mb-6">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-accent">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <h1 class="font-heading font-bold text-3xl mb-3">Your Dashboard</h1>
+      <p class="text-text-secondary mb-6 max-w-md mx-auto">Create a free account to save calculations, store documents, and pre-fill your business details across all tools.</p>
+      <button id="dash-signup-btn" type="button" class="bg-accent hover:bg-accent-hover text-white font-semibold px-8 py-3 rounded-lg transition-colors">
+        Create Free Account
+      </button>
+      <p class="text-text-muted text-sm mt-3">Already have an account? <button id="dash-login-btn" type="button" class="text-accent hover:underline">Log in</button></p>
+    </div>
+
+    <!-- Logged in dashboard -->
+    <div id="dash-content" class="hidden">
+      <!-- Welcome -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 class="font-heading font-bold text-3xl">Welcome back<span id="dash-name"></span></h1>
+          <p class="text-text-secondary mt-1">Here's your saved work and business profile.</p>
+        </div>
+        <button id="dash-logout" type="button" class="text-text-muted text-sm hover:text-text-secondary transition-colors self-start">Log out</button>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+        <a href="#" id="qa-invoice" class="bg-bg-card border border-border rounded-xl p-4 text-center no-underline hover:border-accent/50 transition-colors">
+          <div class="w-10 h-10 rounded-lg bg-[rgba(192,132,252,0.15)] flex items-center justify-center mx-auto mb-2">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#C084FC" stroke-width="1.5"><path d="M6 2h8l4 4v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M7 11h6M7 14h4"/></svg>
+          </div>
+          <span class="text-text-primary text-xs font-medium">New Invoice</span>
+        </a>
+        <a href="#" id="qa-estimate" class="bg-bg-card border border-border rounded-xl p-4 text-center no-underline hover:border-accent/50 transition-colors">
+          <div class="w-10 h-10 rounded-lg bg-[rgba(52,211,153,0.15)] flex items-center justify-center mx-auto mb-2">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#34D399" stroke-width="1.5"><path d="M4 4h12v14H4z"/><path d="M7 8h6M7 11h6M7 14h3"/></svg>
+          </div>
+          <span class="text-text-primary text-xs font-medium">New Estimate</span>
+        </a>
+        <a href="#" id="qa-tool1" class="bg-bg-card border border-border rounded-xl p-4 text-center no-underline hover:border-accent/50 transition-colors">
+          <div class="w-10 h-10 rounded-lg bg-[rgba(96,165,250,0.15)] flex items-center justify-center mx-auto mb-2">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#60A5FA" stroke-width="1.5"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l3 3"/></svg>
+          </div>
+          <span class="text-text-primary text-xs font-medium">Quick Calc</span>
+        </a>
+        <a href="#" id="qa-profile" class="bg-bg-card border border-border rounded-xl p-4 text-center no-underline hover:border-accent/50 transition-colors">
+          <div class="w-10 h-10 rounded-lg bg-[rgba(251,191,36,0.15)] flex items-center justify-center mx-auto mb-2">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#FBBF24" stroke-width="1.5"><path d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/><circle cx="8" cy="7" r="3"/><path d="M2 18v-1a5 5 0 015-5h2"/></svg>
+          </div>
+          <span class="text-text-primary text-xs font-medium">Edit Profile</span>
+        </a>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <div class="bg-bg-card border border-border rounded-xl p-5">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Saved Calcs</div>
+          <div id="stat-calcs" class="font-heading font-extrabold text-2xl text-text-primary">0</div>
+        </div>
+        <div class="bg-bg-card border border-border rounded-xl p-5">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Documents</div>
+          <div id="stat-docs" class="font-heading font-extrabold text-2xl text-text-primary">0</div>
+        </div>
+        <div class="bg-bg-card border border-border rounded-xl p-5">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Tools Used</div>
+          <div id="stat-tools" class="font-heading font-extrabold text-2xl text-text-primary">0</div>
+        </div>
+        <div class="bg-bg-card border border-border rounded-xl p-5">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Member Since</div>
+          <div id="stat-since" class="font-heading font-extrabold text-2xl text-text-primary">—</div>
+        </div>
+      </div>
+
+      <!-- Recent Calculations -->
+      <section class="mb-10">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-heading font-bold text-2xl">Recent Calculations</h2>
+        </div>
+        <div id="calcs-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div id="calcs-empty" class="col-span-full bg-bg-card border border-border rounded-xl p-8 text-center">
+            <p class="text-text-muted mb-3">No saved calculations yet.</p>
+            <p class="text-text-secondary text-sm">Use any calculator tool and click "Save to Dashboard" to see your results here.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- My Documents -->
+      <section class="mb-10">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-heading font-bold text-2xl">My Documents</h2>
+        </div>
+        <div id="docs-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div id="docs-empty" class="col-span-full bg-bg-card border border-border rounded-xl p-8 text-center">
+            <p class="text-text-muted mb-3">No documents yet.</p>
+            <p class="text-text-secondary text-sm">Create an invoice, estimate, or work order to get started.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Business Profile -->
+      <section class="mb-10">
+        <h2 class="font-heading font-bold text-2xl mb-4">Business Profile</h2>
+        <div class="bg-bg-card border border-border rounded-2xl p-6 md:p-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-text-secondary mb-2">Business Name</label>
+              <input type="text" id="profile-business" placeholder="Your Company Name" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-text-secondary mb-2">Owner / Tech Name</label>
+              <input type="text" id="profile-owner" placeholder="Your Name" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-text-secondary mb-2">Trade</label>
+              <select id="profile-trade" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary focus:border-accent focus:outline-none transition-colors">
+                <option value="">Select a trade</option>
+                <option value="hvac">HVAC</option>
+                <option value="plumbing">Plumbing</option>
+                <option value="electrical">Electrical</option>
+                <option value="roofing">Roofing</option>
+                <option value="painting">Painting</option>
+                <option value="landscaping">Landscaping</option>
+                <option value="gc">General Contractor</option>
+                <option value="handyman">Handyman</option>
+                <option value="pest-control">Pest Control</option>
+                <option value="cleaning">Cleaning</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-text-secondary mb-2">Phone</label>
+              <input type="tel" id="profile-phone" placeholder="(555) 555-5555" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-text-secondary mb-2">Email</label>
+              <input type="email" id="profile-email" placeholder="office@yourcompany.com" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-text-secondary mb-2">License Number</label>
+              <input type="text" id="profile-license" placeholder="CLN-123456" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-text-secondary mb-2">Default Hourly Rate ($)</label>
+              <input type="number" id="profile-rate" placeholder="85" min="0" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-text-secondary mb-2">Default Markup (%)</label>
+              <input type="number" id="profile-markup" placeholder="30" min="0" max="200" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted" />
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 mt-8">
+            <button id="profile-save" type="button" class="bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-lg transition-colors">
+              Save Profile
+            </button>
+            <span id="profile-saved" class="hidden text-[#34D399] text-sm font-medium">Saved!</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  const loading = document.getElementById('dash-loading')!;
+  const guest = document.getElementById('dash-guest')!;
+  const content = document.getElementById('dash-content')!;
+
+  // Check auth state
+  async function initDashboard() {
+    const hasAccount = localStorage.getItem('ntq_has_account');
+
+    if (!hasAccount) {
+      loading.classList.add('hidden');
+      guest.classList.remove('hidden');
+      return;
+    }
+
+    // Try to get user data from Supabase session
+    try {
+      const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2' as any);
+
+      // Get session from stored tokens
+      const storedSession = localStorage.getItem('ntq_session');
+      if (!storedSession) {
+        showGuest();
+        return;
+      }
+
+      const session = JSON.parse(storedSession);
+      const res = await fetch('/api/auth/me', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+
+      if (!res.ok) {
+        showGuest();
+        return;
+      }
+
+      const data = await res.json();
+      renderDashboard(data);
+    } catch {
+      showGuest();
+    }
+  }
+
+  function showGuest() {
+    localStorage.removeItem('ntq_has_account');
+    loading.classList.add('hidden');
+    guest.classList.remove('hidden');
+  }
+
+  function renderDashboard(data: any) {
+    loading.classList.add('hidden');
+    content.classList.remove('hidden');
+
+    const { user, profile } = data;
+
+    // Welcome name
+    if (profile?.owner_name || profile?.business_name) {
+      document.getElementById('dash-name')!.textContent = `, ${profile.owner_name || profile.business_name}`;
+    }
+
+    // Stats
+    document.getElementById('stat-since')!.textContent = new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+    // Tools used from localStorage
+    const toolsUsed = JSON.parse(localStorage.getItem('ntq_tools_used') || '[]');
+    document.getElementById('stat-tools')!.textContent = String(toolsUsed.length);
+
+    // Populate profile fields
+    if (profile) {
+      setVal('profile-business', profile.business_name);
+      setVal('profile-owner', profile.owner_name);
+      setVal('profile-trade', profile.trade);
+      setVal('profile-phone', profile.phone);
+      setVal('profile-email', profile.email || user.email);
+      setVal('profile-license', profile.license_number);
+      setVal('profile-rate', profile.default_hourly_rate);
+      setVal('profile-markup', profile.default_markup);
+    } else {
+      setVal('profile-email', user.email);
+    }
+
+    // Quick action links based on trade
+    const trade = profile?.trade || 'hvac';
+    document.getElementById('qa-invoice')?.setAttribute('href', `/${trade}/invoice-generator`);
+    document.getElementById('qa-estimate')?.setAttribute('href', `/${trade}/estimate-template`);
+    document.getElementById('qa-tool1')?.setAttribute('href', `/${trade}/`);
+    document.getElementById('qa-profile')?.setAttribute('href', '#profile-business');
+
+    // Load saved calculations
+    loadCalcs(data);
+    loadDocs(data);
+  }
+
+  function setVal(id: string, value: any) {
+    const el = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+    if (el && value != null) el.value = String(value);
+  }
+
+  async function loadCalcs(data: any) {
+    // Fetch from API
+    try {
+      const session = JSON.parse(localStorage.getItem('ntq_session') || '{}');
+      const res = await fetch('/api/dashboard/calculations', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (!res.ok) return;
+      const calcs = await res.json();
+
+      document.getElementById('stat-calcs')!.textContent = String(calcs.length);
+
+      if (calcs.length > 0) {
+        document.getElementById('calcs-empty')?.remove();
+        const container = document.getElementById('calcs-list')!;
+        calcs.slice(0, 6).forEach((calc: any) => {
+          container.innerHTML += `
+            <div class="bg-bg-card border border-border rounded-xl p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-[rgba(96,165,250,0.15)] text-[#60A5FA]">${calc.trade}</span>
+              </div>
+              <h3 class="font-heading font-bold text-base text-text-primary mb-1">${calc.label || calc.tool_slug.replace(/-/g, ' ')}</h3>
+              <p class="text-text-muted text-xs mb-3">${new Date(calc.created_at).toLocaleDateString()}</p>
+              <a href="/${calc.trade}/${calc.tool_slug}" class="text-accent text-sm font-medium hover:underline no-underline">View &rarr;</a>
+            </div>`;
+        });
+      }
+    } catch { /* silent */ }
+  }
+
+  async function loadDocs(data: any) {
+    try {
+      const session = JSON.parse(localStorage.getItem('ntq_session') || '{}');
+      const res = await fetch('/api/dashboard/documents', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (!res.ok) return;
+      const docs = await res.json();
+
+      document.getElementById('stat-docs')!.textContent = String(docs.length);
+
+      if (docs.length > 0) {
+        document.getElementById('docs-empty')?.remove();
+        const container = document.getElementById('docs-list')!;
+        const statusColors: Record<string, string> = {
+          draft: 'bg-[rgba(251,191,36,0.15)] text-[#FBBF24]',
+          sent: 'bg-[rgba(52,211,153,0.15)] text-[#34D399]',
+        };
+        docs.slice(0, 6).forEach((doc: any) => {
+          const sc = statusColors[doc.status] || statusColors.draft;
+          container.innerHTML += `
+            <div class="bg-bg-card border border-border rounded-xl p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-[rgba(192,132,252,0.15)] text-[#C084FC]">${doc.doc_type}</span>
+                <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${sc}">${doc.status}</span>
+              </div>
+              <h3 class="font-heading font-bold text-base text-text-primary mb-1">${doc.client_name || 'Untitled'}</h3>
+              <p class="text-text-muted text-xs mb-1">${doc.amount ? '$' + Number(doc.amount).toLocaleString() : ''}</p>
+              <p class="text-text-muted text-xs">${new Date(doc.created_at).toLocaleDateString()}</p>
+            </div>`;
+        });
+      }
+    } catch { /* silent */ }
+  }
+
+  // Profile save
+  document.getElementById('profile-save')?.addEventListener('click', async () => {
+    const session = JSON.parse(localStorage.getItem('ntq_session') || '{}');
+    if (!session.access_token) return;
+
+    const body = {
+      businessName: (document.getElementById('profile-business') as HTMLInputElement).value,
+      ownerName: (document.getElementById('profile-owner') as HTMLInputElement).value,
+      trade: (document.getElementById('profile-trade') as HTMLSelectElement).value,
+      phone: (document.getElementById('profile-phone') as HTMLInputElement).value,
+      email: (document.getElementById('profile-email') as HTMLInputElement).value,
+      licenseNumber: (document.getElementById('profile-license') as HTMLInputElement).value,
+      defaultHourlyRate: (document.getElementById('profile-rate') as HTMLInputElement).value || null,
+      defaultMarkup: (document.getElementById('profile-markup') as HTMLInputElement).value || null,
+    };
+
+    const res = await fetch('/api/dashboard/profile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (res.ok) {
+      const saved = document.getElementById('profile-saved')!;
+      saved.classList.remove('hidden');
+      setTimeout(() => saved.classList.add('hidden'), 2000);
+    }
+  });
+
+  // Logout
+  document.getElementById('dash-logout')?.addEventListener('click', () => {
+    localStorage.removeItem('ntq_has_account');
+    localStorage.removeItem('ntq_session');
+    window.location.href = '/';
+  });
+
+  // Guest buttons
+  document.getElementById('dash-signup-btn')?.addEventListener('click', () => {
+    (window as any).openSignupModal?.('direct');
+  });
+  document.getElementById('dash-login-btn')?.addEventListener('click', () => {
+    (window as any).openSignupModal?.('direct');
+  });
+
+  initDashboard();
+</script>

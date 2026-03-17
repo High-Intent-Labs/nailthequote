@@ -1,0 +1,59 @@
+---
+export const prerender = false;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logging in... — NailTheQuote</title>
+  <style>
+    body { background: #0F1419; color: #F1F3F5; font-family: Inter, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    .loader { text-align: center; }
+    .spinner { width: 32px; height: 32px; border: 3px solid #2A3442; border-top-color: #FF6B2B; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="loader">
+    <div class="spinner"></div>
+    <p>Logging you in...</p>
+  </div>
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    const supabaseUrl = document.querySelector('meta[name="supabase-url"]')?.getAttribute('content');
+    const supabaseKey = document.querySelector('meta[name="supabase-key"]')?.getAttribute('content');
+
+    // Parse the hash fragment from the magic link
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get('access_token');
+    const refreshToken = hashParams.get('refresh_token');
+
+    if (accessToken && refreshToken) {
+      // Store session
+      localStorage.setItem('ntq_has_account', '1');
+
+      // Check if user needs onboarding (new user)
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        const data = await res.json();
+
+        if (data.needsOnboarding) {
+          window.location.href = '/dashboard?onboard=1';
+        } else {
+          window.location.href = '/dashboard';
+        }
+      } catch {
+        window.location.href = '/dashboard';
+      }
+    } else {
+      // No tokens — may be an error or the user navigated here directly
+      window.location.href = '/';
+    }
+  </script>
+</body>
+</html>

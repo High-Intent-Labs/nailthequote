@@ -1,0 +1,148 @@
+---
+interface Props {
+  toolName: string;
+  toolSlug: string;
+  tradeSlug: string;
+  tradeName: string;
+}
+
+const { toolName, toolSlug, tradeSlug, tradeName } = Astro.props;
+---
+
+<div
+  id="email-capture-card"
+  class="mt-8 bg-bg-card border border-border rounded-2xl p-6 md:p-8 relative overflow-hidden"
+  data-tool-name={toolName}
+  data-tool-slug={toolSlug}
+  data-trade-slug={tradeSlug}
+  data-trade-name={tradeName}
+>
+  <!-- Accent top border -->
+  <div class="absolute top-0 left-0 right-0 h-1 bg-accent"></div>
+
+  <!-- Form state -->
+  <div id="email-capture-form">
+    <div class="flex items-start gap-4 mb-4">
+      <div class="shrink-0 w-10 h-10 rounded-lg bg-accent/15 flex items-center justify-center">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="text-accent">
+          <path d="M2.5 6.667L9.025 11.05a1.667 1.667 0 001.95 0L17.5 6.667M4.167 15h11.666A1.667 1.667 0 0017.5 13.333V6.667A1.667 1.667 0 0015.833 5H4.167A1.667 1.667 0 002.5 6.667v6.666A1.667 1.667 0 004.167 15z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="font-heading font-bold text-lg text-text-primary">Email these results to yourself</h3>
+        <p class="text-text-secondary text-sm mt-0.5">Get a copy you can reference on the job site or attach to a quote.</p>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3 mb-3">
+      <input
+        type="email"
+        id="email-capture-input"
+        placeholder="you@company.com"
+        required
+        class="flex-1 bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-base focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted"
+      />
+      <button
+        id="email-capture-submit"
+        type="button"
+        class="bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-lg transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Send Results
+      </button>
+    </div>
+
+    <label class="flex items-start gap-2 cursor-pointer select-none">
+      <input
+        type="checkbox"
+        id="email-capture-consent"
+        checked
+        class="mt-0.5 w-4 h-4 rounded border-border bg-bg-dark accent-accent"
+      />
+      <span class="text-text-muted text-xs leading-relaxed">
+        Also send me free tools, updates, and tips for pros. Unsubscribe anytime.
+      </span>
+    </label>
+
+    <div id="email-capture-error" class="hidden mt-3 text-sm text-[#EF4444]"></div>
+  </div>
+
+  <!-- Success state -->
+  <div id="email-capture-success" class="hidden">
+    <div class="flex items-center gap-3 mb-3">
+      <div class="shrink-0 w-10 h-10 rounded-full bg-[rgba(52,211,153,0.15)] flex items-center justify-center">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="text-[#34D399]">
+          <path d="M16.667 5L7.5 14.167 3.333 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <p class="font-heading font-bold text-lg text-text-primary">Results sent! Check your inbox.</p>
+      </div>
+    </div>
+    <p class="text-text-secondary text-sm">
+      Want to save all your calculations?
+      <button id="email-capture-upsell" type="button" class="text-accent font-semibold hover:underline">
+        Create a free account
+      </button>
+    </p>
+  </div>
+</div>
+
+<script>
+  const card = document.getElementById('email-capture-card')!;
+  const form = document.getElementById('email-capture-form')!;
+  const success = document.getElementById('email-capture-success')!;
+  const input = document.getElementById('email-capture-input') as HTMLInputElement;
+  const submit = document.getElementById('email-capture-submit') as HTMLButtonElement;
+  const consent = document.getElementById('email-capture-consent') as HTMLInputElement;
+  const errorEl = document.getElementById('email-capture-error')!;
+
+  submit.addEventListener('click', async () => {
+    const email = input.value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errorEl.textContent = 'Please enter a valid email address.';
+      errorEl.classList.remove('hidden');
+      return;
+    }
+
+    errorEl.classList.add('hidden');
+    submit.disabled = true;
+    submit.textContent = 'Sending...';
+
+    try {
+      const res = await fetch('/api/email-capture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          toolSlug: card.dataset.toolSlug,
+          toolName: card.dataset.toolName,
+          tradeSlug: card.dataset.tradeSlug,
+          tradeName: card.dataset.tradeName,
+          marketingConsent: consent.checked,
+          sourceUrl: window.location.pathname,
+        }),
+      });
+
+      if (!res.ok) throw new Error('Failed to send');
+
+      form.classList.add('hidden');
+      success.classList.remove('hidden');
+    } catch {
+      errorEl.textContent = 'Something went wrong. Please try again.';
+      errorEl.classList.remove('hidden');
+      submit.disabled = false;
+      submit.textContent = 'Send Results';
+    }
+  });
+
+  // Enter key submits
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') submit.click();
+  });
+
+  // Upsell button opens signup modal
+  document.getElementById('email-capture-upsell')?.addEventListener('click', () => {
+    document.getElementById('signup-modal')?.classList.remove('hidden');
+    document.getElementById('signup-modal')?.setAttribute('data-trigger', 'tier1_upsell');
+  });
+</script>

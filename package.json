@@ -1,5 +1,5 @@
 {
-  "name": "sendthebid",
+  "name": "nailthequote",
   "type": "module",
   "version": "0.0.1",
   "engines": {
@@ -12,12 +12,15 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^13.1.2",
     "@astrojs/sitemap": "^3.7.1",
+    "@supabase/supabase-js": "^2.99.2",
     "@tailwindcss/vite": "^4.2.1",
     "astro": "^6.0.4",
     "chart.js": "^4.5.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.0",
+    "resend": "^6.9.4",
     "tailwindcss": "^4.2.1"
   }
 }
