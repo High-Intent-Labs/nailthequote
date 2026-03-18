@@ -15,10 +15,18 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 });
     }
 
+    // Exclude document-type tools (shown separately under Documents)
+    const docSlugs = ['invoice-generator', 'estimate-template', 'work-order-template',
+      'service-agreement-template', 'subcontractor-agreement-template',
+      'inspection-report-template', 'completion-report-template', 'receipt-template',
+      'maintenance-checklist', 'service-checklist', 'inspection-checklist',
+      'punch-list-template', 'treatment-checklist', 'change-order-template'];
+
     const { data, error } = await supabase
       .from('saved_calculations')
       .select('*')
       .eq('user_id', user.id)
+      .not('tool_slug', 'in', `(${docSlugs.join(',')})`)
       .order('created_at', { ascending: false })
       .limit(20);
 

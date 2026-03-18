@@ -350,7 +350,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
               </div>
               <h3 class="font-heading font-bold text-base text-text-primary mb-1">${doc.client_name || 'Untitled'}</h3>
               <p class="text-text-muted text-xs mb-1">${doc.amount ? '$' + Number(doc.amount).toLocaleString() : ''}</p>
-              <p class="text-text-muted text-xs">${new Date(doc.created_at).toLocaleDateString()}</p>
+              <p class="text-text-muted text-xs mb-3">${new Date(doc.created_at).toLocaleDateString()}</p>
+              <a href="/${doc.trade}/${doc.tool_slug}/?restore=${doc.id}" class="text-accent text-sm font-medium hover:underline no-underline">Open &rarr;</a>
             </div>`;
         });
       }

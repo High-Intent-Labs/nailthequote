@@ -287,44 +287,46 @@ const webAppSchema = {
         const { profile } = await res.json();
         if (!profile) return;
 
-        // Map profile fields to common form field patterns
-        const fieldMap: [string[], string][] = [
-          [['company', 'business', 'company-name', 'business-name'], profile.business_name],
-          [['owner', 'tech-name', 'owner-name', 'your-name'], profile.owner_name],
-          [['phone', 'company-phone', 'your-phone'], profile.phone],
-          [['email', 'company-email', 'your-email'], profile.email],
-          [['license', 'license-number', 'license-num'], profile.license_number],
-          [['hourly-rate', 'labor-rate', 'billable-rate', 'rate'], profile.default_hourly_rate],
-          [['markup', 'parts-markup', 'materials-markup'], profile.default_markup],
-        ];
+        // Auto-fill by matching input ID directly to profile fields
+        const idMap: Record<string, string | undefined> = {
+          'companyName': profile.business_name,
+          'companyname': profile.business_name,
+          'company-name': profile.business_name,
+          'businessName': profile.business_name,
+          'business-name': profile.business_name,
+          'company': profile.business_name,
+          'companyPhone': profile.phone,
+          'companyphone': profile.phone,
+          'company-phone': profile.phone,
+          'phone': profile.phone,
+          'companyEmail': profile.email,
+          'companyemail': profile.email,
+          'company-email': profile.email,
+          'ownerName': profile.owner_name,
+          'owner-name': profile.owner_name,
+          'tech-name': profile.owner_name,
+          'licenseNum': profile.license_number,
+          'license-num': profile.license_number,
+          'license': profile.license_number,
+          'hourly-rate': profile.default_hourly_rate,
+          'labor-rate': profile.default_hourly_rate,
+          'billable-rate': profile.default_hourly_rate,
+          'rate': profile.default_hourly_rate,
+          'markup': profile.default_markup,
+          'parts-markup': profile.default_markup,
+          'materials-markup': profile.default_markup,
+        };
 
-        // Fill inputs by matching placeholder text, label text, name, or id
         const inputs = document.querySelectorAll<HTMLInputElement>('input[type="text"], input[type="tel"], input[type="email"], input[type="number"]');
         inputs.forEach(input => {
-          // Skip if user already typed something or URL params pre-filled the value
           if (input.value && input.value !== input.defaultValue) return;
-
-          // Skip email capture card and signup modal inputs
           if (input.closest('#email-capture-card') || input.closest('#signup-modal')) return;
 
-          const label = input.closest('div')?.querySelector('label')?.textContent?.toLowerCase() || '';
-          const id = (input.id || '').toLowerCase();
-          const name = (input.name || '').toLowerCase();
-          const dataField = (input.getAttribute('data-field') || '').toLowerCase();
-          // Only use placeholder if it looks like a field hint, not an example email
-          const placeholder = (input.placeholder || '').toLowerCase();
-          const safePlaceholder = placeholder.includes('@') ? '' : placeholder;
-          const searchStr = `${safePlaceholder} ${label} ${id} ${name} ${dataField}`;
-
-          for (const [patterns, value] of fieldMap) {
-            if (!value) continue;
-            for (const pattern of patterns) {
-              if (searchStr.includes(pattern)) {
-                input.value = String(value);
-                input.dispatchEvent(new Event('input', { bubbles: true }));
-                return; // Only fill once per input
-              }
-            }
+          // Match by exact ID first
+          const val = idMap[input.id] || idMap[input.name];
+          if (val) {
+            input.value = String(val);
+            input.dispatchEvent(new Event('input', { bubbles: true }));
           }
         });
       } catch { /* silent — don't break the page */ }
