@@ -19,25 +19,28 @@
     <div class="spinner"></div>
     <p>Logging you in...</p>
   </div>
-  <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  <script>
+    try {
+      // Parse the hash fragment from the magic link
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
 
-    const supabaseUrl = document.querySelector('meta[name="supabase-url"]')?.getAttribute('content');
-    const supabaseKey = document.querySelector('meta[name="supabase-key"]')?.getAttribute('content');
-
-    // Parse the hash fragment from the magic link
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const accessToken = hashParams.get('access_token');
-    const refreshToken = hashParams.get('refresh_token');
-
-    if (accessToken && refreshToken) {
-      // Store session and go straight to dashboard
-      localStorage.setItem('ntq_has_account', '1');
-      localStorage.setItem('ntq_session', JSON.stringify({ access_token: accessToken, refresh_token: refreshToken }));
-      window.location.href = '/dashboard';
-    } else {
-      // No tokens — may be an error or the user navigated here directly
-      window.location.href = '/';
+      if (accessToken && refreshToken) {
+        // Store session and go straight to dashboard
+        localStorage.setItem('ntq_has_account', '1');
+        localStorage.setItem('ntq_session', JSON.stringify({ access_token: accessToken, refresh_token: refreshToken }));
+        window.location.href = '/dashboard/';
+      } else {
+        // No tokens — link may be expired or user navigated here directly
+        document.querySelector('.spinner')?.remove();
+        document.querySelector('.loader p').textContent = 'Login link expired or invalid. Redirecting...';
+        setTimeout(() => { window.location.href = '/'; }, 2500);
+      }
+    } catch (e) {
+      document.querySelector('.spinner')?.remove();
+      document.querySelector('.loader p').textContent = 'Something went wrong. Redirecting...';
+      setTimeout(() => { window.location.href = '/'; }, 2500);
     }
   </script>
 </body>

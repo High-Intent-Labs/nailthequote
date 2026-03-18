@@ -12,6 +12,7 @@ interface Props {
   ogImage?: string;
   currentPath?: string;
   schema?: object[];
+  noindex?: boolean;
 }
 
 const {
@@ -20,7 +21,8 @@ const {
   canonicalUrl,
   ogImage = '/images/og-default.png',
   currentPath = Astro.url.pathname,
-  schema = []
+  schema = [],
+  noindex = false
 } = Astro.props;
 
 const siteUrl = 'https://nailthequote.com';
@@ -34,6 +36,7 @@ const canonical = canonicalUrl || `${siteUrl}${currentPath}`;
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  {noindex && <meta name="robots" content="noindex, nofollow" />}
   <link rel="canonical" href={canonical} />
   <meta name="google-site-verification" content="fjqa3ABRAdp_e1EXOy5tFvEKZN6PUbS60yaODrru9DY" />
 

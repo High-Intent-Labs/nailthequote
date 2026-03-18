@@ -3,7 +3,7 @@
 // Trigger types: template_save, pdf_download, repeat_visit, tier1_upsell
 ---
 
-<div id="signup-modal" class="hidden fixed inset-0 z-50" data-trigger="" data-tab="login">
+<div id="signup-modal" class="hidden fixed inset-0 z-50" role="dialog" aria-modal="true" aria-labelledby="signup-heading" data-trigger="" data-tab="login">
   <!-- Backdrop -->
   <div id="signup-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
 
@@ -37,10 +37,12 @@
         <!-- Form state (shared between login and signup — magic link works for both) -->
         <div id="signup-form">
           <div class="mb-4">
+            <label for="signup-email" class="sr-only">Email address</label>
             <input
               type="email"
               id="signup-email"
               placeholder="you@company.com"
+              aria-label="Email address"
               class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-base focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted"
             />
           </div>
@@ -276,16 +278,21 @@
   (window as any).openSignupModal = openModal;
 
   // Repeat visit detection
-  const visitCount = parseInt(localStorage.getItem('ntq_visit_count') || '0', 10) + 1;
-  localStorage.setItem('ntq_visit_count', String(visitCount));
-  const toolsUsed = JSON.parse(localStorage.getItem('ntq_tools_used') || '[]') as string[];
-  const currentSlug = window.location.pathname.split('/').filter(Boolean).pop() || '';
-  if (currentSlug && !toolsUsed.includes(currentSlug)) {
-    toolsUsed.push(currentSlug);
-    localStorage.setItem('ntq_tools_used', JSON.stringify(toolsUsed));
-  }
+  let visitCount = 0;
+  let toolsUsed: string[] = [];
+  try {
+    visitCount = parseInt(localStorage.getItem('ntq_visit_count') || '0', 10) + 1;
+    localStorage.setItem('ntq_visit_count', String(visitCount));
+    toolsUsed = JSON.parse(localStorage.getItem('ntq_tools_used') || '[]') as string[];
+    const currentSlug = window.location.pathname.split('/').filter(Boolean).pop() || '';
+    if (currentSlug && !toolsUsed.includes(currentSlug)) {
+      toolsUsed.push(currentSlug);
+      localStorage.setItem('ntq_tools_used', JSON.stringify(toolsUsed));
+    }
+  } catch { /* localStorage unavailable or corrupt — skip */ }
 
   // Show repeat visit prompt every 5th visit (not per session — per total visits)
+  try {
   if (visitCount > 0 && visitCount % 5 === 0 && !localStorage.getItem('ntq_has_account')) {
     const lastPromptVisit = parseInt(localStorage.getItem('ntq_last_prompt_visit') || '0', 10);
     if (lastPromptVisit !== visitCount) {
@@ -297,4 +304,5 @@
       }, 5000);
     }
   }
+  } catch { /* localStorage unavailable */ }
 </script>

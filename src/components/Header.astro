@@ -14,7 +14,7 @@ const liveTrades = getLiveTrades();
   </a>
 
   <!-- Mobile menu button -->
-  <button id="mobile-menu-btn" class="md:hidden text-text-secondary p-2" aria-label="Toggle menu">
+  <button id="mobile-menu-btn" class="md:hidden text-text-secondary p-2" aria-label="Toggle menu" aria-expanded="false">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <line x1="3" y1="6" x2="21" y2="6"></line>
       <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -64,10 +64,21 @@ const liveTrades = getLiveTrades();
   const menu = document.getElementById('mobile-menu');
   btn?.addEventListener('click', () => {
     menu?.classList.toggle('hidden');
+    const expanded = !menu?.classList.contains('hidden');
+    btn?.setAttribute('aria-expanded', String(expanded));
+  });
+
+  // Close mobile menu when a link is clicked
+  menu?.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      menu?.classList.add('hidden');
+      btn?.setAttribute('aria-expanded', 'false');
+    });
   });
 
   // Auth state: show Dashboard link or Log In button
-  const hasAccount = localStorage.getItem('ntq_has_account');
+  let hasAccount: string | null = null;
+  try { hasAccount = localStorage.getItem('ntq_has_account'); } catch {}
   const dashboardLink = document.getElementById('header-dashboard-link');
   const loginBtn = document.getElementById('header-login-btn');
 

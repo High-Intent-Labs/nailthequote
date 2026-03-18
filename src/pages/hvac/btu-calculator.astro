@@ -213,6 +213,7 @@ const faqSchema = {
 
   // Auto-calculate on input change
   document.querySelectorAll('#btu-calc input, #btu-calc select').forEach(el => {
+    el.addEventListener('input', calculate);
     el.addEventListener('change', calculate);
   });
 

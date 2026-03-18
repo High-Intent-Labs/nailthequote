@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Page Not Found — NailTheQuote"
+  description="The page you're looking for doesn't exist."
+>
+  <div class="max-w-[600px] mx-auto px-6 py-20 text-center">
+    <div class="text-[120px] font-heading font-extrabold text-accent leading-none mb-4">404</div>
+    <h1 class="font-heading font-bold text-3xl text-text-primary mb-4">Page not found</h1>
+    <p class="text-text-secondary text-lg mb-8">
+      The page you're looking for doesn't exist or has been moved.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/" class="bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-lg transition-colors no-underline">
+        Go to Homepage
+      </a>
+      <a href="/#trades" class="border border-border text-text-primary hover:border-accent/50 font-semibold px-6 py-3 rounded-lg transition-colors no-underline">
+        Browse All Tools
+      </a>
+    </div>
+  </div>
+</BaseLayout>
