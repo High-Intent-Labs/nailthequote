@@ -326,8 +326,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
         // Wire up delete buttons
         container.querySelectorAll('[data-delete-calc]').forEach(btn => {
-          btn.addEventListener('click', async (e) => {
-            const id = (e.currentTarget as HTMLElement).dataset.deleteCalc;
+          btn.addEventListener('click', async function(this: HTMLElement) {
+            const card = this.closest('[data-delete-calc]')?.closest('div.rounded-xl') || this.parentElement?.parentElement;
+            const id = this.dataset.deleteCalc;
             if (!confirm('Delete this saved calculation?')) return;
             try {
               const session = JSON.parse(localStorage.getItem('ntq_session') || '{}');
@@ -336,7 +337,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
                 body: JSON.stringify({ id }),
               });
-              if (res.ok) (e.currentTarget as HTMLElement).closest('.bg-bg-card')?.remove();
+              if (res.ok) card?.remove();
             } catch {}
           });
         });
@@ -382,8 +383,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
         // Wire up delete buttons for docs
         container.querySelectorAll('[data-delete-doc]').forEach(btn => {
-          btn.addEventListener('click', async (e) => {
-            const id = (e.currentTarget as HTMLElement).dataset.deleteDoc;
+          btn.addEventListener('click', async function(this: HTMLElement) {
+            const card = this.closest('[data-delete-doc]')?.closest('div.rounded-xl') || this.parentElement?.parentElement;
+            const id = this.dataset.deleteDoc;
             if (!confirm('Delete this saved document?')) return;
             try {
               const session = JSON.parse(localStorage.getItem('ntq_session') || '{}');
@@ -392,7 +394,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
                 body: JSON.stringify({ id }),
               });
-              if (res.ok) (e.currentTarget as HTMLElement).closest('.bg-bg-card')?.remove();
+              if (res.ok) card?.remove();
             } catch {}
           });
         });
