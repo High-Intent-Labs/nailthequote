@@ -28,7 +28,7 @@ const liveTrades = getLiveTrades();
       <a href={`/${trade.slug}/`} class:list={[
         "text-sm font-medium no-underline transition-colors",
         currentPath.startsWith(`/${trade.slug}`) ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'
-      ]}>{trade.name} Tools</a>
+      ]}>{trade.name}</a>
     ))}
     <a href="/#trades" class="text-text-secondary text-sm font-medium no-underline hover:text-text-primary transition-colors">All Trades</a>
     <!-- Auth: swapped via JS based on login state -->
@@ -40,7 +40,7 @@ const liveTrades = getLiveTrades();
       </span>
       My Account
     </a>
-    <button id="header-login-btn" type="button" class="text-sm font-medium text-accent hover:text-accent-hover transition-colors cursor-pointer">Log In</button>
+    <button id="header-login-btn" type="button" class="bg-accent hover:bg-accent-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer">Log In</button>
   </div>
 </nav>
 
@@ -51,11 +51,11 @@ const liveTrades = getLiveTrades();
       <a href={`/${trade.slug}/`} class:list={[
         "text-sm font-medium no-underline",
         currentPath.startsWith(`/${trade.slug}`) ? 'text-text-primary' : 'text-text-secondary'
-      ]}>{trade.name} Tools</a>
+      ]}>{trade.name}</a>
     ))}
     <a href="/#trades" class="text-text-secondary text-sm font-medium no-underline">All Trades</a>
     <a href="/dashboard" id="mobile-dashboard-link" class="hidden text-sm font-medium text-text-primary no-underline">Dashboard</a>
-    <button id="mobile-login-btn" type="button" class="text-sm font-medium text-accent text-left cursor-pointer">Log In</button>
+    <button id="mobile-login-btn" type="button" class="bg-accent hover:bg-accent-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors text-left cursor-pointer w-fit">Log In</button>
   </div>
 </div>
 
