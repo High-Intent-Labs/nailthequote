@@ -4,7 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <BaseLayout
   title="Privacy Policy | NailTheQuote"
-  description="NailTheQuote privacy policy. We don't collect personal data, use cookies, or require accounts. Your calculations stay in your browser."
+  description="NailTheQuote privacy policy. How we handle your data, email collection, and account information."
   currentPath="/privacy"
 >
   <div class="max-w-[800px] mx-auto px-6 md:px-12 py-16">
@@ -14,43 +14,59 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
       <section>
         <h2 class="font-heading font-bold text-xl text-text-primary mb-3">The Short Version</h2>
-        <p>NailTheQuote is a free tools site for tradespeople. We don't collect your personal data, we don't use cookies, and we don't require accounts. Everything runs in your browser.</p>
+        <p>NailTheQuote provides free tools for tradespeople. All calculators, templates, and estimators work without an account. If you choose to share your email or create an account, we explain exactly what we collect and why below.</p>
       </section>
 
       <section>
-        <h2 class="font-heading font-bold text-xl text-text-primary mb-3">What We Don't Collect</h2>
-        <ul class="list-disc list-inside space-y-1">
-          <li>No personal information (name, email, phone)</li>
-          <li>No cookies or tracking pixels</li>
-          <li>No account registration</li>
-          <li>No calculator inputs or results</li>
-          <li>No financial data from invoices or estimates</li>
+        <h2 class="font-heading font-bold text-xl text-text-primary mb-3">What We Collect</h2>
+        <p class="mb-3"><strong class="text-text-primary">If you use tools without signing up:</strong> Your calculator inputs and results stay in your browser. We do not store them on our servers.</p>
+        <p class="mb-3"><strong class="text-text-primary">If you enter your email:</strong> We collect your email address when you use the "Email these results to yourself" feature. If the marketing consent checkbox is checked, we add your email to our mailing list for free tool updates and tips. You can unsubscribe at any time.</p>
+        <p><strong class="text-text-primary">If you create an account:</strong> We collect your email address and, optionally, your name, company name, and license number. Account data is stored securely in Supabase (our database provider) and used to save your calculations, documents, and preferences.</p>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-xl text-text-primary mb-3">How We Use Your Data</h2>
+        <ul class="list-disc list-inside space-y-2">
+          <li><strong class="text-text-primary">Email delivery:</strong> To send you calculation results, invoices, or documents you requested.</li>
+          <li><strong class="text-text-primary">Account functionality:</strong> To save and retrieve your calculations, documents, and business profile across sessions and devices.</li>
+          <li><strong class="text-text-primary">Marketing (opt-in only):</strong> To send free tool announcements, tips, and updates. Only if you checked the consent box. Unsubscribe link in every email.</li>
         </ul>
       </section>
 
       <section>
-        <h2 class="font-heading font-bold text-xl text-text-primary mb-3">Your Data Stays Local</h2>
-        <p>All calculations, invoices, estimates, and other documents are generated entirely in your browser. Nothing is sent to our servers. When you generate a PDF, it's created client-side using your browser's print function.</p>
-      </section>
-
-      <section>
-        <h2 class="font-heading font-bold text-xl text-text-primary mb-3">Analytics</h2>
-        <p>We use Cloudflare Analytics, which is a privacy-first analytics service. It does not use cookies, does not track individual users, and does not collect personal data. It only provides aggregate page view counts so we know which tools are useful.</p>
-      </section>
-
-      <section>
-        <h2 class="font-heading font-bold text-xl text-text-primary mb-3">Hosting</h2>
-        <p>NailTheQuote is hosted on Cloudflare Pages. Cloudflare may collect standard server logs (IP addresses, request timestamps) as part of their infrastructure. See <a href="https://www.cloudflare.com/privacypolicy/" class="text-accent hover:underline" target="_blank" rel="noopener noreferrer">Cloudflare's Privacy Policy</a> for details.</p>
+        <h2 class="font-heading font-bold text-xl text-text-primary mb-3">What We Don't Do</h2>
+        <ul class="list-disc list-inside space-y-1">
+          <li>We don't sell your data to anyone.</li>
+          <li>We don't share your email with third parties for their marketing.</li>
+          <li>We don't use tracking cookies or advertising pixels.</li>
+          <li>We don't store your calculator inputs unless you have an account and explicitly save them.</li>
+          <li>We don't access your financial data from invoices or estimates — those are generated in your browser.</li>
+        </ul>
       </section>
 
       <section>
         <h2 class="font-heading font-bold text-xl text-text-primary mb-3">Third-Party Services</h2>
-        <p>We load Google Fonts (Barlow Condensed and Inter) for typography. Google may collect anonymized usage data through font requests. No other third-party services are used.</p>
+        <ul class="list-disc list-inside space-y-2">
+          <li><strong class="text-text-primary">Cloudflare:</strong> Hosting and CDN. Cloudflare collects standard server logs. See <a href="https://www.cloudflare.com/privacypolicy/" class="text-accent hover:underline" target="_blank" rel="noopener noreferrer">Cloudflare's Privacy Policy</a>.</li>
+          <li><strong class="text-text-primary">Supabase:</strong> Database and authentication. Stores account data and saved calculations securely. See <a href="https://supabase.com/privacy" class="text-accent hover:underline" target="_blank" rel="noopener noreferrer">Supabase's Privacy Policy</a>.</li>
+          <li><strong class="text-text-primary">Resend:</strong> Email delivery. Processes your email address to deliver results and marketing emails. See <a href="https://resend.com/legal/privacy-policy" class="text-accent hover:underline" target="_blank" rel="noopener noreferrer">Resend's Privacy Policy</a>.</li>
+          <li><strong class="text-text-primary">Google Fonts:</strong> Typography. Google may collect anonymized usage data through font requests.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-xl text-text-primary mb-3">Data Retention</h2>
+        <p>Email addresses collected through the email capture form are retained until you unsubscribe. Account data is retained for as long as your account exists. You can delete your account and all associated data at any time by contacting us.</p>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-xl text-text-primary mb-3">Your Rights</h2>
+        <p>You can request a copy of your data, ask us to correct it, or ask us to delete it entirely. Email us and we'll handle it within 7 business days.</p>
       </section>
 
       <section>
         <h2 class="font-heading font-bold text-xl text-text-primary mb-3">Changes</h2>
-        <p>If we ever change this policy, we'll update this page. Since we don't have your email, we can't notify you directly — but the "Last updated" date at the top will reflect any changes.</p>
+        <p>If we change this policy, we'll update this page and the "Last updated" date above. If you have an account, we may also notify you by email for significant changes.</p>
       </section>
 
       <section>
