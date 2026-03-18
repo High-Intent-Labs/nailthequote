@@ -182,12 +182,17 @@ const webAppSchema = {
           // Skip if user already typed something
           if (input.value && input.value !== input.defaultValue) return;
 
-          const placeholder = (input.placeholder || '').toLowerCase();
+          // Skip email capture card and signup modal inputs
+          if (input.closest('#email-capture-card') || input.closest('#signup-modal')) return;
+
           const label = input.closest('div')?.querySelector('label')?.textContent?.toLowerCase() || '';
           const id = (input.id || '').toLowerCase();
           const name = (input.name || '').toLowerCase();
           const dataField = (input.getAttribute('data-field') || '').toLowerCase();
-          const searchStr = `${placeholder} ${label} ${id} ${name} ${dataField}`;
+          // Only use placeholder if it looks like a field hint, not an example email
+          const placeholder = (input.placeholder || '').toLowerCase();
+          const safePlaceholder = placeholder.includes('@') ? '' : placeholder;
+          const searchStr = `${safePlaceholder} ${label} ${id} ${name} ${dataField}`;
 
           for (const [patterns, value] of fieldMap) {
             if (!value) continue;
