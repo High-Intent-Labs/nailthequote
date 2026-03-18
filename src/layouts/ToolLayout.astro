@@ -149,4 +149,58 @@ const webAppSchema = {
       &larr; View all {tool.tradeName} tools
     </a>
   </div>
+
+  <!-- Auto-fill profile data for logged-in users -->
+  <script>
+    (async () => {
+      try {
+        const session = JSON.parse(localStorage.getItem('ntq_session') || '{}');
+        if (!session.access_token) return;
+
+        const res = await fetch('/api/auth/me', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        if (!res.ok) return;
+
+        const { profile } = await res.json();
+        if (!profile) return;
+
+        // Map profile fields to common form field patterns
+        const fieldMap: [string[], string][] = [
+          [['company', 'business', 'company-name', 'business-name'], profile.business_name],
+          [['owner', 'tech-name', 'owner-name', 'your-name'], profile.owner_name],
+          [['phone', 'company-phone', 'your-phone'], profile.phone],
+          [['email', 'company-email', 'your-email'], profile.email],
+          [['license', 'license-number', 'license-num'], profile.license_number],
+          [['hourly-rate', 'labor-rate', 'billable-rate', 'rate'], profile.default_hourly_rate],
+          [['markup', 'parts-markup', 'materials-markup'], profile.default_markup],
+        ];
+
+        // Fill inputs by matching placeholder text, label text, name, or id
+        const inputs = document.querySelectorAll<HTMLInputElement>('input[type="text"], input[type="tel"], input[type="email"], input[type="number"]');
+        inputs.forEach(input => {
+          // Skip if user already typed something
+          if (input.value && input.value !== input.defaultValue) return;
+
+          const placeholder = (input.placeholder || '').toLowerCase();
+          const label = input.closest('div')?.querySelector('label')?.textContent?.toLowerCase() || '';
+          const id = (input.id || '').toLowerCase();
+          const name = (input.name || '').toLowerCase();
+          const dataField = (input.getAttribute('data-field') || '').toLowerCase();
+          const searchStr = `${placeholder} ${label} ${id} ${name} ${dataField}`;
+
+          for (const [patterns, value] of fieldMap) {
+            if (!value) continue;
+            for (const pattern of patterns) {
+              if (searchStr.includes(pattern)) {
+                input.value = String(value);
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                return; // Only fill once per input
+              }
+            }
+          }
+        });
+      } catch { /* silent — don't break the page */ }
+    })();
+  </script>
 </BaseLayout>
