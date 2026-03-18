@@ -25,8 +25,8 @@
         <div id="signup-context" class="hidden bg-accent/10 border border-accent/20 rounded-lg px-4 py-3 mb-6 text-sm text-accent"></div>
 
         <!-- Heading -->
-        <h2 class="font-heading font-bold text-2xl text-text-primary mb-2">Create your free account</h2>
-        <p class="text-text-secondary text-sm mb-6">Save your work, pre-fill your details, and access your calculations from any device.</p>
+        <h2 id="signup-heading" class="font-heading font-bold text-2xl text-text-primary mb-2">Create your free account</h2>
+        <p id="signup-subheading" class="text-text-secondary text-sm mb-6">Save your work, pre-fill your details, and access your calculations from any device.</p>
 
         <!-- Signup form state -->
         <div id="signup-form">
@@ -96,8 +96,7 @@
           </div>
           <h3 class="font-heading font-bold text-xl text-text-primary mb-2">Check your email</h3>
           <p class="text-text-secondary text-sm mb-1">We sent a login link to</p>
-          <p id="signup-sent-email" class="text-text-primary font-semibold text-sm mb-4"></p>
-          <p class="text-text-muted text-xs">No password needed. Click the link in your email to log in.</p>
+          <p id="signup-sent-email" class="text-text-primary font-semibold text-sm"></p>
         </div>
 
       </div>
@@ -118,6 +117,8 @@
   const googleBtn = document.getElementById('signup-google') as HTMLButtonElement;
   const consentCheckbox = document.getElementById('signup-consent') as HTMLInputElement;
   const signupError = document.getElementById('signup-error')!;
+  const signupHeading = document.getElementById('signup-heading')!;
+  const signupSubheading = document.getElementById('signup-subheading')!;
 
   const triggerMessages: Record<string, string> = {
     template_save: 'Create a free account to save this document and pre-fill your business details next time.',
@@ -141,6 +142,8 @@
     // Reset to form state
     signupForm.classList.remove('hidden');
     linkSent.classList.add('hidden');
+    signupHeading.classList.remove('hidden');
+    signupSubheading.classList.remove('hidden');
   }
 
   function closeModal() {
@@ -188,6 +191,9 @@
       document.getElementById('signup-sent-email')!.textContent = email;
       signupForm.classList.add('hidden');
       linkSent.classList.remove('hidden');
+      signupHeading.classList.add('hidden');
+      signupSubheading.classList.add('hidden');
+      contextBanner.classList.add('hidden');
     } catch {
       signupError.textContent = 'Something went wrong. Please try again.';
       signupError.classList.remove('hidden');
