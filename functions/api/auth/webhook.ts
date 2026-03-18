@@ -3,6 +3,14 @@ import { getSupabaseAdmin } from '../../_lib/supabase';
 import { getResend, getAudienceId } from '../../_lib/resend';
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
+  // --- Webhook signature verification ---
+  const webhookSecret = context.env.SUPABASE_WEBHOOK_SECRET;
+  const incomingSecret = context.request.headers.get('x-webhook-secret');
+
+  if (!webhookSecret || !incomingSecret || incomingSecret !== webhookSecret) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+  }
+
   try {
     const body: any = await context.request.json();
     const { type, record } = body;

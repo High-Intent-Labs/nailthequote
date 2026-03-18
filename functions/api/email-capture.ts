@@ -2,6 +2,39 @@ import type { Env } from '../_lib/env';
 import { getSupabaseAdmin } from '../_lib/supabase';
 import { getResend, getAudienceId } from '../_lib/resend';
 
+// ---------------------------------------------------------------------------
+// Basic in-memory duplicate-submission guard
+// ---------------------------------------------------------------------------
+// Cloudflare Workers are stateless across isolates, so this map only prevents
+// rapid-fire duplicate requests hitting the SAME isolate (e.g. a user
+// double-clicking submit). For proper rate limiting, configure Cloudflare WAF
+// rate-limiting rules in the dashboard:
+//   Zone > Security > WAF > Rate limiting rules
+//   Suggested rule: /api/email-capture  — 5 requests per 10 seconds per IP.
+// ---------------------------------------------------------------------------
+const recentSubmissions = new Map<string, number>();
+const DEDUP_WINDOW_MS = 10_000; // 10 seconds
+
+function isDuplicate(email: string): boolean {
+  const now = Date.now();
+  const lastSeen = recentSubmissions.get(email);
+  if (lastSeen && now - lastSeen < DEDUP_WINDOW_MS) {
+    return true;
+  }
+  recentSubmissions.set(email, now);
+
+  // Housekeeping: prune stale entries to avoid unbounded growth
+  if (recentSubmissions.size > 500) {
+    for (const [key, ts] of recentSubmissions) {
+      if (now - ts > DEDUP_WINDOW_MS) {
+        recentSubmissions.delete(key);
+      }
+    }
+  }
+
+  return false;
+}
+
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
     const body: any = await context.request.json();
@@ -9,6 +42,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return new Response(JSON.stringify({ error: 'Invalid email' }), { status: 400 });
+    }
+
+    // Duplicate-submission guard (same email within 10 s on this isolate)
+    if (isDuplicate(email.toLowerCase())) {
+      return new Response(JSON.stringify({ success: true, deduplicated: true }), { status: 200 });
     }
 
     const resend = getResend(context.env);
