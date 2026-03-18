@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How much does a new Pest Control system cost?",
+      "name": "How much does fumigation cost?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A new Pest Control system typically costs between $5,000 and $15,000 installed, depending on system type, efficiency level, home size, and region. A standard efficiency primary systems for a average home averages around $6,500, while a high-efficiency high-efficiency system can run $11,500 or more before regional and complexity adjustments."
+        "text": "Structural fumigation typically costs $1 to $3 per square foot, with most residential jobs falling between $2,000 and $8,000. A standard 2,000 sq ft single-story home averages $3,000-$5,000 for drywood termite fumigation. Larger structures, multi-story buildings, and difficult pest infestations push costs higher. Warehouses and commercial spaces are quoted on a case-by-case basis."
       }
     },
     {
       "@type": "Question",
-      "name": "What size Pest Control system do I need?",
+      "name": "How long does fumigation take?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "System size is measured in tons and depends on your home's square footage, insulation, climate, and layout. A rough rule of thumb is 1 ton per 500-600 square feet, but a proper Manual J load calculation is required for accurate sizing. Oversized systems short-cycle and waste energy, while undersized systems can't keep up on extreme days."
+        "text": "The fumigation process typically requires 24 to 72 hours of exposure time depending on the pest type, structure size, and fumigant used. Add a day for tarping/setup and a day for aeration and clearance testing. Total time from start to re-entry is usually 3 to 5 days for a standard residential fumigation. Larger structures or difficult infestations may require longer exposure periods."
       }
     },
     {
       "@type": "Question",
-      "name": "Are there tax credits for new Pest Control systems?",
+      "name": "When can occupants re-enter after fumigation?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. The federal 25C energy efficiency tax credit offers up to $2,000 for qualifying high-efficiency systems installed in your primary residence. The system must meet specific efficiency requirements (CEE Tier 1 or higher). Standard air conditioners and systems may qualify for a smaller $600 credit. Check with your tax advisor for current eligibility details."
+        "text": "Re-entry is only permitted after a licensed fumigator performs clearance testing and certifies the structure is safe. For sulfuryl fluoride (Vikane), this is typically 24 to 48 hours after aeration begins. The fumigator must post a re-entry notice and is legally responsible for clearance. Never allow occupants to re-enter based on time alone — always perform instrument-based clearance testing."
       }
     },
     {
       "@type": "Question",
-      "name": "How long does Pest Control installation take?",
+      "name": "Is fumigation the only option for termites?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A straightforward like-for-like replacement typically takes 1 day (6-10 hours). If new system work is required, expect 2-3 days. Converting from one system type to another (e.g., system to high-efficiency option) may take 1-2 days. Complex multi-zone premium installations can take 2-4 days depending on the number of indoor units and line set routing."
+        "text": "No. Fumigation is typically required for drywood termites because they live inside the wood and cannot be reached with liquid treatments. Subterranean termites are usually treated with soil treatments, bait stations, or liquid termiticides without fumigation. Localized drywood infestations can sometimes be treated with spot treatments, heat treatment, or microwave systems, but whole-structure fumigation remains the most reliable option for widespread drywood infestations."
       }
     }
   ]
@@ -49,72 +49,45 @@ const faqSchema = {
     <!-- Input Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="systemType">System Type</label>
-        <select id="systemType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="standard-system">Standard System</option>
-          <option value="heat-pump">Premium Option</option>
-          <option value="mini-1">Option 1-Zone</option>
-          <option value="mini-2">Option 2-Zone</option>
-          <option value="mini-3">Option 3-Zone</option>
-          <option value="mini-4">Option 4-Zone</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="structureSqft">Structure Size (sq ft)</label>
+        <input type="number" id="structureSqft" value="2000" min="500" max="100000" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="structureType">Structure Type</label>
+        <select id="structureType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="house" selected>Single-Family House</option>
+          <option value="apartment">Apartment / Condo</option>
+          <option value="warehouse">Warehouse / Commercial</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="efficiency">Efficiency Level</label>
-        <select id="efficiency" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="standard">Standard (14 efficiency / 80% efficiency)</option>
-          <option value="mid" selected>Mid-Range (16 efficiency / 96% efficiency)</option>
-          <option value="high">High Efficiency (high-efficiency)</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="pestType">Pest Type</label>
+        <select id="pestType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="termites" selected>Drywood Termites</option>
+          <option value="bed-bugs">Bed Bugs</option>
+          <option value="stored-product">Stored Product Pests</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tons">System Size (Tons)</label>
-        <select id="tons" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.5">1.5 Ton</option>
-          <option value="2">2 Ton</option>
-          <option value="2.5">2.5 Ton</option>
-          <option value="3" selected>3 Ton</option>
-          <option value="3.5">3.5 Ton</option>
-          <option value="4">4 Ton</option>
-          <option value="5">5 Ton</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="stories">Number of Stories</label>
+        <select id="stories" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1" selected>1 Story</option>
+          <option value="2">2 Stories</option>
+          <option value="3">3+ Stories</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="region">Region</label>
-        <select id="region" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="0.85">Southeast</option>
-          <option value="0.90">Midwest</option>
-          <option value="0.95">South</option>
-          <option value="1.00" selected>National Average</option>
-          <option value="1.05">Mountain</option>
-          <option value="1.10">Northeast</option>
-          <option value="1.10">Pacific NW</option>
-          <option value="1.15">West</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="homeType">Home Type</label>
-        <select id="homeType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.0" selected>Single Story</option>
-          <option value="1.1">Multi-Story</option>
-          <option value="1.15">Attic Installation</option>
-          <option value="1.1">Crawlspace</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="ductwork">Project Complexity</label>
-        <select id="ductwork" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.0" selected>Existing (good condition)</option>
-          <option value="1.15">Partial Modification Needed</option>
-          <option value="1.5">Major Renovation Required</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="tarping">Tarping Needed</label>
+        <select id="tarping" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="yes" selected>Yes (tent fumigation)</option>
+          <option value="no">No (sealed structure / vault)</option>
         </select>
       </div>
     </div>
 
-
     <!-- Results -->
     <div id="results" class="mt-8 border-t border-border pt-8">
-      <h3 class="font-heading font-bold text-xl mb-6">Your Estimated Cost</h3>
+      <h3 class="font-heading font-bold text-xl mb-6">Your Estimate</h3>
 
       <!-- Cost Range Bar -->
       <div class="bg-bg-dark rounded-xl p-6 mb-6">
@@ -132,91 +105,91 @@ const faqSchema = {
             <div id="result-high" class="font-heading font-extrabold text-xl text-text-secondary">--</div>
           </div>
         </div>
-        <!-- Visual range bar -->
         <div class="relative h-3 bg-bg-card rounded-full overflow-hidden mt-4">
           <div id="range-bar" class="absolute inset-y-0 left-[10%] right-[10%] rounded-full bg-gradient-to-r from-accent/40 via-accent to-accent/40"></div>
           <div id="range-marker" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-accent rounded-full border-2 border-white shadow-lg"></div>
         </div>
       </div>
 
-      <!-- Monthly Financing + Tax Credit -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <!-- Detail Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">60-Month Financing</div>
-          <div id="result-monthly60" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">per month</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cubic Volume</div>
+          <div id="result-volume" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">cubic feet</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">120-Month Financing</div>
-          <div id="result-monthly120" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">per month</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Fumigant Needed</div>
+          <div id="result-fumigant" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">lbs (estimated)</div>
         </div>
-        <div id="tax-credit-card" class="hidden bg-bg-dark rounded-xl p-5 text-center border border-green-500/30">
-          <div class="text-green-400 text-xs font-medium uppercase tracking-wider mb-2">Federal Tax Credit</div>
-          <div class="font-heading font-extrabold text-2xl text-green-400">Up to $2,000</div>
-          <div class="text-text-muted text-xs mt-1">25C credit for qualifying high-efficiency options</div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Duration</div>
+          <div id="result-duration" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">days total</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Re-Entry After</div>
+          <div id="result-reentry" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">hours (after aeration)</div>
         </div>
       </div>
 
-      <p class="text-text-muted text-sm italic">This is a ballpark estimate based on national averages. Actual costs vary by contractor, equipment brand, and job-specific conditions. Get exact pricing from a licensed Pest Control contractor in your area.</p>
+      <p class="text-text-muted text-sm italic">Ballpark estimate for quoting purposes. Actual costs depend on local fumigant pricing, tarp condition, structure sealing requirements, and specific pest dosage rates. Always perform a thorough inspection and calculate dosage per label requirements.</p>
     </div>
   </div>
 
   <!-- Content sections -->
   <Fragment slot="content">
     <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
-      <!-- How to Use -->
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Estimator</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Select your system type.</strong> Choose between a traditional primary systems combo, a high-efficiency option, or a premium system. Premium options are priced by the number of indoor zones.</p>
-          <p><strong class="text-text-primary">2. Pick your efficiency level.</strong> Standard efficiency costs less upfront but more to operate. High-efficiency systems cost more to install but lower monthly energy bills and may qualify for federal tax credits.</p>
-          <p><strong class="text-text-primary">3. Set the system size and your region.</strong> Tonnage should match your home's load calculation. Regional labor and material costs vary significantly, with the Southeast being most affordable and the West Coast being most expensive.</p>
-          <p><strong class="text-text-primary">4. Adjust for complexity.</strong> Multi-story homes, difficult access, and special requirements add labor time. Major system changes can add 50% to the total project cost.</p>
+          <p><strong class="text-text-primary">1. Enter the structure square footage.</strong> Use the total enclosed area of the building. For multi-story structures, enter the total footprint — the calculator accounts for height based on the number of stories you select.</p>
+          <p><strong class="text-text-primary">2. Select the structure type.</strong> Houses, apartments, and commercial buildings have different tarping requirements, access challenges, and pricing structures. Warehouses and commercial spaces typically involve larger volumes and may use different fumigation approaches.</p>
+          <p><strong class="text-text-primary">3. Choose the pest type.</strong> Different pests require different fumigant concentrations and exposure times. Drywood termites are the most common fumigation target. Bed bugs and stored product pests have their own dosage and time requirements.</p>
+          <p><strong class="text-text-primary">4. Set stories and tarping.</strong> More stories means more volume, more tarp material, and more labor for setup. Structures that are already sealed (like vaults or certain commercial buildings) may not need tarping, which reduces cost.</p>
         </div>
       </section>
 
-      <!-- What Affects Cost -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">What Affects Pest Control Replacement Cost</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">What Affects Fumigation Cost</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">System type and efficiency.</strong> The biggest cost driver is the equipment itself. A basic standard efficiency system is the most affordable option. High-efficiency options cost slightly less for the equipment but provide both heating and cooling. High-efficiency units (high-efficiency) can cost double the standard models.</p>
-          <p><strong class="text-text-primary">System size.</strong> Larger homes need larger systems. The cost scales roughly proportionally with tonnage. A 5-ton system costs significantly more than a 2-ton system in both equipment and labor.</p>
-          <p><strong class="text-text-primary">Regional pricing.</strong> Labor rates, permit costs, and material availability vary by region. Southeastern states tend to have the lowest installation costs, while the West Coast and Northeast are the most expensive markets.</p>
-          <p><strong class="text-text-primary">Home complexity.</strong> Multi-story homes require more additional materials, longer runs, and difficult access. Work in tight spaces, at height, or in extreme weather adds difficulty and time. Complex jobs with multiple components take longer and cost more.</p>
-          <p><strong class="text-text-primary">System condition.</strong> If your existing existing systems are in good shape, the contractor simply connects the new system. Partial modifications (adding a return, resizing a trunk line) add moderate cost. A full system overhaul is a major project that can increase the total price by 50%.</p>
+          <p><strong class="text-text-primary">Cubic volume is the primary driver.</strong> Fumigant dosage is calculated by volume, not just square footage. A tall structure costs more to fumigate than a low one of the same footprint because you are filling more airspace with gas. Always calculate volume accurately.</p>
+          <p><strong class="text-text-primary">Tarping labor and materials.</strong> Tent fumigation requires a crew to cover the entire structure with tarps, seal all seams, and secure the tarps against wind. Multi-story homes are significantly more labor-intensive. Damaged or inadequate tarps require replacement, adding to costs.</p>
+          <p><strong class="text-text-primary">Pest type and dosage requirements.</strong> Drywood termites require specific concentrations maintained over specific time periods per the fumigant label. Bed bugs may require higher concentrations or longer exposure times. Always follow the fumigant label — it is the law and the minimum standard of care.</p>
+          <p><strong class="text-text-primary">Structure preparation.</strong> Homeowners must remove or double-bag all food, medicine, and living things. If they don't prepare properly, your crew has to handle it or reschedule the job. Build preparation inspection time into your process.</p>
+          <p><strong class="text-text-primary">Local regulations and licensing.</strong> Fumigation licensing requirements, notification rules, and clearance testing protocols vary by state. Some jurisdictions require additional insurance, bonding, or notification procedures that add to your operating costs.</p>
         </div>
       </section>
 
-      <!-- When To Use This -->
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">During sales visits.</strong> Pull this up on your tablet while sitting at the kitchen table with a homeowner. Walk through the options together, show them how efficiency level and system condition affect the price, and set realistic expectations before running your detailed proposal.</p>
-          <p><strong class="text-text-primary">Phone estimates.</strong> When a homeowner calls asking "how much for a new AC?" you can walk them through a few questions and give a ballpark range on the spot. This builds trust and qualifies the lead before scheduling an in-home visit.</p>
-          <p><strong class="text-text-primary">Website lead generation.</strong> Embed this calculator on your website so homeowners can self-educate on pricing. Visitors who use the tool and then call you are better-informed and more likely to convert because they already have realistic price expectations.</p>
+          <p><strong class="text-text-primary">Initial customer quoting.</strong> When a homeowner or property manager calls about fumigation, get the basic structure info and run the numbers. Give them a range over the phone so they know what to expect before you schedule the inspection. This pre-qualifies the lead and sets realistic expectations.</p>
+          <p><strong class="text-text-primary">Comparing bids on commercial projects.</strong> For larger commercial fumigation jobs, run the estimator to sanity-check your bid before submitting. If your number is way outside the typical range, double-check your volume calculations and dosage rates.</p>
+          <p><strong class="text-text-primary">Training new estimators.</strong> Use the calculator to show newer team members how square footage, volume, pest type, and tarping all connect to the final price. It builds pricing intuition faster than just shadowing jobs.</p>
         </div>
       </section>
 
-      <!-- FAQ -->
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a new Pest Control system cost?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A new Pest Control system typically costs between $5,000 and $15,000 installed, depending on system type, efficiency level, home size, and region. A standard efficiency primary systems for a average home averages around $6,500, while a high-efficiency high-efficiency system can run $11,500 or more before regional and complexity adjustments.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does fumigation cost?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Structural fumigation typically costs $1 to $3 per square foot, with most residential jobs falling between $2,000 and $8,000. A standard 2,000 sq ft single-story home averages $3,000-$5,000 for drywood termite fumigation. Larger structures, multi-story buildings, and difficult pest infestations push costs higher. Warehouses and commercial spaces are quoted on a case-by-case basis.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What size Pest Control system do I need?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">System size is measured in tons and depends on your home's square footage, insulation, climate, and layout. A rough rule of thumb is 1 ton per 500-600 square feet, but a proper Manual J load calculation is required for accurate sizing. Oversized systems short-cycle and waste energy, while undersized systems can't keep up on extreme days.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does fumigation take?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The fumigation process typically requires 24 to 72 hours of exposure time depending on the pest type, structure size, and fumigant used. Add a day for tarping/setup and a day for aeration and clearance testing. Total time from start to re-entry is usually 3 to 5 days for a standard residential fumigation. Larger structures or difficult infestations may require longer exposure periods.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Are there tax credits for new Pest Control systems?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. The federal 25C energy efficiency tax credit offers up to $2,000 for qualifying high-efficiency systems installed in your primary residence. The system must meet specific efficiency requirements (CEE Tier 1 or higher). Standard air conditioners and systems may qualify for a smaller $600 credit. Check with your tax advisor for current eligibility details.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">When can occupants re-enter after fumigation?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Re-entry is only permitted after a licensed fumigator performs clearance testing and certifies the structure is safe. For sulfuryl fluoride (Vikane), this is typically 24 to 48 hours after aeration begins. The fumigator must post a re-entry notice and is legally responsible for clearance. Never allow occupants to re-enter based on time alone — always perform instrument-based clearance testing.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does Pest Control installation take?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A straightforward like-for-like replacement typically takes 1 day (6-10 hours). If new system work is required, expect 2-3 days. Converting from one system type to another (e.g., system to high-efficiency option) may take 1-2 days. Complex multi-zone premium installations can take 2-4 days depending on the number of indoor units and line set routing.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Is fumigation the only option for termites?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">No. Fumigation is typically required for drywood termites because they live inside the wood and cannot be reached with liquid treatments. Subterranean termites are usually treated with soil treatments, bait stations, or liquid termiticides without fumigation. Localized drywood infestations can sometimes be treated with spot treatments, heat treatment, or microwave systems, but whole-structure fumigation remains the most reliable option for widespread drywood infestations.</div>
           </details>
         </div>
       </section>
@@ -225,57 +198,98 @@ const faqSchema = {
 </ToolLayout>
 
 <script>
-  function calculate() {
-    const systemType = (document.getElementById('systemType') as HTMLSelectElement).value;
-    const efficiency = (document.getElementById('efficiency') as HTMLSelectElement).value;
-    const tons = parseFloat((document.getElementById('tons') as HTMLSelectElement).value);
-    const region = parseFloat((document.getElementById('region') as HTMLSelectElement).value);
-    const homeType = parseFloat((document.getElementById('homeType') as HTMLSelectElement).value);
-    const ductwork = parseFloat((document.getElementById('ductwork') as HTMLSelectElement).value);
-
-    // Base prices by system type and efficiency
-    const basePrices: Record<string, Record<string, number>> = {
-      'standard-system': { standard: 6500, mid: 9000, high: 13000 },
-      'heat-pump': { standard: 5500, mid: 8000, high: 11500 },
-      'mini-1': { standard: 4500, mid: 4500, high: 4500 },
-      'mini-2': { standard: 7000, mid: 7000, high: 7000 },
-      'mini-3': { standard: 10000, mid: 10000, high: 10000 },
-      'mini-4': { standard: 13000, mid: 13000, high: 13000 },
-    };
-
-    const basePrice = basePrices[systemType]?.[efficiency] ?? 9000;
-
-    // Formula: Base_Price x Regional x (Tons/3.0) x Complexity x Complexity
-    const estimatedCost = basePrice * region * (size / 1.0) * homeType * ductwork;
-
-    const low = Math.round(estimatedCost * 0.8);
-    const mid = Math.round(estimatedCost);
-    const high = Math.round(estimatedCost * 1.2);
-    const monthly60 = Math.round(mid / 60);
-    const monthly120 = Math.round(mid / 120);
-
-    // Format currency
-    const fmt = (n: number) => '$' + n.toLocaleString();
-
-    document.getElementById('result-low')!.textContent = fmt(low);
-    document.getElementById('result-mid')!.textContent = fmt(mid);
-    document.getElementById('result-high')!.textContent = fmt(high);
-    document.getElementById('result-monthly60')!.textContent = fmt(monthly60);
-    document.getElementById('result-monthly120')!.textContent = fmt(monthly120);
-
-    // Show/hide tax credit for high-efficiency option and premium option systems
-    const taxCreditCard = document.getElementById('tax-credit-card')!;
-    const isHeatPump = systemType === 'heat-pump' || systemType.startsWith('mini-');
-    taxCreditCard.classList.toggle('hidden', !isHeatPump);
-
+  interface FumigationInputs {
+    structureSqft: number;
+    structureType: string;
+    pestType: string;
+    stories: number;
+    tarping: boolean;
   }
 
+  function calculate(): void {
+    const structureSqft = parseFloat((document.getElementById('structureSqft') as HTMLInputElement).value) || 2000;
+    const structureType = (document.getElementById('structureType') as HTMLSelectElement).value;
+    const pestType = (document.getElementById('pestType') as HTMLSelectElement).value;
+    const stories = parseInt((document.getElementById('stories') as HTMLSelectElement).value);
+    const tarping = (document.getElementById('tarping') as HTMLSelectElement).value === 'yes';
 
-  // Auto-calculate on input change
-  document.querySelectorAll('#cost-calc select').forEach(el => {
+    // Calculate cubic volume (avg ceiling height ~9ft per story)
+    const ceilingHeight = 9;
+    const totalVolume = structureSqft * ceilingHeight * stories;
+
+    // Fumigant needed (rough: ~1 lb per 1000 cubic ft for Vikane at standard dosage)
+    const dosageRates: Record<string, number> = {
+      termites: 1.0,
+      'bed-bugs': 1.5,
+      'stored-product': 0.8,
+    };
+    const dosageRate = dosageRates[pestType] ?? 1.0;
+    const fumigantLbs = Math.ceil((totalVolume / 1000) * dosageRate);
+
+    // Structure type multiplier
+    const structureMultiplier: Record<string, number> = {
+      house: 1.0,
+      apartment: 1.15,
+      warehouse: 0.75,
+    };
+
+    // Pest type cost multiplier
+    const pestMultiplier: Record<string, number> = {
+      termites: 1.0,
+      'bed-bugs': 1.3,
+      'stored-product': 0.9,
+    };
+
+    // Height multiplier for tarping difficulty
+    const heightMultiplier: Record<number, number> = {
+      1: 1.0,
+      2: 1.3,
+      3: 1.55,
+    };
+
+    const sMult = structureMultiplier[structureType] ?? 1.0;
+    const pMult = pestMultiplier[pestType] ?? 1.0;
+    const hMult = heightMultiplier[stories] ?? 1.0;
+    const tarpMult = tarping ? 1.0 : 0.75;
+
+    // Base: $1-3/sq ft
+    const lowRate = 1.00 * sMult * pMult * hMult * tarpMult;
+    const highRate = 3.00 * sMult * pMult * hMult * tarpMult;
+
+    const lowCost = Math.round(structureSqft * lowRate);
+    const highCost = Math.round(structureSqft * highRate);
+    const midCost = Math.round((lowCost + highCost) / 2);
+
+    // Duration: base 3 days for termites, 4 for bed bugs, 2 for stored product
+    const baseDays: Record<string, number> = {
+      termites: 3,
+      'bed-bugs': 4,
+      'stored-product': 2,
+    };
+    const duration = (baseDays[pestType] ?? 3) + (stories > 1 ? 1 : 0);
+
+    // Re-entry hours after aeration begins
+    const reentryHours: Record<string, number> = {
+      termites: 24,
+      'bed-bugs': 36,
+      'stored-product': 24,
+    };
+
+    const fmt = (n: number): string => '$' + n.toLocaleString();
+
+    document.getElementById('result-low')!.textContent = fmt(lowCost);
+    document.getElementById('result-mid')!.textContent = fmt(midCost);
+    document.getElementById('result-high')!.textContent = fmt(highCost);
+    document.getElementById('result-volume')!.textContent = totalVolume.toLocaleString();
+    document.getElementById('result-fumigant')!.textContent = fumigantLbs.toString();
+    document.getElementById('result-duration')!.textContent = duration + '-' + (duration + 1);
+    document.getElementById('result-reentry')!.textContent = (reentryHours[pestType] ?? 24).toString();
+  }
+
+  document.querySelectorAll('#cost-calc select, #cost-calc input').forEach(el => {
     el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
   });
 
-  // Calculate on load with defaults
   calculate();
 </script>

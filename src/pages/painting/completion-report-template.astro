@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What should a Painting inspection report include?",
+      "name": "What should a painting completion report include?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A professional Painting inspection report should include system identification (make, model, serial number, age), component-by-component ratings using a Red/Yellow/Green scale, temperature and pressure measurements, carbon monoxide readings, a prioritized list of findings with estimated repair costs, an overall pass/fail assessment, and inspector credentials with license number."
+        "text": "A professional painting completion report should include property and client information, a room-by-room breakdown of surfaces painted, paint products used (brand, color, finish, number of coats), surface preparation details, before and after photos, any issues encountered during the project, a punch list of remaining touch-ups, warranty information, and your company credentials with license number."
       }
     },
     {
       "@type": "Question",
-      "name": "How much does a Painting inspection cost?",
+      "name": "Why should painters use a completion report?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A standard Painting inspection costs between $75 and $200 depending on the system type, location, and scope. Pre-purchase inspections for real estate transactions typically run $150 to $300 since they require more detailed documentation. Annual maintenance inspections are often included in service agreements ranging from $150 to $500 per year."
+        "text": "A completion report protects you and satisfies the customer. It documents exactly what was done, which paints were used (so the client can touch up later), and creates a written record for warranty claims. It also serves as a professional walk-through document that gets the customer to sign off on the finished work, reducing callbacks and disputes."
       }
     },
     {
       "@type": "Question",
-      "name": "What is checked during a Painting inspection?",
+      "name": "What details should be recorded for each room?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A thorough Painting inspection checks the component for cracks or corrosion, electrical connections and amp draws, all critical components and systems, checking for wear, damage, code compliance, and safety issues. Detailed measurements and observations are recorded for each area inspected. Each item receives a condition rating with notes explaining the assessment."
+        "text": "For each room or area, record the surfaces painted (walls, ceiling, trim, doors), the paint brand and color code, the finish type (flat, eggshell, satin, semi-gloss, gloss), number of coats applied, any surface prep work done (scraping, sanding, priming, patching), and a condition rating. Note any areas that need monitoring or future attention."
       }
     },
     {
       "@type": "Question",
-      "name": "How do I write a professional inspection report?",
+      "name": "How do I write a professional painting completion report?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Start with complete property and system identification. Rate each component using a standardized scale (Pass/Monitor/Fail or Green/Yellow/Red). Record all measurements with actual values, not just pass/fail. List every finding with a recommended action, estimated cost, and priority level. Include an overall assessment and total repair cost estimate. Always add a disclaimer about the inspection scope and limitations."
+        "text": "Start with complete property and client information. List every room or area painted with specific paint details. Rate each area using a standardized scale (Excellent, Good, Needs Touch-Up). Document all surface prep work performed. Include a punch list of any remaining items. Add paint care and maintenance instructions for the client. Always include a signature line for client sign-off and your warranty terms."
       }
     }
   ]
@@ -367,23 +367,23 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Template</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Fill in inspector and property details.</strong> Enter your company name, license number, and the property address. The report number auto-generates as IR-001 — change it to match your numbering system. Select the reason for the inspection so the report context is clear from the start.</p>
-          <p><strong class="text-text-primary">2. Identify the system and rate each component.</strong> Record the equipment make, model, and serial number from the data plate. The age calculates automatically from the install date. Then go through each component — component, electrical, each key area of concern — and assign a Pass, Monitor, or Fail rating with notes explaining your assessment.</p>
-          <p><strong class="text-text-primary">3. Record measurements and document findings.</strong> Enter all temperature, CO, gas pressure, and static pressure readings. For every issue you find, add a finding row with a description, recommended action, estimated repair cost, and priority level. The summary section auto-calculates totals as you go.</p>
-          <p><strong class="text-text-primary">4. Generate the printable report.</strong> Select your overall assessment, add any additional notes, and hit Generate. The report opens in a new tab with professional formatting, color-coded rating grids, a findings table with priority flags, and a signature line — ready to print or save as PDF.</p>
+          <p><strong class="text-text-primary">1. Fill in your company and project details.</strong> Enter your company name, license number, and the property address. The report number auto-generates as IR-001 — change it to match your numbering system. Select the project type so the report context is clear from the start.</p>
+          <p><strong class="text-text-primary">2. Document each room or area painted.</strong> Record the surfaces completed (walls, ceilings, trim, doors), the paint products used (brand, color name, color code, finish), and the number of coats applied. Rate each area's finish quality and note any areas that need monitoring or touch-up.</p>
+          <p><strong class="text-text-primary">3. Record surface prep and document findings.</strong> For each area, note the prep work performed — scraping, sanding, patching, priming, caulking. If you found issues during prep (rot, water damage, mold), add a finding row with a description, recommended action, and priority level. The summary section auto-calculates totals as you go.</p>
+          <p><strong class="text-text-primary">4. Generate the printable report.</strong> Select your overall assessment, add any punch list items or maintenance notes for the customer, and hit Generate. The report opens in a new tab with professional formatting, color-coded quality ratings, a findings table, and a signature line — ready to print or save as PDF for the customer walk-through.</p>
         </div>
       </section>
 
       <!-- What Makes a Professional Report -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">What Makes a Professional Painting Inspection Report</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">What Makes a Professional Painting Completion Report</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p>A professional inspection report does more than check boxes. Every section serves a specific purpose in communicating system condition to the property owner, buyer, insurer, or warranty provider.</p>
-          <p><strong class="text-text-primary">System identification</strong> anchors the report to a specific piece of equipment. Make, model, serial number, and install date let anyone verify what was inspected. The calculated age and estimated remaining life give the reader immediate context about the system's position in its lifecycle.</p>
-          <p><strong class="text-text-primary">Component ratings</strong> using a standardized Red/Yellow/Green scale make complex technical findings accessible to non-technical readers. A homebuyer doesn't need to understand technical details — they need to know the inspection found three green components, four yellow, and one red. The notes behind each rating provide the technical detail for other professionals.</p>
-          <p><strong class="text-text-primary">Measurements</strong> document the system's actual operating condition with verifiable numbers. Temperature split, CO readings, gas pressure, and static pressure are objective data points that cannot be disputed. They create a baseline for future comparisons and protect the inspector if conditions change after the inspection.</p>
-          <p><strong class="text-text-primary">Prioritized findings</strong> turn observations into actionable recommendations. Each finding includes what's wrong, what should be done, how much it will cost, and how urgent it is. This structure helps property owners make informed decisions about repairs and budgeting.</p>
-          <p><strong class="text-text-primary">Documentation matters</strong> because inspection reports become legal documents. They're referenced in real estate transactions, insurance claims, warranty disputes, and liability cases. A thorough, well-structured report protects your client, protects your business, and demonstrates the professionalism that separates serious contractors from everyone else.</p>
+          <p>A professional completion report does more than list what was painted. Every section serves a specific purpose in communicating the scope of work to the property owner and creating a permanent record of the project.</p>
+          <p><strong class="text-text-primary">Paint specifications</strong> are the most valuable part of the report for the customer. Brand, color name, color code, and finish type for every surface means they can touch up years later without guessing. This single detail generates more referrals than anything else you can do — customers remember the painter who left them a complete paint schedule.</p>
+          <p><strong class="text-text-primary">Surface preparation details</strong> document the work the customer cannot see. Scraping, sanding, patching, priming, and caulking are what separate a paint job that lasts from one that peels. Recording prep work justifies your pricing and protects you if adhesion issues arise later — you can point to exactly what was done.</p>
+          <p><strong class="text-text-primary">Quality ratings</strong> using a standardized scale (Excellent, Good, Needs Touch-Up) give the customer a clear picture of the finished result. Walk through each area together, agree on the rating, and note any items for the punch list. This structured approach eliminates ambiguity during the final walk-through.</p>
+          <p><strong class="text-text-primary">Punch list items</strong> show professionalism and honesty. Every paint job has small touch-ups. Documenting them proactively — rather than waiting for the customer to find them — builds trust and sets the expectation that you will come back to finish the details.</p>
+          <p><strong class="text-text-primary">Documentation matters</strong> because completion reports become reference documents. They protect you from warranty disputes, help property managers track maintenance history, and give real estate agents confidence when selling a recently painted home. A thorough report separates professional painters from handyman-level work.</p>
         </div>
       </section>
 
@@ -391,9 +391,9 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">Pre-purchase inspections.</strong> A buyer's agent or homebuyer hires you to evaluate the Painting system before closing on a property. The report becomes part of the due diligence package. A clear pass/fail assessment with estimated repair costs gives the buyer leverage to negotiate price reductions or request repairs before closing. This is the highest-stakes use case — your report directly influences a six-figure transaction.</p>
-          <p><strong class="text-text-primary">Annual maintenance inspections.</strong> During seasonal maintenance visits and maintenance visits, a formal inspection report documents the system's current condition and creates a year-over-year record. When a component rating moves from green to yellow, you can point to the history and recommend proactive replacement before it fails. This builds trust, generates future work, and protects you from customers who claim you never told them something was wearing out.</p>
-          <p><strong class="text-text-primary">Insurance and warranty claims.</strong> Insurance companies require documented proof of system condition when processing claims for equipment damage. Warranty providers need inspection records showing proper maintenance was performed. A professional report with component ratings, measurements, and findings gives adjusters and warranty administrators exactly what they need to approve claims — without the back-and-forth of incomplete documentation.</p>
+          <p><strong class="text-text-primary">End of every project.</strong> Use this template at the completion of every painting job, no matter the size. A completion report turns a finished project into a professional deliverable. The customer walk-through becomes structured and efficient, and you leave behind a document that markets your business every time the homeowner opens a drawer looking for their paint colors.</p>
+          <p><strong class="text-text-primary">Commercial and property management work.</strong> Property managers require documentation for every service performed on their properties. A completion report with room-by-room paint specs, prep details, and before/after ratings gives them exactly what they need for their records. This level of documentation is often the difference between getting a single job and landing an ongoing contract.</p>
+          <p><strong class="text-text-primary">Warranty and callback protection.</strong> When a customer calls six months later about peeling paint, your completion report documents exactly what prep was done, what products were used, and what the surface condition was at completion. This protects you from claims related to substrate failure, moisture problems, or other issues outside your control.</p>
         </div>
       </section>
 
@@ -402,20 +402,20 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What should a Painting inspection report include?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A professional Painting inspection report should include system identification (make, model, serial number, age), component-by-component ratings using a Red/Yellow/Green scale, temperature and pressure measurements, carbon monoxide readings, a prioritized list of findings with estimated repair costs, an overall pass/fail assessment, and inspector credentials with license number.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What should a painting completion report include?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A professional painting completion report should include property and client information, a room-by-room breakdown of surfaces painted, paint products used (brand, color, finish, number of coats), surface preparation details, any issues encountered during the project, a punch list of remaining touch-ups, warranty information, and your company credentials with license number.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a Painting inspection cost?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard Painting inspection costs between $75 and $200 depending on the system type, location, and scope. Pre-purchase inspections for real estate transactions typically run $150 to $300 since they require more detailed documentation. Annual maintenance inspections are often included in service agreements ranging from $150 to $500 per year.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Why should painters use a completion report?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A completion report protects you and satisfies the customer. It documents exactly what was done, which paints were used (so the client can touch up later), and creates a written record for warranty claims. It also serves as a professional walk-through document that gets the customer to sign off on the finished work, reducing callbacks and disputes.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is checked during a Painting inspection?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A thorough Painting inspection checks the component for cracks or corrosion, electrical connections and amp draws, all critical components and systems, checking for wear, damage, code compliance, and safety issues. Detailed measurements and observations are recorded for each area inspected. Each item receives a condition rating with notes explaining the assessment.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What details should be recorded for each room?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For each room or area, record the surfaces painted (walls, ceiling, trim, doors), the paint brand and color code, the finish type (flat, eggshell, satin, semi-gloss, gloss), number of coats applied, any surface prep work done (scraping, sanding, priming, patching), and a condition rating. Note any areas that need monitoring or future attention.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I write a professional inspection report?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Start with complete property and system identification. Rate each component using a standardized scale (Pass/Monitor/Fail or Green/Yellow/Red). Record all measurements with actual values, not just pass/fail. List every finding with a recommended action, estimated cost, and priority level. Include an overall assessment and total repair cost estimate. Always add a disclaimer about the inspection scope and limitations.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I write a professional painting completion report?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Start with complete property and client information. List every room or area painted with specific paint details. Rate each area using a standardized scale (Excellent, Good, Needs Touch-Up). Document all surface prep work performed. Include a punch list of any remaining items. Add paint care and maintenance instructions for the client. Always include a signature line for client sign-off and your warranty terms.</div>
           </details>
         </div>
       </section>
@@ -847,7 +847,7 @@ ${findingsHtml ? `<h2>Findings &amp; Recommendations</h2>
 ${getVal('additional-notes') ? `<div style="margin-top:12px;"><span class="label">Additional Notes:</span><div class="value" style="background:#f9f9f9;padding:10px;border-radius:4px;white-space:pre-wrap;margin-top:4px;">${getVal('additional-notes')}</div></div>` : ''}
 
 <div class="disclaimer">
-  <strong>Disclaimer:</strong> This inspection report reflects the condition of the Painting system at the time of inspection based on visual examination and standard diagnostic measurements. Hidden defects, inaccessible components, and conditions that may develop after the inspection date are not covered. This report is not a warranty or guarantee of future performance. The inspector and company assume no liability for conditions that were not observable or testable at the time of inspection. Repair cost estimates are approximate and may vary based on contractor pricing, parts availability, and actual scope of work.
+  <strong>Disclaimer:</strong> This completion report reflects the condition of the paint work at the time of final inspection based on visual examination. Hidden defects, inaccessible components, and conditions that may develop after the inspection date are not covered. This report is not a warranty or guarantee of future performance. The inspector and company assume no liability for conditions that were not observable or testable at the time of inspection. Repair cost estimates are approximate and may vary based on contractor pricing, parts availability, and actual scope of work.
 </div>
 
 <div class="signature-block">

@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What should a Handyman inspection report include?",
+      "name": "What should a handyman receipt include?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A professional Handyman inspection report should include system identification (make, model, serial number, age), component-by-component ratings using a Red/Yellow/Green scale, temperature and pressure measurements, carbon monoxide readings, a prioritized list of findings with estimated repair costs, an overall pass/fail assessment, and inspector credentials with license number."
+        "text": "A professional handyman receipt should include your company name, address, phone, and license number; the customer's name and property address; the date of service; an itemized list of work performed with labor hours and material costs; your hourly rate or flat-rate pricing; material receipts or markups; payment method and amount; and any warranty or guarantee terms for the work completed."
       }
     },
     {
       "@type": "Question",
-      "name": "How much does a Handyman inspection cost?",
+      "name": "Why do handymen need professional receipts?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A standard Handyman inspection costs between $75 and $200 depending on the system type, location, and scope. Pre-purchase inspections for real estate transactions typically run $150 to $300 since they require more detailed documentation. Annual maintenance inspections are often included in service agreements ranging from $150 to $500 per year."
+        "text": "Professional receipts build trust and protect your business. They give the customer a clear record of what was done and what they paid for, which reduces disputes. Receipts also serve as proof of payment for your bookkeeping and tax records. For warranty work, the receipt proves when the original service was performed. Property managers and landlords often require receipts for their own records and tax deductions."
       }
     },
     {
       "@type": "Question",
-      "name": "What is checked during a Handyman inspection?",
+      "name": "How should a handyman itemize labor and materials?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A thorough Handyman inspection checks the component for cracks or corrosion, electrical connections and amp draws, all critical components and systems, checking for wear, damage, code compliance, and safety issues. Detailed measurements and observations are recorded for each area inspected. Each item receives a condition rating with notes explaining the assessment."
+        "text": "List each task separately with the time spent and hourly rate. For materials, include the item description, quantity, and cost. Many handymen apply a 15-25% markup on materials to cover their time sourcing them. Keep labor and materials as separate line items so the customer can see exactly where their money went. Group related tasks together if you worked on multiple areas of the home."
       }
     },
     {
       "@type": "Question",
-      "name": "How do I write a professional inspection report?",
+      "name": "Should handymen collect payment before or after the work?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Start with complete property and system identification. Rate each component using a standardized scale (Pass/Monitor/Fail or Green/Yellow/Red). Record all measurements with actual values, not just pass/fail. List every finding with a recommended action, estimated cost, and priority level. Include an overall assessment and total repair cost estimate. Always add a disclaimer about the inspection scope and limitations."
+        "text": "For small jobs under $500, most handymen collect payment upon completion. For larger projects, collect a deposit of 25-50% before starting to cover material costs, with the balance due on completion. Always issue a receipt regardless of payment timing. For recurring clients or property managers, net-15 or net-30 invoicing is common. Accept multiple payment methods to make it easy for customers to pay on the spot."
       }
     }
   ]
@@ -367,23 +367,23 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Template</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Fill in inspector and property details.</strong> Enter your company name, license number, and the property address. The report number auto-generates as IR-001 — change it to match your numbering system. Select the reason for the inspection so the report context is clear from the start.</p>
-          <p><strong class="text-text-primary">2. Identify the system and rate each component.</strong> Record the equipment make, model, and serial number from the data plate. The age calculates automatically from the install date. Then go through each component — component, electrical, each key area of concern — and assign a Pass, Monitor, or Fail rating with notes explaining your assessment.</p>
-          <p><strong class="text-text-primary">3. Record measurements and document findings.</strong> Enter all temperature, CO, gas pressure, and static pressure readings. For every issue you find, add a finding row with a description, recommended action, estimated repair cost, and priority level. The summary section auto-calculates totals as you go.</p>
-          <p><strong class="text-text-primary">4. Generate the printable report.</strong> Select your overall assessment, add any additional notes, and hit Generate. The report opens in a new tab with professional formatting, color-coded rating grids, a findings table with priority flags, and a signature line — ready to print or save as PDF.</p>
+          <p><strong class="text-text-primary">1. Fill in your company and client details.</strong> Enter your company name, phone number, and license number. Add the customer's name and property address. The receipt number auto-generates — change it to match your numbering system.</p>
+          <p><strong class="text-text-primary">2. Itemize the work performed.</strong> Add each task as a separate line item with a description, labor hours, hourly rate, and material costs. Group related tasks together if you worked on multiple areas. The template calculates subtotals and the grand total automatically.</p>
+          <p><strong class="text-text-primary">3. Record payment details.</strong> Select the payment method, enter the amount received, and note any remaining balance or deposit applied. Add warranty terms for the work completed so the customer has a clear record.</p>
+          <p><strong class="text-text-primary">4. Generate the printable receipt.</strong> Hit Generate to create a clean, professional receipt in a new tab — ready to print, save as PDF, or email to the customer on the spot.</p>
         </div>
       </section>
 
-      <!-- What Makes a Professional Report -->
+      <!-- What Makes a Professional Receipt -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">What Makes a Professional Handyman Inspection Report</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">What Makes a Professional Handyman Receipt</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p>A professional inspection report does more than check boxes. Every section serves a specific purpose in communicating system condition to the property owner, buyer, insurer, or warranty provider.</p>
-          <p><strong class="text-text-primary">System identification</strong> anchors the report to a specific piece of equipment. Make, model, serial number, and install date let anyone verify what was inspected. The calculated age and estimated remaining life give the reader immediate context about the system's position in its lifecycle.</p>
-          <p><strong class="text-text-primary">Component ratings</strong> using a standardized Red/Yellow/Green scale make complex technical findings accessible to non-technical readers. A homebuyer doesn't need to understand technical details — they need to know the inspection found three green components, four yellow, and one red. The notes behind each rating provide the technical detail for other professionals.</p>
-          <p><strong class="text-text-primary">Measurements</strong> document the system's actual operating condition with verifiable numbers. Temperature split, CO readings, gas pressure, and static pressure are objective data points that cannot be disputed. They create a baseline for future comparisons and protect the inspector if conditions change after the inspection.</p>
-          <p><strong class="text-text-primary">Prioritized findings</strong> turn observations into actionable recommendations. Each finding includes what's wrong, what should be done, how much it will cost, and how urgent it is. This structure helps property owners make informed decisions about repairs and budgeting.</p>
-          <p><strong class="text-text-primary">Documentation matters</strong> because inspection reports become legal documents. They're referenced in real estate transactions, insurance claims, warranty disputes, and liability cases. A thorough, well-structured report protects your client, protects your business, and demonstrates the professionalism that separates serious contractors from everyone else.</p>
+          <p>A professional receipt does more than confirm payment. It documents what was done, protects both parties, and positions you as a serious business that customers trust with repeat work.</p>
+          <p><strong class="text-text-primary">Itemized labor and materials</strong> show the customer exactly where their money went. Listing each task separately with hours and rates eliminates confusion and reduces disputes. Customers who understand your pricing are more likely to call you back without shopping around.</p>
+          <p><strong class="text-text-primary">Material documentation</strong> protects you and helps the customer. When you list specific products used (caulk brand, fixture model, paint color), the customer can buy matching materials later. It also proves you used quality products if a warranty question comes up.</p>
+          <p><strong class="text-text-primary">Payment records</strong> matter for your bookkeeping and the customer's tax records. Property managers and landlords need receipts for deductions. A clear payment record with method, amount, and date keeps your books clean and makes tax time painless.</p>
+          <p><strong class="text-text-primary">Warranty terms</strong> set expectations upfront. Stating your guarantee on the receipt — 30 days on labor, 1 year on parts, whatever your policy is — prevents misunderstandings and shows confidence in your work. It also gives the customer a reason to keep your receipt and call you first when something else needs fixing.</p>
+          <p><strong class="text-text-primary">Professional presentation</strong> separates you from the competition. A clean, branded receipt with your logo and license number tells the customer they hired a real business, not someone working out of the back of a truck. That impression generates referrals.</p>
         </div>
       </section>
 
@@ -391,9 +391,9 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">Pre-purchase inspections.</strong> A buyer's agent or homebuyer hires you to evaluate the Handyman system before closing on a property. The report becomes part of the due diligence package. A clear pass/fail assessment with estimated repair costs gives the buyer leverage to negotiate price reductions or request repairs before closing. This is the highest-stakes use case — your report directly influences a six-figure transaction.</p>
-          <p><strong class="text-text-primary">Annual maintenance inspections.</strong> During seasonal maintenance visits and maintenance visits, a formal inspection report documents the system's current condition and creates a year-over-year record. When a component rating moves from green to yellow, you can point to the history and recommend proactive replacement before it fails. This builds trust, generates future work, and protects you from customers who claim you never told them something was wearing out.</p>
-          <p><strong class="text-text-primary">Insurance and warranty claims.</strong> Insurance companies require documented proof of system condition when processing claims for equipment damage. Warranty providers need inspection records showing proper maintenance was performed. A professional report with component ratings, measurements, and findings gives adjusters and warranty administrators exactly what they need to approve claims — without the back-and-forth of incomplete documentation.</p>
+          <p><strong class="text-text-primary">Every completed job.</strong> Issue a receipt for every job, no matter how small. A $75 faucet repair deserves the same documentation as a $2,000 bathroom remodel. Consistent receipts build your paper trail, simplify your bookkeeping, and show every customer the same level of professionalism.</p>
+          <p><strong class="text-text-primary">Property management work.</strong> Property managers require receipts for every service call. They need itemized records for their owners, insurance, and tax filings. A professional receipt template that includes the property address, detailed line items, and payment terms makes you the handyman they keep calling back.</p>
+          <p><strong class="text-text-primary">Warranty and callback situations.</strong> When a customer calls about a previous repair, your receipt is the first thing you check. It tells you exactly what was done, what materials were used, and when the work was completed. Without a receipt, you are guessing — and guessing leads to doing free work you should not have to do.</p>
         </div>
       </section>
 
@@ -402,20 +402,20 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What should a Handyman inspection report include?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A professional Handyman inspection report should include system identification (make, model, serial number, age), component-by-component ratings using a Red/Yellow/Green scale, temperature and pressure measurements, carbon monoxide readings, a prioritized list of findings with estimated repair costs, an overall pass/fail assessment, and inspector credentials with license number.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What should a handyman receipt include?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A professional handyman receipt should include your company name, address, phone, and license number; the customer's name and property address; date of service; an itemized list of work performed with labor hours and material costs; your hourly rate or flat-rate pricing; payment method and amount; and any warranty or guarantee terms for the completed work.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a Handyman inspection cost?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard Handyman inspection costs between $75 and $200 depending on the system type, location, and scope. Pre-purchase inspections for real estate transactions typically run $150 to $300 since they require more detailed documentation. Annual maintenance inspections are often included in service agreements ranging from $150 to $500 per year.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Why do handymen need professional receipts?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Professional receipts build trust and protect your business. They give the customer a clear record of what was done and what they paid, reducing disputes. Receipts serve as proof of payment for bookkeeping and tax records. For warranty work, the receipt proves when the original service was performed. Property managers and landlords require receipts for their own records and tax deductions.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is checked during a Handyman inspection?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A thorough Handyman inspection checks the component for cracks or corrosion, electrical connections and amp draws, all critical components and systems, checking for wear, damage, code compliance, and safety issues. Detailed measurements and observations are recorded for each area inspected. Each item receives a condition rating with notes explaining the assessment.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How should a handyman itemize labor and materials?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">List each task separately with the time spent and hourly rate. For materials, include the item description, quantity, and cost. Many handymen apply a 15-25% markup on materials to cover sourcing time. Keep labor and materials as separate line items so the customer sees exactly where their money went. Group related tasks together if you worked on multiple areas of the home.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I write a professional inspection report?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Start with complete property and system identification. Rate each component using a standardized scale (Pass/Monitor/Fail or Green/Yellow/Red). Record all measurements with actual values, not just pass/fail. List every finding with a recommended action, estimated cost, and priority level. Include an overall assessment and total repair cost estimate. Always add a disclaimer about the inspection scope and limitations.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should handymen collect payment before or after the work?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For small jobs under $500, most handymen collect payment upon completion. For larger projects, collect a 25-50% deposit before starting to cover material costs, with the balance due on completion. Always issue a receipt regardless of payment timing. For recurring clients or property managers, net-15 or net-30 invoicing is common. Accept multiple payment methods to make it easy for customers to pay on the spot.</div>
           </details>
         </div>
       </section>
@@ -847,7 +847,7 @@ ${findingsHtml ? `<h2>Findings &amp; Recommendations</h2>
 ${getVal('additional-notes') ? `<div style="margin-top:12px;"><span class="label">Additional Notes:</span><div class="value" style="background:#f9f9f9;padding:10px;border-radius:4px;white-space:pre-wrap;margin-top:4px;">${getVal('additional-notes')}</div></div>` : ''}
 
 <div class="disclaimer">
-  <strong>Disclaimer:</strong> This inspection report reflects the condition of the Handyman system at the time of inspection based on visual examination and standard diagnostic measurements. Hidden defects, inaccessible components, and conditions that may develop after the inspection date are not covered. This report is not a warranty or guarantee of future performance. The inspector and company assume no liability for conditions that were not observable or testable at the time of inspection. Repair cost estimates are approximate and may vary based on contractor pricing, parts availability, and actual scope of work.
+  <strong>Disclaimer:</strong> This inspection report reflects the condition of the property at the time of inspection based on visual examination and standard measurements. Hidden defects, inaccessible components, and conditions that may develop after the inspection date are not covered. This report is not a warranty or guarantee of future performance. The inspector and company assume no liability for conditions that were not observable or testable at the time of inspection. Repair cost estimates are approximate and may vary based on contractor pricing, parts availability, and actual scope of work.
 </div>
 
 <div class="signature-block">

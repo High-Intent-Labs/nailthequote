@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How much can I save with a new Pest Control system?",
+      "name": "How many gallons of spray solution do I need per 1,000 square feet?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Savings depend on the efficiency gap between your current and new system, local energy prices, and climate. Replacing a 10 efficiency / 80% efficiency system with a 16 efficiency / 96% efficiency system typically saves $500 to $1,200 per year on a 3-ton unit. Hotter climates with more cooling hours see greater savings on the AC side, while colder climates benefit more from the system upgrade."
+        "text": "Standard coverage rates for pest control spraying are typically 1 gallon of finished solution per 1,000 square feet for interior applications and 1-2 gallons per 1,000 square feet for exterior perimeter treatments. These rates vary by product label, target pest, and surface porosity. Always follow the product label for specific coverage rates."
       }
     },
     {
       "@type": "Question",
-      "name": "What efficiency rating should I get?",
+      "name": "How do I calculate the amount of product concentrate needed?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "For most homeowners, 16 efficiency hits the sweet spot of upfront cost and long-term savings. In hot climates like the South or Southwest with 2,500+ cooling hours per year, 18-20 efficiency can pay back faster. In mild climates with under 1,500 cooling hours, 14-16 efficiency is usually sufficient. Always compare the payback period at different efficiency levels before deciding."
+        "text": "First determine total gallons of finished solution needed based on square footage and coverage rate. Then multiply total gallons by the label application rate in ounces per gallon. For example, if you need 2.5 gallons of solution and the label rate is 1 oz per gallon, you need 2.5 oz of concentrate total."
       }
     },
     {
       "@type": "Question",
-      "name": "Is a higher efficiency always worth it?",
+      "name": "How many bait stations do I need for a residential home?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Not always. Each efficiency point above 16 costs more per unit of efficiency gained, and the savings diminish. A jump from 10 to 16 efficiency cuts cooling costs by 37%, but going from 16 to 20 efficiency only saves an additional 12.5%. In mild climates with low cooling hours, the extra cost of a 20+ efficiency unit may never pay back. Run the comparison to see exact payback for your situation."
+        "text": "For exterior rodent bait stations, the standard is one station every 25-50 feet around the perimeter. A typical 2,000 sq ft home with 180 linear feet of perimeter needs 4-7 stations. For interior insect bait stations, place them every 8-10 linear feet along baseboards in active areas. Adjust spacing based on pest pressure and the product label."
       }
     },
     {
       "@type": "Question",
-      "name": "How long does a new AC take to pay for itself?",
+      "name": "What follow-up interval should I recommend to customers?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Payback periods typically range from 5 to 12 years depending on the efficiency jump, system size, local energy costs, and climate. A homeowner in the South upgrading from 10 efficiency to 16 efficiency on a 3-ton system often sees payback in 6-8 years. Utility rebates, manufacturer incentives, and federal tax credits can shorten that timeline significantly."
+        "text": "Follow-up intervals depend on the pest type and treatment method. General pest control with residual sprays typically calls for quarterly service (every 90 days). Ants and roaches in active infestations need 2-4 week follow-ups until controlled, then quarterly maintenance. Bed bugs require follow-ups every 10-14 days. Termites using bait stations need monitoring every 60-90 days. Mosquito treatments are usually monthly during active season."
       }
     }
   ]
@@ -45,201 +45,136 @@ const faqSchema = {
 ---
 
 <ToolLayout tool={tool} extraSchema={[faqSchema]}>
-  <div id="energy-comp">
-    <!-- Two-column system inputs -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <!-- Left Column: Current System -->
-      <div class="bg-bg-card border border-border rounded-xl p-6">
-        <h3 class="font-heading font-bold text-lg text-text-primary mb-1">Your Current System</h3>
-        <p class="text-text-muted text-xs mb-5">Enter your existing equipment specs</p>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="old-seer">efficiency Rating</label>
-            <input type="number" id="old-seer" value="10" min="8" max="26" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-            <p class="text-text-muted text-xs mt-1">Don't know? Use 10 for 15+ year old systems</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="old-afue">efficiency %</label>
-            <input type="number" id="old-afue" value="80" min="50" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-            <p class="text-text-muted text-xs mt-1">Don't know? Use 80% for older systems</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="system-age">System Age (years)</label>
-            <input type="number" id="system-age" value="15" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column: Proposed New System -->
-      <div class="bg-bg-card border border-border rounded-xl p-6" style="border-color: rgba(255,107,43,0.3);">
-        <h3 class="font-heading font-bold text-lg text-accent mb-1">Proposed New System</h3>
-        <p class="text-text-muted text-xs mb-5">Enter the equipment you're quoting</p>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="new-seer">efficiency Rating</label>
-            <input type="number" id="new-seer" value="16" min="13" max="26" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="new-afue">efficiency %</label>
-            <input type="number" id="new-afue" value="96" min="50" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Shared Inputs -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+  <div id="tplan-calc">
+    <!-- Top row: Pest Type and Property Type -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tons">System Size (Tons)</label>
-        <select id="tons" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.5">1.5 Ton</option>
-          <option value="2">2 Ton</option>
-          <option value="2.5">2.5 Ton</option>
-          <option value="3" selected>3 Ton</option>
-          <option value="3.5">3.5 Ton</option>
-          <option value="4">4 Ton</option>
-          <option value="5">5 Ton</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="pest-type">Pest Type</label>
+        <select id="pest-type" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="general" selected>General Pest / Roaches</option>
+          <option value="ants">Ants</option>
+          <option value="spiders">Spiders</option>
+          <option value="rodents">Rodents</option>
+          <option value="termites">Termites</option>
+          <option value="bedbugs">Bed Bugs</option>
+          <option value="mosquitoes">Mosquitoes</option>
+          <option value="wasps">Wasps / Bees</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="elec-rate">Electricity Rate ($/kWh)</label>
-        <input type="number" id="elec-rate" value="0.16" min="0.01" max="1" step="0.01" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="gas-rate">Gas Rate ($/therm)</label>
-        <input type="number" id="gas-rate" value="1.20" min="0.10" max="5" step="0.05" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="region">Region</label>
-        <select id="region" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="2500,600">South (2500 / 600 hrs)</option>
-          <option value="2200,800">Southeast (2200 / 800 hrs)</option>
-          <option value="1400,2000">Midwest (1400 / 2000 hrs)</option>
-          <option value="1200,2200">Northeast (1200 / 2200 hrs)</option>
-          <option value="2800,400">Southwest (2800 / 400 hrs)</option>
-          <option value="800,1800">Northwest (800 / 1800 hrs)</option>
-          <option value="2100,1500" selected>National Avg (2100 / 1500 hrs)</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="property-type">Property Type</label>
+        <select id="property-type" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="residential" selected>Residential</option>
+          <option value="commercial">Commercial</option>
+          <option value="restaurant">Restaurant / Food Service</option>
+          <option value="warehouse">Warehouse / Industrial</option>
         </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="upgrade-cost">Upgrade Cost ($)</label>
-        <input type="number" id="upgrade-cost" value="8000" min="0" max="100000" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
     </div>
 
+    <!-- Area inputs -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="sq-footage">Interior Square Footage</label>
+        <input type="number" id="sq-footage" value="2000" min="100" max="500000" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Total treatable interior area</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="perimeter-ft">Exterior Perimeter (linear feet)</label>
+        <input type="number" id="perimeter-ft" value="180" min="0" max="50000" step="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Foundation perimeter for exterior treatment</p>
+      </div>
+    </div>
+
+    <!-- Treatment method and application settings -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="treatment-method">Treatment Method</label>
+        <select id="treatment-method" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="perimeter-spray" selected>Perimeter Spray</option>
+          <option value="interior-spray">Interior Spray</option>
+          <option value="bait-stations">Bait Stations</option>
+          <option value="gel-bait">Gel Bait</option>
+          <option value="dust">Dust Application</option>
+          <option value="fumigation">Fumigation</option>
+        </select>
+      </div>
+      <div id="app-rate-group">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="app-rate">Application Rate (oz / gallon)</label>
+        <input type="number" id="app-rate" value="1" min="0.1" max="16" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Concentrate per gallon of finished solution</p>
+      </div>
+      <div id="coverage-rate-group">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="coverage-rate">Coverage Rate (gal / 1,000 sq ft)</label>
+        <input type="number" id="coverage-rate" value="1" min="0.1" max="10" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Gallons of finished spray per 1,000 sq ft</p>
+      </div>
+    </div>
 
     <!-- Results -->
     <div id="results" class="mt-8 border-t border-border pt-8">
-      <!-- Side-by-side cost comparison -->
-      <h3 class="font-heading font-bold text-xl mb-6">Annual Cost Comparison</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <!-- Current System Card -->
-        <div class="bg-bg-card border border-border rounded-xl p-6">
-          <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Current System</h4>
-          <div class="space-y-3">
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Cooling Cost</span>
-              <span id="result-old-cooling" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Heating Cost</span>
-              <span id="result-old-heating" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="border-t border-border pt-3 flex justify-between items-center">
-              <span class="text-text-primary font-medium">Total Annual Cost</span>
-              <span id="result-old-total" class="font-heading font-extrabold text-2xl text-text-primary">--</span>
-            </div>
-          </div>
-        </div>
+      <h3 class="font-heading font-bold text-xl mb-6">Treatment Plan Summary</h3>
 
-        <!-- New System Card -->
-        <div class="bg-bg-card border rounded-xl p-6" style="border-color: rgba(255,107,43,0.3);">
-          <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-accent mb-4">New System</h4>
-          <div class="space-y-3">
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Cooling Cost</span>
-              <span id="result-new-cooling" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Heating Cost</span>
-              <span id="result-new-heating" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="border-t border-border pt-3 flex justify-between items-center">
-              <span class="text-text-primary font-medium">Total Annual Cost</span>
-              <span id="result-new-total" class="font-heading font-extrabold text-2xl text-accent">--</span>
-            </div>
-          </div>
+      <!-- Pest & property context bar -->
+      <div class="bg-bg-card border border-border rounded-xl p-5 mb-6">
+        <div class="flex flex-wrap gap-x-8 gap-y-2 text-sm">
+          <div><span class="text-text-muted">Pest:</span> <span id="result-pest" class="text-text-primary font-medium">General Pest / Roaches</span></div>
+          <div><span class="text-text-muted">Property:</span> <span id="result-property" class="text-text-primary font-medium">Residential</span></div>
+          <div><span class="text-text-muted">Method:</span> <span id="result-method" class="text-text-primary font-medium">Perimeter Spray</span></div>
         </div>
       </div>
 
-      <!-- Visual bar chart comparison -->
-      <div class="bg-bg-card border border-border rounded-xl p-6 mb-8">
-        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Annual Cost Comparison</h4>
-        <div class="space-y-4">
-          <div>
-            <div class="flex justify-between text-sm mb-1">
-              <span class="text-text-secondary">Current System</span>
-              <span id="bar-old-label" class="text-text-primary font-medium">--</span>
-            </div>
-            <div class="w-full bg-bg-dark rounded-full h-8 overflow-hidden">
-              <div id="bar-old" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 100%; background: linear-gradient(90deg, #dc2626, #ef4444);">
-                <span class="text-white text-xs font-bold whitespace-nowrap"></span>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div class="flex justify-between text-sm mb-1">
-              <span class="text-text-secondary">New System</span>
-              <span id="bar-new-label" class="text-text-primary font-medium">--</span>
-            </div>
-            <div class="w-full bg-bg-dark rounded-full h-8 overflow-hidden">
-              <div id="bar-new" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 50%; background: linear-gradient(90deg, #16a34a, #22c55e);">
-                <span class="text-white text-xs font-bold whitespace-nowrap"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Savings summary cards -->
-      <h3 class="font-heading font-bold text-xl mb-6">Your Savings</h3>
+      <!-- Primary result cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-bg-dark rounded-xl p-5 text-center border-2" style="border-color: rgba(255,107,43,0.4);">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Annual Savings</div>
-          <div class="flex items-center justify-center gap-2">
-            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-            <span id="result-annual" class="font-heading font-extrabold text-3xl text-accent">--</span>
-          </div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Solution Needed</div>
+          <div id="result-total-gallons" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div class="text-text-muted text-xs mt-1">gallons</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Monthly Savings</div>
-          <div id="result-monthly" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Product Concentrate</div>
+          <div id="result-product-oz" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">fluid ounces</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Payback Period</div>
-          <div id="result-payback" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Bait Stations</div>
+          <div id="result-bait-stations" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">stations recommended</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">10-Year Net Savings</div>
-          <div id="result-tenyear" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Estimated Time</div>
+          <div id="result-time" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">on-site</div>
         </div>
       </div>
 
-      <!-- Environmental impact -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <!-- Secondary detail cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">CO2 Reduction</div>
-          <div id="result-co2" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">lbs/year</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Treatment Area</div>
+          <div id="result-area" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div id="result-area-unit" class="text-text-muted text-xs mt-1">sq ft / linear ft</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Environmental Impact</div>
-          <div id="result-trees" class="font-heading font-extrabold text-2xl text-green-500">--</div>
-          <div class="text-text-muted text-xs mt-1">equivalent trees planted per year</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Follow-Up Interval</div>
+          <div id="result-followup" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">recommended</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Product in Quarts</div>
+          <div id="result-product-qt" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">of concentrate</div>
         </div>
       </div>
 
-      <p class="text-text-muted text-sm italic">Estimates based on average usage patterns. Actual savings depend on equipment condition, property condition, pest activity, and local environment. Consult with a licensed Pest Control contractor for a detailed energy audit.</p>
+      <!-- Treatment notes -->
+      <div id="treatment-notes" class="bg-bg-card border border-border rounded-xl p-5 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-3">Treatment Notes</h4>
+        <ul id="notes-list" class="text-text-secondary text-sm leading-relaxed space-y-2">
+        </ul>
+      </div>
+
+      <p class="text-text-muted text-sm italic">Estimates based on standard application rates and typical conditions. Always follow the product label for exact rates, re-entry intervals, and PPE requirements. Adjust quantities based on actual pest pressure and site conditions.</p>
     </div>
   </div>
 
@@ -250,24 +185,25 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Tool</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Enter the current system specs.</strong> Check the nameplate on the outdoor condenser for efficiency and the system data plate for efficiency. If the customer doesn't know, use 10 efficiency and 80% efficiency as safe defaults for systems over 15 years old.</p>
-          <p><strong class="text-text-primary">2. Enter the proposed system specs.</strong> Use the efficiency and efficiency ratings from the equipment you're quoting. A 16 efficiency / 96% efficiency combination is a common mid-tier upgrade that shows strong savings.</p>
-          <p><strong class="text-text-primary">3. Set the shared parameters.</strong> Select the system size in tons, enter the customer's electricity and gas rates from their utility bill, choose their region to auto-fill typical cooling and heating hours, and enter your quoted upgrade cost.</p>
-          <p><strong class="text-text-primary">4. Review the side-by-side comparison.</strong> Show the customer the annual cost difference, payback period, and 10-year net savings. The visual bar chart makes the savings immediately obvious during a sales presentation.</p>
+          <p><strong class="text-text-primary">1. Select the pest type and property type.</strong> Choose the target pest you are treating and the type of property. The tool adjusts default recommendations, estimated treatment time, and follow-up intervals based on these selections.</p>
+          <p><strong class="text-text-primary">2. Enter the treatment area.</strong> Input interior square footage for indoor treatments and perimeter linear feet for exterior treatments. The tool uses whichever measurement applies to your selected treatment method.</p>
+          <p><strong class="text-text-primary">3. Choose the treatment method.</strong> Select how you plan to treat. Perimeter spray uses the exterior linear footage. Interior spray uses the square footage. Bait stations calculate placement counts based on spacing standards. Gel bait, dust, and fumigation each adjust the output accordingly.</p>
+          <p><strong class="text-text-primary">4. Set application and coverage rates.</strong> Enter the product label rate in ounces per gallon and the coverage rate in gallons per 1,000 square feet. These two values determine how much finished solution and concentrate you need for the job.</p>
         </div>
       </section>
 
-      <!-- Understanding efficiency and efficiency Ratings -->
+      <!-- How the Calculations Work -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">Understanding efficiency and efficiency Ratings</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">How the Calculations Work</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">efficiency (Seasonal Energy Efficiency Ratio)</strong> measures cooling efficiency. It's the total BTU of heat removed per watt-hour of electricity consumed over a typical cooling season. A 10 efficiency system uses 60% more electricity than a 16 efficiency system to deliver the same cooling. The federal minimum is now 14 efficiency in northern states and 15 efficiency in the South. Higher efficiency means lower electric bills every summer.</p>
-          <p><strong class="text-text-primary">efficiency (Annual Fuel Utilization Efficiency)</strong> measures how efficiently a gas system converts fuel to heat. An 80% efficiency system loses 20 cents of every dollar as exhaust waste. A 96% efficiency system captures nearly all of that energy, reducing gas consumption by 20% compared to the older unit. Standard-efficiency systems run at 80% efficiency, while high-efficiency condensing systems reach 95-98%.</p>
-          <p><strong class="text-text-primary">Why higher is better:</strong> Both ratings work like miles per gallon for your Pest Control system. Higher numbers mean more output per unit of energy consumed. The difference compounds every month the system runs. In a hot climate, the efficiency upgrade drives most of the savings. In a cold climate, the efficiency improvement often matters more. This tool models both sides so you can show the customer exactly where their money goes.</p>
-          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm">
-            <p>Cooling: kWh = (Tons x 12,000 x Cooling_Hours) / (efficiency x 1,000)</p>
-            <p>Heating: Therms = (Tons x 12,000 x Heating_Hours) / (efficiency/100 x 100,000)</p>
+          <p><strong class="text-text-primary">Spray solution volume:</strong> The tool divides your treatable area by 1,000, then multiplies by the coverage rate. For a perimeter spray, it converts linear feet to square feet by assuming a 3-foot treatment band on each side of the foundation. The result is total gallons of finished spray solution needed for the job.</p>
+          <p><strong class="text-text-primary">Product concentrate:</strong> Once total solution gallons are known, the tool multiplies by the application rate (ounces per gallon) to determine how many ounces of concentrate to pull from the jug. This is the number you need when loading your tank.</p>
+          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
+            <p>Total_Gallons = (Treatable_Area / 1,000) x Coverage_Rate</p>
+            <p>Concentrate_Oz = Total_Gallons x App_Rate_Per_Gallon</p>
+            <p>Bait_Stations = Perimeter_LF / Station_Spacing</p>
           </div>
+          <p><strong class="text-text-primary">Bait station count:</strong> For bait station treatments, the tool divides the exterior perimeter by the recommended spacing interval (typically 25-50 feet for rodent stations, 8-10 feet for insect stations). The count rounds up so you always have enough stations to close any gaps in your placement.</p>
         </div>
       </section>
 
@@ -275,9 +211,9 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">Sales presentations at the kitchen table.</strong> Pull this up on your tablet while sitting with the homeowner. Enter their current system specs on the left, your proposed equipment on the right, and let the visual comparison make the case. The side-by-side layout and bar chart are designed to be shown to customers, not just used behind the scenes.</p>
-          <p><strong class="text-text-primary">Proposal support for premium equipment.</strong> When you're quoting a 16 efficiency system against a competitor's 14 efficiency bid, this tool proves the long-term value. Show the customer that paying more upfront saves thousands over 10 years. Screenshot the results and attach them to your written proposal for added credibility.</p>
-          <p><strong class="text-text-primary">Customer education on repair vs. replace.</strong> When a customer asks whether to repair their 18-year-old system or replace it, run the comparison. If the annual savings alone cover a significant portion of the repair cost, replacement makes financial sense even before factoring in reliability improvements and reduced breakdown risk.</p>
+          <p><strong class="text-text-primary">Pre-loading your truck before a route.</strong> Run each job through the tool the night before to know exactly how much product and how many bait stations to load. No more guessing whether you have enough concentrate for a large commercial account or running back to the shop mid-route.</p>
+          <p><strong class="text-text-primary">Quoting jobs with accurate material costs.</strong> When you know the exact ounces of concentrate needed, you can calculate your true material cost per job. Enter the square footage from the inspection, pick the treatment method, and use the product totals to build a profitable price.</p>
+          <p><strong class="text-text-primary">Training new technicians on coverage standards.</strong> Hand a new tech the treatment plan before they roll out. It tells them the target pest, method, how much solution to mix, how many stations to place, and the follow-up timeline. It builds consistency across your team and reduces callbacks from under-application.</p>
         </div>
       </section>
 
@@ -286,20 +222,20 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much can I save with a new Pest Control system?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Savings depend on the efficiency gap between your current and new system, local energy prices, and climate. Replacing a 10 efficiency / 80% efficiency system with a 16 efficiency / 96% efficiency system typically saves $500 to $1,200 per year on a 3-ton unit. Hotter climates with more cooling hours see greater savings on the AC side, while colder climates benefit more from the system upgrade.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many gallons of spray solution do I need per 1,000 square feet?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Standard coverage rates for pest control spraying are typically 1 gallon of finished solution per 1,000 square feet for interior applications and 1-2 gallons per 1,000 square feet for exterior perimeter treatments. These rates vary by product label, target pest, and surface porosity. Always follow the product label for specific coverage rates.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What efficiency rating should I get?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For most homeowners, 16 efficiency hits the sweet spot of upfront cost and long-term savings. In hot climates like the South or Southwest with 2,500+ cooling hours per year, 18-20 efficiency can pay back faster. In mild climates with under 1,500 cooling hours, 14-16 efficiency is usually sufficient. Always compare the payback period at different efficiency levels before deciding.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate the amount of product concentrate needed?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">First determine total gallons of finished solution needed based on square footage and coverage rate. Then multiply total gallons by the label application rate in ounces per gallon. For example, if you need 2.5 gallons of solution and the label rate is 1 oz per gallon, you need 2.5 oz of concentrate total.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Is a higher efficiency always worth it?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Not always. Each efficiency point above 16 costs more per unit of efficiency gained, and the savings diminish. A jump from 10 to 16 efficiency cuts cooling costs by 37%, but going from 16 to 20 efficiency only saves an additional 12.5%. In mild climates with low cooling hours, the extra cost of a 20+ efficiency unit may never pay back. Run the comparison to see exact payback for your situation.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many bait stations do I need for a residential home?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For exterior rodent bait stations, the standard is one station every 25-50 feet around the perimeter. A typical 2,000 sq ft home with 180 linear feet of perimeter needs 4-7 stations. For interior insect bait stations, place them every 8-10 linear feet along baseboards in active areas. Adjust spacing based on pest pressure and the product label.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does a new AC take to pay for itself?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Payback periods typically range from 5 to 12 years depending on the efficiency jump, system size, local energy costs, and climate. A homeowner in the South upgrading from 10 efficiency to 16 efficiency on a 3-ton system often sees payback in 6-8 years. Utility rebates, manufacturer incentives, and federal tax credits can shorten that timeline significantly.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What follow-up interval should I recommend to customers?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Follow-up intervals depend on the pest type and treatment method. General pest control with residual sprays typically calls for quarterly service (every 90 days). Ants and roaches in active infestations need 2-4 week follow-ups until controlled, then quarterly maintenance. Bed bugs require follow-ups every 10-14 days. Termites using bait stations need monitoring every 60-90 days. Mosquito treatments are usually monthly during active season.</div>
           </details>
         </div>
       </section>
@@ -308,97 +244,309 @@ const faqSchema = {
 </ToolLayout>
 
 <script>
-  const regions: Record<string, [number, number]> = {
-    '2500,600': [2500, 600],
-    '2200,800': [2200, 800],
-    '1400,2000': [1400, 2000],
-    '1200,2200': [1200, 2200],
-    '2800,400': [2800, 400],
-    '800,1800': [800, 1800],
-    '2100,1500': [2100, 1500],
+  // --- TypeScript types ---
+  interface PestProfile {
+    label: string;
+    followUp: string;
+    baseMinutes: number;
+    sqftMinutePer1000: number;
+    notes: string[];
+    baitSpacing: number; // linear feet between stations
+  }
+
+  interface PropertyProfile {
+    label: string;
+    timeMultiplier: number;
+  }
+
+  interface MethodProfile {
+    label: string;
+    usesSpray: boolean;
+    usesBait: boolean;
+    usesDust: boolean;
+    usesFumigation: boolean;
+  }
+
+  // --- Data tables ---
+  const pestProfiles: Record<string, PestProfile> = {
+    general: {
+      label: 'General Pest / Roaches',
+      followUp: 'Every 90 days (quarterly)',
+      baseMinutes: 20,
+      sqftMinutePer1000: 8,
+      notes: [
+        'Apply residual spray along baseboards, under sinks, and around entry points.',
+        'Treat exterior perimeter 3 feet up and 3 feet out from foundation.',
+        'Focus on kitchens, bathrooms, and utility rooms for interior treatment.',
+        'Check weather stripping and door sweeps during inspection.'
+      ],
+      baitSpacing: 10
+    },
+    ants: {
+      label: 'Ants',
+      followUp: 'Every 2-4 weeks until controlled, then quarterly',
+      baseMinutes: 25,
+      sqftMinutePer1000: 10,
+      notes: [
+        'Identify species before treatment — bait preference varies by species.',
+        'Trace trails to locate entry points and treat at the source.',
+        'Apply non-repellent products near trails so foragers carry it back to the colony.',
+        'Place bait stations near active trails and entry points.'
+      ],
+      baitSpacing: 8
+    },
+    spiders: {
+      label: 'Spiders',
+      followUp: 'Every 60-90 days',
+      baseMinutes: 20,
+      sqftMinutePer1000: 7,
+      notes: [
+        'Remove visible webs during treatment to monitor for re-infestation.',
+        'Treat eaves, window frames, door frames, and exterior lighting areas.',
+        'Dust voids and undisturbed areas where spiders harbor.',
+        'Reducing other insect populations limits the spider food source.'
+      ],
+      baitSpacing: 10
+    },
+    rodents: {
+      label: 'Rodents',
+      followUp: 'Every 30 days until controlled, then every 60-90 days',
+      baseMinutes: 30,
+      sqftMinutePer1000: 5,
+      notes: [
+        'Conduct thorough inspection for droppings, rub marks, and gnaw damage.',
+        'Seal entry points larger than 1/4 inch for mice or 1/2 inch for rats.',
+        'Place tamper-resistant bait stations along walls and travel paths.',
+        'Check and service all stations on every follow-up visit.'
+      ],
+      baitSpacing: 30
+    },
+    termites: {
+      label: 'Termites',
+      followUp: 'Every 60-90 days (bait monitoring) or annual (liquid barrier)',
+      baseMinutes: 45,
+      sqftMinutePer1000: 12,
+      notes: [
+        'Identify termite species (subterranean vs. drywood) before selecting treatment.',
+        'For liquid barrier: trench and rod along the entire foundation perimeter.',
+        'For bait systems: install monitoring stations every 10-15 linear feet.',
+        'Document all findings and treatment details for the customer record.'
+      ],
+      baitSpacing: 12
+    },
+    bedbugs: {
+      label: 'Bed Bugs',
+      followUp: 'Every 10-14 days (minimum 2-3 follow-ups)',
+      baseMinutes: 60,
+      sqftMinutePer1000: 25,
+      notes: [
+        'Inspect mattress seams, box springs, headboards, and baseboards thoroughly.',
+        'Treat cracks and crevices with residual spray and dust formulations.',
+        'Encase mattresses and box springs after treatment.',
+        'Advise customer on preparation: laundering bedding, reducing clutter.'
+      ],
+      baitSpacing: 0
+    },
+    mosquitoes: {
+      label: 'Mosquitoes',
+      followUp: 'Monthly during active season',
+      baseMinutes: 20,
+      sqftMinutePer1000: 5,
+      notes: [
+        'Treat shaded resting areas: under eaves, shrubs, tall grass, fences.',
+        'Address standing water sources or advise customer to eliminate them.',
+        'Apply adulticide to vegetation and structural resting surfaces.',
+        'Consider larvicide in water features that cannot be drained.'
+      ],
+      baitSpacing: 0
+    },
+    wasps: {
+      label: 'Wasps / Bees',
+      followUp: 'As needed (one-time treatment typical)',
+      baseMinutes: 25,
+      sqftMinutePer1000: 3,
+      notes: [
+        'Locate all active nests before beginning treatment.',
+        'Treat nests during early morning or late evening when activity is lowest.',
+        'Use dust formulations for wall voids and aerosol for exposed nests.',
+        'Remove accessible nests after knockdown and seal entry points.'
+      ],
+      baitSpacing: 0
+    }
   };
 
-  function formatCurrency(val: number): string {
-    return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const propertyProfiles: Record<string, PropertyProfile> = {
+    residential: { label: 'Residential', timeMultiplier: 1.0 },
+    commercial: { label: 'Commercial', timeMultiplier: 1.2 },
+    restaurant: { label: 'Restaurant / Food Service', timeMultiplier: 1.4 },
+    warehouse: { label: 'Warehouse / Industrial', timeMultiplier: 0.8 }
+  };
+
+  const methodProfiles: Record<string, MethodProfile> = {
+    'perimeter-spray': { label: 'Perimeter Spray', usesSpray: true, usesBait: false, usesDust: false, usesFumigation: false },
+    'interior-spray': { label: 'Interior Spray', usesSpray: true, usesBait: false, usesDust: false, usesFumigation: false },
+    'bait-stations': { label: 'Bait Stations', usesSpray: false, usesBait: true, usesDust: false, usesFumigation: false },
+    'gel-bait': { label: 'Gel Bait', usesSpray: false, usesBait: true, usesDust: false, usesFumigation: false },
+    'dust': { label: 'Dust Application', usesSpray: false, usesBait: false, usesDust: true, usesFumigation: false },
+    'fumigation': { label: 'Fumigation', usesSpray: false, usesBait: false, usesDust: false, usesFumigation: true }
+  };
+
+  function calculate(): void {
+    const pestType = (document.getElementById('pest-type') as HTMLSelectElement).value;
+    const propertyType = (document.getElementById('property-type') as HTMLSelectElement).value;
+    const sqFootage = parseFloat((document.getElementById('sq-footage') as HTMLInputElement).value) || 2000;
+    const perimeterFt = parseFloat((document.getElementById('perimeter-ft') as HTMLInputElement).value) || 180;
+    const treatmentMethod = (document.getElementById('treatment-method') as HTMLSelectElement).value;
+    const appRate = parseFloat((document.getElementById('app-rate') as HTMLInputElement).value) || 1;
+    const coverageRate = parseFloat((document.getElementById('coverage-rate') as HTMLInputElement).value) || 1;
+
+    const pest = pestProfiles[pestType] || pestProfiles['general'];
+    const property = propertyProfiles[propertyType] || propertyProfiles['residential'];
+    const method = methodProfiles[treatmentMethod] || methodProfiles['perimeter-spray'];
+
+    // Show/hide rate inputs based on method
+    const appRateGroup = document.getElementById('app-rate-group') as HTMLElement;
+    const coverageRateGroup = document.getElementById('coverage-rate-group') as HTMLElement;
+
+    if (method.usesSpray) {
+      appRateGroup.classList.remove('hidden');
+      coverageRateGroup.classList.remove('hidden');
+    } else if (method.usesDust) {
+      appRateGroup.classList.remove('hidden');
+      coverageRateGroup.classList.add('hidden');
+    } else {
+      appRateGroup.classList.add('hidden');
+      coverageRateGroup.classList.add('hidden');
+    }
+
+    // Determine treatable area based on method
+    let treatableAreaSqFt: number = 0;
+    let areaDisplay: string = '';
+    let areaUnit: string = '';
+
+    if (treatmentMethod === 'perimeter-spray') {
+      // 3-foot band on each side = 6 feet wide total perimeter band
+      treatableAreaSqFt = perimeterFt * 6;
+      areaDisplay = perimeterFt.toLocaleString() + ' LF';
+      areaUnit = 'linear feet (perimeter)';
+    } else if (treatmentMethod === 'interior-spray') {
+      treatableAreaSqFt = sqFootage;
+      areaDisplay = sqFootage.toLocaleString() + ' sq ft';
+      areaUnit = 'square feet (interior)';
+    } else if (treatmentMethod === 'bait-stations' || treatmentMethod === 'gel-bait') {
+      treatableAreaSqFt = 0;
+      areaDisplay = perimeterFt.toLocaleString() + ' LF';
+      areaUnit = 'linear feet (placement area)';
+    } else if (treatmentMethod === 'dust') {
+      treatableAreaSqFt = sqFootage * 0.1; // dust covers ~10% of area (voids/cracks)
+      areaDisplay = sqFootage.toLocaleString() + ' sq ft';
+      areaUnit = 'square feet (voids/cracks ~10%)';
+    } else if (treatmentMethod === 'fumigation') {
+      treatableAreaSqFt = sqFootage;
+      areaDisplay = sqFootage.toLocaleString() + ' sq ft';
+      areaUnit = 'square feet (full structure)';
+    }
+
+    // Calculate spray solution
+    let totalGallons: number = 0;
+    let concentrateOz: number = 0;
+
+    if (method.usesSpray) {
+      totalGallons = (treatableAreaSqFt / 1000) * coverageRate;
+      concentrateOz = totalGallons * appRate;
+    } else if (method.usesDust) {
+      // Dust: app rate is oz of dust product per 1000 sq ft of void area
+      concentrateOz = (treatableAreaSqFt / 1000) * appRate;
+      totalGallons = 0;
+    } else if (method.usesFumigation) {
+      // Fumigation: volume-based, rough estimate in solution equivalent
+      totalGallons = sqFootage * 0.001; // placeholder ratio
+      concentrateOz = totalGallons * appRate;
+    }
+
+    // Calculate bait stations
+    let baitStationCount: number = 0;
+    if (method.usesBait && pest.baitSpacing > 0) {
+      if (treatmentMethod === 'gel-bait') {
+        // Gel bait placements: roughly every 3-5 feet in active areas
+        baitStationCount = Math.ceil(perimeterFt / 5);
+      } else {
+        baitStationCount = Math.ceil(perimeterFt / pest.baitSpacing);
+      }
+    }
+
+    // Estimate time
+    let estMinutes: number = pest.baseMinutes + (sqFootage / 1000) * pest.sqftMinutePer1000;
+    estMinutes *= property.timeMultiplier;
+    if (method.usesBait) estMinutes += baitStationCount * 2; // ~2 min per station
+    estMinutes = Math.round(estMinutes);
+
+    const hours = Math.floor(estMinutes / 60);
+    const mins = estMinutes % 60;
+    const timeDisplay = hours > 0 ? hours + 'h ' + mins + 'm' : mins + ' min';
+
+    // Update context bar
+    document.getElementById('result-pest')!.textContent = pest.label;
+    document.getElementById('result-property')!.textContent = property.label;
+    document.getElementById('result-method')!.textContent = method.label;
+
+    // Update primary results
+    if (method.usesSpray) {
+      document.getElementById('result-total-gallons')!.textContent = totalGallons.toFixed(1);
+    } else if (method.usesFumigation) {
+      document.getElementById('result-total-gallons')!.textContent = totalGallons.toFixed(1);
+    } else {
+      document.getElementById('result-total-gallons')!.textContent = 'N/A';
+    }
+
+    if (concentrateOz > 0) {
+      document.getElementById('result-product-oz')!.textContent = concentrateOz.toFixed(1);
+    } else {
+      document.getElementById('result-product-oz')!.textContent = 'N/A';
+    }
+
+    document.getElementById('result-bait-stations')!.textContent = method.usesBait ? baitStationCount.toString() : 'N/A';
+    document.getElementById('result-time')!.textContent = timeDisplay;
+
+    // Update secondary results
+    document.getElementById('result-area')!.textContent = areaDisplay;
+    document.getElementById('result-area-unit')!.textContent = areaUnit;
+    document.getElementById('result-followup')!.textContent = pest.followUp;
+    document.getElementById('result-product-qt')!.textContent = concentrateOz > 0 ? (concentrateOz / 32).toFixed(2) + ' qt' : 'N/A';
+
+    // Treatment notes
+    const notesList = document.getElementById('notes-list') as HTMLUListElement;
+    notesList.innerHTML = '';
+    pest.notes.forEach((note: string) => {
+      const li = document.createElement('li');
+      li.textContent = note;
+      notesList.appendChild(li);
+    });
+
+    // Add method-specific note
+    if (method.usesSpray && totalGallons > 0) {
+      const li = document.createElement('li');
+      const tankLoads4 = Math.ceil(totalGallons / 4);
+      const tankLoads1 = Math.ceil(totalGallons / 1);
+      li.textContent = 'Tank loads: ' + tankLoads1 + ' fill(s) with a 1-gal sprayer, or ' + tankLoads4 + ' fill(s) with a 4-gal backpack.';
+      notesList.appendChild(li);
+    }
+    if (method.usesBait) {
+      const li = document.createElement('li');
+      li.textContent = 'Place stations flush against walls and in areas with evidence of activity.';
+      notesList.appendChild(li);
+    }
+    if (method.usesDust) {
+      const li = document.createElement('li');
+      li.textContent = 'Apply dust lightly into wall voids, under baseboards, and around pipe penetrations. Avoid visible piles.';
+      notesList.appendChild(li);
+    }
   }
-
-  function calculate() {
-    // Current system inputs
-    const oldSeer = parseFloat((document.getElementById('old-seer') as HTMLInputElement).value) || 10;
-    const oldAfue = parseFloat((document.getElementById('old-afue') as HTMLInputElement).value) || 80;
-
-    // New system inputs
-    const newSeer = parseFloat((document.getElementById('new-seer') as HTMLInputElement).value) || 16;
-    const newAfue = parseFloat((document.getElementById('new-afue') as HTMLInputElement).value) || 96;
-
-    // Shared inputs
-    const tons = parseFloat((document.getElementById('tons') as HTMLSelectElement).value) || 3;
-    const elecRate = parseFloat((document.getElementById('elec-rate') as HTMLInputElement).value) || 0.16;
-    const gasRate = parseFloat((document.getElementById('gas-rate') as HTMLInputElement).value) || 1.20;
-    const upgradeCost = parseFloat((document.getElementById('upgrade-cost') as HTMLInputElement).value) || 8000;
-
-    // Get hours from region
-    const regionVal = (document.getElementById('region') as HTMLSelectElement).value;
-    const hours = regions[regionVal] || [2100, 1500];
-    const coolHours = hours[0];
-    const heatHours = hours[1];
-
-    // Cooling calculations
-    const oldCoolingKwh = (tons * 12000 * coolHours) / (oldSeer * 1000);
-    const newCoolingKwh = (tons * 12000 * coolHours) / (newSeer * 1000);
-    const oldCoolingCost = oldCoolingKwh * elecRate;
-    const newCoolingCost = newCoolingKwh * elecRate;
-
-    // Heating calculations (gas)
-    const btuOutput = tons * 12000;
-    const oldHeatCost = (btuOutput * heatHours) / ((oldAfue / 100) * 100000) * gasRate;
-    const newHeatCost = (btuOutput * heatHours) / ((newAfue / 100) * 100000) * gasRate;
-
-    // Totals
-    const oldTotalCost = oldCoolingCost + oldHeatCost;
-    const newTotalCost = newCoolingCost + newHeatCost;
-    const annualSavings = oldTotalCost - newTotalCost;
-    const monthlySavings = annualSavings / 12;
-    const paybackYears = annualSavings > 0 ? upgradeCost / annualSavings : 0;
-    const tenYearNet = (annualSavings * 10) - upgradeCost;
-
-    // Environmental
-    const co2Reduction = (oldCoolingKwh - newCoolingKwh) * 0.92;
-    const treesEquivalent = co2Reduction / 48;
-
-    // Update side-by-side cost cards
-    document.getElementById('result-old-cooling')!.textContent = formatCurrency(Math.round(oldCoolingCost));
-    document.getElementById('result-old-heating')!.textContent = formatCurrency(Math.round(oldHeatCost));
-    document.getElementById('result-old-total')!.textContent = formatCurrency(Math.round(oldTotalCost));
-    document.getElementById('result-new-cooling')!.textContent = formatCurrency(Math.round(newCoolingCost));
-    document.getElementById('result-new-heating')!.textContent = formatCurrency(Math.round(newHeatCost));
-    document.getElementById('result-new-total')!.textContent = formatCurrency(Math.round(newTotalCost));
-
-    // Update bar chart
-    const maxCost = Math.max(oldTotalCost, newTotalCost, 1);
-    const oldBarPct = (oldTotalCost / maxCost) * 100;
-    const newBarPct = (newTotalCost / maxCost) * 100;
-    (document.getElementById('bar-old') as HTMLElement).style.width = oldBarPct + '%';
-    (document.getElementById('bar-new') as HTMLElement).style.width = newBarPct + '%';
-    document.getElementById('bar-old-label')!.textContent = formatCurrency(Math.round(oldTotalCost));
-    document.getElementById('bar-new-label')!.textContent = formatCurrency(Math.round(newTotalCost));
-
-    // Update savings summary
-    document.getElementById('result-annual')!.textContent = formatCurrency(Math.round(annualSavings));
-    document.getElementById('result-monthly')!.textContent = formatCurrency(Math.round(monthlySavings));
-    document.getElementById('result-payback')!.textContent = paybackYears > 0 ? paybackYears.toFixed(1) + ' yrs' : 'N/A';
-    document.getElementById('result-tenyear')!.textContent = formatCurrency(Math.round(tenYearNet));
-
-    // Update environmental impact
-    document.getElementById('result-co2')!.textContent = Math.round(co2Reduction).toLocaleString();
-    document.getElementById('result-trees')!.textContent = Math.round(treesEquivalent).toLocaleString();
-
-  }
-
 
   // Auto-calculate on any input change
-  document.querySelectorAll('#energy-comp input, #energy-comp select').forEach(el => {
+  document.querySelectorAll('#tplan-calc input, #tplan-calc select').forEach(el => {
     el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
   });
 
   // Calculate on load with defaults

@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How much does a new Painting system cost?",
+      "name": "How much does it cost to paint the exterior of a house?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A new Painting system typically costs between $5,000 and $15,000 installed, depending on system type, efficiency level, home size, and region. A standard efficiency primary systems for a average home averages around $6,500, while a high-efficiency high-efficiency system can run $11,500 or more before regional and complexity adjustments."
+        "text": "Exterior house painting typically costs between $1.50 and $4.50 per square foot of paintable surface, or $3,000 to $12,000 for a full exterior on a typical home. A 2,000 sq ft single-story ranch with vinyl siding in good condition lands around $4,000 to $6,000. A 3,500 sq ft two-story with wood siding needing significant prep can run $9,000 to $14,000. Siding type, condition, stories, and trim detail are the biggest cost drivers."
       }
     },
     {
       "@type": "Question",
-      "name": "What size Painting system do I need?",
+      "name": "How many gallons of paint do I need for an exterior?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "System size is measured in tons and depends on your home's square footage, insulation, climate, and layout. A rough rule of thumb is 1 ton per 500-600 square feet, but a proper Manual J load calculation is required for accurate sizing. Oversized systems short-cycle and waste energy, while undersized systems can't keep up on extreme days."
+        "text": "One gallon of exterior paint covers approximately 250 to 350 square feet per coat depending on surface texture and porosity. Rough or porous surfaces like stucco and wood absorb more paint and drop coverage to around 200 to 250 sq ft per gallon. A typical 2,000 sq ft home has roughly 1,500 to 2,000 sq ft of paintable exterior surface and needs 8 to 12 gallons for two coats. Always order 10-15% extra to avoid mid-job shortages."
       }
     },
     {
       "@type": "Question",
-      "name": "Are there tax credits for new Painting systems?",
+      "name": "How long does it take to paint the exterior of a house?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. The federal 25C energy efficiency tax credit offers up to $2,000 for qualifying high-efficiency systems installed in your primary residence. The system must meet specific efficiency requirements (CEE Tier 1 or higher). Standard air conditioners and systems may qualify for a smaller $600 credit. Check with your tax advisor for current eligibility details."
+        "text": "A two-person crew can typically paint the exterior of an average single-story home in 3 to 5 days including prep, priming, two coats, and cleanup. Multi-story homes, heavy prep work, or extensive trim add 1 to 3 additional days. Weather delays are common on exterior jobs so always build buffer time into your schedule. A three-person crew can shave 25-30% off these times."
       }
     },
     {
       "@type": "Question",
-      "name": "How long does Painting installation take?",
+      "name": "Should I charge per square foot or per project for exterior painting?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A straightforward like-for-like replacement typically takes 1 day (6-10 hours). If new system work is required, expect 2-3 days. Converting from one system type to another (e.g., system to high-efficiency option) may take 1-2 days. Complex multi-zone premium installations can take 2-4 days depending on the number of indoor units and line set routing."
+        "text": "Calculate your price per square foot of paintable surface internally to ensure consistent margins, then present the homeowner with a per-project total. Per square foot pricing keeps your estimating accurate across different home sizes and styles. Most professional painters land between $1.75 and $3.50 per square foot for exteriors depending on siding type, condition, and paint quality. Present it as a project total so the homeowner sees one clear number."
       }
     }
   ]
@@ -49,72 +49,56 @@ const faqSchema = {
     <!-- Input Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="systemType">System Type</label>
-        <select id="systemType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="standard-system">Standard System</option>
-          <option value="heat-pump">Premium Option</option>
-          <option value="mini-1">Option 1-Zone</option>
-          <option value="mini-2">Option 2-Zone</option>
-          <option value="mini-3">Option 3-Zone</option>
-          <option value="mini-4">Option 4-Zone</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="homeSqFt">Home Square Footage</label>
+        <input type="number" id="homeSqFt" value="2000" min="500" max="15000" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="stories">Number of Stories</label>
+        <select id="stories" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1" selected>1 Story</option>
+          <option value="1.5">1.5 Stories (split-level)</option>
+          <option value="2">2 Stories</option>
+          <option value="3">3 Stories</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="efficiency">Efficiency Level</label>
-        <select id="efficiency" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="standard">Standard (14 efficiency / 80% efficiency)</option>
-          <option value="mid" selected>Mid-Range (16 efficiency / 96% efficiency)</option>
-          <option value="high">High Efficiency (high-efficiency)</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="sidingType">Siding Type</label>
+        <select id="sidingType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="vinyl">Vinyl / Aluminum</option>
+          <option value="wood" selected>Wood (lap/shingle)</option>
+          <option value="hardiboard">HardiPlank / Fiber Cement</option>
+          <option value="stucco">Stucco</option>
+          <option value="brick">Brick</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tons">System Size (Tons)</label>
-        <select id="tons" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.5">1.5 Ton</option>
-          <option value="2">2 Ton</option>
-          <option value="2.5">2.5 Ton</option>
-          <option value="3" selected>3 Ton</option>
-          <option value="3.5">3.5 Ton</option>
-          <option value="4">4 Ton</option>
-          <option value="5">5 Ton</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="condition">Surface Condition</label>
+        <select id="condition" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="good" selected>Good (light wash and scrape)</option>
+          <option value="fair">Fair (moderate scraping/sanding)</option>
+          <option value="poor">Poor (heavy prep, caulk, prime)</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="region">Region</label>
-        <select id="region" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="0.85">Southeast</option>
-          <option value="0.90">Midwest</option>
-          <option value="0.95">South</option>
-          <option value="1.00" selected>National Average</option>
-          <option value="1.05">Mountain</option>
-          <option value="1.10">Northeast</option>
-          <option value="1.10">Pacific NW</option>
-          <option value="1.15">West</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="paintQuality">Paint Quality</label>
+        <select id="paintQuality" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="standard">Standard ($30-40/gal)</option>
+          <option value="mid" selected>Mid-Range ($45-60/gal)</option>
+          <option value="premium">Premium ($65-90/gal)</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="homeType">Home Type</label>
-        <select id="homeType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.0" selected>Single Story</option>
-          <option value="1.1">Multi-Story</option>
-          <option value="1.15">Attic Installation</option>
-          <option value="1.1">Crawlspace</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="ductwork">Project Complexity</label>
-        <select id="ductwork" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.0" selected>Existing (good condition)</option>
-          <option value="1.15">Partial Modification Needed</option>
-          <option value="1.5">Major Renovation Required</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="includeTrim">Include Trim</label>
+        <select id="includeTrim" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="no">No (body only)</option>
+          <option value="yes" selected>Yes (fascia, soffits, trim)</option>
         </select>
       </div>
     </div>
 
-
     <!-- Results -->
     <div id="results" class="mt-8 border-t border-border pt-8">
-      <h3 class="font-heading font-bold text-xl mb-6">Your Estimated Cost</h3>
+      <h3 class="font-heading font-bold text-xl mb-6">Your Estimate</h3>
 
       <!-- Cost Range Bar -->
       <div class="bg-bg-dark rounded-xl p-6 mb-6">
@@ -139,26 +123,31 @@ const faqSchema = {
         </div>
       </div>
 
-      <!-- Monthly Financing + Tax Credit -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <!-- Detail Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">60-Month Financing</div>
-          <div id="result-monthly60" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">per month</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Paintable Surface</div>
+          <div id="result-sqft" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">sq ft</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">120-Month Financing</div>
-          <div id="result-monthly120" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">per month</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Gallons Needed</div>
+          <div id="result-gallons" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">gallons (2 coats)</div>
         </div>
-        <div id="tax-credit-card" class="hidden bg-bg-dark rounded-xl p-5 text-center border border-green-500/30">
-          <div class="text-green-400 text-xs font-medium uppercase tracking-wider mb-2">Federal Tax Credit</div>
-          <div class="font-heading font-extrabold text-2xl text-green-400">Up to $2,000</div>
-          <div class="text-text-muted text-xs mt-1">25C credit for qualifying high-efficiency options</div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Labor Hours</div>
+          <div id="result-hours" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">crew hours (2-person)</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cost per Sq Ft</div>
+          <div id="result-persqft" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">labor + materials</div>
         </div>
       </div>
 
-      <p class="text-text-muted text-sm italic">This is a ballpark estimate based on national averages. Actual costs vary by contractor, equipment brand, and job-specific conditions. Get exact pricing from a licensed Painting contractor in your area.</p>
+      <p class="text-text-muted text-sm italic">Ballpark estimate for budgeting and quoting. Actual job costs depend on local labor rates, paint brand, surface texture, accessibility, and on-site conditions. Always measure and quote each job individually.</p>
     </div>
   </div>
 
@@ -169,22 +158,22 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Estimator</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Select your system type.</strong> Choose between a traditional primary systems combo, a high-efficiency option, or a premium system. Premium options are priced by the number of indoor zones.</p>
-          <p><strong class="text-text-primary">2. Pick your efficiency level.</strong> Standard efficiency costs less upfront but more to operate. High-efficiency systems cost more to install but lower monthly energy bills and may qualify for federal tax credits.</p>
-          <p><strong class="text-text-primary">3. Set the system size and your region.</strong> Tonnage should match your home's load calculation. Regional labor and material costs vary significantly, with the Southeast being most affordable and the West Coast being most expensive.</p>
-          <p><strong class="text-text-primary">4. Adjust for complexity.</strong> Multi-story homes, difficult access, and special requirements add labor time. Major system changes can add 50% to the total project cost.</p>
+          <p><strong class="text-text-primary">1. Enter the home's square footage.</strong> Use the living area square footage. The calculator converts this to approximate exterior wall area based on the number of stories and typical window/door openings.</p>
+          <p><strong class="text-text-primary">2. Select stories and siding type.</strong> Multi-story homes need ladders or lifts and take longer. Siding type affects paint absorption, coverage rates, and prep requirements. Wood and stucco absorb more paint and need more prep than smooth surfaces like vinyl or HardiPlank.</p>
+          <p><strong class="text-text-primary">3. Set the surface condition.</strong> Good condition means a pressure wash and light scrape gets you ready to paint. Fair condition means moderate scraping, sanding, and spot priming. Poor condition means heavy scraping, caulking, wood repair, and full priming before paint goes on.</p>
+          <p><strong class="text-text-primary">4. Include trim if applicable.</strong> Trim painting (fascia, soffits, window casings, door frames, shutters) adds 15-25% to the total cost. It is slower, more detail-oriented work that requires cutting in and often uses a different color and sheen than the body.</p>
         </div>
       </section>
 
       <!-- What Affects Cost -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">What Affects Painting Replacement Cost</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">What Affects Exterior Painting Cost</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">System type and efficiency.</strong> The biggest cost driver is the equipment itself. A basic standard efficiency system is the most affordable option. High-efficiency options cost slightly less for the equipment but provide both heating and cooling. High-efficiency units (high-efficiency) can cost double the standard models.</p>
-          <p><strong class="text-text-primary">System size.</strong> Larger homes need larger systems. The cost scales roughly proportionally with tonnage. A 5-ton system costs significantly more than a 2-ton system in both equipment and labor.</p>
-          <p><strong class="text-text-primary">Regional pricing.</strong> Labor rates, permit costs, and material availability vary by region. Southeastern states tend to have the lowest installation costs, while the West Coast and Northeast are the most expensive markets.</p>
-          <p><strong class="text-text-primary">Home complexity.</strong> Multi-story homes require more additional materials, longer runs, and difficult access. Work in tight spaces, at height, or in extreme weather adds difficulty and time. Complex jobs with multiple components take longer and cost more.</p>
-          <p><strong class="text-text-primary">System condition.</strong> If your existing existing systems are in good shape, the contractor simply connects the new system. Partial modifications (adding a return, resizing a trunk line) add moderate cost. A full system overhaul is a major project that can increase the total price by 50%.</p>
+          <p><strong class="text-text-primary">Prep is where exterior jobs get expensive.</strong> A house in good shape might need a day of pressure washing and light scraping. A house with peeling paint, rotted trim, or failing caulk can eat 2 to 4 days of prep before a single gallon of paint is opened. Accurate prep assessment is the difference between a profitable job and a money loser.</p>
+          <p><strong class="text-text-primary">Height and access.</strong> Single-story homes are straightforward ladder work. Two- and three-story homes need extension ladders, scaffolding, or even boom lifts. Each step up in height slows production, increases safety considerations, and adds equipment costs. Price your multi-story work 20-40% higher per square foot than single-story.</p>
+          <p><strong class="text-text-primary">Siding type determines coverage and speed.</strong> Smooth vinyl and fiber cement are the fastest to paint and use the least material. Wood lap siding is moderate. Stucco and rough-textured surfaces absorb paint heavily and require more material plus slower application. Brick is the most paint-hungry surface by far.</p>
+          <p><strong class="text-text-primary">Paint quality affects longevity and callbacks.</strong> Premium exterior paints last 10-15 years versus 5-7 for standard grades. The higher per-gallon cost is often offset by better coverage and far fewer warranty callbacks. On exteriors, cheap paint is expensive paint in the long run.</p>
+          <p><strong class="text-text-primary">Trim and detail work.</strong> Painting trim, soffits, fascia, shutters, and window casings is slower than rolling body walls. It requires more cutting in, often involves different products (higher-sheen enamels), and adds significant labor time. Always quote trim as a separate line item so the homeowner sees the value.</p>
         </div>
       </section>
 
@@ -192,9 +181,9 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">During sales visits.</strong> Pull this up on your tablet while sitting at the kitchen table with a homeowner. Walk through the options together, show them how efficiency level and system condition affect the price, and set realistic expectations before running your detailed proposal.</p>
-          <p><strong class="text-text-primary">Phone estimates.</strong> When a homeowner calls asking "how much for a new AC?" you can walk them through a few questions and give a ballpark range on the spot. This builds trust and qualifies the lead before scheduling an in-home visit.</p>
-          <p><strong class="text-text-primary">Website lead generation.</strong> Embed this calculator on your website so homeowners can self-educate on pricing. Visitors who use the tool and then call you are better-informed and more likely to convert because they already have realistic price expectations.</p>
+          <p><strong class="text-text-primary">Phone screening and lead qualifying.</strong> When a homeowner calls asking about exterior painting, walk them through the basic specs and give them a ballpark range before you commit to a site visit. This filters out budget shoppers early and sets expectations for homeowners who are ready to move forward.</p>
+          <p><strong class="text-text-primary">Fast on-site ballparking.</strong> Pull this up on your phone as you walk the exterior. Plug in the home size, count the stories, assess the siding condition, and show the homeowner a range on the spot. Follow up with a detailed written proposal within 24 hours while the conversation is fresh.</p>
+          <p><strong class="text-text-primary">Comparing job profitability.</strong> Run a few recent exterior jobs through this estimator and compare the output to what you actually charged. If you consistently come in below the calculator's range, you may be underpricing your work. If you are consistently above, you have a strong value proposition to lean into.</p>
         </div>
       </section>
 
@@ -203,20 +192,20 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a new Painting system cost?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A new Painting system typically costs between $5,000 and $15,000 installed, depending on system type, efficiency level, home size, and region. A standard efficiency primary systems for a average home averages around $6,500, while a high-efficiency high-efficiency system can run $11,500 or more before regional and complexity adjustments.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does it cost to paint the exterior of a house?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Exterior house painting typically costs between $1.50 and $4.50 per square foot of paintable surface, or $3,000 to $12,000 for a full exterior on a typical home. A 2,000 sq ft single-story ranch with vinyl siding in good condition lands around $4,000 to $6,000. A 3,500 sq ft two-story with wood siding needing significant prep can run $9,000 to $14,000. Siding type, condition, stories, and trim detail are the biggest cost drivers.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What size Painting system do I need?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">System size is measured in tons and depends on your home's square footage, insulation, climate, and layout. A rough rule of thumb is 1 ton per 500-600 square feet, but a proper Manual J load calculation is required for accurate sizing. Oversized systems short-cycle and waste energy, while undersized systems can't keep up on extreme days.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many gallons of paint do I need for an exterior?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">One gallon of exterior paint covers approximately 250 to 350 square feet per coat depending on surface texture and porosity. Rough or porous surfaces like stucco and wood absorb more paint and drop coverage to around 200 to 250 sq ft per gallon. A typical 2,000 sq ft home has roughly 1,500 to 2,000 sq ft of paintable exterior surface and needs 8 to 12 gallons for two coats. Always order 10-15% extra to avoid mid-job shortages.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Are there tax credits for new Painting systems?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. The federal 25C energy efficiency tax credit offers up to $2,000 for qualifying high-efficiency systems installed in your primary residence. The system must meet specific efficiency requirements (CEE Tier 1 or higher). Standard air conditioners and systems may qualify for a smaller $600 credit. Check with your tax advisor for current eligibility details.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does it take to paint the exterior of a house?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A two-person crew can typically paint the exterior of an average single-story home in 3 to 5 days including prep, priming, two coats, and cleanup. Multi-story homes, heavy prep work, or extensive trim add 1 to 3 additional days. Weather delays are common on exterior jobs so always build buffer time into your schedule. A three-person crew can shave 25-30% off these times.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does Painting installation take?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A straightforward like-for-like replacement typically takes 1 day (6-10 hours). If new system work is required, expect 2-3 days. Converting from one system type to another (e.g., system to high-efficiency option) may take 1-2 days. Complex multi-zone premium installations can take 2-4 days depending on the number of indoor units and line set routing.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I charge per square foot or per project for exterior painting?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Calculate your price per square foot of paintable surface internally to ensure consistent margins, then present the homeowner with a per-project total. Per square foot pricing keeps your estimating accurate across different home sizes and styles. Most professional painters land between $1.75 and $3.50 per square foot for exteriors depending on siding type, condition, and paint quality. Present it as a project total so the homeowner sees one clear number.</div>
           </details>
         </div>
       </section>
@@ -225,55 +214,90 @@ const faqSchema = {
 </ToolLayout>
 
 <script>
-  function calculate() {
-    const systemType = (document.getElementById('systemType') as HTMLSelectElement).value;
-    const efficiency = (document.getElementById('efficiency') as HTMLSelectElement).value;
-    const tons = parseFloat((document.getElementById('tons') as HTMLSelectElement).value);
-    const region = parseFloat((document.getElementById('region') as HTMLSelectElement).value);
-    const homeType = parseFloat((document.getElementById('homeType') as HTMLSelectElement).value);
-    const ductwork = parseFloat((document.getElementById('ductwork') as HTMLSelectElement).value);
+  function calculate(): void {
+    const homeSqFt = parseFloat((document.getElementById('homeSqFt') as HTMLInputElement).value) || 2000;
+    const stories = parseFloat((document.getElementById('stories') as HTMLSelectElement).value);
+    const sidingType = (document.getElementById('sidingType') as HTMLSelectElement).value;
+    const condition = (document.getElementById('condition') as HTMLSelectElement).value;
+    const paintQuality = (document.getElementById('paintQuality') as HTMLSelectElement).value;
+    const includeTrim = (document.getElementById('includeTrim') as HTMLSelectElement).value === 'yes';
 
-    // Base prices by system type and efficiency
-    const basePrices: Record<string, Record<string, number>> = {
-      'standard-system': { standard: 6500, mid: 9000, high: 13000 },
-      'heat-pump': { standard: 5500, mid: 8000, high: 11500 },
-      'mini-1': { standard: 4500, mid: 4500, high: 4500 },
-      'mini-2': { standard: 7000, mid: 7000, high: 7000 },
-      'mini-3': { standard: 10000, mid: 10000, high: 10000 },
-      'mini-4': { standard: 13000, mid: 13000, high: 13000 },
+    // Estimate exterior wall area from home sq ft and stories
+    // Approximate: perimeter * wall height. For a square footprint: perimeter = 4 * sqrt(footprint)
+    const footprint = homeSqFt / Math.max(stories, 1);
+    const perimeter = 4 * Math.sqrt(footprint);
+    const wallHeight = stories * 9; // ~9 ft per story
+    const grossWallArea = perimeter * wallHeight;
+
+    // Subtract ~15% for windows and doors
+    const netWallArea = grossWallArea * 0.85;
+
+    // Trim adds ~20% more paintable area
+    const trimArea = includeTrim ? netWallArea * 0.20 : 0;
+    const totalPaintableArea = Math.round(netWallArea + trimArea);
+
+    // Coverage per gallon varies by siding type
+    const coveragePerGallon: Record<string, number> = {
+      vinyl: 350,
+      wood: 300,
+      hardiboard: 325,
+      stucco: 225,
+      brick: 200,
     };
+    const coverage = coveragePerGallon[sidingType] ?? 300;
+    const gallonsPerCoat = totalPaintableArea / coverage;
+    const totalGallons = Math.ceil(gallonsPerCoat * 2); // 2 coats standard
 
-    const basePrice = basePrices[systemType]?.[efficiency] ?? 9000;
+    // Prep multiplier
+    const prepMultiplier: Record<string, number> = { good: 1.0, fair: 1.35, poor: 1.75 };
+    const prep = prepMultiplier[condition] ?? 1.0;
 
-    // Formula: Base_Price x Regional x (Tons/3.0) x Complexity x Complexity
-    const estimatedCost = basePrice * region * (size / 1.0) * homeType * ductwork;
+    // Height/access multiplier
+    const heightMultiplier: Record<string, number> = { '1': 1.0, '1.5': 1.15, '2': 1.30, '3': 1.50 };
+    const height = heightMultiplier[String(stories)] ?? 1.0;
 
-    const low = Math.round(estimatedCost * 0.8);
-    const mid = Math.round(estimatedCost);
-    const high = Math.round(estimatedCost * 1.2);
-    const monthly60 = Math.round(mid / 60);
-    const monthly120 = Math.round(mid / 120);
+    // Siding difficulty multiplier (affects labor speed)
+    const sidingMultiplier: Record<string, number> = {
+      vinyl: 0.85,
+      wood: 1.0,
+      hardiboard: 0.90,
+      stucco: 1.15,
+      brick: 1.25,
+    };
+    const sidingFactor = sidingMultiplier[sidingType] ?? 1.0;
 
-    // Format currency
-    const fmt = (n: number) => '$' + n.toLocaleString();
+    // Labor hours: ~80 sq ft per hour per painter for body, 2-person crew
+    const bodyHoursPerPainter = (netWallArea / 80) * 2 * prep * height * sidingFactor; // 2 coats
+    const trimHoursPerPainter = includeTrim ? (trimArea / 40) * 2 * height : 0; // trim is slower
+    const totalCrewHours = Math.round(((bodyHoursPerPainter + trimHoursPerPainter) / 2) * 10) / 10; // 2-person crew
 
-    document.getElementById('result-low')!.textContent = fmt(low);
-    document.getElementById('result-mid')!.textContent = fmt(mid);
-    document.getElementById('result-high')!.textContent = fmt(high);
-    document.getElementById('result-monthly60')!.textContent = fmt(monthly60);
-    document.getElementById('result-monthly120')!.textContent = fmt(monthly120);
+    // Cost per sq ft by paint quality
+    const costRanges: Record<string, { low: number; high: number }> = {
+      standard: { low: 1.50, high: 2.75 },
+      mid: { low: 2.25, high: 3.50 },
+      premium: { low: 3.00, high: 4.50 },
+    };
+    const range = costRanges[paintQuality] ?? costRanges.mid;
 
-    // Show/hide tax credit for high-efficiency option and premium option systems
-    const taxCreditCard = document.getElementById('tax-credit-card')!;
-    const isHeatPump = systemType === 'heat-pump' || systemType.startsWith('mini-');
-    taxCreditCard.classList.toggle('hidden', !isHeatPump);
+    const lowCost = Math.round(totalPaintableArea * range.low * prep * height * sidingFactor);
+    const highCost = Math.round(totalPaintableArea * range.high * prep * height * sidingFactor);
+    const midCost = Math.round((lowCost + highCost) / 2);
 
+    const fmt = (n: number): string => '$' + n.toLocaleString();
+
+    document.getElementById('result-low')!.textContent = fmt(lowCost);
+    document.getElementById('result-mid')!.textContent = fmt(midCost);
+    document.getElementById('result-high')!.textContent = fmt(highCost);
+    document.getElementById('result-sqft')!.textContent = totalPaintableArea.toLocaleString();
+    document.getElementById('result-gallons')!.textContent = totalGallons.toString();
+    document.getElementById('result-hours')!.textContent = totalCrewHours.toString();
+    document.getElementById('result-persqft')!.textContent = '$' + (midCost / totalPaintableArea).toFixed(2);
   }
 
-
-  // Auto-calculate on input change
-  document.querySelectorAll('#cost-calc select').forEach(el => {
+  // Auto-calculate on any input change
+  document.querySelectorAll('#cost-calc select, #cost-calc input').forEach(el => {
     el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
   });
 
   // Calculate on load with defaults

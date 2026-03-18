@@ -10,18 +10,18 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What should be on a General Contracting work order?",
+      "name": "What should be on a construction change order?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A complete General Contracting change order includes the original scope reference, change description, cost breakdown (materials, labor, subcontractors), schedule impact, required approvals, and signatures from both contractor and client with the date of authorization."
+        "text": "A complete construction change order includes the original contract reference, a clear description of the scope change, itemized cost breakdown (materials, labor, subcontractors, markup), schedule impact in working days, required approvals, and signatures from both contractor and client with the date of authorization."
       }
     },
     {
       "@type": "Question",
-      "name": "Why do I need to record system readings?",
+      "name": "Why do I need detailed cost breakdowns on change orders?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "System readings like suction pressure, head pressure, superheat, subcooling, and temperature split document the system's operating condition at the time of service. These readings are critical for warranty claims, verifying proper charge levels, tracking system degradation over time, and protecting your company from liability disputes."
+        "text": "Detailed cost breakdowns document the financial impact of every change. Itemize materials, labor hours, equipment rental, and subcontractor costs separately. This transparency builds client trust, prevents disputes about markup, and creates accurate records for job costing and future project estimating."
       }
     },
     {
@@ -34,10 +34,10 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      "name": "What's a normal temperature split for AC?",
+      "name": "How should I handle client-requested upgrades?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A normal temperature split (return air minus supply air) for an air conditioning system is 15 to 20 degrees Fahrenheit. A split below 15°F may indicate low refrigerant charge, a dirty evaporator coil, or airflow restrictions. A split above 20°F can suggest low airflow from a clogged filter or failing blower motor."
+        "text": "Client-requested upgrades should always go through the change order process even if they seem minor. Document the upgrade, cost difference, and any schedule impact. Get the client's signature before ordering materials or starting work. This protects both parties and ensures the project budget stays accurate."
       }
     }
   ]
@@ -47,28 +47,28 @@ const faqSchema = {
 <ToolLayout tool={tool} extraSchema={[faqSchema]}>
   <div id="work-order-form">
 
-    <!-- Section: Dispatch Info -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Dispatch Info</h3>
+    <!-- Section: Change Order Info -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Change Order Info</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="wo-number">Work Order #</label>
-        <input type="text" id="wo-number" value="WO-001" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="wo-number">Change Order #</label>
+        <input type="text" id="wo-number" value="CO-001" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
         <label class="block text-sm font-medium text-text-secondary mb-2" for="wo-date">Date</label>
         <input type="date" id="wo-date" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="wo-time">Time</label>
-        <input type="time" id="wo-time" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="contract-ref">Original Contract #</label>
+        <input type="text" id="contract-ref" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tech-name">Technician Name</label>
-        <input type="text" id="tech-name" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="pm-name">Project Manager</label>
+        <input type="text" id="pm-name" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="truck-number">Truck #</label>
-        <input type="text" id="truck-number" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="project-name">Project Name</label>
+        <input type="text" id="project-name" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
         <label class="block text-sm font-medium text-text-secondary mb-2" for="priority">Priority</label>
@@ -80,15 +80,15 @@ const faqSchema = {
       </div>
     </div>
 
-    <!-- Section: Customer Info -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Customer Info</h3>
+    <!-- Section: Client Info -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Client Info</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="cust-name">Customer Name</label>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="cust-name">Client Name</label>
         <input type="text" id="cust-name" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="cust-address">Address</label>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="cust-address">Project Address</label>
         <input type="text" id="cust-address" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
@@ -96,205 +96,143 @@ const faqSchema = {
         <input type="text" id="cust-phone" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="access-instructions">Access Instructions</label>
-        <input type="text" id="access-instructions" placeholder="Gate code, lockbox, etc." class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="cust-email">Email</label>
+        <input type="email" id="cust-email" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
     </div>
 
-    <!-- Section: System Info -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">System Info</h3>
+    <!-- Section: Project Info -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Project Info</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="equip-type">Equipment Type</label>
-        <select id="equip-type" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="Central AC">New Build</option>
-          <option value="Heat Pump">Addition</option>
-          <option value="Furnace">Mechanical System</option>
-          <option value="Mini Split">Remodel</option>
-          <option value="Boiler">Renovation</option>
-          <option value="Package Unit">Restoration</option>
-          <option value="RTU">RTU</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="project-type">Project Type</label>
+        <select id="project-type" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="New Build">New Build</option>
+          <option value="Addition" selected>Addition</option>
+          <option value="Remodel">Remodel</option>
+          <option value="Renovation">Renovation</option>
+          <option value="Restoration">Restoration</option>
+          <option value="Tenant Improvement">Tenant Improvement</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="equip-make">Make</label>
-        <input type="text" id="equip-make" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="original-value">Original Contract Value ($)</label>
+        <input type="number" id="original-value" min="0" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="equip-model">Model</label>
-        <input type="text" id="equip-model" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="equip-serial">Serial #</label>
-        <input type="text" id="equip-serial" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="install-date">Install Date</label>
-        <input type="date" id="install-date" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="filter-size">Filter Size</label>
-        <input type="text" id="filter-size" placeholder="e.g., 16x25x1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="refrigerant-type">Material Type</label>
-        <select id="refrigerant-type" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="R-410A" selected>R-410A</option>
-          <option value="R-22">R-22</option>
-          <option value="R-32">R-32</option>
-          <option value="R-134a">R-134a</option>
-          <option value="Other">Other</option>
-        </select>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="original-completion">Original Completion Date</label>
+        <input type="date" id="original-completion" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
     </div>
 
-    <!-- Section: Service Details -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Service Details</h3>
+    <!-- Section: Change Description -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Change Description</h3>
     <div class="space-y-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="reported-issue">Reported Issue</label>
-        <textarea id="reported-issue" rows="3" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors resize-y"></textarea>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="change-reason">Reason for Change</label>
+        <select id="change-reason" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="Client Request" selected>Client Request</option>
+          <option value="Unforeseen Condition">Unforeseen Condition</option>
+          <option value="Design Change">Design Change</option>
+          <option value="Code Requirement">Code Requirement</option>
+          <option value="Material Substitution">Material Substitution</option>
+          <option value="Scope Clarification">Scope Clarification</option>
+        </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="diagnosis">Diagnosis</label>
-        <textarea id="diagnosis" rows="3" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors resize-y"></textarea>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="change-description">Description of Change</label>
+        <textarea id="change-description" rows="4" placeholder="Describe the scope change in detail..." class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors resize-y"></textarea>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="work-performed">Work Performed</label>
-        <textarea id="work-performed" rows="4" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors resize-y"></textarea>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="justification">Justification / Impact if Not Approved</label>
+        <textarea id="justification" rows="3" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors resize-y"></textarea>
       </div>
     </div>
 
-    <!-- Section: Parts Used -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Parts Used</h3>
+    <!-- Section: Cost Breakdown -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Cost Breakdown</h3>
     <div class="mb-8">
-      <div id="parts-table" class="space-y-3">
-        <div class="grid grid-cols-[1fr_1fr_80px_40px] gap-3 items-end part-row">
+      <div id="cost-table" class="space-y-3">
+        <div class="grid grid-cols-[1fr_120px_100px_120px_40px] gap-3 items-end cost-row">
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-2">Part Name</label>
-            <input type="text" class="part-name w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+            <label class="block text-sm font-medium text-text-secondary mb-2">Item Description</label>
+            <input type="text" class="item-desc w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-2">Part #</label>
-            <input type="text" class="part-number w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+            <label class="block text-sm font-medium text-text-secondary mb-2">Category</label>
+            <select class="item-category w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors">
+              <option value="Material">Material</option>
+              <option value="Labor">Labor</option>
+              <option value="Subcontractor">Sub</option>
+              <option value="Equipment">Equipment</option>
+            </select>
           </div>
           <div>
             <label class="block text-sm font-medium text-text-secondary mb-2">Qty</label>
-            <input type="number" value="1" min="1" class="part-qty w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+            <input type="number" value="1" min="1" class="item-qty w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-2">Unit Cost ($)</label>
+            <input type="number" min="0" step="0.01" class="item-cost w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
           </div>
           <div>
             <label class="block text-sm font-medium text-text-secondary mb-2">&nbsp;</label>
-            <button type="button" class="remove-part-btn w-full bg-red-900/30 text-red-400 rounded-lg py-3 hover:bg-red-900/50 transition-colors cursor-pointer text-lg font-bold" title="Remove part">&times;</button>
+            <button type="button" class="remove-cost-btn w-full bg-red-900/30 text-red-400 rounded-lg py-3 hover:bg-red-900/50 transition-colors cursor-pointer text-lg font-bold" title="Remove item">&times;</button>
           </div>
         </div>
       </div>
-      <button type="button" id="add-part-btn" class="mt-3 text-accent hover:text-accent-hover transition-colors cursor-pointer text-sm font-medium">+ Add Part</button>
+      <button type="button" id="add-cost-btn" class="mt-3 text-accent hover:text-accent-hover transition-colors cursor-pointer text-sm font-medium">+ Add Line Item</button>
+
+      <!-- Markup and totals -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+        <div>
+          <label class="block text-sm font-medium text-text-secondary mb-2" for="markup-pct">Markup / OH&amp;P (%)</label>
+          <input type="number" id="markup-pct" value="15" min="0" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-text-secondary mb-2">Subtotal</label>
+          <div id="subtotal-display" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-lg font-bold text-text-muted">&mdash;</div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-text-secondary mb-2">Total with Markup</label>
+          <div id="total-display" class="w-full bg-bg-dark border border-accent/50 rounded-lg px-4 py-3 text-lg font-bold text-accent">&mdash;</div>
+        </div>
+      </div>
     </div>
 
-    <!-- Section: Materials Log -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Material Log</h3>
+    <!-- Section: Schedule Impact -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Schedule Impact</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="ref-added">Amount Added (lbs)</label>
-        <input type="number" id="ref-added" min="0" step="0.25" value="0" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="days-added">Working Days Added</label>
+        <input type="number" id="days-added" min="0" value="0" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="ref-recovered">Amount Recovered (lbs)</label>
-        <input type="number" id="ref-recovered" min="0" step="0.25" value="0" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="new-completion">Revised Completion Date</label>
+        <input type="date" id="new-completion" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="schedule-notes">Schedule Notes</label>
+        <textarea id="schedule-notes" rows="2" placeholder="Which milestones are affected, lead time for materials, etc." class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors resize-y"></textarea>
       </div>
     </div>
 
-    <!-- Section: System Readings -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">System Readings</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Section: Authorization -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Authorization</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="suction-psi">Suction Pressure (PSI)</label>
-        <input type="number" id="suction-psi" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="head-psi">Head/Liquid Pressure (PSI)</label>
-        <input type="number" id="head-psi" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="contractor-sig">Contractor Name / Signature</label>
+        <input type="text" id="contractor-sig" placeholder="Type full name" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="superheat">Superheat (&deg;F)</label>
-        <input type="number" id="superheat" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="subcooling">Subcooling (&deg;F)</label>
-        <input type="number" id="subcooling" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="supply-temp">Supply Air Temp (&deg;F)</label>
-        <input type="number" id="supply-temp" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="return-temp">Return Air Temp (&deg;F)</label>
-        <input type="number" id="return-temp" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2">Temperature Split (&deg;F)</label>
-        <div id="temp-split-display" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-lg font-bold text-text-muted">&mdash;</div>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="comp-amps">Compressor Amps</label>
-        <input type="number" id="comp-amps" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-    </div>
-
-    <!-- Section: Safety Checklist -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Safety Checklist</h3>
-    <div class="space-y-3 mb-8">
-      <div class="flex items-center gap-3">
-        <input type="checkbox" id="chk-co" class="w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent cursor-pointer" />
-        <label for="chk-co" class="text-text-primary cursor-pointer">CO Test</label>
-        <input type="number" id="co-ppm" placeholder="PPM" min="0" class="w-24 bg-bg-dark border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div class="flex items-center gap-3">
-        <input type="checkbox" id="chk-gasleak" class="w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent cursor-pointer" />
-        <label for="chk-gasleak" class="text-text-primary cursor-pointer">Gas Leak Check</label>
-      </div>
-      <div class="flex items-center gap-3">
-        <input type="checkbox" id="chk-electrical" class="w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent cursor-pointer" />
-        <label for="chk-electrical" class="text-text-primary cursor-pointer">Electrical Connections Inspected</label>
-      </div>
-      <div class="flex items-center gap-3">
-        <input type="checkbox" id="chk-capacitor" class="w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent cursor-pointer" />
-        <label for="chk-capacitor" class="text-text-primary cursor-pointer">Capacitor Tested</label>
-      </div>
-      <div class="flex items-center gap-3">
-        <input type="checkbox" id="chk-contactor" class="w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent cursor-pointer" />
-        <label for="chk-contactor" class="text-text-primary cursor-pointer">Contactor Inspected</label>
-      </div>
-      <div class="flex items-center gap-3">
-        <input type="checkbox" id="chk-drain" class="w-5 h-5 rounded border-border bg-bg-dark text-accent focus:ring-accent cursor-pointer" />
-        <label for="chk-drain" class="text-text-primary cursor-pointer">Drain Line Clear</label>
-      </div>
-    </div>
-
-    <!-- Section: Completion -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Completion</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="time-arrived">Time Arrived</label>
-        <input type="time" id="time-arrived" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="time-completed">Time Completed</label>
-        <input type="time" id="time-completed" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2">Total Hours</label>
-        <div id="total-hours-display" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-lg font-bold text-text-muted">&mdash;</div>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tech-signature">Technician Signature</label>
-        <input type="text" id="tech-signature" placeholder="Type full name" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="client-sig">Client Name / Signature</label>
+        <input type="text" id="client-sig" placeholder="Type full name" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
     </div>
 
     <!-- Generate Button -->
     <button id="generate-btn" class="w-full md:w-auto bg-accent text-white font-heading font-bold text-base uppercase tracking-wider px-8 py-3.5 rounded-lg hover:bg-accent-hover hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,107,43,0.3)] transition-all cursor-pointer">
-      Generate Work Order &rarr;
+      Generate Change Order &rarr;
     </button>
   </div>
 
@@ -305,17 +243,17 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Template</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Fill in dispatch and customer info.</strong> Start with the work order number, date, and technician assignment. Add the customer's name, address, phone, and any access instructions like gate codes or lockbox combos.</p>
-          <p><strong class="text-text-primary">2. Identify the system.</strong> Select the equipment type and enter the make, model, and serial number from the data plate. Record the install date and current filter size so the next tech has a complete picture.</p>
-          <p><strong class="text-text-primary">3. Document the service.</strong> Write what the customer reported, your diagnosis, and exactly what work you performed. Be specific — vague notes cause problems during warranty claims and callbacks.</p>
-          <p><strong class="text-text-primary">4. Record readings and safety checks.</strong> Log all system pressures, temperatures, and amp draws. Run through the safety checklist. These readings prove the system was operating correctly when you left.</p>
-          <p><strong class="text-text-primary">5. Generate the work order.</strong> Hit the button to create a clean, printable work order. Have the customer review it, then use it for your records, warranty documentation, or office filing.</p>
+          <p><strong class="text-text-primary">1. Fill in the change order and client info.</strong> Start with the change order number, date, and original contract reference. Add the client's name, project address, and contact details. The original contract reference ties this change back to the base scope.</p>
+          <p><strong class="text-text-primary">2. Describe the change.</strong> Select the reason for the change and write a detailed description of what is being added, removed, or modified. Be specific — vague change orders lead to disputes when the client's memory of the conversation differs from yours.</p>
+          <p><strong class="text-text-primary">3. Break down the costs.</strong> Add line items for every material, labor hour, subcontractor charge, and equipment rental. Set your markup percentage. Transparent, itemized pricing prevents arguments about what the client is paying for.</p>
+          <p><strong class="text-text-primary">4. Document the schedule impact.</strong> State how many working days this change adds and which milestones are affected. If materials have lead times, note them here. Schedule documentation prevents disputes about completion dates.</p>
+          <p><strong class="text-text-primary">5. Get signatures before starting work.</strong> Both contractor and client must sign before any change order work begins. This single practice prevents more disputes than any other documentation habit in construction.</p>
         </div>
       </section>
 
-      <!-- What Goes on a Work Order -->
+      <!-- What Goes on a Change Order -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">What Goes on a General Contracting Change Order</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">What Goes on a Construction Change Order</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
           <p>A change order is the document that authorizes modifications to the original project scope. Every section exists for a reason.</p>
           <p><strong class="text-text-primary">Original scope reference</strong> ties the change back to the original contract. Include the contract number, original scope item being modified, and the reason for the change. Without this context, disputes become impossible to resolve.</p>
@@ -330,7 +268,7 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">Scope additions.</strong> When a client wants to add rooms, upgrade finishes, or include work not in the original contract, a change order documents exactly what's being added, the cost, and the timeline impact before work begins.</p>
+          <p><strong class="text-text-primary">Scope additions.</strong> When a client wants to add rooms, upgrade finishes, or include work not in the original contract, a change order documents exactly what is being added, the cost, and the timeline impact before work begins.</p>
           <p><strong class="text-text-primary">Unforeseen conditions.</strong> Hidden damage, soil issues, structural problems, or code requirements discovered during construction often require scope changes. A change order documents the discovery, the required fix, and the cost so the client understands why the project budget is changing.</p>
           <p><strong class="text-text-primary">Material substitutions.</strong> When specified materials are unavailable or a client wants to upgrade or downgrade selections, a change order records the substitution, any cost difference, and whether it affects the schedule or warranty coverage.</p>
         </div>
@@ -341,8 +279,8 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What should be on a General Contracting change order?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A complete General Contracting change order includes the original scope reference, change description, cost breakdown (materials, labor, subcontractors), schedule impact, required approvals, and signatures from both contractor and client with the date of authorization.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What should be on a construction change order?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A complete construction change order includes the original contract reference, a clear description of the scope change, itemized cost breakdown (materials, labor, subcontractors, markup), schedule impact in working days, required approvals, and signatures from both contractor and client with the date of authorization.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
             <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Why do I need detailed cost breakdowns?</summary>
@@ -363,166 +301,116 @@ const faqSchema = {
 </ToolLayout>
 
 <script>
-  // --- Default date and time ---
+  // --- Default date ---
   const now = new Date();
   const dateInput = document.getElementById('wo-date') as HTMLInputElement;
-  const timeInput = document.getElementById('wo-time') as HTMLInputElement;
   if (dateInput && !dateInput.value) {
     dateInput.value = now.toISOString().slice(0, 10);
   }
-  if (timeInput && !timeInput.value) {
-    timeInput.value = now.toTimeString().slice(0, 5);
-  }
 
-  // --- Temperature Split auto-calculation ---
-  function updateTempSplit() {
-    const supply = parseFloat((document.getElementById('supply-temp') as HTMLInputElement).value);
-    const ret = parseFloat((document.getElementById('return-temp') as HTMLInputElement).value);
-    const display = document.getElementById('temp-split-display')!;
-    if (!isNaN(supply) && !isNaN(ret)) {
-      const split = ret - supply;
-      display.textContent = split.toFixed(1) + '°F';
-      if (split >= 15 && split <= 20) {
-        display.className = 'w-full bg-bg-dark border border-green-500/50 rounded-lg px-4 py-3 text-lg font-bold text-green-400';
-      } else {
-        display.className = 'w-full bg-bg-dark border border-yellow-500/50 rounded-lg px-4 py-3 text-lg font-bold text-yellow-400';
-      }
-    } else {
-      display.textContent = '\u2014';
-      display.className = 'w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-lg font-bold text-text-muted';
-    }
-  }
-  document.getElementById('supply-temp')?.addEventListener('input', updateTempSplit);
-  document.getElementById('return-temp')?.addEventListener('input', updateTempSplit);
-
-  // --- Total Hours auto-calculation ---
-  function updateTotalHours() {
-    const arrived = (document.getElementById('time-arrived') as HTMLInputElement).value;
-    const completed = (document.getElementById('time-completed') as HTMLInputElement).value;
-    const display = document.getElementById('total-hours-display')!;
-    if (arrived && completed) {
-      const [ah, am] = arrived.split(':').map(Number);
-      const [ch, cm] = completed.split(':').map(Number);
-      let totalMinutes = (ch * 60 + cm) - (ah * 60 + am);
-      if (totalMinutes < 0) totalMinutes += 24 * 60; // handle overnight
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = totalMinutes % 60;
-      display.textContent = hours + 'h ' + minutes + 'm';
-      display.className = 'w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-lg font-bold text-text-primary';
-    } else {
-      display.textContent = '\u2014';
-      display.className = 'w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-lg font-bold text-text-muted';
-    }
-  }
-  document.getElementById('time-arrived')?.addEventListener('input', updateTotalHours);
-  document.getElementById('time-completed')?.addEventListener('input', updateTotalHours);
-
-  // --- Dynamic Parts Table ---
-  function addPartRow() {
-    const table = document.getElementById('parts-table')!;
+  // --- Dynamic Cost Table ---
+  function addCostRow() {
+    const table = document.getElementById('cost-table')!;
     const row = document.createElement('div');
-    row.className = 'grid grid-cols-[1fr_1fr_80px_40px] gap-3 items-end part-row';
+    row.className = 'grid grid-cols-[1fr_120px_100px_120px_40px] gap-3 items-end cost-row';
     row.innerHTML = `
       <div>
-        <input type="text" class="part-name w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <input type="text" class="item-desc w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
-        <input type="text" class="part-number w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <select class="item-category w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors">
+          <option value="Material">Material</option>
+          <option value="Labor">Labor</option>
+          <option value="Subcontractor">Sub</option>
+          <option value="Equipment">Equipment</option>
+        </select>
       </div>
       <div>
-        <input type="number" value="1" min="1" class="part-qty w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <input type="number" value="1" min="1" class="item-qty w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
-        <button type="button" class="remove-part-btn w-full bg-red-900/30 text-red-400 rounded-lg py-3 hover:bg-red-900/50 transition-colors cursor-pointer text-lg font-bold" title="Remove part">&times;</button>
+        <input type="number" min="0" step="0.01" class="item-cost w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <button type="button" class="remove-cost-btn w-full bg-red-900/30 text-red-400 rounded-lg py-3 hover:bg-red-900/50 transition-colors cursor-pointer text-lg font-bold" title="Remove item">&times;</button>
       </div>
     `;
     table.appendChild(row);
+    updateTotals();
   }
 
-  document.getElementById('add-part-btn')?.addEventListener('click', addPartRow);
+  document.getElementById('add-cost-btn')?.addEventListener('click', addCostRow);
 
-  document.getElementById('parts-table')?.addEventListener('click', (e) => {
+  document.getElementById('cost-table')?.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
-    if (target.classList.contains('remove-part-btn')) {
-      const row = target.closest('.part-row');
-      const allRows = document.querySelectorAll('.part-row');
+    if (target.classList.contains('remove-cost-btn')) {
+      const row = target.closest('.cost-row');
+      const allRows = document.querySelectorAll('.cost-row');
       if (allRows.length > 1 && row) {
         row.remove();
+        updateTotals();
       }
     }
   });
 
-  // --- Generate Work Order ---
+  // --- Totals calculation ---
+  function updateTotals() {
+    const rows = document.querySelectorAll('.cost-row');
+    let subtotal = 0;
+    rows.forEach(row => {
+      const qty = parseFloat((row.querySelector('.item-qty') as HTMLInputElement)?.value) || 0;
+      const cost = parseFloat((row.querySelector('.item-cost') as HTMLInputElement)?.value) || 0;
+      subtotal += qty * cost;
+    });
+
+    const markup = parseFloat((document.getElementById('markup-pct') as HTMLInputElement)?.value) || 0;
+    const total = subtotal * (1 + markup / 100);
+
+    const fmt = (n: number) => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('subtotal-display')!.textContent = fmt(subtotal);
+    document.getElementById('total-display')!.textContent = fmt(total);
+  }
+
+  // Listen for input changes in the cost table
+  document.getElementById('cost-table')?.addEventListener('input', updateTotals);
+  document.getElementById('markup-pct')?.addEventListener('input', updateTotals);
+
+  // --- Generate Change Order ---
   function getVal(id: string): string {
     const el = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
     return el ? el.value : '';
   }
-  function getChecked(id: string): boolean {
-    return (document.getElementById(id) as HTMLInputElement)?.checked || false;
-  }
 
-  function generateWorkOrder() {
-    // Collect parts
-    const partRows = document.querySelectorAll('.part-row');
-    let partsHtml = '';
-    partRows.forEach(row => {
-      const name = (row.querySelector('.part-name') as HTMLInputElement)?.value || '';
-      const num = (row.querySelector('.part-number') as HTMLInputElement)?.value || '';
-      const qty = (row.querySelector('.part-qty') as HTMLInputElement)?.value || '';
-      if (name || num) {
-        partsHtml += `<tr><td style="border:1px solid #ddd;padding:6px 10px;">${name}</td><td style="border:1px solid #ddd;padding:6px 10px;">${num}</td><td style="border:1px solid #ddd;padding:6px 10px;text-align:center;">${qty}</td></tr>`;
+  function generateChangeOrder() {
+    // Collect cost items
+    const costRows = document.querySelectorAll('.cost-row');
+    let itemsHtml = '';
+    let subtotal = 0;
+    costRows.forEach(row => {
+      const desc = (row.querySelector('.item-desc') as HTMLInputElement)?.value || '';
+      const category = (row.querySelector('.item-category') as HTMLSelectElement)?.value || '';
+      const qty = parseFloat((row.querySelector('.item-qty') as HTMLInputElement)?.value) || 0;
+      const cost = parseFloat((row.querySelector('.item-cost') as HTMLInputElement)?.value) || 0;
+      const lineTotal = qty * cost;
+      subtotal += lineTotal;
+      if (desc || cost) {
+        itemsHtml += `<tr><td style="border:1px solid #ddd;padding:6px 10px;">${desc}</td><td style="border:1px solid #ddd;padding:6px 10px;">${category}</td><td style="border:1px solid #ddd;padding:6px 10px;text-align:center;">${qty}</td><td style="border:1px solid #ddd;padding:6px 10px;text-align:right;">$${cost.toFixed(2)}</td><td style="border:1px solid #ddd;padding:6px 10px;text-align:right;">$${lineTotal.toFixed(2)}</td></tr>`;
       }
     });
 
-    // Temperature split
-    const supplyT = parseFloat(getVal('supply-temp'));
-    const returnT = parseFloat(getVal('return-temp'));
-    let splitVal = '';
-    let splitColor = '#666';
-    if (!isNaN(supplyT) && !isNaN(returnT)) {
-      const s = returnT - supplyT;
-      splitVal = s.toFixed(1) + '°F';
-      splitColor = (s >= 15 && s <= 20) ? '#16a34a' : '#ca8a04';
-    }
-
-    // Total hours
-    const arrived = getVal('time-arrived');
-    const completed = getVal('time-completed');
-    let totalHours = '';
-    if (arrived && completed) {
-      const [ah, am] = arrived.split(':').map(Number);
-      const [ch, cm] = completed.split(':').map(Number);
-      let totalMin = (ch * 60 + cm) - (ah * 60 + am);
-      if (totalMin < 0) totalMin += 24 * 60;
-      totalHours = Math.floor(totalMin / 60) + 'h ' + (totalMin % 60) + 'm';
-    }
-
-    // Safety checklist
-    const safetyItems = [
-      { id: 'chk-co', label: 'CO Test', extra: getVal('co-ppm') ? ' — ' + getVal('co-ppm') + ' PPM' : '' },
-      { id: 'chk-gasleak', label: 'Gas Leak Check', extra: '' },
-      { id: 'chk-electrical', label: 'Electrical Connections Inspected', extra: '' },
-      { id: 'chk-capacitor', label: 'Capacitor Tested', extra: '' },
-      { id: 'chk-contactor', label: 'Contactor Inspected', extra: '' },
-      { id: 'chk-drain', label: 'Drain Line Clear', extra: '' },
-    ];
-    let safetyHtml = '';
-    safetyItems.forEach(item => {
-      const checked = getChecked(item.id);
-      const mark = checked ? '&#9745;' : '&#9744;';
-      safetyHtml += `<div style="margin-bottom:4px;">${mark} ${item.label}${item.extra}</div>`;
-    });
+    const markup = parseFloat(getVal('markup-pct')) || 0;
+    const markupAmount = subtotal * (markup / 100);
+    const total = subtotal + markupAmount;
+    const fmt2 = (n: number) => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     const html = `<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Work Order ${getVal('wo-number')}</title>
+<html><head><meta charset="UTF-8"><title>Change Order ${getVal('wo-number')}</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color:#1a1a1a; padding:40px; max-width:850px; margin:0 auto; font-size:14px; line-height:1.5; }
   h1 { font-size:22px; margin-bottom:4px; }
   h2 { font-size:15px; color:#333; margin:20px 0 8px; padding-bottom:4px; border-bottom:2px solid #e5e5e5; text-transform:uppercase; letter-spacing:0.5px; }
   .header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; padding-bottom:16px; border-bottom:3px solid #1a1a1a; }
-  .header-left { }
-  .header-right { text-align:right; font-size:13px; color:#555; }
   .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:4px 24px; margin-bottom:6px; }
   .grid2 .label { font-weight:600; font-size:12px; color:#666; text-transform:uppercase; letter-spacing:0.3px; }
   .grid2 .value { font-size:14px; margin-bottom:6px; }
@@ -532,9 +420,7 @@ const faqSchema = {
   table { width:100%; border-collapse:collapse; margin-bottom:8px; }
   th { background:#f0f0f0; border:1px solid #ddd; padding:6px 10px; text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:0.3px; }
   td { border:1px solid #ddd; padding:6px 10px; }
-  .readings-table td { text-align:center; }
-  .split-val { font-weight:700; color:${splitColor}; }
-  .safety { font-size:14px; }
+  .totals-row { font-weight:700; }
   .signature-block { display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:40px; padding-top:16px; }
   .sig-line { border-top:1px solid #1a1a1a; padding-top:6px; font-size:12px; color:#666; text-transform:uppercase; }
   .sig-name { font-size:16px; font-weight:600; min-height:20px; }
@@ -546,88 +432,59 @@ const faqSchema = {
 </style>
 </head><body>
 <div class="header">
-  <div class="header-left">
-    <h1>General Contracting Work Order</h1>
-    <div style="font-size:13px;color:#555;">Service Documentation</div>
+  <div>
+    <h1>Construction Change Order</h1>
+    <div style="font-size:13px;color:#555;">Project: ${getVal('project-name') || '\u2014'}</div>
   </div>
-  <div class="header-right">
+  <div style="text-align:right;">
     <div style="font-size:20px;font-weight:700;">${getVal('wo-number')}</div>
     <div>${getVal('wo-date')}</div>
-    <div>${getVal('wo-time')}</div>
     <span class="priority-badge priority-${getVal('priority')}">${getVal('priority')}</span>
   </div>
 </div>
 
-<h2>Dispatch</h2>
+<h2>Project Info</h2>
 <div class="grid2">
-  <div><span class="label">Technician:</span></div><div><span class="label">Truck #:</span></div>
-  <div class="value">${getVal('tech-name') || '—'}</div><div class="value">${getVal('truck-number') || '—'}</div>
+  <div><span class="label">Client:</span></div><div><span class="label">Project Address:</span></div>
+  <div class="value">${getVal('cust-name') || '\u2014'}</div><div class="value">${getVal('cust-address') || '\u2014'}</div>
+  <div><span class="label">Original Contract #:</span></div><div><span class="label">Project Type:</span></div>
+  <div class="value">${getVal('contract-ref') || '\u2014'}</div><div class="value">${getVal('project-type')}</div>
+  <div><span class="label">Original Contract Value:</span></div><div><span class="label">Original Completion:</span></div>
+  <div class="value">${getVal('original-value') ? '$' + parseInt(getVal('original-value')).toLocaleString() : '\u2014'}</div><div class="value">${getVal('original-completion') || '\u2014'}</div>
 </div>
 
-<h2>Customer</h2>
+<h2>Change Description</h2>
+<div class="text-block"><div class="label">Reason</div><div class="value">${getVal('change-reason')}</div></div>
+<div class="text-block"><div class="label">Description of Change</div><div class="value">${getVal('change-description') || '\u2014'}</div></div>
+<div class="text-block"><div class="label">Justification</div><div class="value">${getVal('justification') || '\u2014'}</div></div>
+
+${itemsHtml ? `<h2>Cost Breakdown</h2>
+<table><thead><tr><th>Description</th><th>Category</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Unit Cost</th><th style="text-align:right;">Line Total</th></tr></thead><tbody>${itemsHtml}
+<tr class="totals-row"><td colspan="4" style="border:1px solid #ddd;padding:6px 10px;text-align:right;">Subtotal</td><td style="border:1px solid #ddd;padding:6px 10px;text-align:right;">${fmt2(subtotal)}</td></tr>
+<tr class="totals-row"><td colspan="4" style="border:1px solid #ddd;padding:6px 10px;text-align:right;">Markup (${markup}%)</td><td style="border:1px solid #ddd;padding:6px 10px;text-align:right;">${fmt2(markupAmount)}</td></tr>
+<tr class="totals-row" style="font-size:16px;"><td colspan="4" style="border:2px solid #333;padding:8px 10px;text-align:right;">TOTAL</td><td style="border:2px solid #333;padding:8px 10px;text-align:right;">${fmt2(total)}</td></tr>
+</tbody></table>` : ''}
+
+<h2>Schedule Impact</h2>
 <div class="grid2">
-  <div><span class="label">Name:</span></div><div><span class="label">Phone:</span></div>
-  <div class="value">${getVal('cust-name') || '—'}</div><div class="value">${getVal('cust-phone') || '—'}</div>
-  <div><span class="label">Address:</span></div><div><span class="label">Access:</span></div>
-  <div class="value">${getVal('cust-address') || '—'}</div><div class="value">${getVal('access-instructions') || '—'}</div>
+  <div><span class="label">Working Days Added:</span></div><div><span class="label">Revised Completion:</span></div>
+  <div class="value">${getVal('days-added') || '0'} days</div><div class="value">${getVal('new-completion') || '\u2014'}</div>
 </div>
-
-<h2>Equipment</h2>
-<div class="grid2">
-  <div><span class="label">Type:</span></div><div><span class="label">Make:</span></div>
-  <div class="value">${getVal('equip-type')}</div><div class="value">${getVal('equip-make') || '—'}</div>
-  <div><span class="label">Model:</span></div><div><span class="label">Serial #:</span></div>
-  <div class="value">${getVal('equip-model') || '—'}</div><div class="value">${getVal('equip-serial') || '—'}</div>
-  <div><span class="label">Install Date:</span></div><div><span class="label">Filter Size:</span></div>
-  <div class="value">${getVal('install-date') || '—'}</div><div class="value">${getVal('filter-size') || '—'}</div>
-  <div><span class="label">Materials:</span></div><div></div>
-  <div class="value">${getVal('refrigerant-type')}</div><div></div>
-</div>
-
-<h2>Service Details</h2>
-<div class="text-block"><div class="label">Reported Issue</div><div class="value">${getVal('reported-issue') || '—'}</div></div>
-<div class="text-block"><div class="label">Diagnosis</div><div class="value">${getVal('diagnosis') || '—'}</div></div>
-<div class="text-block"><div class="label">Work Performed</div><div class="value">${getVal('work-performed') || '—'}</div></div>
-
-${partsHtml ? `<h2>Parts Used</h2>
-<table><thead><tr><th>Part Name</th><th>Part #</th><th style="text-align:center;">Qty</th></tr></thead><tbody>${partsHtml}</tbody></table>` : ''}
-
-<h2>Material Log</h2>
-<div class="grid2">
-  <div><span class="label">Added:</span></div><div><span class="label">Recovered:</span></div>
-  <div class="value">${getVal('ref-added') || '0'} lbs</div><div class="value">${getVal('ref-recovered') || '0'} lbs</div>
-</div>
-
-<h2>System Readings</h2>
-<table class="readings-table">
-  <thead><tr><th>Suction PSI</th><th>Head PSI</th><th>Superheat</th><th>Subcooling</th></tr></thead>
-  <tbody><tr><td>${getVal('suction-psi') || '—'}</td><td>${getVal('head-psi') || '—'}</td><td>${getVal('superheat') ? getVal('superheat') + '°F' : '—'}</td><td>${getVal('subcooling') ? getVal('subcooling') + '°F' : '—'}</td></tr></tbody>
-</table>
-<table class="readings-table" style="margin-top:8px;">
-  <thead><tr><th>Supply Air</th><th>Return Air</th><th>Temp Split</th><th>Comp. Amps</th></tr></thead>
-  <tbody><tr><td>${getVal('supply-temp') ? getVal('supply-temp') + '°F' : '—'}</td><td>${getVal('return-temp') ? getVal('return-temp') + '°F' : '—'}</td><td class="split-val">${splitVal || '—'}</td><td>${getVal('comp-amps') || '—'}</td></tr></tbody>
-</table>
-
-<h2>Safety Checklist</h2>
-<div class="safety">${safetyHtml}</div>
-
-<h2>Completion</h2>
-<div class="grid2">
-  <div><span class="label">Time Arrived:</span></div><div><span class="label">Time Completed:</span></div>
-  <div class="value">${arrived || '—'}</div><div class="value">${completed || '—'}</div>
-  <div><span class="label">Total Hours:</span></div><div></div>
-  <div class="value">${totalHours || '—'}</div><div></div>
-</div>
+${getVal('schedule-notes') ? `<div class="text-block"><div class="label">Schedule Notes</div><div class="value">${getVal('schedule-notes')}</div></div>` : ''}
 
 <div class="signature-block">
   <div>
-    <div class="sig-name">${getVal('tech-signature') || ''}</div>
-    <div class="sig-line">Technician Signature</div>
+    <div class="sig-name">${getVal('contractor-sig') || ''}</div>
+    <div class="sig-line">Contractor Signature &nbsp; &nbsp; Date: ___________</div>
   </div>
   <div>
-    <div class="sig-name">&nbsp;</div>
-    <div class="sig-line">Customer Signature</div>
+    <div class="sig-name">${getVal('client-sig') || ''}</div>
+    <div class="sig-line">Client Signature &nbsp; &nbsp; Date: ___________</div>
   </div>
+</div>
+
+<div style="margin-top:30px;padding-top:12px;border-top:1px solid #e5e5e5;font-size:11px;color:#999;text-align:center;">
+  No work shall proceed on the above-described change until this document is signed by both parties.
 </div>
 
 </body></html>`;
@@ -639,5 +496,5 @@ ${partsHtml ? `<h2>Parts Used</h2>
     }
   }
 
-  document.getElementById('generate-btn')?.addEventListener('click', generateWorkOrder);
+  document.getElementById('generate-btn')?.addEventListener('click', generateChangeOrder);
 </script>

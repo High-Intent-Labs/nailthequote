@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How much can I save with a new Landscaping system?",
+      "name": "What is the average ROI on landscaping projects?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Savings depend on the efficiency gap between your current and new system, local energy prices, and climate. Replacing a 10 efficiency / 80% efficiency system with a 16 efficiency / 96% efficiency system typically saves $500 to $1,200 per year on a 3-ton unit. Hotter climates with more cooling hours see greater savings on the AC side, while colder climates benefit more from the system upgrade."
+        "text": "According to the National Association of Realtors and the National Association of Landscape Professionals, landscaping projects recover 100% to 150% of their cost on average at resale. Basic lawn care and maintenance can return 200-300%, garden beds and plantings return 100-200%, and hardscaping like patios and walkways returns 50-75%. The exact ROI depends on the project type, home value, local market conditions, and quality of the work."
       }
     },
     {
       "@type": "Question",
-      "name": "What efficiency rating should I get?",
+      "name": "How much does landscaping increase home value?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "For most homeowners, 16 efficiency hits the sweet spot of upfront cost and long-term savings. In hot climates like the South or Southwest with 2,500+ cooling hours per year, 18-20 efficiency can pay back faster. In mild climates with under 1,500 cooling hours, 14-16 efficiency is usually sufficient. Always compare the payback period at different efficiency levels before deciding."
+        "text": "Professional landscaping typically increases home value by 5% to 15%. On a $400,000 home, that translates to $20,000 to $60,000 in added value. The biggest impact comes from a well-maintained lawn, mature trees, and a cohesive landscape design. First impressions matter most in real estate, and landscaping is the first thing buyers see. Homes with excellent curb appeal sell for 7% more on average than comparable homes with poor landscaping."
       }
     },
     {
       "@type": "Question",
-      "name": "Is a higher efficiency always worth it?",
+      "name": "Which landscaping projects have the highest ROI?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Not always. Each efficiency point above 16 costs more per unit of efficiency gained, and the savings diminish. A jump from 10 to 16 efficiency cuts cooling costs by 37%, but going from 16 to 20 efficiency only saves an additional 12.5%. In mild climates with low cooling hours, the extra cost of a 20+ efficiency unit may never pay back. Run the comparison to see exact payback for your situation."
+        "text": "Basic lawn care and maintenance consistently delivers the highest ROI at 200-300% because it has the lowest cost relative to perceived value. Mature tree planting also performs well at 100-200% ROI, with each healthy mature tree adding $1,000 to $3,000 in property value. Garden beds and plantings return 100-200%. Full landscape redesigns return 100-150%. Hardscaping projects like patios return a lower percentage (50-75%) but can add substantial dollar value on higher-end homes."
       }
     },
     {
       "@type": "Question",
-      "name": "How long does a new AC take to pay for itself?",
+      "name": "How does curb appeal affect home sale price?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Payback periods typically range from 5 to 12 years depending on the efficiency jump, system size, local energy costs, and climate. A homeowner in the South upgrading from 10 efficiency to 16 efficiency on a 3-ton system often sees payback in 6-8 years. Utility rebates, manufacturer incentives, and federal tax credits can shorten that timeline significantly."
+        "text": "Curb appeal has a measurable impact on sale price. Homes with high curb appeal sell for 7% more on average according to multiple real estate studies. In a seller's market, the premium can reach 10-15% because buyers compete for move-in ready homes. Poor curb appeal can reduce offers by 5-10% or cause buyers to skip the listing entirely. Landscaping is the most cost-effective way to improve curb appeal because it covers the entire front-facing impression of the property."
       }
     }
   ]
@@ -45,155 +45,118 @@ const faqSchema = {
 ---
 
 <ToolLayout tool={tool} extraSchema={[faqSchema]}>
-  <div id="energy-comp">
-    <!-- Two-column system inputs -->
+  <div id="roi-calc">
+    <!-- Two-column inputs -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <!-- Left Column: Current System -->
+      <!-- Left Column: Project Details -->
       <div class="bg-bg-card border border-border rounded-xl p-6">
-        <h3 class="font-heading font-bold text-lg text-text-primary mb-1">Your Current System</h3>
-        <p class="text-text-muted text-xs mb-5">Enter your existing equipment specs</p>
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-1">Project Details</h3>
+        <p class="text-text-muted text-xs mb-5">Select the type of work you're quoting</p>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="old-seer">efficiency Rating</label>
-            <input type="number" id="old-seer" value="10" min="8" max="26" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-            <p class="text-text-muted text-xs mt-1">Don't know? Use 10 for 15+ year old systems</p>
+            <label class="block text-sm font-medium text-text-secondary mb-1" for="project-type">Project Type</label>
+            <select id="project-type" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+              <option value="lawn">New Lawn / Lawn Renovation</option>
+              <option value="garden-beds">Garden Beds &amp; Plantings</option>
+              <option value="hardscaping" selected>Hardscaping (Patio, Walkway)</option>
+              <option value="full-landscape">Full Landscape Redesign</option>
+              <option value="trees">Mature Tree Planting</option>
+              <option value="lighting">Outdoor Lighting</option>
+              <option value="irrigation">Irrigation System</option>
+            </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="old-afue">efficiency %</label>
-            <input type="number" id="old-afue" value="80" min="50" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-            <p class="text-text-muted text-xs mt-1">Don't know? Use 80% for older systems</p>
+            <label class="block text-sm font-medium text-text-secondary mb-1" for="project-cost">Estimated Project Cost ($)</label>
+            <input type="number" id="project-cost" value="12000" min="500" max="500000" step="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+            <p class="text-text-muted text-xs mt-1">Enter the total you're quoting for the job</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="system-age">System Age (years)</label>
-            <input type="number" id="system-age" value="15" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+            <label class="block text-sm font-medium text-text-secondary mb-1" for="num-trees">Number of Trees (if applicable)</label>
+            <input type="number" id="num-trees" value="0" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+            <p class="text-text-muted text-xs mt-1">Each mature tree adds $1,000-$3,000 in value</p>
           </div>
         </div>
       </div>
 
-      <!-- Right Column: Proposed New System -->
+      <!-- Right Column: Property Info -->
       <div class="bg-bg-card border border-border rounded-xl p-6" style="border-color: rgba(255,107,43,0.3);">
-        <h3 class="font-heading font-bold text-lg text-accent mb-1">Proposed New System</h3>
-        <p class="text-text-muted text-xs mb-5">Enter the equipment you're quoting</p>
+        <h3 class="font-heading font-bold text-lg text-accent mb-1">Property Information</h3>
+        <p class="text-text-muted text-xs mb-5">Enter the customer's home details</p>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="new-seer">efficiency Rating</label>
-            <input type="number" id="new-seer" value="16" min="13" max="26" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+            <label class="block text-sm font-medium text-text-secondary mb-1" for="home-value">Home's Current Estimated Value ($)</label>
+            <input type="number" id="home-value" value="400000" min="50000" max="5000000" step="10000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+            <p class="text-text-muted text-xs mt-1">Approximate market value before landscaping</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="new-afue">efficiency %</label>
-            <input type="number" id="new-afue" value="96" min="50" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+            <label class="block text-sm font-medium text-text-secondary mb-1" for="home-condition">Current Landscape Condition</label>
+            <select id="home-condition" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+              <option value="needs-work">Needs Work (overgrown, bare, neglected)</option>
+              <option value="average" selected>Average (basic lawn, minimal plantings)</option>
+              <option value="well-maintained">Well-Maintained (decent shape, some gaps)</option>
+              <option value="high-end">High-End (already landscaped, upgrading)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-1" for="market-condition">Local Market Conditions</label>
+            <select id="market-condition" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+              <option value="buyers">Buyer's Market (slower sales, price-sensitive)</option>
+              <option value="balanced" selected>Balanced Market</option>
+              <option value="sellers">Seller's Market (fast sales, competitive offers)</option>
+            </select>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Shared Inputs -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tons">System Size (Tons)</label>
-        <select id="tons" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.5">1.5 Ton</option>
-          <option value="2">2 Ton</option>
-          <option value="2.5">2.5 Ton</option>
-          <option value="3" selected>3 Ton</option>
-          <option value="3.5">3.5 Ton</option>
-          <option value="4">4 Ton</option>
-          <option value="5">5 Ton</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="elec-rate">Electricity Rate ($/kWh)</label>
-        <input type="number" id="elec-rate" value="0.16" min="0.01" max="1" step="0.01" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="gas-rate">Gas Rate ($/therm)</label>
-        <input type="number" id="gas-rate" value="1.20" min="0.10" max="5" step="0.05" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="region">Region</label>
-        <select id="region" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="2500,600">South (2500 / 600 hrs)</option>
-          <option value="2200,800">Southeast (2200 / 800 hrs)</option>
-          <option value="1400,2000">Midwest (1400 / 2000 hrs)</option>
-          <option value="1200,2200">Northeast (1200 / 2200 hrs)</option>
-          <option value="2800,400">Southwest (2800 / 400 hrs)</option>
-          <option value="800,1800">Northwest (800 / 1800 hrs)</option>
-          <option value="2100,1500" selected>National Avg (2100 / 1500 hrs)</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="upgrade-cost">Upgrade Cost ($)</label>
-        <input type="number" id="upgrade-cost" value="8000" min="0" max="100000" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-    </div>
-
 
     <!-- Results -->
     <div id="results" class="mt-8 border-t border-border pt-8">
-      <!-- Side-by-side cost comparison -->
-      <h3 class="font-heading font-bold text-xl mb-6">Annual Cost Comparison</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <!-- Current System Card -->
-        <div class="bg-bg-card border border-border rounded-xl p-6">
-          <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Current System</h4>
-          <div class="space-y-3">
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Cooling Cost</span>
-              <span id="result-old-cooling" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Heating Cost</span>
-              <span id="result-old-heating" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="border-t border-border pt-3 flex justify-between items-center">
-              <span class="text-text-primary font-medium">Total Annual Cost</span>
-              <span id="result-old-total" class="font-heading font-extrabold text-2xl text-text-primary">--</span>
-            </div>
+      <!-- Value increase summary cards -->
+      <h3 class="font-heading font-bold text-xl mb-6">Estimated Return on Investment</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-bg-dark rounded-xl p-5 text-center border-2" style="border-color: rgba(255,107,43,0.4);">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Value Increase</div>
+          <div class="flex items-center justify-center gap-2">
+            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+            <span id="result-value-increase" class="font-heading font-extrabold text-3xl text-accent">--</span>
           </div>
         </div>
-
-        <!-- New System Card -->
-        <div class="bg-bg-card border rounded-xl p-6" style="border-color: rgba(255,107,43,0.3);">
-          <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-accent mb-4">New System</h4>
-          <div class="space-y-3">
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Cooling Cost</span>
-              <span id="result-new-cooling" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Heating Cost</span>
-              <span id="result-new-heating" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="border-t border-border pt-3 flex justify-between items-center">
-              <span class="text-text-primary font-medium">Total Annual Cost</span>
-              <span id="result-new-total" class="font-heading font-extrabold text-2xl text-accent">--</span>
-            </div>
-          </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">ROI Percentage</div>
+          <div id="result-roi-pct" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Net Gain / (Loss)</div>
+          <div id="result-net-gain" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">New Home Value</div>
+          <div id="result-new-home-value" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
         </div>
       </div>
 
       <!-- Visual bar chart comparison -->
       <div class="bg-bg-card border border-border rounded-xl p-6 mb-8">
-        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Annual Cost Comparison</h4>
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Investment vs. Value Added</h4>
         <div class="space-y-4">
           <div>
             <div class="flex justify-between text-sm mb-1">
-              <span class="text-text-secondary">Current System</span>
-              <span id="bar-old-label" class="text-text-primary font-medium">--</span>
+              <span class="text-text-secondary">Project Cost</span>
+              <span id="bar-cost-label" class="text-text-primary font-medium">--</span>
             </div>
             <div class="w-full bg-bg-dark rounded-full h-8 overflow-hidden">
-              <div id="bar-old" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 100%; background: linear-gradient(90deg, #dc2626, #ef4444);">
+              <div id="bar-cost" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 50%; background: linear-gradient(90deg, #2563eb, #3b82f6);">
                 <span class="text-white text-xs font-bold whitespace-nowrap"></span>
               </div>
             </div>
           </div>
           <div>
             <div class="flex justify-between text-sm mb-1">
-              <span class="text-text-secondary">New System</span>
-              <span id="bar-new-label" class="text-text-primary font-medium">--</span>
+              <span class="text-text-secondary">Estimated Value Added</span>
+              <span id="bar-value-label" class="text-text-primary font-medium">--</span>
             </div>
             <div class="w-full bg-bg-dark rounded-full h-8 overflow-hidden">
-              <div id="bar-new" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 50%; background: linear-gradient(90deg, #16a34a, #22c55e);">
+              <div id="bar-value" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 80%; background: linear-gradient(90deg, #16a34a, #22c55e);">
                 <span class="text-white text-xs font-bold whitespace-nowrap"></span>
               </div>
             </div>
@@ -201,45 +164,32 @@ const faqSchema = {
         </div>
       </div>
 
-      <!-- Savings summary cards -->
-      <h3 class="font-heading font-bold text-xl mb-6">Your Savings</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="bg-bg-dark rounded-xl p-5 text-center border-2" style="border-color: rgba(255,107,43,0.4);">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Annual Savings</div>
-          <div class="flex items-center justify-center gap-2">
-            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-            <span id="result-annual" class="font-heading font-extrabold text-3xl text-accent">--</span>
-          </div>
-        </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Monthly Savings</div>
-          <div id="result-monthly" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
-        </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Payback Period</div>
-          <div id="result-payback" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
-        </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">10-Year Net Savings</div>
-          <div id="result-tenyear" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
-        </div>
-      </div>
-
-      <!-- Environmental impact -->
+      <!-- Curb appeal and context cards -->
+      <h3 class="font-heading font-bold text-xl mb-6">Curb Appeal &amp; Market Impact</h3>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">CO2 Reduction</div>
-          <div id="result-co2" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">lbs/year</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Curb Appeal Score</div>
+          <div class="flex items-center justify-center gap-3">
+            <span id="result-curb-before" class="font-heading font-bold text-2xl text-text-muted">--</span>
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+            <span id="result-curb-after" class="font-heading font-extrabold text-2xl text-green-500">--</span>
+          </div>
+          <div class="text-text-muted text-xs mt-1">out of 10</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Environmental Impact</div>
-          <div id="result-trees" class="font-heading font-extrabold text-2xl text-green-500">--</div>
-          <div class="text-text-muted text-xs mt-1">equivalent trees planted per year</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Value as % of Home</div>
+          <div id="result-pct-of-home" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">of current home value invested</div>
         </div>
       </div>
 
-      <p class="text-text-muted text-sm italic">Estimates based on average usage patterns. Actual savings depend on equipment condition, soil condition, drainage quality, and local climate. Consult with a licensed Landscaping contractor for a detailed energy audit.</p>
+      <!-- Payback context -->
+      <div class="bg-bg-card border border-border rounded-xl p-6 mb-6">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-3">What This Means for the Homeowner</h4>
+        <p id="result-context" class="text-text-secondary text-sm leading-relaxed">--</p>
+      </div>
+
+      <p class="text-text-muted text-sm italic">Estimates based on national averages from NAR/NALP research data. Actual ROI varies by region, home style, neighborhood comparables, quality of materials, and local buyer preferences. Use these figures as a conversation guide, not a guarantee.</p>
     </div>
   </div>
 
@@ -250,24 +200,21 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Tool</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Enter the current system specs.</strong> Check the nameplate on the outdoor condenser for efficiency and the system data plate for efficiency. If the customer doesn't know, use 10 efficiency and 80% efficiency as safe defaults for systems over 15 years old.</p>
-          <p><strong class="text-text-primary">2. Enter the proposed system specs.</strong> Use the efficiency and efficiency ratings from the equipment you're quoting. A 16 efficiency / 96% efficiency combination is a common mid-tier upgrade that shows strong savings.</p>
-          <p><strong class="text-text-primary">3. Set the shared parameters.</strong> Select the system size in tons, enter the customer's electricity and gas rates from their utility bill, choose their region to auto-fill typical cooling and heating hours, and enter your quoted upgrade cost.</p>
-          <p><strong class="text-text-primary">4. Review the side-by-side comparison.</strong> Show the customer the annual cost difference, payback period, and 10-year net savings. The visual bar chart makes the savings immediately obvious during a sales presentation.</p>
+          <p><strong class="text-text-primary">1. Select the project type.</strong> Choose the category that best matches the work you're quoting. Each project type uses different ROI ranges backed by NAR and NALP research data, so selecting the right one gives the most accurate estimate.</p>
+          <p><strong class="text-text-primary">2. Enter the project cost.</strong> Use the total amount from your quote. This is the number the homeowner will see as their investment, so make sure it matches what you plan to present.</p>
+          <p><strong class="text-text-primary">3. Fill in the property details.</strong> Enter the home's estimated value (Zillow or recent comps work fine), the current landscape condition, and local market conditions. These factors shift the ROI calculation up or down to reflect reality.</p>
+          <p><strong class="text-text-primary">4. Show the results to your customer.</strong> Walk them through the estimated value increase, ROI percentage, and curb appeal improvement. The visual bar chart makes the value-over-cost story immediately clear. Screenshot the results for your proposal.</p>
         </div>
       </section>
 
-      <!-- Understanding efficiency and efficiency Ratings -->
+      <!-- Understanding Landscaping ROI -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">Understanding efficiency and efficiency Ratings</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">Understanding Landscaping ROI</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">efficiency (Seasonal Energy Efficiency Ratio)</strong> measures cooling efficiency. It's the total BTU of heat removed per watt-hour of electricity consumed over a typical cooling season. A 10 efficiency system uses 60% more electricity than a 16 efficiency system to deliver the same cooling. The federal minimum is now 14 efficiency in northern states and 15 efficiency in the South. Higher efficiency means lower electric bills every summer.</p>
-          <p><strong class="text-text-primary">efficiency (Annual Fuel Utilization Efficiency)</strong> measures how efficiently a gas system converts fuel to heat. An 80% efficiency system loses 20 cents of every dollar as exhaust waste. A 96% efficiency system captures nearly all of that energy, reducing gas consumption by 20% compared to the older unit. Standard-efficiency systems run at 80% efficiency, while high-efficiency condensing systems reach 95-98%.</p>
-          <p><strong class="text-text-primary">Why higher is better:</strong> Both ratings work like miles per gallon for your Landscaping system. Higher numbers mean more output per unit of energy consumed. The difference compounds every month the system runs. In a hot climate, the efficiency upgrade drives most of the savings. In a cold climate, the efficiency improvement often matters more. This tool models both sides so you can show the customer exactly where their money goes.</p>
-          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm">
-            <p>Cooling: kWh = (Tons x 12,000 x Cooling_Hours) / (efficiency x 1,000)</p>
-            <p>Heating: Therms = (Tons x 12,000 x Heating_Hours) / (efficiency/100 x 100,000)</p>
-          </div>
+          <p><strong class="text-text-primary">Why landscaping delivers strong returns.</strong> Landscaping is one of the few home improvements that consistently recovers 100% or more of its cost at resale. Unlike kitchen remodels or bathroom upgrades that return 50-80%, outdoor improvements benefit from maximum visibility. Every visitor, neighbor, and potential buyer sees the landscaping before they walk through the front door.</p>
+          <p><strong class="text-text-primary">The research behind the numbers.</strong> The National Association of Realtors and the National Association of Landscape Professionals conduct joint studies on landscape investment recovery. Their data shows that a well-executed landscape project recovers 100-150% of its cost on average. Basic lawn care leads the pack because it has the lowest cost relative to the perceived value it creates. Mature trees are also standout performers, with each healthy specimen adding $1,000 to $3,000 in appraised value.</p>
+          <p><strong class="text-text-primary">Curb appeal drives sale price.</strong> Homes with strong curb appeal sell for 7% more on average than comparable homes with poor landscaping. In a competitive seller's market, that premium climbs even higher because buyers make snap judgments from the street. A $400,000 home with excellent landscaping can command $28,000 or more above a similar home with a neglected yard.</p>
+          <p><strong class="text-text-primary">Condition matters.</strong> The biggest ROI comes from improving a neglected yard to a well-maintained one. Going from bare dirt or overgrown weeds to a clean, designed landscape has more impact than upgrading an already decent yard to a premium one. This tool adjusts for that starting condition.</p>
         </div>
       </section>
 
@@ -275,9 +222,10 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">Sales presentations at the kitchen table.</strong> Pull this up on your tablet while sitting with the homeowner. Enter their current system specs on the left, your proposed equipment on the right, and let the visual comparison make the case. The side-by-side layout and bar chart are designed to be shown to customers, not just used behind the scenes.</p>
-          <p><strong class="text-text-primary">Proposal support for premium equipment.</strong> When you're quoting a 16 efficiency system against a competitor's 14 efficiency bid, this tool proves the long-term value. Show the customer that paying more upfront saves thousands over 10 years. Screenshot the results and attach them to your written proposal for added credibility.</p>
-          <p><strong class="text-text-primary">Customer education on repair vs. replace.</strong> When a customer asks whether to repair their 18-year-old system or replace it, run the comparison. If the annual savings alone cover a significant portion of the repair cost, replacement makes financial sense even before factoring in reliability improvements and reduced breakdown risk.</p>
+          <p><strong class="text-text-primary">Pull this up during the sales visit.</strong> When you're sitting with a homeowner who is hesitant about the price, open this tool on your phone or tablet. Enter their project details and show them the ROI numbers. Shifting the conversation from cost to investment changes how the homeowner thinks about the project.</p>
+          <p><strong class="text-text-primary">Justify premium materials and design.</strong> When you're quoting a full landscape redesign against a competitor's basic bid, this tool shows why the investment makes sense. A $15,000 landscape that adds $18,000 in home value is a financial win, and customers need to see that math to feel confident about the bigger number.</p>
+          <p><strong class="text-text-primary">Help customers prioritize projects.</strong> Run two or three project types through the estimator to show which improvements deliver the best return. A customer debating between a patio and garden beds can see the ROI difference. This positions you as a trusted advisor, not just a contractor asking for money.</p>
+          <p><strong class="text-text-primary">Support proposals for homeowners planning to sell.</strong> Customers preparing their home for sale are especially receptive to ROI data. Show them how a targeted landscape investment can net them thousands more at closing. The numbers from this tool give them confidence to move forward now rather than later.</p>
         </div>
       </section>
 
@@ -286,20 +234,20 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much can I save with a new Landscaping system?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Savings depend on the efficiency gap between your current and new system, local energy prices, and climate. Replacing a 10 efficiency / 80% efficiency system with a 16 efficiency / 96% efficiency system typically saves $500 to $1,200 per year on a 3-ton unit. Hotter climates with more cooling hours see greater savings on the AC side, while colder climates benefit more from the system upgrade.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is the average ROI on landscaping projects?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">According to the National Association of Realtors and the National Association of Landscape Professionals, landscaping projects recover 100% to 150% of their cost on average at resale. Basic lawn care and maintenance can return 200-300%, garden beds and plantings return 100-200%, and hardscaping like patios and walkways returns 50-75%. The exact ROI depends on the project type, home value, local market conditions, and quality of the work.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What efficiency rating should I get?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For most homeowners, 16 efficiency hits the sweet spot of upfront cost and long-term savings. In hot climates like the South or Southwest with 2,500+ cooling hours per year, 18-20 efficiency can pay back faster. In mild climates with under 1,500 cooling hours, 14-16 efficiency is usually sufficient. Always compare the payback period at different efficiency levels before deciding.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does landscaping increase home value?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Professional landscaping typically increases home value by 5% to 15%. On a $400,000 home, that translates to $20,000 to $60,000 in added value. The biggest impact comes from a well-maintained lawn, mature trees, and a cohesive landscape design. First impressions matter most in real estate, and landscaping is the first thing buyers see. Homes with excellent curb appeal sell for 7% more on average than comparable homes with poor landscaping.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Is a higher efficiency always worth it?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Not always. Each efficiency point above 16 costs more per unit of efficiency gained, and the savings diminish. A jump from 10 to 16 efficiency cuts cooling costs by 37%, but going from 16 to 20 efficiency only saves an additional 12.5%. In mild climates with low cooling hours, the extra cost of a 20+ efficiency unit may never pay back. Run the comparison to see exact payback for your situation.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Which landscaping projects have the highest ROI?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Basic lawn care and maintenance consistently delivers the highest ROI at 200-300% because it has the lowest cost relative to perceived value. Mature tree planting also performs well at 100-200% ROI, with each healthy mature tree adding $1,000 to $3,000 in property value. Garden beds and plantings return 100-200%. Full landscape redesigns return 100-150%. Hardscaping projects like patios return a lower percentage (50-75%) but can add substantial dollar value on higher-end homes.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does a new AC take to pay for itself?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Payback periods typically range from 5 to 12 years depending on the efficiency jump, system size, local energy costs, and climate. A homeowner in the South upgrading from 10 efficiency to 16 efficiency on a 3-ton system often sees payback in 6-8 years. Utility rebates, manufacturer incentives, and federal tax credits can shorten that timeline significantly.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How does curb appeal affect home sale price?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Curb appeal has a measurable impact on sale price. Homes with high curb appeal sell for 7% more on average according to multiple real estate studies. In a seller's market, the premium can reach 10-15% because buyers compete for move-in ready homes. Poor curb appeal can reduce offers by 5-10% or cause buyers to skip the listing entirely. Landscaping is the most cost-effective way to improve curb appeal because it covers the entire front-facing impression of the property.</div>
           </details>
         </div>
       </section>
@@ -308,97 +256,172 @@ const faqSchema = {
 </ToolLayout>
 
 <script>
-  const regions: Record<string, [number, number]> = {
-    '2500,600': [2500, 600],
-    '2200,800': [2200, 800],
-    '1400,2000': [1400, 2000],
-    '1200,2200': [1200, 2200],
-    '2800,400': [2800, 400],
-    '800,1800': [800, 1800],
-    '2100,1500': [2100, 1500],
+  // ROI ranges by project type: [lowROI, highROI] as multipliers (1.0 = 100%)
+  interface ProjectROI {
+    lowROI: number;
+    highROI: number;
+    treeValueLow: number;
+    treeValueHigh: number;
+  }
+
+  const projectROIs: Record<string, ProjectROI> = {
+    'lawn':           { lowROI: 2.0, highROI: 3.0, treeValueLow: 0, treeValueHigh: 0 },
+    'garden-beds':    { lowROI: 1.0, highROI: 2.0, treeValueLow: 0, treeValueHigh: 0 },
+    'hardscaping':    { lowROI: 0.5, highROI: 0.75, treeValueLow: 0, treeValueHigh: 0 },
+    'full-landscape': { lowROI: 1.0, highROI: 1.5, treeValueLow: 0, treeValueHigh: 0 },
+    'trees':          { lowROI: 1.0, highROI: 2.0, treeValueLow: 1000, treeValueHigh: 3000 },
+    'lighting':       { lowROI: 0.5, highROI: 0.75, treeValueLow: 0, treeValueHigh: 0 },
+    'irrigation':     { lowROI: 0.5, highROI: 0.75, treeValueLow: 0, treeValueHigh: 0 },
+  };
+
+  // Condition multipliers: how much extra ROI boost from improving a worse starting point
+  const conditionMultipliers: Record<string, number> = {
+    'needs-work':      1.20,
+    'average':         1.00,
+    'well-maintained': 0.85,
+    'high-end':        0.70,
+  };
+
+  // Market condition multipliers
+  const marketMultipliers: Record<string, number> = {
+    'buyers':   0.85,
+    'balanced': 1.00,
+    'sellers':  1.15,
+  };
+
+  // Curb appeal base scores by condition
+  const curbScoresBefore: Record<string, number> = {
+    'needs-work':      2,
+    'average':         4,
+    'well-maintained': 6,
+    'high-end':        8,
+  };
+
+  // Curb appeal improvement by project type (points added, out of 10)
+  const curbImprovements: Record<string, number> = {
+    'lawn':           3,
+    'garden-beds':    2.5,
+    'hardscaping':    2,
+    'full-landscape': 4,
+    'trees':          2,
+    'lighting':       1.5,
+    'irrigation':     1,
   };
 
   function formatCurrency(val: number): string {
     return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
 
-  function calculate() {
-    // Current system inputs
-    const oldSeer = parseFloat((document.getElementById('old-seer') as HTMLInputElement).value) || 10;
-    const oldAfue = parseFloat((document.getElementById('old-afue') as HTMLInputElement).value) || 80;
+  function calculate(): void {
+    // Inputs
+    const projectType = (document.getElementById('project-type') as HTMLSelectElement).value;
+    const projectCost = parseFloat((document.getElementById('project-cost') as HTMLInputElement).value) || 12000;
+    const numTrees = parseInt((document.getElementById('num-trees') as HTMLInputElement).value) || 0;
+    const homeValue = parseFloat((document.getElementById('home-value') as HTMLInputElement).value) || 400000;
+    const homeCondition = (document.getElementById('home-condition') as HTMLSelectElement).value;
+    const marketCondition = (document.getElementById('market-condition') as HTMLSelectElement).value;
 
-    // New system inputs
-    const newSeer = parseFloat((document.getElementById('new-seer') as HTMLInputElement).value) || 16;
-    const newAfue = parseFloat((document.getElementById('new-afue') as HTMLInputElement).value) || 96;
+    // Get ROI data for project type
+    const roi = projectROIs[projectType] || projectROIs['hardscaping'];
+    const condMult = conditionMultipliers[homeCondition] || 1.0;
+    const marketMult = marketMultipliers[marketCondition] || 1.0;
 
-    // Shared inputs
-    const tons = parseFloat((document.getElementById('tons') as HTMLSelectElement).value) || 3;
-    const elecRate = parseFloat((document.getElementById('elec-rate') as HTMLInputElement).value) || 0.16;
-    const gasRate = parseFloat((document.getElementById('gas-rate') as HTMLInputElement).value) || 1.20;
-    const upgradeCost = parseFloat((document.getElementById('upgrade-cost') as HTMLInputElement).value) || 8000;
+    // Calculate midpoint ROI with adjustments
+    const baseROI = (roi.lowROI + roi.highROI) / 2;
+    const adjustedROI = baseROI * condMult * marketMult;
 
-    // Get hours from region
-    const regionVal = (document.getElementById('region') as HTMLSelectElement).value;
-    const hours = regions[regionVal] || [2100, 1500];
-    const coolHours = hours[0];
-    const heatHours = hours[1];
+    // Calculate value increase
+    let valueIncrease = projectCost * adjustedROI;
 
-    // Cooling calculations
-    const oldCoolingKwh = (tons * 12000 * coolHours) / (oldSeer * 1000);
-    const newCoolingKwh = (tons * 12000 * coolHours) / (newSeer * 1000);
-    const oldCoolingCost = oldCoolingKwh * elecRate;
-    const newCoolingCost = newCoolingKwh * elecRate;
+    // Add tree value bonus if applicable
+    if (numTrees > 0) {
+      const treeValueMid = (roi.treeValueLow + roi.treeValueHigh) / 2;
+      // If project is specifically trees, the tree value is the main ROI
+      // For other projects, trees are an extra bonus
+      if (projectType === 'trees') {
+        valueIncrease = numTrees * treeValueMid * condMult * marketMult;
+      } else {
+        valueIncrease += numTrees * treeValueMid * condMult * marketMult;
+      }
+    }
 
-    // Heating calculations (gas)
-    const btuOutput = tons * 12000;
-    const oldHeatCost = (btuOutput * heatHours) / ((oldAfue / 100) * 100000) * gasRate;
-    const newHeatCost = (btuOutput * heatHours) / ((newAfue / 100) * 100000) * gasRate;
+    // Cap value increase at reasonable percentage of home value (20%)
+    const maxIncrease = homeValue * 0.20;
+    valueIncrease = Math.min(valueIncrease, maxIncrease);
 
-    // Totals
-    const oldTotalCost = oldCoolingCost + oldHeatCost;
-    const newTotalCost = newCoolingCost + newHeatCost;
-    const annualSavings = oldTotalCost - newTotalCost;
-    const monthlySavings = annualSavings / 12;
-    const paybackYears = annualSavings > 0 ? upgradeCost / annualSavings : 0;
-    const tenYearNet = (annualSavings * 10) - upgradeCost;
+    const roiPct = (valueIncrease / projectCost) * 100;
+    const netGain = valueIncrease - projectCost;
+    const newHomeValue = homeValue + valueIncrease;
+    const pctOfHome = (projectCost / homeValue) * 100;
 
-    // Environmental
-    const co2Reduction = (oldCoolingKwh - newCoolingKwh) * 0.92;
-    const treesEquivalent = co2Reduction / 48;
+    // Curb appeal scores
+    const curbBefore = curbScoresBefore[homeCondition] || 4;
+    const curbImprovement = curbImprovements[projectType] || 2;
+    // Scale improvement by investment relative to home value (diminishing returns)
+    const investmentScale = Math.min(projectCost / (homeValue * 0.05), 1.0);
+    const scaledImprovement = curbImprovement * investmentScale * condMult;
+    const curbAfter = Math.min(Math.round((curbBefore + scaledImprovement) * 10) / 10, 10);
 
-    // Update side-by-side cost cards
-    document.getElementById('result-old-cooling')!.textContent = formatCurrency(Math.round(oldCoolingCost));
-    document.getElementById('result-old-heating')!.textContent = formatCurrency(Math.round(oldHeatCost));
-    document.getElementById('result-old-total')!.textContent = formatCurrency(Math.round(oldTotalCost));
-    document.getElementById('result-new-cooling')!.textContent = formatCurrency(Math.round(newCoolingCost));
-    document.getElementById('result-new-heating')!.textContent = formatCurrency(Math.round(newHeatCost));
-    document.getElementById('result-new-total')!.textContent = formatCurrency(Math.round(newTotalCost));
+    // Update value cards
+    document.getElementById('result-value-increase')!.textContent = formatCurrency(Math.round(valueIncrease));
+    document.getElementById('result-roi-pct')!.textContent = Math.round(roiPct) + '%';
+    document.getElementById('result-net-gain')!.textContent = formatCurrency(Math.round(netGain));
+
+    const netGainEl = document.getElementById('result-net-gain')!;
+    if (netGain >= 0) {
+      netGainEl.classList.remove('text-red-400');
+      netGainEl.classList.add('text-text-primary');
+    } else {
+      netGainEl.classList.remove('text-text-primary');
+      netGainEl.classList.add('text-red-400');
+    }
+
+    document.getElementById('result-new-home-value')!.textContent = formatCurrency(Math.round(newHomeValue));
 
     // Update bar chart
-    const maxCost = Math.max(oldTotalCost, newTotalCost, 1);
-    const oldBarPct = (oldTotalCost / maxCost) * 100;
-    const newBarPct = (newTotalCost / maxCost) * 100;
-    (document.getElementById('bar-old') as HTMLElement).style.width = oldBarPct + '%';
-    (document.getElementById('bar-new') as HTMLElement).style.width = newBarPct + '%';
-    document.getElementById('bar-old-label')!.textContent = formatCurrency(Math.round(oldTotalCost));
-    document.getElementById('bar-new-label')!.textContent = formatCurrency(Math.round(newTotalCost));
+    const maxBar = Math.max(projectCost, valueIncrease, 1);
+    const costBarPct = (projectCost / maxBar) * 100;
+    const valueBarPct = (valueIncrease / maxBar) * 100;
+    (document.getElementById('bar-cost') as HTMLElement).style.width = costBarPct + '%';
+    (document.getElementById('bar-value') as HTMLElement).style.width = valueBarPct + '%';
+    document.getElementById('bar-cost-label')!.textContent = formatCurrency(Math.round(projectCost));
+    document.getElementById('bar-value-label')!.textContent = formatCurrency(Math.round(valueIncrease));
 
-    // Update savings summary
-    document.getElementById('result-annual')!.textContent = formatCurrency(Math.round(annualSavings));
-    document.getElementById('result-monthly')!.textContent = formatCurrency(Math.round(monthlySavings));
-    document.getElementById('result-payback')!.textContent = paybackYears > 0 ? paybackYears.toFixed(1) + ' yrs' : 'N/A';
-    document.getElementById('result-tenyear')!.textContent = formatCurrency(Math.round(tenYearNet));
+    // Update curb appeal
+    document.getElementById('result-curb-before')!.textContent = curbBefore.toString();
+    document.getElementById('result-curb-after')!.textContent = curbAfter.toFixed(1);
 
-    // Update environmental impact
-    document.getElementById('result-co2')!.textContent = Math.round(co2Reduction).toLocaleString();
-    document.getElementById('result-trees')!.textContent = Math.round(treesEquivalent).toLocaleString();
+    // Update percentage of home value
+    document.getElementById('result-pct-of-home')!.textContent = pctOfHome.toFixed(1) + '%';
 
+    // Build context message
+    let context = '';
+    if (roiPct >= 150) {
+      context = `This project is projected to return ${Math.round(roiPct)}% of the investment, adding an estimated ${formatCurrency(Math.round(valueIncrease))} to the home's value. That's a net gain of ${formatCurrency(Math.round(netGain))} in equity. This is a strong investment that more than pays for itself at resale. `;
+    } else if (roiPct >= 100) {
+      context = `This project is projected to return ${Math.round(roiPct)}% of the investment, fully recovering the cost and adding ${formatCurrency(Math.round(netGain))} in net value. The homeowner gets to enjoy the improvement now and recover the full cost when they sell. `;
+    } else if (roiPct >= 60) {
+      context = `This project is projected to recover ${Math.round(roiPct)}% of its cost at resale, adding ${formatCurrency(Math.round(valueIncrease))} in value. While the full cost isn't recovered at sale, the homeowner benefits from daily enjoyment, improved curb appeal, and a more competitive listing when it's time to sell. `;
+    } else {
+      context = `This project is projected to recover ${Math.round(roiPct)}% of its cost at resale. The primary value here is the homeowner's personal enjoyment and lifestyle improvement rather than a pure financial return. That said, ${formatCurrency(Math.round(valueIncrease))} in added value is meaningful. `;
+    }
+
+    // Add curb appeal context
+    if (scaledImprovement >= 3) {
+      context += `The curb appeal jump from ${curbBefore} to ${curbAfter.toFixed(1)} out of 10 is dramatic and will be immediately noticeable from the street.`;
+    } else if (scaledImprovement >= 1.5) {
+      context += `The curb appeal improvement from ${curbBefore} to ${curbAfter.toFixed(1)} out of 10 is a solid upgrade that buyers and neighbors will notice.`;
+    } else {
+      context += `The curb appeal moves from ${curbBefore} to ${curbAfter.toFixed(1)} out of 10, a meaningful improvement that adds to the overall property presentation.`;
+    }
+
+    document.getElementById('result-context')!.textContent = context;
   }
 
-
   // Auto-calculate on any input change
-  document.querySelectorAll('#energy-comp input, #energy-comp select').forEach(el => {
+  document.querySelectorAll('#roi-calc input, #roi-calc select').forEach(el => {
     el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
   });
 
   // Calculate on load with defaults

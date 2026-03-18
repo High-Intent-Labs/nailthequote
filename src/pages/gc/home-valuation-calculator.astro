@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How much can I save with a new General Contracting system?",
+      "name": "How accurate are renovation ROI estimates?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Savings depend on the efficiency gap between your current and new system, local energy prices, and climate. Replacing a 10 efficiency / 80% efficiency system with a 16 efficiency / 96% efficiency system typically saves $500 to $1,200 per year on a 3-ton unit. Hotter climates with more cooling hours see greater savings on the AC side, while colder climates benefit more from the system upgrade."
+        "text": "ROI estimates are based on national averages from Remodeling Magazine's annual Cost vs Value Report, which tracks actual resale data across hundreds of markets. Your results will vary based on local market conditions, quality of work, neighborhood comparables, and buyer preferences. Use these numbers as a conversation starter with customers, not a guarantee. In strong seller's markets, ROI often exceeds the averages. In buyer's markets, it can fall 10-15% below."
       }
     },
     {
       "@type": "Question",
-      "name": "What efficiency rating should I get?",
+      "name": "Which renovations give the best return on investment?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "For most homeowners, 16 efficiency hits the sweet spot of upfront cost and long-term savings. In hot climates like the South or Southwest with 2,500+ cooling hours per year, 18-20 efficiency can pay back faster. In mild climates with under 1,500 cooling hours, 14-16 efficiency is usually sufficient. Always compare the payback period at different efficiency levels before deciding."
+        "text": "Consistently, minor kitchen remodels and siding replacement deliver the highest ROI at 75-80%. These projects improve curb appeal and daily livability without overcapitalizing. Major upscale kitchen remodels and large room additions tend to have the lowest ROI at 50-65% because the cost escalates faster than the perceived value increase. Mid-range projects in kitchens, bathrooms, and basements typically land in the 60-75% range and represent the sweet spot for most homeowners."
       }
     },
     {
       "@type": "Question",
-      "name": "Is a higher efficiency always worth it?",
+      "name": "How does the local market affect renovation value?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Not always. Each efficiency point above 16 costs more per unit of efficiency gained, and the savings diminish. A jump from 10 to 16 efficiency cuts cooling costs by 37%, but going from 16 to 20 efficiency only saves an additional 12.5%. In mild climates with low cooling hours, the extra cost of a 20+ efficiency unit may never pay back. Run the comparison to see exact payback for your situation."
+        "text": "Market conditions significantly impact how much value a renovation adds. In a seller's market with low inventory, buyers pay premiums for move-in-ready homes, boosting renovation ROI by 10-20% above national averages. In a balanced market, returns track close to the averages. In a buyer's market with excess inventory, buyers have more options and less urgency, which can reduce ROI by 10-15%. Neighborhood price tier also matters. Overcapitalizing in an entry-level neighborhood yields lower returns than the same project in a mid-range or high-end area."
       }
     },
     {
       "@type": "Question",
-      "name": "How long does a new AC take to pay for itself?",
+      "name": "Should I show customers this tool during consultations?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Payback periods typically range from 5 to 12 years depending on the efficiency jump, system size, local energy costs, and climate. A homeowner in the South upgrading from 10 efficiency to 16 efficiency on a 3-ton system often sees payback in 6-8 years. Utility rebates, manufacturer incentives, and federal tax credits can shorten that timeline significantly."
+        "text": "Yes. Pull this up on your tablet or laptop during the initial consultation. Customers respond to concrete numbers more than vague promises about value. Enter their home value and the project you are discussing, and walk through the estimated value increase and ROI together. It reframes the conversation from cost to investment. Customers who see that a $35,000 kitchen remodel could add $25,000 or more in home value are far more likely to move forward and less likely to push back on price."
       }
     }
   ]
@@ -45,155 +45,122 @@ const faqSchema = {
 ---
 
 <ToolLayout tool={tool} extraSchema={[faqSchema]}>
-  <div id="energy-comp">
-    <!-- Two-column system inputs -->
+  <div id="valuation-calc">
+    <!-- Two-column inputs -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <!-- Left Column: Current System -->
+      <!-- Left Column: Property Details -->
       <div class="bg-bg-card border border-border rounded-xl p-6">
-        <h3 class="font-heading font-bold text-lg text-text-primary mb-1">Your Current System</h3>
-        <p class="text-text-muted text-xs mb-5">Enter your existing equipment specs</p>
+        <h3 class="font-heading font-bold text-lg text-text-primary mb-1">Property Details</h3>
+        <p class="text-text-muted text-xs mb-5">Enter the customer's home information</p>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="old-seer">efficiency Rating</label>
-            <input type="number" id="old-seer" value="10" min="8" max="26" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-            <p class="text-text-muted text-xs mt-1">Don't know? Use 10 for 15+ year old systems</p>
+            <label class="block text-sm font-medium text-text-secondary mb-1" for="home-value">Current Home Value ($)</label>
+            <input type="number" id="home-value" value="350000" min="50000" max="10000000" step="5000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+            <p class="text-text-muted text-xs mt-1">Use Zillow estimate or recent comps</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="old-afue">efficiency %</label>
-            <input type="number" id="old-afue" value="80" min="50" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-            <p class="text-text-muted text-xs mt-1">Don't know? Use 80% for older systems</p>
+            <label class="block text-sm font-medium text-text-secondary mb-1" for="neighborhood">Neighborhood Tier</label>
+            <select id="neighborhood" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+              <option value="entry">Entry-Level</option>
+              <option value="mid" selected>Mid-Range</option>
+              <option value="high">High-End</option>
+            </select>
+            <p class="text-text-muted text-xs mt-1">Affects how much value the market will absorb</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="system-age">System Age (years)</label>
-            <input type="number" id="system-age" value="15" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+            <label class="block text-sm font-medium text-text-secondary mb-1" for="market">Market Conditions</label>
+            <select id="market" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+              <option value="buyer">Buyer's Market</option>
+              <option value="balanced" selected>Balanced Market</option>
+              <option value="seller">Seller's Market</option>
+            </select>
           </div>
         </div>
       </div>
 
-      <!-- Right Column: Proposed New System -->
-      <div class="bg-bg-card border border-border rounded-xl p-6" style="border-color: rgba(255,107,43,0.3);">
-        <h3 class="font-heading font-bold text-lg text-accent mb-1">Proposed New System</h3>
-        <p class="text-text-muted text-xs mb-5">Enter the equipment you're quoting</p>
+      <!-- Right Column: Renovation Details -->
+      <div class="bg-bg-card border rounded-xl p-6" style="border-color: rgba(255,107,43,0.3);">
+        <h3 class="font-heading font-bold text-lg text-accent mb-1">Renovation Details</h3>
+        <p class="text-text-muted text-xs mb-5">Enter the project you're quoting</p>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="new-seer">efficiency Rating</label>
-            <input type="number" id="new-seer" value="16" min="13" max="26" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+            <label class="block text-sm font-medium text-text-secondary mb-1" for="reno-type">Renovation Type</label>
+            <select id="reno-type" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+              <option value="kitchen">Kitchen Remodel</option>
+              <option value="bathroom">Bathroom Remodel</option>
+              <option value="basement">Basement Finishing</option>
+              <option value="addition">Room Addition</option>
+              <option value="deck">Deck / Patio</option>
+              <option value="siding">Siding Replacement</option>
+              <option value="windows">Window Replacement</option>
+              <option value="garage">Garage Addition</option>
+              <option value="attic">Attic Conversion</option>
+            </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="new-afue">efficiency %</label>
-            <input type="number" id="new-afue" value="96" min="50" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+            <label class="block text-sm font-medium text-text-secondary mb-1" for="scope">Project Scope</label>
+            <select id="scope" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+              <option value="minor">Minor / Cosmetic</option>
+              <option value="midrange" selected>Mid-Range</option>
+              <option value="major">Major / Upscale</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-1" for="project-cost">Estimated Project Cost ($)</label>
+            <input type="number" id="project-cost" value="35000" min="1000" max="1000000" step="500" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Shared Inputs -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tons">System Size (Tons)</label>
-        <select id="tons" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.5">1.5 Ton</option>
-          <option value="2">2 Ton</option>
-          <option value="2.5">2.5 Ton</option>
-          <option value="3" selected>3 Ton</option>
-          <option value="3.5">3.5 Ton</option>
-          <option value="4">4 Ton</option>
-          <option value="5">5 Ton</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="elec-rate">Electricity Rate ($/kWh)</label>
-        <input type="number" id="elec-rate" value="0.16" min="0.01" max="1" step="0.01" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="gas-rate">Gas Rate ($/therm)</label>
-        <input type="number" id="gas-rate" value="1.20" min="0.10" max="5" step="0.05" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="region">Region</label>
-        <select id="region" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="2500,600">South (2500 / 600 hrs)</option>
-          <option value="2200,800">Southeast (2200 / 800 hrs)</option>
-          <option value="1400,2000">Midwest (1400 / 2000 hrs)</option>
-          <option value="1200,2200">Northeast (1200 / 2200 hrs)</option>
-          <option value="2800,400">Southwest (2800 / 400 hrs)</option>
-          <option value="800,1800">Northwest (800 / 1800 hrs)</option>
-          <option value="2100,1500" selected>National Avg (2100 / 1500 hrs)</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="upgrade-cost">Upgrade Cost ($)</label>
-        <input type="number" id="upgrade-cost" value="8000" min="0" max="100000" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-    </div>
-
 
     <!-- Results -->
     <div id="results" class="mt-8 border-t border-border pt-8">
-      <!-- Side-by-side cost comparison -->
-      <h3 class="font-heading font-bold text-xl mb-6">Annual Cost Comparison</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <!-- Current System Card -->
-        <div class="bg-bg-card border border-border rounded-xl p-6">
-          <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Current System</h4>
-          <div class="space-y-3">
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Cooling Cost</span>
-              <span id="result-old-cooling" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Heating Cost</span>
-              <span id="result-old-heating" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="border-t border-border pt-3 flex justify-between items-center">
-              <span class="text-text-primary font-medium">Total Annual Cost</span>
-              <span id="result-old-total" class="font-heading font-extrabold text-2xl text-text-primary">--</span>
-            </div>
+      <!-- Value Impact Cards -->
+      <h3 class="font-heading font-bold text-xl mb-6">Value Impact Summary</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-bg-dark rounded-xl p-5 text-center border-2" style="border-color: rgba(255,107,43,0.4);">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Value Increase</div>
+          <div class="flex items-center justify-center gap-2">
+            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+            <span id="result-value-increase" class="font-heading font-extrabold text-3xl text-accent">--</span>
           </div>
         </div>
-
-        <!-- New System Card -->
-        <div class="bg-bg-card border rounded-xl p-6" style="border-color: rgba(255,107,43,0.3);">
-          <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-accent mb-4">New System</h4>
-          <div class="space-y-3">
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Cooling Cost</span>
-              <span id="result-new-cooling" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Heating Cost</span>
-              <span id="result-new-heating" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="border-t border-border pt-3 flex justify-between items-center">
-              <span class="text-text-primary font-medium">Total Annual Cost</span>
-              <span id="result-new-total" class="font-heading font-extrabold text-2xl text-accent">--</span>
-            </div>
-          </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Estimated ROI</div>
+          <div id="result-roi" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cost Recovered</div>
+          <div id="result-recovered" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">New Home Value</div>
+          <div id="result-new-value" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
         </div>
       </div>
 
       <!-- Visual bar chart comparison -->
       <div class="bg-bg-card border border-border rounded-xl p-6 mb-8">
-        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Annual Cost Comparison</h4>
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Cost vs. Value Recovered</h4>
         <div class="space-y-4">
           <div>
             <div class="flex justify-between text-sm mb-1">
-              <span class="text-text-secondary">Current System</span>
-              <span id="bar-old-label" class="text-text-primary font-medium">--</span>
+              <span class="text-text-secondary">Project Cost</span>
+              <span id="bar-cost-label" class="text-text-primary font-medium">--</span>
             </div>
             <div class="w-full bg-bg-dark rounded-full h-8 overflow-hidden">
-              <div id="bar-old" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 100%; background: linear-gradient(90deg, #dc2626, #ef4444);">
+              <div id="bar-cost" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 100%; background: linear-gradient(90deg, #dc2626, #ef4444);">
                 <span class="text-white text-xs font-bold whitespace-nowrap"></span>
               </div>
             </div>
           </div>
           <div>
             <div class="flex justify-between text-sm mb-1">
-              <span class="text-text-secondary">New System</span>
-              <span id="bar-new-label" class="text-text-primary font-medium">--</span>
+              <span class="text-text-secondary">Value Added to Home</span>
+              <span id="bar-value-label" class="text-text-primary font-medium">--</span>
             </div>
             <div class="w-full bg-bg-dark rounded-full h-8 overflow-hidden">
-              <div id="bar-new" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 50%; background: linear-gradient(90deg, #16a34a, #22c55e);">
+              <div id="bar-value" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 50%; background: linear-gradient(90deg, #16a34a, #22c55e);">
                 <span class="text-white text-xs font-bold whitespace-nowrap"></span>
               </div>
             </div>
@@ -201,45 +168,71 @@ const faqSchema = {
         </div>
       </div>
 
-      <!-- Savings summary cards -->
-      <h3 class="font-heading font-bold text-xl mb-6">Your Savings</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="bg-bg-dark rounded-xl p-5 text-center border-2" style="border-color: rgba(255,107,43,0.4);">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Annual Savings</div>
-          <div class="flex items-center justify-center gap-2">
-            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-            <span id="result-annual" class="font-heading font-extrabold text-3xl text-accent">--</span>
+      <!-- Side-by-side detail cards -->
+      <h3 class="font-heading font-bold text-xl mb-6">Detailed Breakdown</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Project Investment Card -->
+        <div class="bg-bg-card border border-border rounded-xl p-6">
+          <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Project Investment</h4>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-text-secondary text-sm">Renovation Type</span>
+              <span id="detail-reno-type" class="font-heading font-bold text-sm text-text-primary">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-text-secondary text-sm">Project Scope</span>
+              <span id="detail-scope" class="font-heading font-bold text-sm text-text-primary">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-text-secondary text-sm">Base ROI Range</span>
+              <span id="detail-base-roi" class="font-heading font-bold text-sm text-text-primary">--</span>
+            </div>
+            <div class="border-t border-border pt-3 flex justify-between items-center">
+              <span class="text-text-primary font-medium">Total Project Cost</span>
+              <span id="detail-cost" class="font-heading font-extrabold text-2xl text-text-primary">--</span>
+            </div>
           </div>
         </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Monthly Savings</div>
-          <div id="result-monthly" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
-        </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Payback Period</div>
-          <div id="result-payback" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
-        </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">10-Year Net Savings</div>
-          <div id="result-tenyear" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+
+        <!-- Market Adjustments Card -->
+        <div class="bg-bg-card border rounded-xl p-6" style="border-color: rgba(255,107,43,0.3);">
+          <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-accent mb-4">Market Adjustments</h4>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-text-secondary text-sm">Market Condition</span>
+              <span id="detail-market" class="font-heading font-bold text-sm text-text-primary">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-text-secondary text-sm">Market Adjustment</span>
+              <span id="detail-market-adj" class="font-heading font-bold text-sm text-text-primary">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-text-secondary text-sm">Neighborhood Adjustment</span>
+              <span id="detail-hood-adj" class="font-heading font-bold text-sm text-text-primary">--</span>
+            </div>
+            <div class="border-t border-border pt-3 flex justify-between items-center">
+              <span class="text-text-primary font-medium">Adjusted ROI</span>
+              <span id="detail-adj-roi" class="font-heading font-extrabold text-2xl text-accent">--</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Environmental impact -->
+      <!-- Cost vs Value benchmark -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">CO2 Reduction</div>
-          <div id="result-co2" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">lbs/year</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">National Avg ROI</div>
+          <div id="result-national-roi" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">Remodeling Magazine Cost vs Value</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Environmental Impact</div>
-          <div id="result-trees" class="font-heading font-extrabold text-2xl text-green-500">--</div>
-          <div class="text-text-muted text-xs mt-1">equivalent trees planted per year</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Your Adjusted ROI</div>
+          <div id="result-your-roi" class="font-heading font-extrabold text-2xl text-green-500">--</div>
+          <div class="text-text-muted text-xs mt-1">With market and neighborhood factors</div>
         </div>
       </div>
 
-      <p class="text-text-muted text-sm italic">Estimates based on average usage patterns. Actual savings depend on equipment condition, building condition, code compliance, and local requirements. Consult with a licensed General Contracting contractor for a detailed energy audit.</p>
+      <p class="text-text-muted text-sm italic">Estimates based on national averages from Remodeling Magazine's Cost vs Value Report, adjusted for market conditions and neighborhood tier. Actual returns vary by location, quality of materials, craftsmanship, and individual buyer preferences. Use as a conversation tool during consultations, not as a guarantee.</p>
     </div>
   </div>
 
@@ -250,23 +243,23 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Tool</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Enter the current system specs.</strong> Check the nameplate on the outdoor condenser for efficiency and the system data plate for efficiency. If the customer doesn't know, use 10 efficiency and 80% efficiency as safe defaults for systems over 15 years old.</p>
-          <p><strong class="text-text-primary">2. Enter the proposed system specs.</strong> Use the efficiency and efficiency ratings from the equipment you're quoting. A 16 efficiency / 96% efficiency combination is a common mid-tier upgrade that shows strong savings.</p>
-          <p><strong class="text-text-primary">3. Set the shared parameters.</strong> Select the system size in tons, enter the customer's electricity and gas rates from their utility bill, choose their region to auto-fill typical cooling and heating hours, and enter your quoted upgrade cost.</p>
-          <p><strong class="text-text-primary">4. Review the side-by-side comparison.</strong> Show the customer the annual cost difference, payback period, and 10-year net savings. The visual bar chart makes the savings immediately obvious during a sales presentation.</p>
+          <p><strong class="text-text-primary">1. Enter the customer's home value.</strong> Use the Zillow Zestimate, a recent appraisal, or nearby comps. If the customer doesn't know, pull up Zillow on your phone and get a ballpark number. This doesn't need to be exact to have the conversation.</p>
+          <p><strong class="text-text-primary">2. Set the neighborhood and market conditions.</strong> Entry-level neighborhoods have less room to absorb high-end upgrades, which lowers ROI. Seller's markets with tight inventory boost returns because buyers pay premiums for move-in-ready homes. Be honest with these settings to keep the estimate credible.</p>
+          <p><strong class="text-text-primary">3. Select the renovation type and scope.</strong> Choose the project you're quoting and whether it's a minor cosmetic refresh, a solid mid-range remodel, or a full upscale overhaul. Enter your estimated project cost. The tool will pull the corresponding ROI range from industry data.</p>
+          <p><strong class="text-text-primary">4. Walk the customer through the results.</strong> Show them the estimated value increase, cost recovered, and how their project compares to national averages. The bar chart makes the value gap immediately visible. Screenshot the results and attach them to your proposal.</p>
         </div>
       </section>
 
-      <!-- Understanding efficiency and efficiency Ratings -->
+      <!-- Understanding Renovation ROI -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">Understanding efficiency and efficiency Ratings</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">Understanding Renovation ROI</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">efficiency (Seasonal Energy Efficiency Ratio)</strong> measures cooling efficiency. It's the total BTU of heat removed per watt-hour of electricity consumed over a typical cooling season. A 10 efficiency system uses 60% more electricity than a 16 efficiency system to deliver the same cooling. The federal minimum is now 14 efficiency in northern states and 15 efficiency in the South. Higher efficiency means lower electric bills every summer.</p>
-          <p><strong class="text-text-primary">efficiency (Annual Fuel Utilization Efficiency)</strong> measures how efficiently a gas system converts fuel to heat. An 80% efficiency system loses 20 cents of every dollar as exhaust waste. A 96% efficiency system captures nearly all of that energy, reducing gas consumption by 20% compared to the older unit. Standard-efficiency systems run at 80% efficiency, while high-efficiency condensing systems reach 95-98%.</p>
-          <p><strong class="text-text-primary">Why higher is better:</strong> Both ratings work like miles per gallon for your General Contracting system. Higher numbers mean more output per unit of energy consumed. The difference compounds every month the system runs. In a hot climate, the efficiency upgrade drives most of the savings. In a cold climate, the efficiency improvement often matters more. This tool models both sides so you can show the customer exactly where their money goes.</p>
+          <p><strong class="text-text-primary">ROI doesn't mean dollar-for-dollar.</strong> No renovation returns 100% of its cost at resale. The industry standard benchmark is Remodeling Magazine's annual Cost vs Value Report, which tracks what homeowners spend and what they recoup when they sell. A 70% ROI on a $40,000 kitchen remodel means the home sells for roughly $28,000 more than it would have without the renovation. The homeowner gets a better kitchen to live in plus recovers most of their investment.</p>
+          <p><strong class="text-text-primary">Scope matters more than most people think.</strong> Minor and mid-range projects consistently outperform major upscale ones on ROI. A minor kitchen remodel that refreshes cabinet faces, countertops, and hardware at $25,000 can return 75-80%. A major upscale gut-renovation at $80,000 might only return 55-65%. The reason is straightforward: buyers won't pay a proportional premium for luxury finishes in a mid-range neighborhood. Match the project scope to the neighborhood.</p>
+          <p><strong class="text-text-primary">Market conditions shift the equation.</strong> In a seller's market, buyers compete for limited inventory and pay premiums for updated homes. Your customer's renovation ROI could beat the national average by 10-20%. In a buyer's market, there's less urgency and more alternatives, which can push returns 10-15% below average. A balanced market tracks close to the published data. Always factor in the current local conditions when setting expectations.</p>
           <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm">
-            <p>Cooling: kWh = (Tons x 12,000 x Cooling_Hours) / (efficiency x 1,000)</p>
-            <p>Heating: Therms = (Tons x 12,000 x Heating_Hours) / (efficiency/100 x 100,000)</p>
+            <p>Value Increase = Project Cost x Base ROI x Market Adjustment x Neighborhood Adjustment</p>
+            <p>Adjusted ROI = Value Increase / Project Cost x 100</p>
           </div>
         </div>
       </section>
@@ -275,9 +268,9 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">Sales presentations at the kitchen table.</strong> Pull this up on your tablet while sitting with the homeowner. Enter their current system specs on the left, your proposed equipment on the right, and let the visual comparison make the case. The side-by-side layout and bar chart are designed to be shown to customers, not just used behind the scenes.</p>
-          <p><strong class="text-text-primary">Proposal support for premium equipment.</strong> When you're quoting a 16 efficiency system against a competitor's 14 efficiency bid, this tool proves the long-term value. Show the customer that paying more upfront saves thousands over 10 years. Screenshot the results and attach them to your written proposal for added credibility.</p>
-          <p><strong class="text-text-primary">Customer education on repair vs. replace.</strong> When a customer asks whether to repair their 18-year-old system or replace it, run the comparison. If the annual savings alone cover a significant portion of the repair cost, replacement makes financial sense even before factoring in reliability improvements and reduced breakdown risk.</p>
+          <p><strong class="text-text-primary">Pull this up during the initial consultation.</strong> When a homeowner is on the fence about a kitchen remodel or bathroom renovation, open this tool on your tablet. Enter their home value and the project details while you're sitting at their kitchen table. Seeing concrete numbers turns an abstract expense into an investment conversation. Customers who understand the value equation are less likely to chase the cheapest bid.</p>
+          <p><strong class="text-text-primary">Attach the results to your proposal.</strong> Screenshot the value impact summary and include it as a page in your written proposal. When the customer is comparing your quote against a competitor's, the ROI data gives them a reason to choose the contractor who's thinking about their home's long-term value, not just the lowest number.</p>
+          <p><strong class="text-text-primary">Use it to right-size the project scope.</strong> If a customer wants a major upscale renovation in an entry-level neighborhood, run the numbers side by side with a mid-range scope. Show them that the mid-range option might recover 70% of cost while the upscale version only recovers 50%. You're not upselling or downselling. You're giving them the data to make a smart decision, and that builds trust.</p>
         </div>
       </section>
 
@@ -286,20 +279,20 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much can I save with a new General Contracting system?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Savings depend on the efficiency gap between your current and new system, local energy prices, and climate. Replacing a 10 efficiency / 80% efficiency system with a 16 efficiency / 96% efficiency system typically saves $500 to $1,200 per year on a 3-ton unit. Hotter climates with more cooling hours see greater savings on the AC side, while colder climates benefit more from the system upgrade.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How accurate are renovation ROI estimates?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">ROI estimates are based on national averages from Remodeling Magazine's annual Cost vs Value Report, which tracks actual resale data across hundreds of markets. Your results will vary based on local market conditions, quality of work, neighborhood comparables, and buyer preferences. Use these numbers as a conversation starter with customers, not a guarantee. In strong seller's markets, ROI often exceeds the averages. In buyer's markets, it can fall 10-15% below.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What efficiency rating should I get?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For most homeowners, 16 efficiency hits the sweet spot of upfront cost and long-term savings. In hot climates like the South or Southwest with 2,500+ cooling hours per year, 18-20 efficiency can pay back faster. In mild climates with under 1,500 cooling hours, 14-16 efficiency is usually sufficient. Always compare the payback period at different efficiency levels before deciding.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Which renovations give the best return on investment?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Consistently, minor kitchen remodels and siding replacement deliver the highest ROI at 75-80%. These projects improve curb appeal and daily livability without overcapitalizing. Major upscale kitchen remodels and large room additions tend to have the lowest ROI at 50-65% because the cost escalates faster than the perceived value increase. Mid-range projects in kitchens, bathrooms, and basements typically land in the 60-75% range and represent the sweet spot for most homeowners.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Is a higher efficiency always worth it?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Not always. Each efficiency point above 16 costs more per unit of efficiency gained, and the savings diminish. A jump from 10 to 16 efficiency cuts cooling costs by 37%, but going from 16 to 20 efficiency only saves an additional 12.5%. In mild climates with low cooling hours, the extra cost of a 20+ efficiency unit may never pay back. Run the comparison to see exact payback for your situation.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How does the local market affect renovation value?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Market conditions significantly impact how much value a renovation adds. In a seller's market with low inventory, buyers pay premiums for move-in-ready homes, boosting renovation ROI by 10-20% above national averages. In a balanced market, returns track close to the averages. In a buyer's market with excess inventory, buyers have more options and less urgency, which can reduce ROI by 10-15%. Neighborhood price tier also matters. Overcapitalizing in an entry-level neighborhood yields lower returns than the same project in a mid-range or high-end area.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does a new AC take to pay for itself?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Payback periods typically range from 5 to 12 years depending on the efficiency jump, system size, local energy costs, and climate. A homeowner in the South upgrading from 10 efficiency to 16 efficiency on a 3-ton system often sees payback in 6-8 years. Utility rebates, manufacturer incentives, and federal tax credits can shorten that timeline significantly.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I show customers this tool during consultations?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. Pull this up on your tablet or laptop during the initial consultation. Customers respond to concrete numbers more than vague promises about value. Enter their home value and the project you are discussing, and walk through the estimated value increase and ROI together. It reframes the conversation from cost to investment. Customers who see that a $35,000 kitchen remodel could add $25,000 or more in home value are far more likely to move forward and less likely to push back on price.</div>
           </details>
         </div>
       </section>
@@ -308,97 +301,149 @@ const faqSchema = {
 </ToolLayout>
 
 <script>
-  const regions: Record<string, [number, number]> = {
-    '2500,600': [2500, 600],
-    '2200,800': [2200, 800],
-    '1400,2000': [1400, 2000],
-    '1200,2200': [1200, 2200],
-    '2800,400': [2800, 400],
-    '800,1800': [800, 1800],
-    '2100,1500': [2100, 1500],
+  // --- Types ---
+  interface RoiRange {
+    minor: [number, number];
+    midrange: [number, number];
+    major: [number, number];
+  }
+
+  interface MarketMultiplier {
+    buyer: number;
+    balanced: number;
+    seller: number;
+  }
+
+  interface NeighborhoodMultiplier {
+    entry: number;
+    mid: number;
+    high: number;
+  }
+
+  // --- ROI Data (based on Remodeling Magazine Cost vs Value Report) ---
+  const roiData: Record<string, RoiRange> = {
+    kitchen:   { minor: [0.75, 0.80], midrange: [0.65, 0.75], major: [0.55, 0.70] },
+    bathroom:  { minor: [0.65, 0.70], midrange: [0.60, 0.70], major: [0.55, 0.65] },
+    basement:  { minor: [0.72, 0.78], midrange: [0.70, 0.75], major: [0.60, 0.70] },
+    addition:  { minor: [0.58, 0.65], midrange: [0.53, 0.62], major: [0.50, 0.58] },
+    deck:      { minor: [0.70, 0.78], midrange: [0.65, 0.75], major: [0.60, 0.70] },
+    siding:    { minor: [0.75, 0.82], midrange: [0.70, 0.80], major: [0.65, 0.75] },
+    windows:   { minor: [0.70, 0.78], midrange: [0.65, 0.75], major: [0.60, 0.70] },
+    garage:    { minor: [0.60, 0.68], midrange: [0.55, 0.65], major: [0.50, 0.60] },
+    attic:     { minor: [0.65, 0.72], midrange: [0.60, 0.70], major: [0.55, 0.65] },
+  };
+
+  const renoLabels: Record<string, string> = {
+    kitchen: 'Kitchen Remodel',
+    bathroom: 'Bathroom Remodel',
+    basement: 'Basement Finishing',
+    addition: 'Room Addition',
+    deck: 'Deck / Patio',
+    siding: 'Siding Replacement',
+    windows: 'Window Replacement',
+    garage: 'Garage Addition',
+    attic: 'Attic Conversion',
+  };
+
+  const scopeLabels: Record<string, string> = {
+    minor: 'Minor / Cosmetic',
+    midrange: 'Mid-Range',
+    major: 'Major / Upscale',
+  };
+
+  const marketLabels: Record<string, string> = {
+    buyer: "Buyer's Market",
+    balanced: 'Balanced Market',
+    seller: "Seller's Market",
+  };
+
+  const marketMultipliers: MarketMultiplier = {
+    buyer: 0.88,
+    balanced: 1.0,
+    seller: 1.15,
+  };
+
+  const neighborhoodMultipliers: NeighborhoodMultiplier = {
+    entry: 0.85,
+    mid: 1.0,
+    high: 1.10,
   };
 
   function formatCurrency(val: number): string {
     return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
 
-  function calculate() {
-    // Current system inputs
-    const oldSeer = parseFloat((document.getElementById('old-seer') as HTMLInputElement).value) || 10;
-    const oldAfue = parseFloat((document.getElementById('old-afue') as HTMLInputElement).value) || 80;
-
-    // New system inputs
-    const newSeer = parseFloat((document.getElementById('new-seer') as HTMLInputElement).value) || 16;
-    const newAfue = parseFloat((document.getElementById('new-afue') as HTMLInputElement).value) || 96;
-
-    // Shared inputs
-    const tons = parseFloat((document.getElementById('tons') as HTMLSelectElement).value) || 3;
-    const elecRate = parseFloat((document.getElementById('elec-rate') as HTMLInputElement).value) || 0.16;
-    const gasRate = parseFloat((document.getElementById('gas-rate') as HTMLInputElement).value) || 1.20;
-    const upgradeCost = parseFloat((document.getElementById('upgrade-cost') as HTMLInputElement).value) || 8000;
-
-    // Get hours from region
-    const regionVal = (document.getElementById('region') as HTMLSelectElement).value;
-    const hours = regions[regionVal] || [2100, 1500];
-    const coolHours = hours[0];
-    const heatHours = hours[1];
-
-    // Cooling calculations
-    const oldCoolingKwh = (tons * 12000 * coolHours) / (oldSeer * 1000);
-    const newCoolingKwh = (tons * 12000 * coolHours) / (newSeer * 1000);
-    const oldCoolingCost = oldCoolingKwh * elecRate;
-    const newCoolingCost = newCoolingKwh * elecRate;
-
-    // Heating calculations (gas)
-    const btuOutput = tons * 12000;
-    const oldHeatCost = (btuOutput * heatHours) / ((oldAfue / 100) * 100000) * gasRate;
-    const newHeatCost = (btuOutput * heatHours) / ((newAfue / 100) * 100000) * gasRate;
-
-    // Totals
-    const oldTotalCost = oldCoolingCost + oldHeatCost;
-    const newTotalCost = newCoolingCost + newHeatCost;
-    const annualSavings = oldTotalCost - newTotalCost;
-    const monthlySavings = annualSavings / 12;
-    const paybackYears = annualSavings > 0 ? upgradeCost / annualSavings : 0;
-    const tenYearNet = (annualSavings * 10) - upgradeCost;
-
-    // Environmental
-    const co2Reduction = (oldCoolingKwh - newCoolingKwh) * 0.92;
-    const treesEquivalent = co2Reduction / 48;
-
-    // Update side-by-side cost cards
-    document.getElementById('result-old-cooling')!.textContent = formatCurrency(Math.round(oldCoolingCost));
-    document.getElementById('result-old-heating')!.textContent = formatCurrency(Math.round(oldHeatCost));
-    document.getElementById('result-old-total')!.textContent = formatCurrency(Math.round(oldTotalCost));
-    document.getElementById('result-new-cooling')!.textContent = formatCurrency(Math.round(newCoolingCost));
-    document.getElementById('result-new-heating')!.textContent = formatCurrency(Math.round(newHeatCost));
-    document.getElementById('result-new-total')!.textContent = formatCurrency(Math.round(newTotalCost));
-
-    // Update bar chart
-    const maxCost = Math.max(oldTotalCost, newTotalCost, 1);
-    const oldBarPct = (oldTotalCost / maxCost) * 100;
-    const newBarPct = (newTotalCost / maxCost) * 100;
-    (document.getElementById('bar-old') as HTMLElement).style.width = oldBarPct + '%';
-    (document.getElementById('bar-new') as HTMLElement).style.width = newBarPct + '%';
-    document.getElementById('bar-old-label')!.textContent = formatCurrency(Math.round(oldTotalCost));
-    document.getElementById('bar-new-label')!.textContent = formatCurrency(Math.round(newTotalCost));
-
-    // Update savings summary
-    document.getElementById('result-annual')!.textContent = formatCurrency(Math.round(annualSavings));
-    document.getElementById('result-monthly')!.textContent = formatCurrency(Math.round(monthlySavings));
-    document.getElementById('result-payback')!.textContent = paybackYears > 0 ? paybackYears.toFixed(1) + ' yrs' : 'N/A';
-    document.getElementById('result-tenyear')!.textContent = formatCurrency(Math.round(tenYearNet));
-
-    // Update environmental impact
-    document.getElementById('result-co2')!.textContent = Math.round(co2Reduction).toLocaleString();
-    document.getElementById('result-trees')!.textContent = Math.round(treesEquivalent).toLocaleString();
-
+  function formatPercent(val: number): string {
+    return val.toFixed(1) + '%';
   }
 
+  function calculate(): void {
+    // Inputs
+    const homeValue = parseFloat((document.getElementById('home-value') as HTMLInputElement).value) || 350000;
+    const renoType = (document.getElementById('reno-type') as HTMLSelectElement).value;
+    const scope = (document.getElementById('scope') as HTMLSelectElement).value as keyof RoiRange;
+    const projectCost = parseFloat((document.getElementById('project-cost') as HTMLInputElement).value) || 35000;
+    const market = (document.getElementById('market') as HTMLSelectElement).value as keyof MarketMultiplier;
+    const neighborhood = (document.getElementById('neighborhood') as HTMLSelectElement).value as keyof NeighborhoodMultiplier;
+
+    // Look up base ROI range
+    const renoRoi = roiData[renoType] || roiData['kitchen'];
+    const roiRange = renoRoi[scope] || renoRoi['midrange'];
+    const baseRoiMid = (roiRange[0] + roiRange[1]) / 2;
+
+    // Apply adjustments
+    const marketMult = marketMultipliers[market];
+    const hoodMult = neighborhoodMultipliers[neighborhood];
+
+    // Cap adjusted ROI: prevent exceeding realistic bounds
+    const adjustedRoi = Math.min(baseRoiMid * marketMult * hoodMult, 0.98);
+
+    // Calculate value impact
+    const valueIncrease = projectCost * adjustedRoi;
+    const roiPercent = adjustedRoi * 100;
+    const costRecovered = valueIncrease;
+    const newHomeValue = homeValue + valueIncrease;
+    const nationalRoiMid = baseRoiMid * 100;
+
+    // Market and neighborhood adjustment display
+    const marketAdjPct = (marketMult - 1) * 100;
+    const hoodAdjPct = (hoodMult - 1) * 100;
+
+    // Update value impact summary cards
+    document.getElementById('result-value-increase')!.textContent = formatCurrency(Math.round(valueIncrease));
+    document.getElementById('result-roi')!.textContent = formatPercent(roiPercent);
+    document.getElementById('result-recovered')!.textContent = formatCurrency(Math.round(costRecovered));
+    document.getElementById('result-new-value')!.textContent = formatCurrency(Math.round(newHomeValue));
+
+    // Update bar chart
+    const maxBar = Math.max(projectCost, valueIncrease, 1);
+    const costBarPct = (projectCost / maxBar) * 100;
+    const valueBarPct = (valueIncrease / maxBar) * 100;
+    (document.getElementById('bar-cost') as HTMLElement).style.width = costBarPct + '%';
+    (document.getElementById('bar-value') as HTMLElement).style.width = valueBarPct + '%';
+    document.getElementById('bar-cost-label')!.textContent = formatCurrency(Math.round(projectCost));
+    document.getElementById('bar-value-label')!.textContent = formatCurrency(Math.round(valueIncrease));
+
+    // Update detail cards
+    document.getElementById('detail-reno-type')!.textContent = renoLabels[renoType] || renoType;
+    document.getElementById('detail-scope')!.textContent = scopeLabels[scope] || scope;
+    document.getElementById('detail-base-roi')!.textContent = (roiRange[0] * 100).toFixed(0) + '-' + (roiRange[1] * 100).toFixed(0) + '%';
+    document.getElementById('detail-cost')!.textContent = formatCurrency(Math.round(projectCost));
+
+    document.getElementById('detail-market')!.textContent = marketLabels[market] || market;
+    document.getElementById('detail-market-adj')!.textContent = (marketAdjPct >= 0 ? '+' : '') + marketAdjPct.toFixed(0) + '%';
+    document.getElementById('detail-hood-adj')!.textContent = (hoodAdjPct >= 0 ? '+' : '') + hoodAdjPct.toFixed(0) + '%';
+    document.getElementById('detail-adj-roi')!.textContent = formatPercent(roiPercent);
+
+    // Update benchmark comparison
+    document.getElementById('result-national-roi')!.textContent = formatPercent(nationalRoiMid);
+    document.getElementById('result-your-roi')!.textContent = formatPercent(roiPercent);
+  }
 
   // Auto-calculate on any input change
-  document.querySelectorAll('#energy-comp input, #energy-comp select').forEach(el => {
+  document.querySelectorAll('#valuation-calc input, #valuation-calc select').forEach(el => {
     el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
   });
 
   // Calculate on load with defaults

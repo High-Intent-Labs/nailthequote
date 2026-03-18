@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How much can I save with a new Handyman system?",
+      "name": "How much should I discount a seasonal service bundle?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Savings depend on the efficiency gap between your current and new system, local energy prices, and climate. Replacing a 10 efficiency / 80% efficiency system with a 16 efficiency / 96% efficiency system typically saves $500 to $1,200 per year on a 3-ton unit. Hotter climates with more cooling hours see greater savings on the AC side, while colder climates benefit more from the system upgrade."
+        "text": "Most handymen find that a 10-15% bundle discount hits the sweet spot. It's enough to make the customer feel like they're getting a deal, but you're still making strong revenue because you're selling 4-7 tasks at once instead of chasing individual calls. A 15% discount on a $900 bundle still nets you $765 in a single visit, compared to maybe booking 1-2 of those tasks individually."
       }
     },
     {
       "@type": "Question",
-      "name": "What efficiency rating should I get?",
+      "name": "What seasonal tasks sell best as bundles?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "For most homeowners, 16 efficiency hits the sweet spot of upfront cost and long-term savings. In hot climates like the South or Southwest with 2,500+ cooling hours per year, 18-20 efficiency can pay back faster. In mild climates with under 1,500 cooling hours, 14-16 efficiency is usually sufficient. Always compare the payback period at different efficiency levels before deciding."
+        "text": "Spring and fall bundles tend to sell best because homeowners feel the urgency of seasonal transitions. Gutter cleaning paired with exterior caulking and power washing is a strong spring combo. In fall, storm window installation plus weatherstripping and smoke detector battery swaps are easy sells. The key is combining visible tasks (power washing, paint touch-ups) with preventive ones (insulation checks, dryer vent cleaning) so customers see immediate value."
       }
     },
     {
       "@type": "Question",
-      "name": "Is a higher efficiency always worth it?",
+      "name": "How do I pitch a seasonal bundle to a customer?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Not always. Each efficiency point above 16 costs more per unit of efficiency gained, and the savings diminish. A jump from 10 to 16 efficiency cuts cooling costs by 37%, but going from 16 to 20 efficiency only saves an additional 12.5%. In mild climates with low cooling hours, the extra cost of a 20+ efficiency unit may never pay back. Run the comparison to see exact payback for your situation."
+        "text": "Lead with the savings and convenience. Tell them: instead of calling multiple times throughout the season, you'll handle everything in one visit at a bundled rate. Show them the line-item breakdown so they see the individual value, then highlight the discount. Framing it as 'seasonal maintenance' rather than a list of repairs positions you as a proactive partner, not just someone they call when things break."
       }
     },
     {
       "@type": "Question",
-      "name": "How long does a new AC take to pay for itself?",
+      "name": "Should I offer the same bundles to every customer?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Payback periods typically range from 5 to 12 years depending on the efficiency jump, system size, local energy costs, and climate. A homeowner in the South upgrading from 10 efficiency to 16 efficiency on a 3-ton system often sees payback in 6-8 years. Utility rebates, manufacturer incentives, and federal tax credits can shorten that timeline significantly."
+        "text": "Start with a standard bundle as your base offering, then customize. This tool lets you check and uncheck tasks so you can tailor the bundle during the conversation. Older homes might need more weatherproofing and caulking work. Newer homes might focus on cosmetic maintenance like deck staining and power washing. Having a default bundle ready saves you time, but flexibility closes more deals."
       }
     }
   ]
@@ -45,155 +45,91 @@ const faqSchema = {
 ---
 
 <ToolLayout tool={tool} extraSchema={[faqSchema]}>
-  <div id="energy-comp">
-    <!-- Two-column system inputs -->
+  <div id="seasonal-promoter">
+    <!-- Season Selector and Bundle Name -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <!-- Left Column: Current System -->
-      <div class="bg-bg-card border border-border rounded-xl p-6">
-        <h3 class="font-heading font-bold text-lg text-text-primary mb-1">Your Current System</h3>
-        <p class="text-text-muted text-xs mb-5">Enter your existing equipment specs</p>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="old-seer">efficiency Rating</label>
-            <input type="number" id="old-seer" value="10" min="8" max="26" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-            <p class="text-text-muted text-xs mt-1">Don't know? Use 10 for 15+ year old systems</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="old-afue">efficiency %</label>
-            <input type="number" id="old-afue" value="80" min="50" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-            <p class="text-text-muted text-xs mt-1">Don't know? Use 80% for older systems</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="system-age">System Age (years)</label>
-            <input type="number" id="system-age" value="15" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column: Proposed New System -->
-      <div class="bg-bg-card border border-border rounded-xl p-6" style="border-color: rgba(255,107,43,0.3);">
-        <h3 class="font-heading font-bold text-lg text-accent mb-1">Proposed New System</h3>
-        <p class="text-text-muted text-xs mb-5">Enter the equipment you're quoting</p>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="new-seer">efficiency Rating</label>
-            <input type="number" id="new-seer" value="16" min="13" max="26" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="new-afue">efficiency %</label>
-            <input type="number" id="new-afue" value="96" min="50" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Shared Inputs -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tons">System Size (Tons)</label>
-        <select id="tons" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.5">1.5 Ton</option>
-          <option value="2">2 Ton</option>
-          <option value="2.5">2.5 Ton</option>
-          <option value="3" selected>3 Ton</option>
-          <option value="3.5">3.5 Ton</option>
-          <option value="4">4 Ton</option>
-          <option value="5">5 Ton</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="season-select">Select Season</label>
+        <select id="season-select" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="spring">Spring</option>
+          <option value="summer">Summer</option>
+          <option value="fall" selected>Fall</option>
+          <option value="winter">Winter</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="elec-rate">Electricity Rate ($/kWh)</label>
-        <input type="number" id="elec-rate" value="0.16" min="0.01" max="1" step="0.01" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="gas-rate">Gas Rate ($/therm)</label>
-        <input type="number" id="gas-rate" value="1.20" min="0.10" max="5" step="0.05" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="region">Region</label>
-        <select id="region" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="2500,600">South (2500 / 600 hrs)</option>
-          <option value="2200,800">Southeast (2200 / 800 hrs)</option>
-          <option value="1400,2000">Midwest (1400 / 2000 hrs)</option>
-          <option value="1200,2200">Northeast (1200 / 2200 hrs)</option>
-          <option value="2800,400">Southwest (2800 / 400 hrs)</option>
-          <option value="800,1800">Northwest (800 / 1800 hrs)</option>
-          <option value="2100,1500" selected>National Avg (2100 / 1500 hrs)</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="upgrade-cost">Upgrade Cost ($)</label>
-        <input type="number" id="upgrade-cost" value="8000" min="0" max="100000" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="bundle-name">Bundle Name</label>
+        <input type="text" id="bundle-name" value="Fall Home Maintenance Package" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" placeholder="e.g. Spring Refresh Package" />
       </div>
     </div>
 
+    <!-- Bundle Discount -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="bundle-discount">Bundle Discount %</label>
+        <input type="number" id="bundle-discount" value="15" min="0" max="50" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">10-15% is the sweet spot for most bundles</p>
+      </div>
+    </div>
+
+    <!-- Task Checklist -->
+    <div class="bg-bg-card border border-border rounded-xl p-6 mb-8">
+      <h3 class="font-heading font-bold text-lg text-text-primary mb-1">Seasonal Tasks</h3>
+      <p class="text-text-muted text-xs mb-5">Check the tasks to include, and adjust prices to match your market</p>
+      <div id="task-list" class="space-y-3">
+        <!-- Tasks will be populated by JavaScript -->
+      </div>
+    </div>
 
     <!-- Results -->
     <div id="results" class="mt-8 border-t border-border pt-8">
-      <!-- Side-by-side cost comparison -->
-      <h3 class="font-heading font-bold text-xl mb-6">Annual Cost Comparison</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <!-- Current System Card -->
-        <div class="bg-bg-card border border-border rounded-xl p-6">
-          <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Current System</h4>
-          <div class="space-y-3">
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Cooling Cost</span>
-              <span id="result-old-cooling" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Heating Cost</span>
-              <span id="result-old-heating" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="border-t border-border pt-3 flex justify-between items-center">
-              <span class="text-text-primary font-medium">Total Annual Cost</span>
-              <span id="result-old-total" class="font-heading font-extrabold text-2xl text-text-primary">--</span>
-            </div>
-          </div>
-        </div>
+      <h3 class="font-heading font-bold text-xl mb-6">Bundle Summary</h3>
 
-        <!-- New System Card -->
-        <div class="bg-bg-card border rounded-xl p-6" style="border-color: rgba(255,107,43,0.3);">
-          <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-accent mb-4">New System</h4>
-          <div class="space-y-3">
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Cooling Cost</span>
-              <span id="result-new-cooling" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Heating Cost</span>
-              <span id="result-new-heating" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="border-t border-border pt-3 flex justify-between items-center">
-              <span class="text-text-primary font-medium">Total Annual Cost</span>
-              <span id="result-new-total" class="font-heading font-extrabold text-2xl text-accent">--</span>
-            </div>
+      <!-- Summary cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Tasks Selected</div>
+          <div id="result-task-count" class="font-heading font-extrabold text-3xl text-text-primary">0</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Individual Total</div>
+          <div id="result-individual-total" class="font-heading font-extrabold text-3xl text-text-primary">$0</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center border-2" style="border-color: rgba(255,107,43,0.4);">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Bundled Price</div>
+          <div id="result-bundle-price" class="font-heading font-extrabold text-3xl text-accent">$0</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Customer Saves</div>
+          <div class="flex items-center justify-center gap-2">
+            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+            <span id="result-customer-savings" class="font-heading font-extrabold text-3xl text-green-500">$0</span>
           </div>
         </div>
       </div>
 
-      <!-- Visual bar chart comparison -->
+      <!-- Visual bar comparison -->
       <div class="bg-bg-card border border-border rounded-xl p-6 mb-8">
-        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Annual Cost Comparison</h4>
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Price Comparison</h4>
         <div class="space-y-4">
           <div>
             <div class="flex justify-between text-sm mb-1">
-              <span class="text-text-secondary">Current System</span>
-              <span id="bar-old-label" class="text-text-primary font-medium">--</span>
+              <span class="text-text-secondary">Individual Pricing</span>
+              <span id="bar-individual-label" class="text-text-primary font-medium">--</span>
             </div>
             <div class="w-full bg-bg-dark rounded-full h-8 overflow-hidden">
-              <div id="bar-old" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 100%; background: linear-gradient(90deg, #dc2626, #ef4444);">
+              <div id="bar-individual" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 100%; background: linear-gradient(90deg, #dc2626, #ef4444);">
                 <span class="text-white text-xs font-bold whitespace-nowrap"></span>
               </div>
             </div>
           </div>
           <div>
             <div class="flex justify-between text-sm mb-1">
-              <span class="text-text-secondary">New System</span>
-              <span id="bar-new-label" class="text-text-primary font-medium">--</span>
+              <span class="text-text-secondary">Your Bundle</span>
+              <span id="bar-bundle-label" class="text-text-primary font-medium">--</span>
             </div>
             <div class="w-full bg-bg-dark rounded-full h-8 overflow-hidden">
-              <div id="bar-new" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 50%; background: linear-gradient(90deg, #16a34a, #22c55e);">
+              <div id="bar-bundle" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 85%; background: linear-gradient(90deg, #16a34a, #22c55e);">
                 <span class="text-white text-xs font-bold whitespace-nowrap"></span>
               </div>
             </div>
@@ -201,45 +137,24 @@ const faqSchema = {
         </div>
       </div>
 
-      <!-- Savings summary cards -->
-      <h3 class="font-heading font-bold text-xl mb-6">Your Savings</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <!-- Revenue projection -->
+      <h3 class="font-heading font-bold text-xl mb-6">Your Revenue Projection</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Revenue Per Bundle</div>
+          <div id="result-revenue-per" class="font-heading font-extrabold text-2xl text-text-primary">$0</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">5 Bundles Sold</div>
+          <div id="result-revenue-5" class="font-heading font-extrabold text-2xl text-text-primary">$0</div>
+        </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center border-2" style="border-color: rgba(255,107,43,0.4);">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Annual Savings</div>
-          <div class="flex items-center justify-center gap-2">
-            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-            <span id="result-annual" class="font-heading font-extrabold text-3xl text-accent">--</span>
-          </div>
-        </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Monthly Savings</div>
-          <div id="result-monthly" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
-        </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Payback Period</div>
-          <div id="result-payback" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
-        </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">10-Year Net Savings</div>
-          <div id="result-tenyear" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">10 Bundles Sold</div>
+          <div id="result-revenue-10" class="font-heading font-extrabold text-2xl text-accent">$0</div>
         </div>
       </div>
 
-      <!-- Environmental impact -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">CO2 Reduction</div>
-          <div id="result-co2" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">lbs/year</div>
-        </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Environmental Impact</div>
-          <div id="result-trees" class="font-heading font-extrabold text-2xl text-green-500">--</div>
-          <div class="text-text-muted text-xs mt-1">equivalent trees planted per year</div>
-        </div>
-      </div>
-
-      <p class="text-text-muted text-sm italic">Estimates based on average usage patterns. Actual savings depend on equipment condition, fixture condition, connection quality, and local codes. Consult with a licensed Handyman contractor for a detailed energy audit.</p>
+      <p class="text-text-muted text-sm italic">Prices are defaults based on national averages. Adjust task prices to match your local market rates and labor costs.</p>
     </div>
   </div>
 
@@ -250,34 +165,30 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Tool</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Enter the current system specs.</strong> Check the nameplate on the outdoor condenser for efficiency and the system data plate for efficiency. If the customer doesn't know, use 10 efficiency and 80% efficiency as safe defaults for systems over 15 years old.</p>
-          <p><strong class="text-text-primary">2. Enter the proposed system specs.</strong> Use the efficiency and efficiency ratings from the equipment you're quoting. A 16 efficiency / 96% efficiency combination is a common mid-tier upgrade that shows strong savings.</p>
-          <p><strong class="text-text-primary">3. Set the shared parameters.</strong> Select the system size in tons, enter the customer's electricity and gas rates from their utility bill, choose their region to auto-fill typical cooling and heating hours, and enter your quoted upgrade cost.</p>
-          <p><strong class="text-text-primary">4. Review the side-by-side comparison.</strong> Show the customer the annual cost difference, payback period, and 10-year net savings. The visual bar chart makes the savings immediately obvious during a sales presentation.</p>
+          <p><strong class="text-text-primary">1. Pick your season.</strong> Select the season you want to build a bundle for. Each season loads a different set of common maintenance tasks that homeowners need done. Fall and spring bundles tend to sell best because of the urgency around seasonal transitions.</p>
+          <p><strong class="text-text-primary">2. Check the tasks you want to include.</strong> Every task has a default price based on national averages. Edit any price to match what you actually charge in your market. Uncheck tasks that don't apply or that you don't offer.</p>
+          <p><strong class="text-text-primary">3. Set your bundle discount.</strong> A 10-15% discount is the sweet spot. It's enough to motivate the customer to buy the whole package instead of cherry-picking one or two tasks. You still make strong revenue because you're selling multiple tasks in a single visit.</p>
+          <p><strong class="text-text-primary">4. Name your bundle and show the customer.</strong> Give it a professional name like "Fall Home Prep Package" or "Spring Refresh Bundle." Show them the individual pricing versus the bundle price so they see the savings. The visual bar chart makes the value obvious during a sales conversation.</p>
         </div>
       </section>
 
-      <!-- Understanding efficiency and efficiency Ratings -->
+      <!-- Why Seasonal Bundles Work -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">Understanding efficiency and efficiency Ratings</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">Why Seasonal Bundles Work</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">efficiency (Seasonal Energy Efficiency Ratio)</strong> measures cooling efficiency. It's the total BTU of heat removed per watt-hour of electricity consumed over a typical cooling season. A 10 efficiency system uses 60% more electricity than a 16 efficiency system to deliver the same cooling. The federal minimum is now 14 efficiency in northern states and 15 efficiency in the South. Higher efficiency means lower electric bills every summer.</p>
-          <p><strong class="text-text-primary">efficiency (Annual Fuel Utilization Efficiency)</strong> measures how efficiently a gas system converts fuel to heat. An 80% efficiency system loses 20 cents of every dollar as exhaust waste. A 96% efficiency system captures nearly all of that energy, reducing gas consumption by 20% compared to the older unit. Standard-efficiency systems run at 80% efficiency, while high-efficiency condensing systems reach 95-98%.</p>
-          <p><strong class="text-text-primary">Why higher is better:</strong> Both ratings work like miles per gallon for your Handyman system. Higher numbers mean more output per unit of energy consumed. The difference compounds every month the system runs. In a hot climate, the efficiency upgrade drives most of the savings. In a cold climate, the efficiency improvement often matters more. This tool models both sides so you can show the customer exactly where their money goes.</p>
-          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm">
-            <p>Cooling: kWh = (Tons x 12,000 x Cooling_Hours) / (efficiency x 1,000)</p>
-            <p>Heating: Therms = (Tons x 12,000 x Heating_Hours) / (efficiency/100 x 100,000)</p>
-          </div>
+          <p><strong class="text-text-primary">Bigger tickets per visit.</strong> Instead of booking a single $150 gutter cleaning, you're selling a $700+ package. Your drive time, setup, and overhead stay the same, but your revenue per visit jumps dramatically. Bundles turn small maintenance calls into profitable half-day jobs.</p>
+          <p><strong class="text-text-primary">Customers see you as a partner, not a one-call fix.</strong> When you pitch seasonal maintenance as a package, you position yourself as someone who keeps their home in shape year-round. That builds recurring relationships. Many handymen who start offering seasonal bundles find that 30-40% of bundle customers rebook the next season without being asked.</p>
+          <p><strong class="text-text-primary">Preventive work uncovers bigger projects.</strong> A routine insulation check might reveal a bathroom that needs remodeling. A deck inspection could lead to a full rebuild quote. Bundled maintenance visits get you inside (and around) the home, where you spot opportunities for larger projects that the customer didn't even know they needed.</p>
         </div>
       </section>
 
-      <!-- When To Use This -->
+      <!-- Pricing Tips -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">Pricing Your Bundles Right</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">Sales presentations at the kitchen table.</strong> Pull this up on your tablet while sitting with the homeowner. Enter their current system specs on the left, your proposed equipment on the right, and let the visual comparison make the case. The side-by-side layout and bar chart are designed to be shown to customers, not just used behind the scenes.</p>
-          <p><strong class="text-text-primary">Proposal support for premium equipment.</strong> When you're quoting a 16 efficiency system against a competitor's 14 efficiency bid, this tool proves the long-term value. Show the customer that paying more upfront saves thousands over 10 years. Screenshot the results and attach them to your written proposal for added credibility.</p>
-          <p><strong class="text-text-primary">Customer education on repair vs. replace.</strong> When a customer asks whether to repair their 18-year-old system or replace it, run the comparison. If the annual savings alone cover a significant portion of the repair cost, replacement makes financial sense even before factoring in reliability improvements and reduced breakdown risk.</p>
+          <p><strong class="text-text-primary">Start with your actual task rates.</strong> The default prices in this tool are national averages. Your market might be higher or lower. Edit each task price to reflect what you'd charge if a customer called you for that one job. Then the bundle discount applies on top of your real numbers, so the math is honest.</p>
+          <p><strong class="text-text-primary">Don't discount more than 20%.</strong> Going over 20% starts cutting into your margins on labor-heavy tasks. The customer already gets value from the convenience of one visit and one invoice. You don't need to race to the bottom on price. If a customer pushes for a bigger discount, add a small bonus task instead of cutting the percentage.</p>
+          <p><strong class="text-text-primary">Factor in efficiency gains.</strong> When you're at a home doing 5-6 tasks, you save on drive time, load/unload, and setup. A gutter cleaning that takes 45 minutes as a standalone visit might only take 30 minutes when you're already on-site with your ladder and tools out. Your effective hourly rate on bundled work is almost always higher than on individual calls.</p>
         </div>
       </section>
 
@@ -286,20 +197,20 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much can I save with a new Handyman system?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Savings depend on the efficiency gap between your current and new system, local energy prices, and climate. Replacing a 10 efficiency / 80% efficiency system with a 16 efficiency / 96% efficiency system typically saves $500 to $1,200 per year on a 3-ton unit. Hotter climates with more cooling hours see greater savings on the AC side, while colder climates benefit more from the system upgrade.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much should I discount a seasonal service bundle?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most handymen find that a 10-15% bundle discount hits the sweet spot. It's enough to make the customer feel like they're getting a deal, but you're still making strong revenue because you're selling 4-7 tasks at once instead of chasing individual calls. A 15% discount on a $900 bundle still nets you $765 in a single visit, compared to maybe booking 1-2 of those tasks individually.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What efficiency rating should I get?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For most homeowners, 16 efficiency hits the sweet spot of upfront cost and long-term savings. In hot climates like the South or Southwest with 2,500+ cooling hours per year, 18-20 efficiency can pay back faster. In mild climates with under 1,500 cooling hours, 14-16 efficiency is usually sufficient. Always compare the payback period at different efficiency levels before deciding.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What seasonal tasks sell best as bundles?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Spring and fall bundles tend to sell best because homeowners feel the urgency of seasonal transitions. Gutter cleaning paired with exterior caulking and power washing is a strong spring combo. In fall, storm window installation plus weatherstripping and smoke detector battery swaps are easy sells. The key is combining visible tasks (power washing, paint touch-ups) with preventive ones (insulation checks, dryer vent cleaning) so customers see immediate value.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Is a higher efficiency always worth it?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Not always. Each efficiency point above 16 costs more per unit of efficiency gained, and the savings diminish. A jump from 10 to 16 efficiency cuts cooling costs by 37%, but going from 16 to 20 efficiency only saves an additional 12.5%. In mild climates with low cooling hours, the extra cost of a 20+ efficiency unit may never pay back. Run the comparison to see exact payback for your situation.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I pitch a seasonal bundle to a customer?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Lead with the savings and convenience. Tell them: instead of calling multiple times throughout the season, you'll handle everything in one visit at a bundled rate. Show them the line-item breakdown so they see the individual value, then highlight the discount. Framing it as "seasonal maintenance" rather than a list of repairs positions you as a proactive partner, not just someone they call when things break.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does a new AC take to pay for itself?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Payback periods typically range from 5 to 12 years depending on the efficiency jump, system size, local energy costs, and climate. A homeowner in the South upgrading from 10 efficiency to 16 efficiency on a 3-ton system often sees payback in 6-8 years. Utility rebates, manufacturer incentives, and federal tax credits can shorten that timeline significantly.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I offer the same bundles to every customer?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Start with a standard bundle as your base offering, then customize. This tool lets you check and uncheck tasks so you can tailor the bundle during the conversation. Older homes might need more weatherproofing and caulking work. Newer homes might focus on cosmetic maintenance like deck staining and power washing. Having a default bundle ready saves you time, but flexibility closes more deals.</div>
           </details>
         </div>
       </section>
@@ -308,99 +219,152 @@ const faqSchema = {
 </ToolLayout>
 
 <script>
-  const regions: Record<string, [number, number]> = {
-    '2500,600': [2500, 600],
-    '2200,800': [2200, 800],
-    '1400,2000': [1400, 2000],
-    '1200,2200': [1200, 2200],
-    '2800,400': [2800, 400],
-    '800,1800': [800, 1800],
-    '2100,1500': [2100, 1500],
+  interface SeasonalTask {
+    name: string;
+    defaultPrice: number;
+    checked: boolean;
+  }
+
+  type SeasonKey = 'spring' | 'summer' | 'fall' | 'winter';
+
+  const seasonalTasks: Record<SeasonKey, SeasonalTask[]> = {
+    spring: [
+      { name: 'Gutter Cleaning', defaultPrice: 150, checked: true },
+      { name: 'Power Washing (Driveway & Siding)', defaultPrice: 250, checked: true },
+      { name: 'Deck Inspection & Minor Repairs', defaultPrice: 175, checked: true },
+      { name: 'Window Screen Repair/Replacement', defaultPrice: 120, checked: true },
+      { name: 'HVAC Filter Change', defaultPrice: 45, checked: true },
+      { name: 'Caulk Inspection & Touch-Up', defaultPrice: 95, checked: true },
+      { name: 'Exterior Paint Touch-Up', defaultPrice: 200, checked: false },
+    ],
+    summer: [
+      { name: 'Fence Repair & Staining', defaultPrice: 300, checked: true },
+      { name: 'Deck Staining/Sealing', defaultPrice: 275, checked: true },
+      { name: 'Ceiling Fan Installation', defaultPrice: 150, checked: true },
+      { name: 'Weather Stripping Check & Replace', defaultPrice: 85, checked: true },
+      { name: 'Dryer Vent Cleaning', defaultPrice: 110, checked: true },
+    ],
+    fall: [
+      { name: 'Gutter Cleaning & Downspout Check', defaultPrice: 165, checked: true },
+      { name: 'Storm Window Installation', defaultPrice: 200, checked: true },
+      { name: 'Insulation Inspection', defaultPrice: 125, checked: true },
+      { name: 'Smoke Detector Battery Swap', defaultPrice: 55, checked: true },
+      { name: 'Door & Window Weatherstripping', defaultPrice: 130, checked: true },
+      { name: 'Exterior Caulking', defaultPrice: 110, checked: true },
+    ],
+    winter: [
+      { name: 'Pipe Insulation', defaultPrice: 175, checked: true },
+      { name: 'Draft Sealing (Doors & Windows)', defaultPrice: 140, checked: true },
+      { name: 'Thermostat Check & Calibration', defaultPrice: 65, checked: true },
+      { name: 'Ice Dam Prevention (Heat Cable Check)', defaultPrice: 195, checked: true },
+      { name: 'Interior Repairs & Touch-Ups', defaultPrice: 160, checked: false },
+    ],
   };
+
+  const defaultBundleNames: Record<SeasonKey, string> = {
+    spring: 'Spring Home Refresh Package',
+    summer: 'Summer Ready Package',
+    fall: 'Fall Home Maintenance Package',
+    winter: 'Winter Prep Package',
+  };
+
+  // Clone tasks for each season so edits don't mutate defaults
+  let currentTasks: SeasonalTask[] = [];
 
   function formatCurrency(val: number): string {
     return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
 
-  function calculate() {
-    // Current system inputs
-    const oldSeer = parseFloat((document.getElementById('old-seer') as HTMLInputElement).value) || 10;
-    const oldAfue = parseFloat((document.getElementById('old-afue') as HTMLInputElement).value) || 80;
+  function renderTasks(): void {
+    const container = document.getElementById('task-list')!;
+    container.innerHTML = '';
 
-    // New system inputs
-    const newSeer = parseFloat((document.getElementById('new-seer') as HTMLInputElement).value) || 16;
-    const newAfue = parseFloat((document.getElementById('new-afue') as HTMLInputElement).value) || 96;
+    currentTasks.forEach((task, index) => {
+      const row = document.createElement('div');
+      row.className = 'flex items-center gap-4 bg-bg-dark border border-border rounded-lg px-4 py-3';
 
-    // Shared inputs
-    const tons = parseFloat((document.getElementById('tons') as HTMLSelectElement).value) || 3;
-    const elecRate = parseFloat((document.getElementById('elec-rate') as HTMLInputElement).value) || 0.16;
-    const gasRate = parseFloat((document.getElementById('gas-rate') as HTMLInputElement).value) || 1.20;
-    const upgradeCost = parseFloat((document.getElementById('upgrade-cost') as HTMLInputElement).value) || 8000;
+      row.innerHTML = `
+        <input type="checkbox" id="task-check-${index}" ${task.checked ? 'checked' : ''} class="w-5 h-5 rounded border-border text-accent focus:ring-accent bg-bg-dark cursor-pointer flex-shrink-0" />
+        <label for="task-check-${index}" class="flex-1 text-text-primary text-sm font-medium cursor-pointer select-none">${task.name}</label>
+        <div class="flex items-center gap-1 flex-shrink-0">
+          <span class="text-text-muted text-sm">$</span>
+          <input type="number" id="task-price-${index}" value="${task.defaultPrice}" min="0" max="9999" step="5" class="w-20 bg-bg-card border border-border rounded-lg px-2 py-1.5 text-text-primary text-sm text-right focus:border-accent focus:outline-none transition-colors" />
+        </div>
+      `;
 
-    // Get hours from region
-    const regionVal = (document.getElementById('region') as HTMLSelectElement).value;
-    const hours = regions[regionVal] || [2100, 1500];
-    const coolHours = hours[0];
-    const heatHours = hours[1];
+      container.appendChild(row);
 
-    // Cooling calculations
-    const oldCoolingKwh = (tons * 12000 * coolHours) / (oldSeer * 1000);
-    const newCoolingKwh = (tons * 12000 * coolHours) / (newSeer * 1000);
-    const oldCoolingCost = oldCoolingKwh * elecRate;
-    const newCoolingCost = newCoolingKwh * elecRate;
+      // Bind events
+      const checkbox = row.querySelector(`#task-check-${index}`) as HTMLInputElement;
+      const priceInput = row.querySelector(`#task-price-${index}`) as HTMLInputElement;
 
-    // Heating calculations (gas)
-    const btuOutput = tons * 12000;
-    const oldHeatCost = (btuOutput * heatHours) / ((oldAfue / 100) * 100000) * gasRate;
-    const newHeatCost = (btuOutput * heatHours) / ((newAfue / 100) * 100000) * gasRate;
+      checkbox.addEventListener('change', () => {
+        currentTasks[index].checked = checkbox.checked;
+        calculate();
+      });
 
-    // Totals
-    const oldTotalCost = oldCoolingCost + oldHeatCost;
-    const newTotalCost = newCoolingCost + newHeatCost;
-    const annualSavings = oldTotalCost - newTotalCost;
-    const monthlySavings = annualSavings / 12;
-    const paybackYears = annualSavings > 0 ? upgradeCost / annualSavings : 0;
-    const tenYearNet = (annualSavings * 10) - upgradeCost;
-
-    // Environmental
-    const co2Reduction = (oldCoolingKwh - newCoolingKwh) * 0.92;
-    const treesEquivalent = co2Reduction / 48;
-
-    // Update side-by-side cost cards
-    document.getElementById('result-old-cooling')!.textContent = formatCurrency(Math.round(oldCoolingCost));
-    document.getElementById('result-old-heating')!.textContent = formatCurrency(Math.round(oldHeatCost));
-    document.getElementById('result-old-total')!.textContent = formatCurrency(Math.round(oldTotalCost));
-    document.getElementById('result-new-cooling')!.textContent = formatCurrency(Math.round(newCoolingCost));
-    document.getElementById('result-new-heating')!.textContent = formatCurrency(Math.round(newHeatCost));
-    document.getElementById('result-new-total')!.textContent = formatCurrency(Math.round(newTotalCost));
-
-    // Update bar chart
-    const maxCost = Math.max(oldTotalCost, newTotalCost, 1);
-    const oldBarPct = (oldTotalCost / maxCost) * 100;
-    const newBarPct = (newTotalCost / maxCost) * 100;
-    (document.getElementById('bar-old') as HTMLElement).style.width = oldBarPct + '%';
-    (document.getElementById('bar-new') as HTMLElement).style.width = newBarPct + '%';
-    document.getElementById('bar-old-label')!.textContent = formatCurrency(Math.round(oldTotalCost));
-    document.getElementById('bar-new-label')!.textContent = formatCurrency(Math.round(newTotalCost));
-
-    // Update savings summary
-    document.getElementById('result-annual')!.textContent = formatCurrency(Math.round(annualSavings));
-    document.getElementById('result-monthly')!.textContent = formatCurrency(Math.round(monthlySavings));
-    document.getElementById('result-payback')!.textContent = paybackYears > 0 ? paybackYears.toFixed(1) + ' yrs' : 'N/A';
-    document.getElementById('result-tenyear')!.textContent = formatCurrency(Math.round(tenYearNet));
-
-    // Update environmental impact
-    document.getElementById('result-co2')!.textContent = Math.round(co2Reduction).toLocaleString();
-    document.getElementById('result-trees')!.textContent = Math.round(treesEquivalent).toLocaleString();
-
+      priceInput.addEventListener('input', () => {
+        currentTasks[index].defaultPrice = parseFloat(priceInput.value) || 0;
+        calculate();
+      });
+    });
   }
 
+  function loadSeason(season: SeasonKey): void {
+    // Deep clone the tasks for this season
+    currentTasks = seasonalTasks[season].map(t => ({ ...t }));
 
-  // Auto-calculate on any input change
-  document.querySelectorAll('#energy-comp input, #energy-comp select').forEach(el => {
-    el.addEventListener('change', calculate);
+    // Update bundle name
+    const nameInput = document.getElementById('bundle-name') as HTMLInputElement;
+    nameInput.value = defaultBundleNames[season];
+
+    renderTasks();
+    calculate();
+  }
+
+  function calculate(): void {
+    const discount = parseFloat((document.getElementById('bundle-discount') as HTMLInputElement).value) || 0;
+    const clampedDiscount = Math.max(0, Math.min(50, discount));
+
+    // Calculate totals from checked tasks
+    const selectedTasks = currentTasks.filter(t => t.checked);
+    const taskCount = selectedTasks.length;
+    const individualTotal = selectedTasks.reduce((sum, t) => sum + t.defaultPrice, 0);
+    const discountAmount = individualTotal * (clampedDiscount / 100);
+    const bundlePrice = individualTotal - discountAmount;
+    const customerSavings = discountAmount;
+
+    // Update summary cards
+    document.getElementById('result-task-count')!.textContent = taskCount.toString();
+    document.getElementById('result-individual-total')!.textContent = formatCurrency(Math.round(individualTotal));
+    document.getElementById('result-bundle-price')!.textContent = formatCurrency(Math.round(bundlePrice));
+    document.getElementById('result-customer-savings')!.textContent = formatCurrency(Math.round(customerSavings));
+
+    // Update bar chart
+    const maxCost = Math.max(individualTotal, 1);
+    const individualBarPct = 100;
+    const bundleBarPct = individualTotal > 0 ? (bundlePrice / maxCost) * 100 : 0;
+    (document.getElementById('bar-individual') as HTMLElement).style.width = individualBarPct + '%';
+    (document.getElementById('bar-bundle') as HTMLElement).style.width = Math.max(bundleBarPct, 2) + '%';
+    document.getElementById('bar-individual-label')!.textContent = formatCurrency(Math.round(individualTotal));
+    document.getElementById('bar-bundle-label')!.textContent = formatCurrency(Math.round(bundlePrice));
+
+    // Revenue projections
+    document.getElementById('result-revenue-per')!.textContent = formatCurrency(Math.round(bundlePrice));
+    document.getElementById('result-revenue-5')!.textContent = formatCurrency(Math.round(bundlePrice * 5));
+    document.getElementById('result-revenue-10')!.textContent = formatCurrency(Math.round(bundlePrice * 10));
+  }
+
+  // Season change handler
+  const seasonSelect = document.getElementById('season-select') as HTMLSelectElement;
+  seasonSelect.addEventListener('change', () => {
+    loadSeason(seasonSelect.value as SeasonKey);
   });
 
-  // Calculate on load with defaults
-  calculate();
+  // Discount change handler
+  const discountInput = document.getElementById('bundle-discount') as HTMLInputElement;
+  discountInput.addEventListener('input', calculate);
+
+  // Initialize with default season
+  loadSeason(seasonSelect.value as SeasonKey);
 </script>

@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What should a Electrical inspection report include?",
+      "name": "What should an electrical inspection report include?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A professional Electrical inspection report should include system identification (make, model, serial number, age), component-by-component ratings using a Red/Yellow/Green scale, voltage and amperage measurements, ground fault and insulation resistance readings, a prioritized list of findings with estimated repair costs, an overall pass/fail assessment, and inspector credentials with license number."
+        "text": "A professional electrical inspection report should include panel identification (manufacturer, amperage rating, number of spaces, age), component-by-component ratings using a Pass/Monitor/Fail scale for the main panel, sub-panels, wiring, breakers, grounding, GFCI/AFCI protection, and service entrance, voltage and amperage measurements, insulation resistance and ground fault readings, a prioritized list of findings with estimated repair costs, an overall pass/fail assessment, and inspector credentials with license number."
       }
     },
     {
       "@type": "Question",
-      "name": "How much does a Electrical inspection cost?",
+      "name": "How much does an electrical inspection cost?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A standard Electrical inspection costs between $75 and $200 depending on the system type, location, and scope. Pre-purchase inspections for real estate transactions typically run $150 to $300 since they require more detailed documentation. Annual maintenance inspections are often included in service agreements ranging from $150 to $500 per year."
+        "text": "A standard electrical inspection costs between $100 and $250 depending on the property size, panel amperage, and scope. Pre-purchase inspections for real estate transactions typically run $200 to $400 since they require more detailed documentation including circuit-by-circuit testing. Annual maintenance inspections for commercial properties range from $200 to $600 depending on the number of panels and circuits."
       }
     },
     {
       "@type": "Question",
-      "name": "What is checked during a Electrical inspection?",
+      "name": "What is checked during an electrical inspection?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A thorough Electrical inspection checks the main panel and sub-panels for proper sizing and condition, wiring for code compliance and damage, all breakers and circuits for proper loading, grounding and bonding systems, GFCI and AFCI protection, and conduit and junction boxes for safety issues. Detailed voltage, amperage, and resistance measurements are recorded for each area inspected. Each item receives a condition rating with notes explaining the assessment."
+        "text": "A thorough electrical inspection checks the main panel and sub-panels for proper sizing and condition, wiring for code compliance and damage, all breakers and circuits for proper loading, grounding and bonding systems, GFCI and AFCI protection in required locations, service entrance condition, conduit and junction boxes for safety issues, and outlet and switch operation. Detailed voltage, amperage, and resistance measurements are recorded for each area inspected."
       }
     },
     {
       "@type": "Question",
-      "name": "How do I write a professional inspection report?",
+      "name": "How do I write a professional electrical inspection report?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Start with complete property and system identification. Rate each component using a standardized scale (Pass/Monitor/Fail or Green/Yellow/Red). Record all measurements with actual values, not just pass/fail. List every finding with a recommended action, estimated cost, and priority level. Include an overall assessment and total repair cost estimate. Always add a disclaimer about the inspection scope and limitations."
+        "text": "Start with complete property and panel identification including manufacturer, amperage rating, and age. Rate each electrical component using a standardized scale such as Pass, Monitor, or Fail. Record all measurements including voltage readings, amperage draws, insulation resistance, and ground fault test results with actual values. List every finding with a recommended action, estimated cost, and priority level. Include an overall assessment and total repair cost estimate. Always add a disclaimer about the inspection scope and limitations."
       }
     }
   ]
@@ -378,12 +378,12 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">What Makes a Professional Electrical Inspection Report</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p>A professional inspection report does more than check boxes. Every section serves a specific purpose in communicating system condition to the property owner, buyer, insurer, or warranty provider.</p>
-          <p><strong class="text-text-primary">System identification</strong> anchors the report to a specific piece of equipment. Make, model, serial number, and install date let anyone verify what was inspected. The calculated age and estimated remaining life give the reader immediate context about the system's position in its lifecycle.</p>
-          <p><strong class="text-text-primary">Component ratings</strong> using a standardized Red/Yellow/Green scale make complex technical findings accessible to non-technical readers. A homebuyer doesn't need to understand technical details — they need to know the inspection found three green components, four yellow, and one red. The notes behind each rating provide the technical detail for other professionals.</p>
-          <p><strong class="text-text-primary">Measurements</strong> document the system's actual operating condition with verifiable numbers. Temperature split, CO readings, gas pressure, and static pressure are objective data points that cannot be disputed. They create a baseline for future comparisons and protect the inspector if conditions change after the inspection.</p>
+          <p>A professional electrical inspection report does more than check boxes. Every section serves a specific purpose in communicating system condition to the property owner, buyer, insurer, or code authority.</p>
+          <p><strong class="text-text-primary">Panel identification</strong> anchors the report to specific equipment. Manufacturer, amperage rating, number of spaces, and install date let anyone verify what was inspected. The calculated age gives the reader immediate context about whether the panel is nearing the end of its service life or has known recall issues.</p>
+          <p><strong class="text-text-primary">Component ratings</strong> using a standardized Pass/Monitor/Fail scale make complex technical findings accessible to non-technical readers. A homebuyer doesn't need to understand double-tapped breakers or improper bonding — they need to know the panel passed, the grounding needs monitoring, and the GFCI protection failed. The notes behind each rating provide the technical detail for other electricians.</p>
+          <p><strong class="text-text-primary">Measurements</strong> document the system's actual operating condition with verifiable numbers. Voltage readings, amperage draws on loaded circuits, insulation resistance values, and ground fault test results are objective data points that cannot be disputed. They create a baseline for future comparisons and protect the inspector if conditions change after the inspection.</p>
           <p><strong class="text-text-primary">Prioritized findings</strong> turn observations into actionable recommendations. Each finding includes what's wrong, what should be done, how much it will cost, and how urgent it is. This structure helps property owners make informed decisions about repairs and budgeting.</p>
-          <p><strong class="text-text-primary">Documentation matters</strong> because inspection reports become legal documents. They're referenced in real estate transactions, insurance claims, warranty disputes, and liability cases. A thorough, well-structured report protects your client, protects your business, and demonstrates the professionalism that separates serious contractors from everyone else.</p>
+          <p><strong class="text-text-primary">Documentation matters</strong> because inspection reports become legal documents. They're referenced in real estate transactions, insurance claims, code compliance disputes, and liability cases. A thorough, well-structured report protects your client, protects your business, and demonstrates the professionalism that separates serious electrical contractors from everyone else.</p>
         </div>
       </section>
 
@@ -402,20 +402,20 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What should a Electrical inspection report include?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A professional Electrical inspection report should include system identification (make, model, serial number, age), component-by-component ratings using a Red/Yellow/Green scale, temperature and pressure measurements, carbon monoxide readings, a prioritized list of findings with estimated repair costs, an overall pass/fail assessment, and inspector credentials with license number.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What should an electrical inspection report include?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A professional electrical inspection report should include panel identification (manufacturer, amperage rating, number of spaces, age), component-by-component ratings using a Pass/Monitor/Fail scale for the main panel, sub-panels, wiring, breakers, grounding, GFCI/AFCI protection, and service entrance, voltage and amperage measurements, insulation resistance and ground fault readings, a prioritized list of findings with estimated repair costs, an overall pass/fail assessment, and inspector credentials with license number.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a Electrical inspection cost?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard Electrical inspection costs between $75 and $200 depending on the system type, location, and scope. Pre-purchase inspections for real estate transactions typically run $150 to $300 since they require more detailed documentation. Annual maintenance inspections are often included in service agreements ranging from $150 to $500 per year.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does an electrical inspection cost?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard electrical inspection costs between $100 and $250 depending on the property size, panel amperage, and scope. Pre-purchase inspections for real estate transactions typically run $200 to $400 since they require more detailed documentation including circuit-by-circuit testing. Annual maintenance inspections for commercial properties range from $200 to $600 depending on the number of panels and circuits.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is checked during a Electrical inspection?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A thorough Electrical inspection checks the component for cracks or corrosion, electrical connections and amp draws, all critical components and systems, checking for wear, damage, code compliance, and safety issues. Detailed measurements and observations are recorded for each area inspected. Each item receives a condition rating with notes explaining the assessment.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is checked during an electrical inspection?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A thorough electrical inspection checks the main panel and sub-panels for proper sizing and condition, wiring for code compliance and damage, all breakers and circuits for proper loading, grounding and bonding systems, GFCI and AFCI protection in required locations, service entrance condition, conduit and junction boxes for safety issues, and outlet and switch operation. Detailed voltage, amperage, and resistance measurements are recorded for each area inspected.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I write a professional inspection report?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Start with complete property and system identification. Rate each component using a standardized scale (Pass/Monitor/Fail or Green/Yellow/Red). Record all measurements with actual values, not just pass/fail. List every finding with a recommended action, estimated cost, and priority level. Include an overall assessment and total repair cost estimate. Always add a disclaimer about the inspection scope and limitations.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I write a professional electrical inspection report?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Start with complete property and panel identification including manufacturer, amperage rating, and age. Rate each electrical component using a standardized scale such as Pass, Monitor, or Fail. Record all measurements including voltage readings, amperage draws, insulation resistance, and ground fault test results with actual values. List every finding with a recommended action, estimated cost, and priority level. Include an overall assessment and total repair cost estimate. Always add a disclaimer about the inspection scope and limitations.</div>
           </details>
         </div>
       </section>

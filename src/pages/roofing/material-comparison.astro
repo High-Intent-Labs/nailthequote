@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How much can I save with a new Roofing system?",
+      "name": "What roofing material has the best cost per year?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Savings depend on the efficiency gap between your current and new system, local energy prices, and climate. Replacing a 10 efficiency / 80% efficiency system with a 16 efficiency / 96% efficiency system typically saves $500 to $1,200 per year on a 3-ton unit. Hotter climates with more cooling hours see greater savings on the AC side, while colder climates benefit more from the system upgrade."
+        "text": "Standing seam metal and architectural asphalt shingles typically offer the lowest cost per year when you divide total installed cost by expected lifespan. Architectural shingles run $120-160 per square installed and last 25-30 years, working out to roughly $4-6 per square per year. Standing seam metal costs $300-500 per square but lasts 40-60 years, landing at $5-12 per square per year. The best lifetime value depends on the specific roof size and local pricing."
       }
     },
     {
       "@type": "Question",
-      "name": "What efficiency rating should I get?",
+      "name": "How many squares is a typical residential roof?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "For most homeowners, 16 efficiency hits the sweet spot of upfront cost and long-term savings. In hot climates like the South or Southwest with 2,500+ cooling hours per year, 18-20 efficiency can pay back faster. In mild climates with under 1,500 cooling hours, 14-16 efficiency is usually sufficient. Always compare the payback period at different efficiency levels before deciding."
+        "text": "The average residential roof in the United States is 25 to 35 squares, with 30 squares being a common default for estimating. A roofing square equals 100 square feet. A 1,500 square foot ranch-style home typically has 18-22 squares, while a 2,500 square foot two-story home with a steep pitch can run 35-45 squares. Always measure or use satellite tools for accurate square counts before quoting."
       }
     },
     {
       "@type": "Question",
-      "name": "Is a higher efficiency always worth it?",
+      "name": "How do I explain cost per year to a customer?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Not always. Each efficiency point above 16 costs more per unit of efficiency gained, and the savings diminish. A jump from 10 to 16 efficiency cuts cooling costs by 37%, but going from 16 to 20 efficiency only saves an additional 12.5%. In mild climates with low cooling hours, the extra cost of a 20+ efficiency unit may never pay back. Run the comparison to see exact payback for your situation."
+        "text": "Cost per year divides the total installed price by the expected lifespan of the material. It shows the customer what they are actually paying annually for their roof. For example, a $15,000 architectural shingle roof that lasts 30 years costs $500 per year. A $40,000 standing seam metal roof that lasts 50 years costs $800 per year but requires virtually no maintenance. This metric helps customers see past sticker shock and compare true long-term value."
       }
     },
     {
       "@type": "Question",
-      "name": "How long does a new AC take to pay for itself?",
+      "name": "Should I show customers all seven materials or just two or three?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Payback periods typically range from 5 to 12 years depending on the efficiency jump, system size, local energy costs, and climate. A homeowner in the South upgrading from 10 efficiency to 16 efficiency on a 3-ton system often sees payback in 6-8 years. Utility rebates, manufacturer incentives, and federal tax credits can shorten that timeline significantly."
+        "text": "Show two or three materials that match the customer's budget and goals. Presenting too many options causes decision paralysis. A strong approach is to show a budget option like 3-tab shingles, a mid-range pick like architectural shingles, and one premium option like standing seam metal or synthetic slate. This gives the customer a clear good-better-best framework and keeps the conversation focused."
       }
     }
   ]
@@ -45,201 +45,86 @@ const faqSchema = {
 ---
 
 <ToolLayout tool={tool} extraSchema={[faqSchema]}>
-  <div id="energy-comp">
-    <!-- Two-column system inputs -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <!-- Left Column: Current System -->
-      <div class="bg-bg-card border border-border rounded-xl p-6">
-        <h3 class="font-heading font-bold text-lg text-text-primary mb-1">Your Current System</h3>
-        <p class="text-text-muted text-xs mb-5">Enter your existing equipment specs</p>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="old-seer">efficiency Rating</label>
-            <input type="number" id="old-seer" value="10" min="8" max="26" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-            <p class="text-text-muted text-xs mt-1">Don't know? Use 10 for 15+ year old systems</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="old-afue">efficiency %</label>
-            <input type="number" id="old-afue" value="80" min="50" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-            <p class="text-text-muted text-xs mt-1">Don't know? Use 80% for older systems</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="system-age">System Age (years)</label>
-            <input type="number" id="system-age" value="15" min="0" max="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column: Proposed New System -->
-      <div class="bg-bg-card border border-border rounded-xl p-6" style="border-color: rgba(255,107,43,0.3);">
-        <h3 class="font-heading font-bold text-lg text-accent mb-1">Proposed New System</h3>
-        <p class="text-text-muted text-xs mb-5">Enter the equipment you're quoting</p>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="new-seer">efficiency Rating</label>
-            <input type="number" id="new-seer" value="16" min="13" max="26" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-text-secondary mb-1" for="new-afue">efficiency %</label>
-            <input type="number" id="new-afue" value="96" min="50" max="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-          </div>
-        </div>
+  <div id="material-comp">
+    <!-- Roof Size Input -->
+    <div class="bg-bg-card border border-border rounded-xl p-6 mb-8">
+      <h3 class="font-heading font-bold text-lg text-text-primary mb-1">Roof Size</h3>
+      <p class="text-text-muted text-xs mb-5">Enter the total roof area in squares (1 square = 100 sq ft)</p>
+      <div class="max-w-xs">
+        <label class="block text-sm font-medium text-text-secondary mb-1" for="roof-squares">Roof Size (squares)</label>
+        <input type="number" id="roof-squares" value="30" min="1" max="200" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Average residential roof is 25-35 squares</p>
       </div>
     </div>
 
-    <!-- Shared Inputs -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tons">System Size (Tons)</label>
-        <select id="tons" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.5">1.5 Ton</option>
-          <option value="2">2 Ton</option>
-          <option value="2.5">2.5 Ton</option>
-          <option value="3" selected>3 Ton</option>
-          <option value="3.5">3.5 Ton</option>
-          <option value="4">4 Ton</option>
-          <option value="5">5 Ton</option>
-        </select>
+    <!-- Material Selection -->
+    <div class="bg-bg-card border border-border rounded-xl p-6 mb-8">
+      <h3 class="font-heading font-bold text-lg text-text-primary mb-1">Select Materials to Compare</h3>
+      <p class="text-text-muted text-xs mb-5">Pick 2 or 3 materials to show the customer side by side</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+          <input type="checkbox" id="mat-3tab" value="3tab" class="mat-checkbox w-4 h-4 accent-accent" />
+          <span class="text-text-primary text-sm">3-Tab Asphalt Shingles</span>
+        </label>
+        <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+          <input type="checkbox" id="mat-arch" value="arch" class="mat-checkbox w-4 h-4 accent-accent" checked />
+          <span class="text-text-primary text-sm">Architectural Asphalt</span>
+        </label>
+        <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+          <input type="checkbox" id="mat-metal" value="metal" class="mat-checkbox w-4 h-4 accent-accent" checked />
+          <span class="text-text-primary text-sm">Standing Seam Metal</span>
+        </label>
+        <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+          <input type="checkbox" id="mat-stone" value="stone" class="mat-checkbox w-4 h-4 accent-accent" />
+          <span class="text-text-primary text-sm">Stone-Coated Steel</span>
+        </label>
+        <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+          <input type="checkbox" id="mat-concrete" value="concrete" class="mat-checkbox w-4 h-4 accent-accent" />
+          <span class="text-text-primary text-sm">Concrete Tile</span>
+        </label>
+        <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+          <input type="checkbox" id="mat-cedar" value="cedar" class="mat-checkbox w-4 h-4 accent-accent" />
+          <span class="text-text-primary text-sm">Cedar Shake</span>
+        </label>
+        <label class="flex items-center gap-3 bg-bg-dark border border-border rounded-lg px-4 py-3 cursor-pointer hover:border-accent transition-colors">
+          <input type="checkbox" id="mat-synslate" value="synslate" class="mat-checkbox w-4 h-4 accent-accent" checked />
+          <span class="text-text-primary text-sm">Synthetic Slate</span>
+        </label>
       </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="elec-rate">Electricity Rate ($/kWh)</label>
-        <input type="number" id="elec-rate" value="0.16" min="0.01" max="1" step="0.01" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="gas-rate">Gas Rate ($/therm)</label>
-        <input type="number" id="gas-rate" value="1.20" min="0.10" max="5" step="0.05" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="region">Region</label>
-        <select id="region" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="2500,600">South (2500 / 600 hrs)</option>
-          <option value="2200,800">Southeast (2200 / 800 hrs)</option>
-          <option value="1400,2000">Midwest (1400 / 2000 hrs)</option>
-          <option value="1200,2200">Northeast (1200 / 2200 hrs)</option>
-          <option value="2800,400">Southwest (2800 / 400 hrs)</option>
-          <option value="800,1800">Northwest (800 / 1800 hrs)</option>
-          <option value="2100,1500" selected>National Avg (2100 / 1500 hrs)</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="upgrade-cost">Upgrade Cost ($)</label>
-        <input type="number" id="upgrade-cost" value="8000" min="0" max="100000" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
+      <p id="selection-warning" class="text-red-400 text-xs mt-3 hidden">Select 2 or 3 materials to compare.</p>
     </div>
-
 
     <!-- Results -->
     <div id="results" class="mt-8 border-t border-border pt-8">
-      <!-- Side-by-side cost comparison -->
-      <h3 class="font-heading font-bold text-xl mb-6">Annual Cost Comparison</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <!-- Current System Card -->
-        <div class="bg-bg-card border border-border rounded-xl p-6">
-          <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Current System</h4>
-          <div class="space-y-3">
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Cooling Cost</span>
-              <span id="result-old-cooling" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Heating Cost</span>
-              <span id="result-old-heating" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="border-t border-border pt-3 flex justify-between items-center">
-              <span class="text-text-primary font-medium">Total Annual Cost</span>
-              <span id="result-old-total" class="font-heading font-extrabold text-2xl text-text-primary">--</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- New System Card -->
-        <div class="bg-bg-card border rounded-xl p-6" style="border-color: rgba(255,107,43,0.3);">
-          <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-accent mb-4">New System</h4>
-          <div class="space-y-3">
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Cooling Cost</span>
-              <span id="result-new-cooling" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-text-secondary text-sm">Annual Heating Cost</span>
-              <span id="result-new-heating" class="font-heading font-bold text-lg text-text-primary">--</span>
-            </div>
-            <div class="border-t border-border pt-3 flex justify-between items-center">
-              <span class="text-text-primary font-medium">Total Annual Cost</span>
-              <span id="result-new-total" class="font-heading font-extrabold text-2xl text-accent">--</span>
-            </div>
-          </div>
-        </div>
+      <!-- Comparison Cards -->
+      <h3 class="font-heading font-bold text-xl mb-6">Side-by-Side Comparison</h3>
+      <div id="comparison-cards" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Cards injected by JS -->
       </div>
 
-      <!-- Visual bar chart comparison -->
+      <!-- Cost Bar Chart -->
       <div class="bg-bg-card border border-border rounded-xl p-6 mb-8">
-        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Annual Cost Comparison</h4>
-        <div class="space-y-4">
-          <div>
-            <div class="flex justify-between text-sm mb-1">
-              <span class="text-text-secondary">Current System</span>
-              <span id="bar-old-label" class="text-text-primary font-medium">--</span>
-            </div>
-            <div class="w-full bg-bg-dark rounded-full h-8 overflow-hidden">
-              <div id="bar-old" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 100%; background: linear-gradient(90deg, #dc2626, #ef4444);">
-                <span class="text-white text-xs font-bold whitespace-nowrap"></span>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div class="flex justify-between text-sm mb-1">
-              <span class="text-text-secondary">New System</span>
-              <span id="bar-new-label" class="text-text-primary font-medium">--</span>
-            </div>
-            <div class="w-full bg-bg-dark rounded-full h-8 overflow-hidden">
-              <div id="bar-new" class="h-full rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-3" style="width: 50%; background: linear-gradient(90deg, #16a34a, #22c55e);">
-                <span class="text-white text-xs font-bold whitespace-nowrap"></span>
-              </div>
-            </div>
-          </div>
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Total Installed Cost</h4>
+        <div id="cost-bars" class="space-y-4">
+          <!-- Bars injected by JS -->
         </div>
       </div>
 
-      <!-- Savings summary cards -->
-      <h3 class="font-heading font-bold text-xl mb-6">Your Savings</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="bg-bg-dark rounded-xl p-5 text-center border-2" style="border-color: rgba(255,107,43,0.4);">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Annual Savings</div>
-          <div class="flex items-center justify-center gap-2">
-            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-            <span id="result-annual" class="font-heading font-extrabold text-3xl text-accent">--</span>
-          </div>
-        </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Monthly Savings</div>
-          <div id="result-monthly" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
-        </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Payback Period</div>
-          <div id="result-payback" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
-        </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">10-Year Net Savings</div>
-          <div id="result-tenyear" class="font-heading font-extrabold text-3xl text-text-primary">--</div>
+      <!-- Cost Per Year Bar Chart -->
+      <div class="bg-bg-card border border-border rounded-xl p-6 mb-8">
+        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Cost Per Year (Lifetime Value)</h4>
+        <div id="yearly-bars" class="space-y-4">
+          <!-- Bars injected by JS -->
         </div>
       </div>
 
-      <!-- Environmental impact -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">CO2 Reduction</div>
-          <div id="result-co2" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">lbs/year</div>
-        </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Environmental Impact</div>
-          <div id="result-trees" class="font-heading font-extrabold text-2xl text-green-500">--</div>
-          <div class="text-text-muted text-xs mt-1">equivalent trees planted per year</div>
-        </div>
+      <!-- Summary Cards -->
+      <h3 class="font-heading font-bold text-xl mb-6">Quick Numbers</h3>
+      <div id="summary-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <!-- Summary injected by JS -->
       </div>
 
-      <p class="text-text-muted text-sm italic">Estimates based on average usage patterns. Actual savings depend on equipment condition, material condition, installation quality, and local weather. Consult with a licensed Roofing contractor for a detailed energy audit.</p>
+      <p class="text-text-muted text-sm italic">Estimates based on national average installed pricing. Actual costs vary by region, roof complexity, and material availability. Use these figures as a starting point when walking customers through their options.</p>
     </div>
   </div>
 
@@ -250,24 +135,21 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Tool</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Enter the current system specs.</strong> Check the nameplate on the outdoor condenser for efficiency and the system data plate for efficiency. If the customer doesn't know, use 10 efficiency and 80% efficiency as safe defaults for systems over 15 years old.</p>
-          <p><strong class="text-text-primary">2. Enter the proposed system specs.</strong> Use the efficiency and efficiency ratings from the equipment you're quoting. A 16 efficiency / 96% efficiency combination is a common mid-tier upgrade that shows strong savings.</p>
-          <p><strong class="text-text-primary">3. Set the shared parameters.</strong> Select the system size in tons, enter the customer's electricity and gas rates from their utility bill, choose their region to auto-fill typical cooling and heating hours, and enter your quoted upgrade cost.</p>
-          <p><strong class="text-text-primary">4. Review the side-by-side comparison.</strong> Show the customer the annual cost difference, payback period, and 10-year net savings. The visual bar chart makes the savings immediately obvious during a sales presentation.</p>
+          <p><strong class="text-text-primary">1. Enter the roof size.</strong> Measure the roof in squares or use a satellite measurement tool. The default is 30 squares, which covers most average-sized residential roofs. Adjust up or down to match the job you are quoting.</p>
+          <p><strong class="text-text-primary">2. Pick 2 or 3 materials.</strong> Select the options that fit the customer's budget and goals. A good approach is one budget option, one mid-range, and one premium. Showing more than three usually causes decision paralysis.</p>
+          <p><strong class="text-text-primary">3. Walk through the comparison cards.</strong> Each card shows installed cost range, expected lifespan, maintenance level, wind resistance, and the cost-per-year metric. The cost-per-year number is the one that shifts the conversation from sticker price to lifetime value.</p>
+          <p><strong class="text-text-primary">4. Use the bar charts during the conversation.</strong> Pull this up on your tablet or laptop at the kitchen table. The visual bars make the cost differences immediately clear without the customer needing to do math.</p>
         </div>
       </section>
 
-      <!-- Understanding efficiency and efficiency Ratings -->
+      <!-- Understanding Roofing Materials -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">Understanding efficiency and efficiency Ratings</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">Understanding Roofing Material Options</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">efficiency (Seasonal Energy Efficiency Ratio)</strong> measures cooling efficiency. It's the total BTU of heat removed per watt-hour of electricity consumed over a typical cooling season. A 10 efficiency system uses 60% more electricity than a 16 efficiency system to deliver the same cooling. The federal minimum is now 14 efficiency in northern states and 15 efficiency in the South. Higher efficiency means lower electric bills every summer.</p>
-          <p><strong class="text-text-primary">efficiency (Annual Fuel Utilization Efficiency)</strong> measures how efficiently a gas system converts fuel to heat. An 80% efficiency system loses 20 cents of every dollar as exhaust waste. A 96% efficiency system captures nearly all of that energy, reducing gas consumption by 20% compared to the older unit. Standard-efficiency systems run at 80% efficiency, while high-efficiency condensing systems reach 95-98%.</p>
-          <p><strong class="text-text-primary">Why higher is better:</strong> Both ratings work like miles per gallon for your Roofing system. Higher numbers mean more output per unit of energy consumed. The difference compounds every month the system runs. In a hot climate, the efficiency upgrade drives most of the savings. In a cold climate, the efficiency improvement often matters more. This tool models both sides so you can show the customer exactly where their money goes.</p>
-          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm">
-            <p>Cooling: kWh = (Tons x 12,000 x Cooling_Hours) / (efficiency x 1,000)</p>
-            <p>Heating: Therms = (Tons x 12,000 x Heating_Hours) / (efficiency/100 x 100,000)</p>
-          </div>
+          <p><strong class="text-text-primary">3-Tab Asphalt Shingles</strong> are the entry-level option. They get the job done at the lowest upfront cost but have the shortest lifespan and weakest wind resistance. Best for budget-conscious customers, rental properties, or homes being prepped for sale. They lay flat with a uniform look that some customers find dated.</p>
+          <p><strong class="text-text-primary">Architectural Asphalt Shingles</strong> are the most popular residential roofing material in the country. The dimensional profile gives a more textured appearance, they handle wind better than 3-tab, and the 25-30 year lifespan makes them a solid mid-range choice. This is your bread-and-butter option for most jobs.</p>
+          <p><strong class="text-text-primary">Standing Seam Metal</strong> is the premium performer. The higher upfront cost is offset by a 40-60 year lifespan, virtually zero maintenance, and excellent wind and fire resistance. Energy-conscious customers like it because it reflects heat. The cost-per-year number on metal roofs often surprises customers who only looked at the sticker price.</p>
+          <p><strong class="text-text-primary">Stone-Coated Steel, Concrete Tile, Cedar Shake, and Synthetic Slate</strong> each serve specific niches. Stone-coated steel gives a tile look with metal durability. Concrete tile dominates in the Southwest. Cedar shake appeals to customers wanting a natural aesthetic but requires real maintenance commitment. Synthetic slate delivers the look of natural slate at a fraction of the weight and cost.</p>
         </div>
       </section>
 
@@ -275,9 +157,9 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">Sales presentations at the kitchen table.</strong> Pull this up on your tablet while sitting with the homeowner. Enter their current system specs on the left, your proposed equipment on the right, and let the visual comparison make the case. The side-by-side layout and bar chart are designed to be shown to customers, not just used behind the scenes.</p>
-          <p><strong class="text-text-primary">Proposal support for premium equipment.</strong> When you're quoting a 16 efficiency system against a competitor's 14 efficiency bid, this tool proves the long-term value. Show the customer that paying more upfront saves thousands over 10 years. Screenshot the results and attach them to your written proposal for added credibility.</p>
-          <p><strong class="text-text-primary">Customer education on repair vs. replace.</strong> When a customer asks whether to repair their 18-year-old system or replace it, run the comparison. If the annual savings alone cover a significant portion of the repair cost, replacement makes financial sense even before factoring in reliability improvements and reduced breakdown risk.</p>
+          <p><strong class="text-text-primary">During the estimate, at the kitchen table.</strong> Pull this up on your tablet while sitting with the homeowner. Enter their roof size, check two or three materials, and let the side-by-side comparison do the talking. Customers respond to visuals more than verbal explanations, and the bar charts make the value proposition instantly clear.</p>
+          <p><strong class="text-text-primary">When a customer has sticker shock on premium materials.</strong> The cost-per-year metric is your best tool for reframing the conversation. A $40,000 metal roof sounds expensive until the customer sees it costs $800 per year over 50 years versus $500 per year for shingles that need replacing twice in the same period. Factor in the second tear-off and the math shifts fast.</p>
+          <p><strong class="text-text-primary">When building good-better-best proposals.</strong> Select 3-tab, architectural, and one premium option. Screenshot the comparison and attach it to your written proposal. It gives the customer a clear framework for their decision and positions you as the contractor who actually helped them think it through.</p>
         </div>
       </section>
 
@@ -286,20 +168,20 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much can I save with a new Roofing system?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Savings depend on the efficiency gap between your current and new system, local energy prices, and climate. Replacing a 10 efficiency / 80% efficiency system with a 16 efficiency / 96% efficiency system typically saves $500 to $1,200 per year on a 3-ton unit. Hotter climates with more cooling hours see greater savings on the AC side, while colder climates benefit more from the system upgrade.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What roofing material has the best cost per year?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Standing seam metal and architectural asphalt shingles typically offer the lowest cost per year when you divide total installed cost by expected lifespan. Architectural shingles run $120-160 per square installed and last 25-30 years, working out to roughly $4-6 per square per year. Standing seam metal costs $300-500 per square but lasts 40-60 years, landing at $5-12 per square per year. The best lifetime value depends on the specific roof size and local pricing.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What efficiency rating should I get?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">For most homeowners, 16 efficiency hits the sweet spot of upfront cost and long-term savings. In hot climates like the South or Southwest with 2,500+ cooling hours per year, 18-20 efficiency can pay back faster. In mild climates with under 1,500 cooling hours, 14-16 efficiency is usually sufficient. Always compare the payback period at different efficiency levels before deciding.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many squares is a typical residential roof?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The average residential roof in the United States is 25 to 35 squares, with 30 squares being a common default for estimating. A roofing square equals 100 square feet. A 1,500 square foot ranch-style home typically has 18-22 squares, while a 2,500 square foot two-story home with a steep pitch can run 35-45 squares. Always measure or use satellite tools for accurate square counts before quoting.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Is a higher efficiency always worth it?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Not always. Each efficiency point above 16 costs more per unit of efficiency gained, and the savings diminish. A jump from 10 to 16 efficiency cuts cooling costs by 37%, but going from 16 to 20 efficiency only saves an additional 12.5%. In mild climates with low cooling hours, the extra cost of a 20+ efficiency unit may never pay back. Run the comparison to see exact payback for your situation.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I explain cost per year to a customer?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Cost per year divides the total installed price by the expected lifespan of the material. It shows the customer what they are actually paying annually for their roof. For example, a $15,000 architectural shingle roof that lasts 30 years costs $500 per year. A $40,000 standing seam metal roof that lasts 50 years costs $800 per year but requires virtually no maintenance. This metric helps customers see past sticker shock and compare true long-term value.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does a new AC take to pay for itself?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Payback periods typically range from 5 to 12 years depending on the efficiency jump, system size, local energy costs, and climate. A homeowner in the South upgrading from 10 efficiency to 16 efficiency on a 3-ton system often sees payback in 6-8 years. Utility rebates, manufacturer incentives, and federal tax credits can shorten that timeline significantly.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I show customers all seven materials or just two or three?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Show two or three materials that match the customer's budget and goals. Presenting too many options causes decision paralysis. A strong approach is to show a budget option like 3-tab shingles, a mid-range pick like architectural shingles, and one premium option like standing seam metal or synthetic slate. This gives the customer a clear good-better-best framework and keeps the conversation focused.</div>
           </details>
         </div>
       </section>
@@ -308,99 +190,320 @@ const faqSchema = {
 </ToolLayout>
 
 <script>
-  const regions: Record<string, [number, number]> = {
-    '2500,600': [2500, 600],
-    '2200,800': [2200, 800],
-    '1400,2000': [1400, 2000],
-    '1200,2200': [1200, 2200],
-    '2800,400': [2800, 400],
-    '800,1800': [800, 1800],
-    '2100,1500': [2100, 1500],
+  interface RoofingMaterial {
+    key: string;
+    name: string;
+    costLow: number;
+    costHigh: number;
+    lifespanLow: number;
+    lifespanHigh: number;
+    maintenance: string;
+    windResistance: string;
+    fireResistance: string;
+    energyEfficiency: string;
+    color: string;
+  }
+
+  const materials: Record<string, RoofingMaterial> = {
+    '3tab': {
+      key: '3tab',
+      name: '3-Tab Asphalt',
+      costLow: 90,
+      costHigh: 110,
+      lifespanLow: 15,
+      lifespanHigh: 20,
+      maintenance: 'Low',
+      windResistance: 'Poor (60-70 mph)',
+      fireResistance: 'Class A',
+      energyEfficiency: 'Standard',
+      color: '#6b7280',
+    },
+    arch: {
+      key: 'arch',
+      name: 'Architectural Asphalt',
+      costLow: 120,
+      costHigh: 160,
+      lifespanLow: 25,
+      lifespanHigh: 30,
+      maintenance: 'Low',
+      windResistance: 'Good (110-130 mph)',
+      fireResistance: 'Class A',
+      energyEfficiency: 'Standard',
+      color: '#3b82f6',
+    },
+    metal: {
+      key: 'metal',
+      name: 'Standing Seam Metal',
+      costLow: 300,
+      costHigh: 500,
+      lifespanLow: 40,
+      lifespanHigh: 60,
+      maintenance: 'Minimal',
+      windResistance: 'Excellent (140+ mph)',
+      fireResistance: 'Class A',
+      energyEfficiency: 'High (reflects heat)',
+      color: '#f97316',
+    },
+    stone: {
+      key: 'stone',
+      name: 'Stone-Coated Steel',
+      costLow: 350,
+      costHigh: 450,
+      lifespanLow: 40,
+      lifespanHigh: 50,
+      maintenance: 'Low',
+      windResistance: 'Excellent (120+ mph)',
+      fireResistance: 'Class A',
+      energyEfficiency: 'High',
+      color: '#a855f7',
+    },
+    concrete: {
+      key: 'concrete',
+      name: 'Concrete Tile',
+      costLow: 350,
+      costHigh: 500,
+      lifespanLow: 40,
+      lifespanHigh: 50,
+      maintenance: 'Moderate',
+      windResistance: 'Excellent (125+ mph)',
+      fireResistance: 'Class A',
+      energyEfficiency: 'High (thermal mass)',
+      color: '#ef4444',
+    },
+    cedar: {
+      key: 'cedar',
+      name: 'Cedar Shake',
+      costLow: 400,
+      costHigh: 600,
+      lifespanLow: 20,
+      lifespanHigh: 30,
+      maintenance: 'High',
+      windResistance: 'Moderate (80-110 mph)',
+      fireResistance: 'Class C (untreated)',
+      energyEfficiency: 'Good (natural insulation)',
+      color: '#84cc16',
+    },
+    synslate: {
+      key: 'synslate',
+      name: 'Synthetic Slate',
+      costLow: 400,
+      costHigh: 550,
+      lifespanLow: 40,
+      lifespanHigh: 50,
+      maintenance: 'Low',
+      windResistance: 'Good (110+ mph)',
+      fireResistance: 'Class A',
+      energyEfficiency: 'Standard',
+      color: '#14b8a6',
+    },
   };
 
   function formatCurrency(val: number): string {
     return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
 
-  function calculate() {
-    // Current system inputs
-    const oldSeer = parseFloat((document.getElementById('old-seer') as HTMLInputElement).value) || 10;
-    const oldAfue = parseFloat((document.getElementById('old-afue') as HTMLInputElement).value) || 80;
-
-    // New system inputs
-    const newSeer = parseFloat((document.getElementById('new-seer') as HTMLInputElement).value) || 16;
-    const newAfue = parseFloat((document.getElementById('new-afue') as HTMLInputElement).value) || 96;
-
-    // Shared inputs
-    const tons = parseFloat((document.getElementById('tons') as HTMLSelectElement).value) || 3;
-    const elecRate = parseFloat((document.getElementById('elec-rate') as HTMLInputElement).value) || 0.16;
-    const gasRate = parseFloat((document.getElementById('gas-rate') as HTMLInputElement).value) || 1.20;
-    const upgradeCost = parseFloat((document.getElementById('upgrade-cost') as HTMLInputElement).value) || 8000;
-
-    // Get hours from region
-    const regionVal = (document.getElementById('region') as HTMLSelectElement).value;
-    const hours = regions[regionVal] || [2100, 1500];
-    const coolHours = hours[0];
-    const heatHours = hours[1];
-
-    // Cooling calculations
-    const oldCoolingKwh = (tons * 12000 * coolHours) / (oldSeer * 1000);
-    const newCoolingKwh = (tons * 12000 * coolHours) / (newSeer * 1000);
-    const oldCoolingCost = oldCoolingKwh * elecRate;
-    const newCoolingCost = newCoolingKwh * elecRate;
-
-    // Heating calculations (gas)
-    const btuOutput = tons * 12000;
-    const oldHeatCost = (btuOutput * heatHours) / ((oldAfue / 100) * 100000) * gasRate;
-    const newHeatCost = (btuOutput * heatHours) / ((newAfue / 100) * 100000) * gasRate;
-
-    // Totals
-    const oldTotalCost = oldCoolingCost + oldHeatCost;
-    const newTotalCost = newCoolingCost + newHeatCost;
-    const annualSavings = oldTotalCost - newTotalCost;
-    const monthlySavings = annualSavings / 12;
-    const paybackYears = annualSavings > 0 ? upgradeCost / annualSavings : 0;
-    const tenYearNet = (annualSavings * 10) - upgradeCost;
-
-    // Environmental
-    const co2Reduction = (oldCoolingKwh - newCoolingKwh) * 0.92;
-    const treesEquivalent = co2Reduction / 48;
-
-    // Update side-by-side cost cards
-    document.getElementById('result-old-cooling')!.textContent = formatCurrency(Math.round(oldCoolingCost));
-    document.getElementById('result-old-heating')!.textContent = formatCurrency(Math.round(oldHeatCost));
-    document.getElementById('result-old-total')!.textContent = formatCurrency(Math.round(oldTotalCost));
-    document.getElementById('result-new-cooling')!.textContent = formatCurrency(Math.round(newCoolingCost));
-    document.getElementById('result-new-heating')!.textContent = formatCurrency(Math.round(newHeatCost));
-    document.getElementById('result-new-total')!.textContent = formatCurrency(Math.round(newTotalCost));
-
-    // Update bar chart
-    const maxCost = Math.max(oldTotalCost, newTotalCost, 1);
-    const oldBarPct = (oldTotalCost / maxCost) * 100;
-    const newBarPct = (newTotalCost / maxCost) * 100;
-    (document.getElementById('bar-old') as HTMLElement).style.width = oldBarPct + '%';
-    (document.getElementById('bar-new') as HTMLElement).style.width = newBarPct + '%';
-    document.getElementById('bar-old-label')!.textContent = formatCurrency(Math.round(oldTotalCost));
-    document.getElementById('bar-new-label')!.textContent = formatCurrency(Math.round(newTotalCost));
-
-    // Update savings summary
-    document.getElementById('result-annual')!.textContent = formatCurrency(Math.round(annualSavings));
-    document.getElementById('result-monthly')!.textContent = formatCurrency(Math.round(monthlySavings));
-    document.getElementById('result-payback')!.textContent = paybackYears > 0 ? paybackYears.toFixed(1) + ' yrs' : 'N/A';
-    document.getElementById('result-tenyear')!.textContent = formatCurrency(Math.round(tenYearNet));
-
-    // Update environmental impact
-    document.getElementById('result-co2')!.textContent = Math.round(co2Reduction).toLocaleString();
-    document.getElementById('result-trees')!.textContent = Math.round(treesEquivalent).toLocaleString();
-
+  function getSelectedMaterials(): RoofingMaterial[] {
+    const selected: RoofingMaterial[] = [];
+    document.querySelectorAll<HTMLInputElement>('.mat-checkbox:checked').forEach((cb) => {
+      const mat = materials[cb.value];
+      if (mat) selected.push(mat);
+    });
+    return selected;
   }
 
+  function calculate(): void {
+    const squares = parseFloat((document.getElementById('roof-squares') as HTMLInputElement).value) || 30;
+    const selected = getSelectedMaterials();
 
-  // Auto-calculate on any input change
-  document.querySelectorAll('#energy-comp input, #energy-comp select').forEach(el => {
-    el.addEventListener('change', calculate);
+    const warning = document.getElementById('selection-warning') as HTMLElement;
+    if (selected.length < 2 || selected.length > 3) {
+      warning.classList.remove('hidden');
+    } else {
+      warning.classList.add('hidden');
+    }
+
+    if (selected.length < 2) {
+      (document.getElementById('comparison-cards') as HTMLElement).innerHTML =
+        '<p class="text-text-muted text-sm col-span-full">Select at least 2 materials above to see the comparison.</p>';
+      (document.getElementById('cost-bars') as HTMLElement).innerHTML = '';
+      (document.getElementById('yearly-bars') as HTMLElement).innerHTML = '';
+      (document.getElementById('summary-cards') as HTMLElement).innerHTML = '';
+      return;
+    }
+
+    const displayMaterials = selected.slice(0, 3);
+
+    // Update grid columns based on selection count
+    const cardsContainer = document.getElementById('comparison-cards') as HTMLElement;
+    cardsContainer.className = displayMaterials.length === 2
+      ? 'grid grid-cols-1 md:grid-cols-2 gap-6 mb-8'
+      : 'grid grid-cols-1 md:grid-cols-3 gap-6 mb-8';
+
+    // Build comparison cards
+    let cardsHtml = '';
+    displayMaterials.forEach((mat, idx) => {
+      const totalLow = mat.costLow * squares;
+      const totalHigh = mat.costHigh * squares;
+      const avgTotal = (totalLow + totalHigh) / 2;
+      const avgLifespan = (mat.lifespanLow + mat.lifespanHigh) / 2;
+      const costPerYear = Math.round(avgTotal / avgLifespan);
+      const isFirst = idx === 0;
+
+      cardsHtml += `
+        <div class="bg-bg-card border rounded-xl p-6" style="border-color: ${mat.color}40;">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-3 h-3 rounded-full" style="background: ${mat.color};"></div>
+            <h4 class="font-heading font-bold text-lg text-text-primary">${mat.name}</h4>
+          </div>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-text-secondary text-sm">Cost per Square</span>
+              <span class="font-heading font-bold text-text-primary">${formatCurrency(mat.costLow)}-${formatCurrency(mat.costHigh)}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-text-secondary text-sm">Total Installed</span>
+              <span class="font-heading font-bold text-text-primary">${formatCurrency(totalLow)}-${formatCurrency(totalHigh)}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-text-secondary text-sm">Lifespan</span>
+              <span class="font-heading font-bold text-text-primary">${mat.lifespanLow}-${mat.lifespanHigh} yrs</span>
+            </div>
+            <div class="border-t border-border pt-3 flex justify-between items-center">
+              <span class="text-text-primary font-medium">Cost Per Year</span>
+              <span class="font-heading font-extrabold text-2xl" style="color: ${mat.color};">${formatCurrency(costPerYear)}/yr</span>
+            </div>
+            <div class="border-t border-border pt-3 space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-text-muted text-xs">Maintenance</span>
+                <span class="text-text-secondary text-xs font-medium">${mat.maintenance}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-text-muted text-xs">Wind Resistance</span>
+                <span class="text-text-secondary text-xs font-medium">${mat.windResistance}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-text-muted text-xs">Fire Rating</span>
+                <span class="text-text-secondary text-xs font-medium">${mat.fireResistance}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-text-muted text-xs">Energy Efficiency</span>
+                <span class="text-text-secondary text-xs font-medium">${mat.energyEfficiency}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    cardsContainer.innerHTML = cardsHtml;
+
+    // Build total cost bars
+    const maxTotal = Math.max(...displayMaterials.map((m) => m.costHigh * squares), 1);
+    let costBarsHtml = '';
+    displayMaterials.forEach((mat) => {
+      const avgTotal = ((mat.costLow + mat.costHigh) / 2) * squares;
+      const pct = (avgTotal / maxTotal) * 100;
+      costBarsHtml += `
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-text-secondary">${mat.name}</span>
+            <span class="text-text-primary font-medium">${formatCurrency(mat.costLow * squares)} - ${formatCurrency(mat.costHigh * squares)}</span>
+          </div>
+          <div class="w-full bg-bg-dark rounded-full h-8 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-700 ease-out" style="width: ${pct}%; background: linear-gradient(90deg, ${mat.color}cc, ${mat.color});"></div>
+          </div>
+        </div>
+      `;
+    });
+    (document.getElementById('cost-bars') as HTMLElement).innerHTML = costBarsHtml;
+
+    // Build cost-per-year bars
+    const maxCpy = Math.max(
+      ...displayMaterials.map((m) => {
+        const avg = ((m.costLow + m.costHigh) / 2) * squares;
+        const life = (m.lifespanLow + m.lifespanHigh) / 2;
+        return avg / life;
+      }),
+      1
+    );
+    let yearlyBarsHtml = '';
+    displayMaterials.forEach((mat) => {
+      const avgTotal = ((mat.costLow + mat.costHigh) / 2) * squares;
+      const avgLifespan = (mat.lifespanLow + mat.lifespanHigh) / 2;
+      const cpy = avgTotal / avgLifespan;
+      const pct = (cpy / maxCpy) * 100;
+      yearlyBarsHtml += `
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-text-secondary">${mat.name}</span>
+            <span class="text-text-primary font-medium">${formatCurrency(Math.round(cpy))}/yr</span>
+          </div>
+          <div class="w-full bg-bg-dark rounded-full h-8 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-700 ease-out" style="width: ${pct}%; background: linear-gradient(90deg, ${mat.color}cc, ${mat.color});"></div>
+          </div>
+        </div>
+      `;
+    });
+    (document.getElementById('yearly-bars') as HTMLElement).innerHTML = yearlyBarsHtml;
+
+    // Build summary cards
+    // Find cheapest upfront, best cost-per-year, longest lifespan
+    let cheapest = displayMaterials[0];
+    let bestValue = displayMaterials[0];
+    let longestLife = displayMaterials[0];
+
+    displayMaterials.forEach((mat) => {
+      const avgCost = ((mat.costLow + mat.costHigh) / 2) * squares;
+      const cheapAvg = ((cheapest.costLow + cheapest.costHigh) / 2) * squares;
+      if (avgCost < cheapAvg) cheapest = mat;
+
+      const matCpy = avgCost / ((mat.lifespanLow + mat.lifespanHigh) / 2);
+      const bestCpy = (((bestValue.costLow + bestValue.costHigh) / 2) * squares) / ((bestValue.lifespanLow + bestValue.lifespanHigh) / 2);
+      if (matCpy < bestCpy) bestValue = mat;
+
+      const matLife = (mat.lifespanLow + mat.lifespanHigh) / 2;
+      const longLife = (longestLife.lifespanLow + longestLife.lifespanHigh) / 2;
+      if (matLife > longLife) longestLife = mat;
+    });
+
+    const cheapTotal = ((cheapest.costLow + cheapest.costHigh) / 2) * squares;
+    const bestCpy = (((bestValue.costLow + bestValue.costHigh) / 2) * squares) / ((bestValue.lifespanLow + bestValue.lifespanHigh) / 2);
+    const longLifeAvg = (longestLife.lifespanLow + longestLife.lifespanHigh) / 2;
+
+    let summaryHtml = `
+      <div class="bg-bg-dark rounded-xl p-5 text-center border-2" style="border-color: rgba(255,107,43,0.4);">
+        <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Lowest Upfront Cost</div>
+        <div class="font-heading font-extrabold text-2xl text-accent">${formatCurrency(Math.round(cheapTotal))}</div>
+        <div class="text-text-muted text-xs mt-1">${cheapest.name}</div>
+      </div>
+      <div class="bg-bg-dark rounded-xl p-5 text-center">
+        <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Best Cost Per Year</div>
+        <div class="font-heading font-extrabold text-2xl text-text-primary">${formatCurrency(Math.round(bestCpy))}/yr</div>
+        <div class="text-text-muted text-xs mt-1">${bestValue.name}</div>
+      </div>
+      <div class="bg-bg-dark rounded-xl p-5 text-center">
+        <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Longest Lifespan</div>
+        <div class="font-heading font-extrabold text-2xl text-text-primary">${Math.round(longLifeAvg)} yrs</div>
+        <div class="text-text-muted text-xs mt-1">${longestLife.name}</div>
+      </div>
+    `;
+    (document.getElementById('summary-cards') as HTMLElement).innerHTML = summaryHtml;
+  }
+
+  // Enforce max 3 selections
+  document.querySelectorAll<HTMLInputElement>('.mat-checkbox').forEach((cb) => {
+    cb.addEventListener('change', () => {
+      const checked = document.querySelectorAll<HTMLInputElement>('.mat-checkbox:checked');
+      if (checked.length > 3) {
+        cb.checked = false;
+      }
+      calculate();
+    });
   });
 
-  // Calculate on load with defaults
+  // Recalculate on roof size change
+  document.getElementById('roof-squares')!.addEventListener('input', calculate);
+  document.getElementById('roof-squares')!.addEventListener('change', calculate);
+
+  // Calculate on load
   calculate();
 </script>

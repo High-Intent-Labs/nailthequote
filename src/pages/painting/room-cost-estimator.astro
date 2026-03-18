@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How much does a new Painting system cost?",
+      "name": "How much does it cost to paint a room?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A new Painting system typically costs between $5,000 and $15,000 installed, depending on system type, efficiency level, home size, and region. A standard efficiency primary systems for a average home averages around $6,500, while a high-efficiency high-efficiency system can run $11,500 or more before regional and complexity adjustments."
+        "text": "Interior room painting typically costs between $1.50 and $4.00 per square foot of paintable surface, including labor and materials. A standard 12x12 bedroom with 8-foot ceilings runs roughly $600 to $1,600 depending on wall condition, paint quality, and number of coats. Rooms needing extensive prep work or premium paint will land at the higher end."
       }
     },
     {
       "@type": "Question",
-      "name": "What size Painting system do I need?",
+      "name": "How many gallons of paint do I need for a room?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "System size is measured in tons and depends on your home's square footage, insulation, climate, and layout. A rough rule of thumb is 1 ton per 500-600 square feet, but a proper Manual J load calculation is required for accurate sizing. Oversized systems short-cycle and waste energy, while undersized systems can't keep up on extreme days."
+        "text": "One gallon of paint covers approximately 350 to 400 square feet per coat. For a standard 12x12 room with 8-foot ceilings (roughly 380 sq ft of wall area after subtracting doors and windows), you need about 1 gallon per coat. Two coats on that same room means 2 gallons. Always round up — running short mid-job costs you more time than having a partial gallon left over."
       }
     },
     {
       "@type": "Question",
-      "name": "Are there tax credits for new Painting systems?",
+      "name": "How long does it take to paint a room?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. The federal 25C energy efficiency tax credit offers up to $2,000 for qualifying high-efficiency systems installed in your primary residence. The system must meet specific efficiency requirements (CEE Tier 1 or higher). Standard air conditioners and systems may qualify for a smaller $600 credit. Check with your tax advisor for current eligibility details."
+        "text": "A single painter can typically complete a standard bedroom (walls only, good condition) in 4 to 6 hours including prep, two coats, and cleanup. Rooms needing significant prep work like patching, sanding, or priming can take 6 to 10 hours. A two-person crew cuts those times roughly in half. Ceiling painting adds 1 to 2 hours per room."
       }
     },
     {
       "@type": "Question",
-      "name": "How long does Painting installation take?",
+      "name": "Should I charge per square foot or per room for interior painting?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A straightforward like-for-like replacement typically takes 1 day (6-10 hours). If new system work is required, expect 2-3 days. Converting from one system type to another (e.g., system to high-efficiency option) may take 1-2 days. Complex multi-zone premium installations can take 2-4 days depending on the number of indoor units and line set routing."
+        "text": "Charging per square foot of paintable surface is more accurate and protects your margin. Per-room flat rates are easier to quote but can burn you on large rooms, high ceilings, or heavy prep. Most professional painters calculate by square foot internally and then present the price as a per-room or per-project total to the homeowner."
       }
     }
   ]
@@ -49,72 +49,67 @@ const faqSchema = {
     <!-- Input Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="systemType">System Type</label>
-        <select id="systemType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="standard-system">Standard System</option>
-          <option value="heat-pump">Premium Option</option>
-          <option value="mini-1">Option 1-Zone</option>
-          <option value="mini-2">Option 2-Zone</option>
-          <option value="mini-3">Option 3-Zone</option>
-          <option value="mini-4">Option 4-Zone</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roomLength">Room Length (ft)</label>
+        <input type="number" id="roomLength" value="12" min="4" max="100" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roomWidth">Room Width (ft)</label>
+        <input type="number" id="roomWidth" value="12" min="4" max="100" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="ceilingHeight">Ceiling Height (ft)</label>
+        <select id="ceilingHeight" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="8" selected>8 ft (standard)</option>
+          <option value="9">9 ft</option>
+          <option value="10">10 ft</option>
+          <option value="12">12 ft (tall)</option>
+          <option value="14">14 ft+ (vaulted)</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="efficiency">Efficiency Level</label>
-        <select id="efficiency" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="standard">Standard (14 efficiency / 80% efficiency)</option>
-          <option value="mid" selected>Mid-Range (16 efficiency / 96% efficiency)</option>
-          <option value="high">High Efficiency (high-efficiency)</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="doors">Number of Doors</label>
+        <input type="number" id="doors" value="1" min="0" max="10" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="windows">Number of Windows</label>
+        <input type="number" id="windows" value="2" min="0" max="20" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="wallCondition">Wall Condition</label>
+        <select id="wallCondition" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="good" selected>Good (minimal prep)</option>
+          <option value="fair">Fair (some patching/sanding)</option>
+          <option value="needs-prep">Needs Prep (heavy patching/priming)</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tons">System Size (Tons)</label>
-        <select id="tons" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.5">1.5 Ton</option>
-          <option value="2">2 Ton</option>
-          <option value="2.5">2.5 Ton</option>
-          <option value="3" selected>3 Ton</option>
-          <option value="3.5">3.5 Ton</option>
-          <option value="4">4 Ton</option>
-          <option value="5">5 Ton</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="paintQuality">Paint Quality</label>
+        <select id="paintQuality" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="builder">Builder Grade ($20-30/gal)</option>
+          <option value="mid" selected>Mid-Range ($35-50/gal)</option>
+          <option value="premium">Premium ($55-80/gal)</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="region">Region</label>
-        <select id="region" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="0.85">Southeast</option>
-          <option value="0.90">Midwest</option>
-          <option value="0.95">South</option>
-          <option value="1.00" selected>National Average</option>
-          <option value="1.05">Mountain</option>
-          <option value="1.10">Northeast</option>
-          <option value="1.10">Pacific NW</option>
-          <option value="1.15">West</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="coats">Number of Coats</label>
+        <select id="coats" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1">1 Coat (touch-up only)</option>
+          <option value="2" selected>2 Coats (standard)</option>
+          <option value="3">3 Coats (dark to light / high coverage)</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="homeType">Home Type</label>
-        <select id="homeType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.0" selected>Single Story</option>
-          <option value="1.1">Multi-Story</option>
-          <option value="1.15">Attic Installation</option>
-          <option value="1.1">Crawlspace</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="ductwork">Project Complexity</label>
-        <select id="ductwork" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.0" selected>Existing (good condition)</option>
-          <option value="1.15">Partial Modification Needed</option>
-          <option value="1.5">Major Renovation Required</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="includeCeiling">Include Ceiling</label>
+        <select id="includeCeiling" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="no" selected>No</option>
+          <option value="yes">Yes</option>
         </select>
       </div>
     </div>
 
-
     <!-- Results -->
     <div id="results" class="mt-8 border-t border-border pt-8">
-      <h3 class="font-heading font-bold text-xl mb-6">Your Estimated Cost</h3>
+      <h3 class="font-heading font-bold text-xl mb-6">Your Estimate</h3>
 
       <!-- Cost Range Bar -->
       <div class="bg-bg-dark rounded-xl p-6 mb-6">
@@ -139,26 +134,31 @@ const faqSchema = {
         </div>
       </div>
 
-      <!-- Monthly Financing + Tax Credit -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <!-- Detail Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">60-Month Financing</div>
-          <div id="result-monthly60" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">per month</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Paintable Surface</div>
+          <div id="result-sqft" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">sq ft</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">120-Month Financing</div>
-          <div id="result-monthly120" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">per month</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Gallons Needed</div>
+          <div id="result-gallons" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">gallons</div>
         </div>
-        <div id="tax-credit-card" class="hidden bg-bg-dark rounded-xl p-5 text-center border border-green-500/30">
-          <div class="text-green-400 text-xs font-medium uppercase tracking-wider mb-2">Federal Tax Credit</div>
-          <div class="font-heading font-extrabold text-2xl text-green-400">Up to $2,000</div>
-          <div class="text-text-muted text-xs mt-1">25C credit for qualifying high-efficiency options</div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Labor Hours</div>
+          <div id="result-hours" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">hours (1 painter)</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cost per Sq Ft</div>
+          <div id="result-persqft" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">labor + materials</div>
         </div>
       </div>
 
-      <p class="text-text-muted text-sm italic">This is a ballpark estimate based on national averages. Actual costs vary by contractor, equipment brand, and job-specific conditions. Get exact pricing from a licensed Painting contractor in your area.</p>
+      <p class="text-text-muted text-sm italic">Ballpark estimate for budgeting purposes. Actual job costs depend on local labor rates, specific paint brands, wall texture, and on-site conditions. Always measure and quote each job individually.</p>
     </div>
   </div>
 
@@ -169,22 +169,22 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Estimator</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Select your system type.</strong> Choose between a traditional primary systems combo, a high-efficiency option, or a premium system. Premium options are priced by the number of indoor zones.</p>
-          <p><strong class="text-text-primary">2. Pick your efficiency level.</strong> Standard efficiency costs less upfront but more to operate. High-efficiency systems cost more to install but lower monthly energy bills and may qualify for federal tax credits.</p>
-          <p><strong class="text-text-primary">3. Set the system size and your region.</strong> Tonnage should match your home's load calculation. Regional labor and material costs vary significantly, with the Southeast being most affordable and the West Coast being most expensive.</p>
-          <p><strong class="text-text-primary">4. Adjust for complexity.</strong> Multi-story homes, difficult access, and special requirements add labor time. Major system changes can add 50% to the total project cost.</p>
+          <p><strong class="text-text-primary">1. Enter the room dimensions.</strong> Plug in the length, width, and ceiling height. The calculator figures the total wall area and subtracts doors and windows automatically so you get actual paintable square footage.</p>
+          <p><strong class="text-text-primary">2. Set the wall condition.</strong> Walls in good shape need minimal prep. Fair condition means some patching and light sanding. Heavy prep adds significant labor time for skim coating, extensive patching, or full priming of problem surfaces.</p>
+          <p><strong class="text-text-primary">3. Choose paint quality and coats.</strong> Builder-grade paint is cheapest but covers less and wears faster. Mid-range covers well in two coats. Premium paint costs more per gallon but often covers in fewer passes with better durability, which can actually save labor time on the right jobs.</p>
+          <p><strong class="text-text-primary">4. Add the ceiling if needed.</strong> Ceiling painting adds area and labor. Ceilings typically take longer per square foot than walls because of the overhead position and the need for more careful cutting in.</p>
         </div>
       </section>
 
       <!-- What Affects Cost -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">What Affects Painting Replacement Cost</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">What Affects Interior Painting Cost</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">System type and efficiency.</strong> The biggest cost driver is the equipment itself. A basic standard efficiency system is the most affordable option. High-efficiency options cost slightly less for the equipment but provide both heating and cooling. High-efficiency units (high-efficiency) can cost double the standard models.</p>
-          <p><strong class="text-text-primary">System size.</strong> Larger homes need larger systems. The cost scales roughly proportionally with tonnage. A 5-ton system costs significantly more than a 2-ton system in both equipment and labor.</p>
-          <p><strong class="text-text-primary">Regional pricing.</strong> Labor rates, permit costs, and material availability vary by region. Southeastern states tend to have the lowest installation costs, while the West Coast and Northeast are the most expensive markets.</p>
-          <p><strong class="text-text-primary">Home complexity.</strong> Multi-story homes require more additional materials, longer runs, and difficult access. Work in tight spaces, at height, or in extreme weather adds difficulty and time. Complex jobs with multiple components take longer and cost more.</p>
-          <p><strong class="text-text-primary">System condition.</strong> If your existing existing systems are in good shape, the contractor simply connects the new system. Partial modifications (adding a return, resizing a trunk line) add moderate cost. A full system overhaul is a major project that can increase the total price by 50%.</p>
+          <p><strong class="text-text-primary">Prep work is the hidden cost driver.</strong> A room in good condition might need 30 minutes of prep. A room with nail pops, water stains, peeling paint, or textured walls needing skim coating can eat 2 to 4 hours before you even open a paint can. Price prep time honestly or it comes straight out of your margin.</p>
+          <p><strong class="text-text-primary">Paint quality matters for coverage and callbacks.</strong> Cheap paint means more coats and more chance of touch-up calls. Premium paints from brands like Benjamin Moore Regal or Sherwin-Williams Emerald cover better, lay down smoother, and hold up longer. The extra $20-30 per gallon often saves you a full coat of labor.</p>
+          <p><strong class="text-text-primary">Room size and ceiling height.</strong> Bigger rooms have more wall area, but the setup and cut-in time stays roughly the same. Tall ceilings require ladders or scaffold time and slow down your production rate. Vaulted or cathedral ceilings can double your labor time per square foot.</p>
+          <p><strong class="text-text-primary">Color changes and dark-to-light transitions.</strong> Going from a dark accent wall to a light color often means a third coat or a tinted primer coat. Factor that extra material and labor time into your quote or the job will eat your profit.</p>
+          <p><strong class="text-text-primary">Trim, doors, and detail work.</strong> This calculator covers walls and ceiling. If you are also painting baseboards, crown molding, door frames, or closet interiors, add that to your total. Trim work is slower and more detail-oriented than rolling walls.</p>
         </div>
       </section>
 
@@ -192,9 +192,9 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">During sales visits.</strong> Pull this up on your tablet while sitting at the kitchen table with a homeowner. Walk through the options together, show them how efficiency level and system condition affect the price, and set realistic expectations before running your detailed proposal.</p>
-          <p><strong class="text-text-primary">Phone estimates.</strong> When a homeowner calls asking "how much for a new AC?" you can walk them through a few questions and give a ballpark range on the spot. This builds trust and qualifies the lead before scheduling an in-home visit.</p>
-          <p><strong class="text-text-primary">Website lead generation.</strong> Embed this calculator on your website so homeowners can self-educate on pricing. Visitors who use the tool and then call you are better-informed and more likely to convert because they already have realistic price expectations.</p>
+          <p><strong class="text-text-primary">Quick phone estimates.</strong> When a homeowner calls asking about painting a bedroom or living room, walk them through the dimensions and give them a range on the spot. Getting a number in front of them fast builds trust and qualifies the lead before you drive out to look at it.</p>
+          <p><strong class="text-text-primary">On-site ballparking.</strong> Pull this up on your phone while walking through a house. Room by room, you can build a rough total in minutes. It gives the homeowner a same-day number while you follow up with a detailed written quote.</p>
+          <p><strong class="text-text-primary">Training new estimators.</strong> If you have crew members learning to estimate, this tool shows them how square footage, prep, paint quality, and coats all connect to the final price. It builds the right pricing instincts.</p>
         </div>
       </section>
 
@@ -203,20 +203,20 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a new Painting system cost?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A new Painting system typically costs between $5,000 and $15,000 installed, depending on system type, efficiency level, home size, and region. A standard efficiency primary systems for a average home averages around $6,500, while a high-efficiency high-efficiency system can run $11,500 or more before regional and complexity adjustments.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does it cost to paint a room?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Interior room painting typically costs between $1.50 and $4.00 per square foot of paintable surface, including labor and materials. A standard 12x12 bedroom with 8-foot ceilings runs roughly $600 to $1,600 depending on wall condition, paint quality, and number of coats. Rooms needing extensive prep work or premium paint will land at the higher end.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What size Painting system do I need?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">System size is measured in tons and depends on your home's square footage, insulation, climate, and layout. A rough rule of thumb is 1 ton per 500-600 square feet, but a proper Manual J load calculation is required for accurate sizing. Oversized systems short-cycle and waste energy, while undersized systems can't keep up on extreme days.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many gallons of paint do I need for a room?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">One gallon of paint covers approximately 350 to 400 square feet per coat. For a standard 12x12 room with 8-foot ceilings (roughly 380 sq ft of wall area after subtracting doors and windows), you need about 1 gallon per coat. Two coats on that same room means 2 gallons. Always round up — running short mid-job costs you more time than having a partial gallon left over.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Are there tax credits for new Painting systems?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. The federal 25C energy efficiency tax credit offers up to $2,000 for qualifying high-efficiency systems installed in your primary residence. The system must meet specific efficiency requirements (CEE Tier 1 or higher). Standard air conditioners and systems may qualify for a smaller $600 credit. Check with your tax advisor for current eligibility details.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does it take to paint a room?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A single painter can typically complete a standard bedroom (walls only, good condition) in 4 to 6 hours including prep, two coats, and cleanup. Rooms needing significant prep work like patching, sanding, or priming can take 6 to 10 hours. A two-person crew cuts those times roughly in half. Ceiling painting adds 1 to 2 hours per room.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does Painting installation take?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A straightforward like-for-like replacement typically takes 1 day (6-10 hours). If new system work is required, expect 2-3 days. Converting from one system type to another (e.g., system to high-efficiency option) may take 1-2 days. Complex multi-zone premium installations can take 2-4 days depending on the number of indoor units and line set routing.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I charge per square foot or per room for interior painting?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Charging per square foot of paintable surface is more accurate and protects your margin. Per-room flat rates are easier to quote but can burn you on large rooms, high ceilings, or heavy prep. Most professional painters calculate by square foot internally and then present the price as a per-room or per-project total to the homeowner.</div>
           </details>
         </div>
       </section>
@@ -225,55 +225,86 @@ const faqSchema = {
 </ToolLayout>
 
 <script>
-  function calculate() {
-    const systemType = (document.getElementById('systemType') as HTMLSelectElement).value;
-    const efficiency = (document.getElementById('efficiency') as HTMLSelectElement).value;
-    const tons = parseFloat((document.getElementById('tons') as HTMLSelectElement).value);
-    const region = parseFloat((document.getElementById('region') as HTMLSelectElement).value);
-    const homeType = parseFloat((document.getElementById('homeType') as HTMLSelectElement).value);
-    const ductwork = parseFloat((document.getElementById('ductwork') as HTMLSelectElement).value);
-
-    // Base prices by system type and efficiency
-    const basePrices: Record<string, Record<string, number>> = {
-      'standard-system': { standard: 6500, mid: 9000, high: 13000 },
-      'heat-pump': { standard: 5500, mid: 8000, high: 11500 },
-      'mini-1': { standard: 4500, mid: 4500, high: 4500 },
-      'mini-2': { standard: 7000, mid: 7000, high: 7000 },
-      'mini-3': { standard: 10000, mid: 10000, high: 10000 },
-      'mini-4': { standard: 13000, mid: 13000, high: 13000 },
-    };
-
-    const basePrice = basePrices[systemType]?.[efficiency] ?? 9000;
-
-    // Formula: Base_Price x Regional x (Tons/3.0) x Complexity x Complexity
-    const estimatedCost = basePrice * region * (size / 1.0) * homeType * ductwork;
-
-    const low = Math.round(estimatedCost * 0.8);
-    const mid = Math.round(estimatedCost);
-    const high = Math.round(estimatedCost * 1.2);
-    const monthly60 = Math.round(mid / 60);
-    const monthly120 = Math.round(mid / 120);
-
-    // Format currency
-    const fmt = (n: number) => '$' + n.toLocaleString();
-
-    document.getElementById('result-low')!.textContent = fmt(low);
-    document.getElementById('result-mid')!.textContent = fmt(mid);
-    document.getElementById('result-high')!.textContent = fmt(high);
-    document.getElementById('result-monthly60')!.textContent = fmt(monthly60);
-    document.getElementById('result-monthly120')!.textContent = fmt(monthly120);
-
-    // Show/hide tax credit for high-efficiency option and premium option systems
-    const taxCreditCard = document.getElementById('tax-credit-card')!;
-    const isHeatPump = systemType === 'heat-pump' || systemType.startsWith('mini-');
-    taxCreditCard.classList.toggle('hidden', !isHeatPump);
-
+  interface CalcInputs {
+    roomLength: number;
+    roomWidth: number;
+    ceilingHeight: number;
+    doors: number;
+    windows: number;
+    wallCondition: string;
+    paintQuality: string;
+    coats: number;
+    includeCeiling: boolean;
   }
 
+  function calculate(): void {
+    const roomLength = parseFloat((document.getElementById('roomLength') as HTMLInputElement).value) || 12;
+    const roomWidth = parseFloat((document.getElementById('roomWidth') as HTMLInputElement).value) || 12;
+    const ceilingHeight = parseFloat((document.getElementById('ceilingHeight') as HTMLSelectElement).value);
+    const doors = parseInt((document.getElementById('doors') as HTMLInputElement).value) || 0;
+    const windows = parseInt((document.getElementById('windows') as HTMLInputElement).value) || 0;
+    const wallCondition = (document.getElementById('wallCondition') as HTMLSelectElement).value;
+    const paintQuality = (document.getElementById('paintQuality') as HTMLSelectElement).value;
+    const coats = parseInt((document.getElementById('coats') as HTMLSelectElement).value);
+    const includeCeiling = (document.getElementById('includeCeiling') as HTMLSelectElement).value === 'yes';
 
-  // Auto-calculate on input change
-  document.querySelectorAll('#cost-calc select').forEach(el => {
+    // Calculate wall area
+    const perimeter = 2 * (roomLength + roomWidth);
+    const grossWallArea = perimeter * ceilingHeight;
+
+    // Subtract openings: doors ~21 sq ft each, windows ~15 sq ft each
+    const doorArea = doors * 21;
+    const windowArea = windows * 15;
+    const netWallArea = Math.max(grossWallArea - doorArea - windowArea, 0);
+
+    // Ceiling area
+    const ceilingArea = includeCeiling ? roomLength * roomWidth : 0;
+    const totalPaintableArea = netWallArea + ceilingArea;
+
+    // Gallons needed (350 sq ft coverage per gallon per coat)
+    const gallonsPerCoat = totalPaintableArea / 350;
+    const totalGallons = Math.ceil(gallonsPerCoat * coats);
+
+    // Prep time multiplier
+    const prepMultiplier: Record<string, number> = { good: 1.0, fair: 1.3, 'needs-prep': 1.7 };
+    const prep = prepMultiplier[wallCondition] ?? 1.0;
+
+    // Base labor: ~100 sq ft per hour for rolling/cutting, adjusted by coats
+    const baseHours = (totalPaintableArea / 100) * coats * prep;
+    // Add setup/cleanup time
+    const totalHours = Math.round((baseHours + 1.5) * 10) / 10;
+
+    // Cost per sq ft ranges by quality
+    const costRanges: Record<string, { low: number; high: number }> = {
+      builder: { low: 1.50, high: 2.50 },
+      mid: { low: 2.00, high: 3.25 },
+      premium: { low: 2.75, high: 4.00 },
+    };
+    const range = costRanges[paintQuality] ?? costRanges.mid;
+
+    // Adjust for coats (base rates assume 2 coats)
+    const coatFactor = coats / 2;
+    const conditionFactor = prep;
+
+    const lowCost = Math.round(totalPaintableArea * range.low * coatFactor * conditionFactor);
+    const highCost = Math.round(totalPaintableArea * range.high * coatFactor * conditionFactor);
+    const midCost = Math.round((lowCost + highCost) / 2);
+
+    const fmt = (n: number): string => '$' + n.toLocaleString();
+
+    document.getElementById('result-low')!.textContent = fmt(lowCost);
+    document.getElementById('result-mid')!.textContent = fmt(midCost);
+    document.getElementById('result-high')!.textContent = fmt(highCost);
+    document.getElementById('result-sqft')!.textContent = Math.round(totalPaintableArea).toLocaleString();
+    document.getElementById('result-gallons')!.textContent = totalGallons.toString();
+    document.getElementById('result-hours')!.textContent = totalHours.toString();
+    document.getElementById('result-persqft')!.textContent = '$' + (midCost / totalPaintableArea).toFixed(2);
+  }
+
+  // Auto-calculate on any input change
+  document.querySelectorAll('#cost-calc select, #cost-calc input').forEach(el => {
     el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
   });
 
   // Calculate on load with defaults

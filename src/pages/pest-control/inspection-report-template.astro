@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What should a Pest Control inspection report include?",
+      "name": "What should a pest control inspection report include?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A professional Pest Control inspection report should include system identification (make, model, serial number, age), component-by-component ratings using a Red/Yellow/Green scale, temperature and pressure measurements, carbon monoxide readings, a prioritized list of findings with estimated repair costs, an overall pass/fail assessment, and inspector credentials with license number."
+        "text": "A professional pest control inspection report should include property identification and access points, pest species identified (with evidence type: live insects, droppings, damage, nesting), severity ratings for each area (None, Low, Moderate, Severe), conducive conditions found (moisture, food sources, entry points, harborage), a diagram or map of activity zones, recommended treatment plan with products and methods, and technician credentials with license number."
       }
     },
     {
       "@type": "Question",
-      "name": "How much does a Pest Control inspection cost?",
+      "name": "How much does a pest control inspection cost?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A standard Pest Control inspection costs between $75 and $200 depending on the system type, location, and scope. Pre-purchase inspections for real estate transactions typically run $150 to $300 since they require more detailed documentation. Annual maintenance inspections are often included in service agreements ranging from $150 to $500 per year."
+        "text": "A standard pest control inspection costs $75 to $150 for general pest assessment. Termite inspections (WDI/WDO reports) for real estate transactions typically run $75 to $250 depending on property size and state requirements. Many pest control companies offer free inspections as a lead-generation tool, with the understanding that treatment services will follow. Annual inspection contracts for commercial properties range from $200 to $1,000 per year."
       }
     },
     {
       "@type": "Question",
-      "name": "What is checked during a Pest Control inspection?",
+      "name": "What is checked during a pest control inspection?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A thorough Pest Control inspection checks the component for cracks or corrosion, electrical connections and amp draws, all critical components and systems, checking for wear, damage, code compliance, and safety issues. Detailed measurements and observations are recorded for each area inspected. Each item receives a condition rating with notes explaining the assessment."
+        "text": "A thorough pest inspection covers the interior (kitchen, bathrooms, basements, attics, utility rooms), exterior (foundation, eaves, soffits, landscaping, drainage), structural elements (crawl spaces, wall voids, roof line), and environmental factors (moisture levels, sanitation, food storage, waste management). The technician looks for live pests, droppings, gnaw marks, mud tubes, wood damage, nesting materials, and conditions that attract or harbor pest activity."
       }
     },
     {
       "@type": "Question",
-      "name": "How do I write a professional inspection report?",
+      "name": "How do I write a professional pest inspection report?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Start with complete property and system identification. Rate each component using a standardized scale (Pass/Monitor/Fail or Green/Yellow/Red). Record all measurements with actual values, not just pass/fail. List every finding with a recommended action, estimated cost, and priority level. Include an overall assessment and total repair cost estimate. Always add a disclaimer about the inspection scope and limitations."
+        "text": "Start with complete property details and inspection scope. Document each area inspected with specific findings and evidence type. Use severity ratings (None, Low, Moderate, Severe) so the client understands the urgency. Include photos of evidence and conducive conditions. List every finding with a recommended treatment, estimated cost, and priority level. Add a property diagram marking activity zones. Always include your license number, the inspection date, and a follow-up recommendation."
       }
     }
   ]
@@ -367,10 +367,10 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Template</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Fill in inspector and property details.</strong> Enter your company name, license number, and the property address. The report number auto-generates as IR-001 — change it to match your numbering system. Select the reason for the inspection so the report context is clear from the start.</p>
-          <p><strong class="text-text-primary">2. Identify the system and rate each component.</strong> Record the equipment make, model, and serial number from the data plate. The age calculates automatically from the install date. Then go through each component — component, electrical, each key area of concern — and assign a Pass, Monitor, or Fail rating with notes explaining your assessment.</p>
-          <p><strong class="text-text-primary">3. Record measurements and document findings.</strong> Enter all temperature, CO, gas pressure, and static pressure readings. For every issue you find, add a finding row with a description, recommended action, estimated repair cost, and priority level. The summary section auto-calculates totals as you go.</p>
-          <p><strong class="text-text-primary">4. Generate the printable report.</strong> Select your overall assessment, add any additional notes, and hit Generate. The report opens in a new tab with professional formatting, color-coded rating grids, a findings table with priority flags, and a signature line — ready to print or save as PDF.</p>
+          <p><strong class="text-text-primary">1. Fill in your company and property details.</strong> Enter your company name, license number, and the property address. The report number auto-generates as IR-001 — change it to match your numbering system. Select the reason for the inspection (routine, pre-purchase, complaint, follow-up) so the report context is clear.</p>
+          <p><strong class="text-text-primary">2. Survey each area and rate pest activity.</strong> Walk through every zone — interior rooms, exterior perimeter, crawl spaces, attic, and outbuildings. For each area, record pest species identified, evidence type (droppings, damage, live sightings, nesting), and assign a severity rating with notes explaining your assessment.</p>
+          <p><strong class="text-text-primary">3. Document conducive conditions and findings.</strong> Note moisture issues, entry points, food sources, harborage areas, and sanitation concerns. For every finding, add a row with a description, recommended treatment or exclusion action, estimated cost, and priority level. The summary section auto-calculates totals as you go.</p>
+          <p><strong class="text-text-primary">4. Generate the printable report.</strong> Select your overall assessment, add treatment recommendations and follow-up schedule, and hit Generate. The report opens in a new tab with professional formatting, color-coded severity ratings, a findings table with priority flags, and a signature line — ready to print or save as PDF.</p>
         </div>
       </section>
 
@@ -378,12 +378,12 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">What Makes a Professional Pest Control Inspection Report</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p>A professional inspection report does more than check boxes. Every section serves a specific purpose in communicating system condition to the property owner, buyer, insurer, or warranty provider.</p>
-          <p><strong class="text-text-primary">System identification</strong> anchors the report to a specific piece of equipment. Make, model, serial number, and install date let anyone verify what was inspected. The calculated age and estimated remaining life give the reader immediate context about the system's position in its lifecycle.</p>
-          <p><strong class="text-text-primary">Component ratings</strong> using a standardized Red/Yellow/Green scale make complex technical findings accessible to non-technical readers. A homebuyer doesn't need to understand technical details — they need to know the inspection found three green components, four yellow, and one red. The notes behind each rating provide the technical detail for other professionals.</p>
-          <p><strong class="text-text-primary">Measurements</strong> document the system's actual operating condition with verifiable numbers. Temperature split, CO readings, gas pressure, and static pressure are objective data points that cannot be disputed. They create a baseline for future comparisons and protect the inspector if conditions change after the inspection.</p>
-          <p><strong class="text-text-primary">Prioritized findings</strong> turn observations into actionable recommendations. Each finding includes what's wrong, what should be done, how much it will cost, and how urgent it is. This structure helps property owners make informed decisions about repairs and budgeting.</p>
-          <p><strong class="text-text-primary">Documentation matters</strong> because inspection reports become legal documents. They're referenced in real estate transactions, insurance claims, warranty disputes, and liability cases. A thorough, well-structured report protects your client, protects your business, and demonstrates the professionalism that separates serious contractors from everyone else.</p>
+          <p>A professional pest inspection report does more than list what you found. Every section serves a specific purpose in communicating pest activity, risk level, and treatment needs to the property owner, buyer, or property manager.</p>
+          <p><strong class="text-text-primary">Property identification</strong> anchors the report to a specific location and date. Address, property type, square footage, and construction details provide context for the inspection scope. A crawl space home in a humid climate tells a different pest story than a slab-on-grade in a dry region.</p>
+          <p><strong class="text-text-primary">Area-by-area ratings</strong> using a standardized severity scale (None, Low, Moderate, Severe) make findings accessible to non-technical readers. A homebuyer does not need to understand pest biology — they need to know the kitchen has moderate rodent activity and the crawl space has severe moisture conducive to termites. The notes behind each rating provide the technical detail.</p>
+          <p><strong class="text-text-primary">Evidence documentation</strong> is what separates a professional report from a verbal summary. Photos of droppings, gnaw marks, mud tubes, entry points, and damage create an objective record that cannot be disputed. This evidence supports your treatment recommendations and protects you if conditions change after the inspection.</p>
+          <p><strong class="text-text-primary">Prioritized findings</strong> turn observations into actionable recommendations. Each finding includes what was found, where, the recommended treatment or exclusion work, estimated cost, and urgency level. This structure helps property owners make informed decisions about treatment and budgeting.</p>
+          <p><strong class="text-text-primary">Documentation matters</strong> because pest inspection reports become legal documents. They are referenced in real estate transactions (WDI/WDO reports), insurance claims for pest damage, warranty disputes, and landlord-tenant disagreements. A thorough, well-structured report protects your client, protects your business, and demonstrates the professionalism that wins ongoing service contracts.</p>
         </div>
       </section>
 
@@ -391,9 +391,9 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">Pre-purchase inspections.</strong> A buyer's agent or homebuyer hires you to evaluate the Pest Control system before closing on a property. The report becomes part of the due diligence package. A clear pass/fail assessment with estimated repair costs gives the buyer leverage to negotiate price reductions or request repairs before closing. This is the highest-stakes use case — your report directly influences a six-figure transaction.</p>
-          <p><strong class="text-text-primary">Annual maintenance inspections.</strong> During seasonal service visits and maintenance visits, a formal inspection report documents the system's current condition and creates a year-over-year record. When a component rating moves from green to yellow, you can point to the history and recommend proactive replacement before it fails. This builds trust, generates future work, and protects you from customers who claim you never told them something was wearing out.</p>
-          <p><strong class="text-text-primary">Insurance and warranty claims.</strong> Insurance companies require documented proof of system condition when processing claims for equipment damage. Warranty providers need inspection records showing proper maintenance was performed. A professional report with component ratings, measurements, and findings gives adjusters and warranty administrators exactly what they need to approve claims — without the back-and-forth of incomplete documentation.</p>
+          <p><strong class="text-text-primary">Real estate inspections.</strong> A buyer's agent or homebuyer hires you to evaluate the property for pest activity before closing. The WDI/WDO report becomes part of the due diligence package. A clear assessment with documented evidence and estimated treatment costs gives the buyer leverage to negotiate price reductions or request remediation before closing. This is the highest-stakes use case — your report directly influences a real estate transaction.</p>
+          <p><strong class="text-text-primary">Recurring service inspections.</strong> During quarterly or monthly service visits, a formal inspection report documents current pest activity levels and creates a visit-over-visit record. When an area moves from "None" to "Low" activity, you can point to the trend and recommend proactive treatment before it escalates. This builds trust, justifies your service contract, and protects you from customers who claim you never told them about a problem.</p>
+          <p><strong class="text-text-primary">Commercial and property management accounts.</strong> Property managers, restaurants, food processing facilities, and healthcare providers require documented pest inspection records for regulatory compliance. A professional report with area ratings, evidence photos, and treatment recommendations gives them exactly what auditors and health inspectors need — without the back-and-forth of incomplete documentation.</p>
         </div>
       </section>
 
@@ -402,20 +402,20 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What should a Pest Control inspection report include?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A professional Pest Control inspection report should include system identification (make, model, serial number, age), component-by-component ratings using a Red/Yellow/Green scale, temperature and pressure measurements, carbon monoxide readings, a prioritized list of findings with estimated repair costs, an overall pass/fail assessment, and inspector credentials with license number.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What should a pest control inspection report include?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A professional pest control inspection report should include property identification, pest species found with evidence type (droppings, damage, live sightings, nesting), area-by-area severity ratings, conducive conditions documented (moisture, entry points, food sources), a prioritized list of findings with treatment recommendations and estimated costs, an overall assessment, and your technician credentials with license number.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a Pest Control inspection cost?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard Pest Control inspection costs between $75 and $200 depending on the system type, location, and scope. Pre-purchase inspections for real estate transactions typically run $150 to $300 since they require more detailed documentation. Annual maintenance inspections are often included in service agreements ranging from $150 to $500 per year.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a pest control inspection cost?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard pest control inspection costs $75 to $150, though many companies offer free inspections to win the treatment contract. Real estate termite inspections (WDI/WDO reports) typically run $75 to $250 depending on property size and state requirements. Annual inspection agreements for commercial properties range from $200 to $1,000 per year.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is checked during a Pest Control inspection?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A thorough Pest Control inspection checks the component for cracks or corrosion, electrical connections and amp draws, all critical components and systems, checking for wear, damage, code compliance, and safety issues. Detailed measurements and observations are recorded for each area inspected. Each item receives a condition rating with notes explaining the assessment.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is checked during a pest control inspection?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A thorough pest inspection covers the interior (kitchen, bathrooms, basement, attic, utility rooms), exterior (foundation perimeter, landscaping, drainage, roof line), and structural elements (crawl spaces, wall voids, wood members). Technicians look for live pests, droppings, gnaw marks, mud tubes, wood damage, nesting material, entry points, moisture issues, and conditions that attract or harbor pest activity.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I write a professional inspection report?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Start with complete property and system identification. Rate each component using a standardized scale (Pass/Monitor/Fail or Green/Yellow/Red). Record all measurements with actual values, not just pass/fail. List every finding with a recommended action, estimated cost, and priority level. Include an overall assessment and total repair cost estimate. Always add a disclaimer about the inspection scope and limitations.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I write a professional pest inspection report?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Start with complete property identification and inspection scope. Document each area with specific findings, evidence type, and severity rating. Include photos of evidence and conducive conditions. List every finding with a recommended treatment, estimated cost, and priority level. Add a property diagram marking activity zones and entry points. Always include your license number, inspection date, and follow-up recommendations.</div>
           </details>
         </div>
       </section>
@@ -847,7 +847,7 @@ ${findingsHtml ? `<h2>Findings &amp; Recommendations</h2>
 ${getVal('additional-notes') ? `<div style="margin-top:12px;"><span class="label">Additional Notes:</span><div class="value" style="background:#f9f9f9;padding:10px;border-radius:4px;white-space:pre-wrap;margin-top:4px;">${getVal('additional-notes')}</div></div>` : ''}
 
 <div class="disclaimer">
-  <strong>Disclaimer:</strong> This inspection report reflects the condition of the Pest Control system at the time of inspection based on visual examination and standard diagnostic measurements. Hidden defects, inaccessible components, and conditions that may develop after the inspection date are not covered. This report is not a warranty or guarantee of future performance. The inspector and company assume no liability for conditions that were not observable or testable at the time of inspection. Repair cost estimates are approximate and may vary based on contractor pricing, parts availability, and actual scope of work.
+  <strong>Disclaimer:</strong> This inspection report reflects the condition of the property with respect to pest activity at the time of inspection based on visual examination and standard diagnostic methods. Hidden defects, inaccessible components, and conditions that may develop after the inspection date are not covered. This report is not a warranty or guarantee of future performance. The inspector and company assume no liability for conditions that were not observable or testable at the time of inspection. Repair cost estimates are approximate and may vary based on contractor pricing, parts availability, and actual scope of work.
 </div>
 
 <div class="signature-block">

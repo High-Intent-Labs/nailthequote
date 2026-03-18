@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How much does a new General Contracting system cost?",
+      "name": "What remodeling projects have the best ROI?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A new General Contracting system typically costs between $5,000 and $15,000 installed, depending on system type, efficiency level, home size, and region. A standard efficiency primary systems for a average home averages around $6,500, while a high-efficiency high-efficiency system can run $11,500 or more before regional and complexity adjustments."
+        "text": "Garage door replacement, manufactured stone veneer, and minor kitchen remodels consistently deliver the highest ROI, often recovering 70-95% of cost at resale. Siding replacement and window upgrades also perform well. Major kitchen and bathroom remodels recover less percentage-wise (50-75%) but add more absolute dollar value. Decks and outdoor living spaces vary heavily by region."
       }
     },
     {
       "@type": "Question",
-      "name": "What size General Contracting system do I need?",
+      "name": "How much does a kitchen remodel increase home value?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "System size is measured in tons and depends on your home's square footage, insulation, climate, and layout. A rough rule of thumb is 1 ton per 500-600 square feet, but a proper Manual J load calculation is required for accurate sizing. Oversized systems short-cycle and waste energy, while undersized systems can't keep up on extreme days."
+        "text": "A minor kitchen remodel (cabinet refacing, new hardware, countertops, and appliances) costing $25,000-$40,000 typically recovers 70-80% at resale. A major kitchen remodel ($75,000-$150,000+) recovers 50-65%. The key insight for GCs is that mid-range projects with broad appeal recover the highest percentage. Ultra-high-end finishes in average neighborhoods recover the least."
       }
     },
     {
       "@type": "Question",
-      "name": "Are there tax credits for new General Contracting systems?",
+      "name": "Does a bathroom remodel add value to a home?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. The federal 25C energy efficiency tax credit offers up to $2,000 for qualifying high-efficiency systems installed in your primary residence. The system must meet specific efficiency requirements (CEE Tier 1 or higher). Standard air conditioners and systems may qualify for a smaller $600 credit. Check with your tax advisor for current eligibility details."
+        "text": "Yes. A mid-range bathroom remodel costing $25,000-$40,000 typically recovers 60-70% at resale. A major upscale bathroom remodel recovers less percentage-wise but adds more absolute value. Adding a bathroom where there was none (e.g., finishing a half-bath or adding a bathroom to a basement) often has the highest ROI because it changes the functional bedroom/bath count of the home."
       }
     },
     {
       "@type": "Question",
-      "name": "How long does General Contracting installation take?",
+      "name": "Should I use ROI data when selling remodeling projects?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A straightforward like-for-like replacement typically takes 1 day (6-10 hours). If new system work is required, expect 2-3 days. Converting from one system type to another (e.g., system to high-efficiency option) may take 1-2 days. Complex multi-zone premium installations can take 2-4 days depending on the number of indoor units and line set routing."
+        "text": "Absolutely. ROI data helps homeowners justify the investment and gives them confidence that the money is well spent. When you can show a homeowner that their $50,000 kitchen remodel is likely to add $35,000-$40,000 in home value, it reframes the project from a pure expense to a partial investment. Pair ROI data with lifestyle benefits for the most effective sales presentation."
       }
     }
   ]
@@ -49,174 +49,140 @@ const faqSchema = {
     <!-- Input Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="systemType">System Type</label>
-        <select id="systemType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="standard-system">Standard System</option>
-          <option value="heat-pump">Premium Option</option>
-          <option value="mini-1">Option 1-Zone</option>
-          <option value="mini-2">Option 2-Zone</option>
-          <option value="mini-3">Option 3-Zone</option>
-          <option value="mini-4">Option 4-Zone</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="projectType">Project Type</label>
+        <select id="projectType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="kitchen" selected>Kitchen Remodel</option>
+          <option value="bathroom">Bathroom Remodel</option>
+          <option value="basement">Basement Finish</option>
+          <option value="deck">Deck Addition</option>
+          <option value="addition">Room Addition</option>
+          <option value="siding">Siding Replacement</option>
+          <option value="windows">Window Replacement</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="efficiency">Efficiency Level</label>
-        <select id="efficiency" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="standard">Standard (14 efficiency / 80% efficiency)</option>
-          <option value="mid" selected>Mid-Range (16 efficiency / 96% efficiency)</option>
-          <option value="high">High Efficiency (high-efficiency)</option>
-        </select>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="projectCost">Project Cost ($)</label>
+        <input type="number" id="projectCost" value="50000" min="5000" max="500000" step="1000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tons">System Size (Tons)</label>
-        <select id="tons" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.5">1.5 Ton</option>
-          <option value="2">2 Ton</option>
-          <option value="2.5">2.5 Ton</option>
-          <option value="3" selected>3 Ton</option>
-          <option value="3.5">3.5 Ton</option>
-          <option value="4">4 Ton</option>
-          <option value="5">5 Ton</option>
-        </select>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="homeValue">Current Home Value ($)</label>
+        <input type="number" id="homeValue" value="350000" min="50000" max="5000000" step="10000" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="region">Region</label>
-        <select id="region" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="0.85">Southeast</option>
-          <option value="0.90">Midwest</option>
-          <option value="0.95">South</option>
-          <option value="1.00" selected>National Average</option>
-          <option value="1.05">Mountain</option>
-          <option value="1.10">Northeast</option>
-          <option value="1.10">Pacific NW</option>
-          <option value="1.15">West</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="homeType">Home Type</label>
-        <select id="homeType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.0" selected>Single Story</option>
-          <option value="1.1">Multi-Story</option>
-          <option value="1.15">Attic Installation</option>
-          <option value="1.1">Crawlspace</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="ductwork">Project Complexity</label>
-        <select id="ductwork" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.0" selected>Existing (good condition)</option>
-          <option value="1.15">Partial Modification Needed</option>
-          <option value="1.5">Major Renovation Required</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="scope">Project Scope</label>
+        <select id="scope" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="minor">Minor (cosmetic refresh)</option>
+          <option value="mid" selected>Mid-Range (standard remodel)</option>
+          <option value="major">Major (high-end / structural)</option>
         </select>
       </div>
     </div>
 
-
     <!-- Results -->
     <div id="results" class="mt-8 border-t border-border pt-8">
-      <h3 class="font-heading font-bold text-xl mb-6">Your Estimated Cost</h3>
+      <h3 class="font-heading font-bold text-xl mb-6">ROI Estimate</h3>
 
-      <!-- Cost Range Bar -->
+      <!-- Main ROI Display -->
       <div class="bg-bg-dark rounded-xl p-6 mb-6">
         <div class="flex justify-between items-end mb-3">
           <div class="text-center">
-            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Low</div>
-            <div id="result-low" class="font-heading font-extrabold text-xl text-text-secondary">--</div>
+            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Project Cost</div>
+            <div id="result-cost" class="font-heading font-extrabold text-xl text-text-secondary">--</div>
           </div>
           <div class="text-center">
-            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Mid Estimate</div>
-            <div id="result-mid" class="font-heading font-extrabold text-3xl text-accent">--</div>
+            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">ROI</div>
+            <div id="result-roi" class="font-heading font-extrabold text-3xl text-accent">--</div>
           </div>
           <div class="text-center">
-            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">High</div>
-            <div id="result-high" class="font-heading font-extrabold text-xl text-text-secondary">--</div>
+            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Value Added</div>
+            <div id="result-value" class="font-heading font-extrabold text-xl text-text-secondary">--</div>
           </div>
         </div>
-        <!-- Visual range bar -->
         <div class="relative h-3 bg-bg-card rounded-full overflow-hidden mt-4">
           <div id="range-bar" class="absolute inset-y-0 left-[10%] right-[10%] rounded-full bg-gradient-to-r from-accent/40 via-accent to-accent/40"></div>
           <div id="range-marker" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-accent rounded-full border-2 border-white shadow-lg"></div>
         </div>
       </div>
 
-      <!-- Monthly Financing + Tax Credit -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <!-- Detail Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">60-Month Financing</div>
-          <div id="result-monthly60" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">per month</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cost Recovered</div>
+          <div id="result-recovered" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">at resale</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">120-Month Financing</div>
-          <div id="result-monthly120" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">per month</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Net Cost to Owner</div>
+          <div id="result-netcost" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">cost minus value added</div>
         </div>
-        <div id="tax-credit-card" class="hidden bg-bg-dark rounded-xl p-5 text-center border border-green-500/30">
-          <div class="text-green-400 text-xs font-medium uppercase tracking-wider mb-2">Federal Tax Credit</div>
-          <div class="font-heading font-extrabold text-2xl text-green-400">Up to $2,000</div>
-          <div class="text-text-muted text-xs mt-1">25C credit for qualifying high-efficiency options</div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">New Home Value</div>
+          <div id="result-newhome" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">estimated after remodel</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cost as % of Home</div>
+          <div id="result-percent" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">of current value</div>
         </div>
       </div>
 
-      <p class="text-text-muted text-sm italic">This is a ballpark estimate based on national averages. Actual costs vary by contractor, equipment brand, and job-specific conditions. Get exact pricing from a licensed General Contracting contractor in your area.</p>
+      <p class="text-text-muted text-sm italic">ROI ranges based on national cost-versus-value data. Actual returns vary by market, neighborhood, project quality, and timing of sale. Use this to set homeowner expectations, not as a guarantee of resale value.</p>
     </div>
   </div>
 
   <!-- Content sections -->
   <Fragment slot="content">
     <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
-      <!-- How to Use -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Estimator</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Select your system type.</strong> Choose between a traditional primary systems combo, a high-efficiency option, or a premium system. Premium options are priced by the number of indoor zones.</p>
-          <p><strong class="text-text-primary">2. Pick your efficiency level.</strong> Standard efficiency costs less upfront but more to operate. High-efficiency systems cost more to install but lower monthly energy bills and may qualify for federal tax credits.</p>
-          <p><strong class="text-text-primary">3. Set the system size and your region.</strong> Tonnage should match your home's load calculation. Regional labor and material costs vary significantly, with the Southeast being most affordable and the West Coast being most expensive.</p>
-          <p><strong class="text-text-primary">4. Adjust for complexity.</strong> Multi-story homes, difficult access, and special requirements add labor time. Major system changes can add 50% to the total project cost.</p>
+          <p><strong class="text-text-primary">1. Select the project type.</strong> Different remodeling categories have different typical ROI ranges. Kitchens and bathrooms are the most commonly referenced, but siding, windows, decks, and additions each have their own return profiles.</p>
+          <p><strong class="text-text-primary">2. Enter the project cost.</strong> Use your actual bid or estimated project cost. The calculator applies ROI percentages based on the project type and scope to estimate how much of that cost translates to increased home value.</p>
+          <p><strong class="text-text-primary">3. Enter the current home value.</strong> This provides context for the investment. A $50,000 kitchen remodel in a $200,000 home is a very different proposition than the same remodel in a $600,000 home. Projects that exceed 10-15% of home value tend to see diminishing ROI.</p>
+          <p><strong class="text-text-primary">4. Choose the project scope.</strong> Minor cosmetic refreshes typically have the highest ROI percentage. Mid-range standard remodels are the sweet spot. Major high-end or structural projects recover less as a percentage but add more absolute value.</p>
         </div>
       </section>
 
-      <!-- What Affects Cost -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">What Affects General Contracting Replacement Cost</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">What Affects Remodeling ROI</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">System type and efficiency.</strong> The biggest cost driver is the equipment itself. A basic standard efficiency system is the most affordable option. High-efficiency options cost slightly less for the equipment but provide both heating and cooling. High-efficiency units (high-efficiency) can cost double the standard models.</p>
-          <p><strong class="text-text-primary">System size.</strong> Larger homes need larger systems. The cost scales roughly proportionally with tonnage. A 5-ton system costs significantly more than a 2-ton system in both equipment and labor.</p>
-          <p><strong class="text-text-primary">Regional pricing.</strong> Labor rates, permit costs, and material availability vary by region. Southeastern states tend to have the lowest installation costs, while the West Coast and Northeast are the most expensive markets.</p>
-          <p><strong class="text-text-primary">Home complexity.</strong> Multi-story homes require more additional materials, longer runs, and difficult access. Work in tight spaces, at height, or in extreme weather adds difficulty and time. Complex jobs with multiple components take longer and cost more.</p>
-          <p><strong class="text-text-primary">System condition.</strong> If your existing existing systems are in good shape, the contractor simply connects the new system. Partial modifications (adding a return, resizing a trunk line) add moderate cost. A full system overhaul is a major project that can increase the total price by 50%.</p>
+          <p><strong class="text-text-primary">Project type matters most.</strong> Curb appeal projects (garage doors, siding, stone veneer) consistently deliver the highest ROI because they affect every buyer's first impression. Kitchen and bath remodels add significant livability value. Luxury additions and niche projects (wine cellars, home theaters) appeal to fewer buyers and recover less.</p>
+          <p><strong class="text-text-primary">Scope and finish level.</strong> Mid-range projects with broad market appeal consistently outperform ultra-high-end finishes. A $35,000 kitchen refresh with solid-surface counters and new appliances often recovers a higher percentage than a $120,000 chef's kitchen with custom everything. The sweet spot is quality finishes that appeal to the widest buyer pool in the neighborhood.</p>
+          <p><strong class="text-text-primary">Neighborhood context.</strong> A remodel that is significantly above the neighborhood standard will not recover as well as one that brings a home in line with comparable properties. Advise homeowners to remodel to the top of the neighborhood range, not beyond it.</p>
+          <p><strong class="text-text-primary">Market timing.</strong> In a hot seller's market, remodels recover more because buyers are competing for limited inventory. In a buyer's market, ROI drops because buyers have more options and less urgency. Long-term averages are more reliable for planning purposes.</p>
+          <p><strong class="text-text-primary">Quality of work.</strong> This is where GCs can directly influence ROI. A well-executed remodel with attention to detail, proper permits, and warranty documentation recovers more at resale than cut-corner work. Your reputation and workmanship are part of the homeowner's return on investment.</p>
         </div>
       </section>
 
-      <!-- When To Use This -->
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">During sales visits.</strong> Pull this up on your tablet while sitting at the kitchen table with a homeowner. Walk through the options together, show them how efficiency level and system condition affect the price, and set realistic expectations before running your detailed proposal.</p>
-          <p><strong class="text-text-primary">Phone estimates.</strong> When a homeowner calls asking "how much for a new AC?" you can walk them through a few questions and give a ballpark range on the spot. This builds trust and qualifies the lead before scheduling an in-home visit.</p>
-          <p><strong class="text-text-primary">Website lead generation.</strong> Embed this calculator on your website so homeowners can self-educate on pricing. Visitors who use the tool and then call you are better-informed and more likely to convert because they already have realistic price expectations.</p>
+          <p><strong class="text-text-primary">Sales presentations.</strong> When a homeowner is weighing whether to pull the trigger on a remodel, showing them the ROI data helps justify the investment. Frame it as spending $50,000 and getting $35,000 back in equity, making the net cost of enjoying a new kitchen only $15,000. That reframe closes deals.</p>
+          <p><strong class="text-text-primary">Scope discussions.</strong> When a homeowner is deciding between a minor refresh and a major overhaul, show them the ROI difference. Sometimes the minor version is the smarter financial move, and you build trust by recommending the option that serves their goals best rather than just selling the biggest project.</p>
+          <p><strong class="text-text-primary">Marketing and content.</strong> Use ROI data in your website content, social media, and proposal materials. Homeowners who see you understand the investment side of remodeling perceive you as more professional and trustworthy than contractors who only talk about finishes and timelines.</p>
         </div>
       </section>
 
-      <!-- FAQ -->
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a new General Contracting system cost?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A new General Contracting system typically costs between $5,000 and $15,000 installed, depending on system type, efficiency level, home size, and region. A standard efficiency primary systems for a average home averages around $6,500, while a high-efficiency high-efficiency system can run $11,500 or more before regional and complexity adjustments.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What remodeling projects have the best ROI?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Garage door replacement, manufactured stone veneer, and minor kitchen remodels consistently deliver the highest ROI, often recovering 70-95% of cost at resale. Siding replacement and window upgrades also perform well. Major kitchen and bathroom remodels recover less percentage-wise (50-75%) but add more absolute dollar value. Decks and outdoor living spaces vary heavily by region.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What size General Contracting system do I need?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">System size is measured in tons and depends on your home's square footage, insulation, climate, and layout. A rough rule of thumb is 1 ton per 500-600 square feet, but a proper Manual J load calculation is required for accurate sizing. Oversized systems short-cycle and waste energy, while undersized systems can't keep up on extreme days.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a kitchen remodel increase home value?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A minor kitchen remodel (cabinet refacing, new hardware, countertops, and appliances) costing $25,000-$40,000 typically recovers 70-80% at resale. A major kitchen remodel ($75,000-$150,000+) recovers 50-65%. The key insight for GCs is that mid-range projects with broad appeal recover the highest percentage. Ultra-high-end finishes in average neighborhoods recover the least.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Are there tax credits for new General Contracting systems?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. The federal 25C energy efficiency tax credit offers up to $2,000 for qualifying high-efficiency systems installed in your primary residence. The system must meet specific efficiency requirements (CEE Tier 1 or higher). Standard air conditioners and systems may qualify for a smaller $600 credit. Check with your tax advisor for current eligibility details.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Does a bathroom remodel add value to a home?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. A mid-range bathroom remodel costing $25,000-$40,000 typically recovers 60-70% at resale. A major upscale bathroom remodel recovers less percentage-wise but adds more absolute value. Adding a bathroom where there was none (e.g., finishing a half-bath or adding a bathroom to a basement) often has the highest ROI because it changes the functional bedroom/bath count of the home.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does General Contracting installation take?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A straightforward like-for-like replacement typically takes 1 day (6-10 hours). If new system work is required, expect 2-3 days. Converting from one system type to another (e.g., system to high-efficiency option) may take 1-2 days. Complex multi-zone premium installations can take 2-4 days depending on the number of indoor units and line set routing.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I use ROI data when selling remodeling projects?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Absolutely. ROI data helps homeowners justify the investment and gives them confidence that the money is well spent. When you can show a homeowner that their $50,000 kitchen remodel is likely to add $35,000-$40,000 in home value, it reframes the project from a pure expense to a partial investment. Pair ROI data with lifestyle benefits for the most effective sales presentation.</div>
           </details>
         </div>
       </section>
@@ -225,57 +191,86 @@ const faqSchema = {
 </ToolLayout>
 
 <script>
-  function calculate() {
-    const systemType = (document.getElementById('systemType') as HTMLSelectElement).value;
-    const efficiency = (document.getElementById('efficiency') as HTMLSelectElement).value;
-    const tons = parseFloat((document.getElementById('tons') as HTMLSelectElement).value);
-    const region = parseFloat((document.getElementById('region') as HTMLSelectElement).value);
-    const homeType = parseFloat((document.getElementById('homeType') as HTMLSelectElement).value);
-    const ductwork = parseFloat((document.getElementById('ductwork') as HTMLSelectElement).value);
-
-    // Base prices by system type and efficiency
-    const basePrices: Record<string, Record<string, number>> = {
-      'standard-system': { standard: 6500, mid: 9000, high: 13000 },
-      'heat-pump': { standard: 5500, mid: 8000, high: 11500 },
-      'mini-1': { standard: 4500, mid: 4500, high: 4500 },
-      'mini-2': { standard: 7000, mid: 7000, high: 7000 },
-      'mini-3': { standard: 10000, mid: 10000, high: 10000 },
-      'mini-4': { standard: 13000, mid: 13000, high: 13000 },
-    };
-
-    const basePrice = basePrices[systemType]?.[efficiency] ?? 9000;
-
-    // Formula: Base_Price x Regional x (Tons/3.0) x Complexity x Complexity
-    const estimatedCost = basePrice * region * (size / 1.0) * homeType * ductwork;
-
-    const low = Math.round(estimatedCost * 0.8);
-    const mid = Math.round(estimatedCost);
-    const high = Math.round(estimatedCost * 1.2);
-    const monthly60 = Math.round(mid / 60);
-    const monthly120 = Math.round(mid / 120);
-
-    // Format currency
-    const fmt = (n: number) => '$' + n.toLocaleString();
-
-    document.getElementById('result-low')!.textContent = fmt(low);
-    document.getElementById('result-mid')!.textContent = fmt(mid);
-    document.getElementById('result-high')!.textContent = fmt(high);
-    document.getElementById('result-monthly60')!.textContent = fmt(monthly60);
-    document.getElementById('result-monthly120')!.textContent = fmt(monthly120);
-
-    // Show/hide tax credit for high-efficiency option and premium option systems
-    const taxCreditCard = document.getElementById('tax-credit-card')!;
-    const isHeatPump = systemType === 'heat-pump' || systemType.startsWith('mini-');
-    taxCreditCard.classList.toggle('hidden', !isHeatPump);
-
+  interface ROIData {
+    minor: { low: number; high: number };
+    mid: { low: number; high: number };
+    major: { low: number; high: number };
   }
 
+  function calculate(): void {
+    const projectType = (document.getElementById('projectType') as HTMLSelectElement).value;
+    const projectCost = parseFloat((document.getElementById('projectCost') as HTMLInputElement).value) || 50000;
+    const homeValue = parseFloat((document.getElementById('homeValue') as HTMLInputElement).value) || 350000;
+    const scope = (document.getElementById('scope') as HTMLSelectElement).value;
 
-  // Auto-calculate on input change
-  document.querySelectorAll('#cost-calc select').forEach(el => {
+    // ROI percentages by project type and scope (based on Cost vs Value data ranges)
+    const roiData: Record<string, ROIData> = {
+      kitchen: {
+        minor: { low: 72, high: 85 },
+        mid: { low: 57, high: 75 },
+        major: { low: 45, high: 65 },
+      },
+      bathroom: {
+        minor: { low: 65, high: 80 },
+        mid: { low: 55, high: 70 },
+        major: { low: 42, high: 60 },
+      },
+      basement: {
+        minor: { low: 60, high: 75 },
+        mid: { low: 50, high: 68 },
+        major: { low: 40, high: 58 },
+      },
+      deck: {
+        minor: { low: 60, high: 75 },
+        mid: { low: 55, high: 72 },
+        major: { low: 48, high: 65 },
+      },
+      addition: {
+        minor: { low: 50, high: 65 },
+        mid: { low: 45, high: 60 },
+        major: { low: 38, high: 55 },
+      },
+      siding: {
+        minor: { low: 70, high: 85 },
+        mid: { low: 65, high: 80 },
+        major: { low: 55, high: 72 },
+      },
+      windows: {
+        minor: { low: 65, high: 78 },
+        mid: { low: 60, high: 73 },
+        major: { low: 52, high: 68 },
+      },
+    };
+
+    const data = roiData[projectType]?.[scope as keyof ROIData] ?? { low: 50, high: 70 };
+
+    // If project cost exceeds 15% of home value, reduce ROI slightly
+    const costPercent = projectCost / homeValue;
+    const overImprovementPenalty = costPercent > 0.15 ? Math.max(0.85, 1 - (costPercent - 0.15)) : 1.0;
+
+    const lowROI = Math.round(data.low * overImprovementPenalty);
+    const highROI = Math.round(data.high * overImprovementPenalty);
+    const midROI = Math.round((lowROI + highROI) / 2);
+
+    const valueAdded = Math.round(projectCost * (midROI / 100));
+    const netCost = projectCost - valueAdded;
+    const newHomeValue = homeValue + valueAdded;
+
+    const fmt = (n: number): string => '$' + n.toLocaleString();
+
+    document.getElementById('result-cost')!.textContent = fmt(projectCost);
+    document.getElementById('result-roi')!.textContent = midROI + '%';
+    document.getElementById('result-value')!.textContent = fmt(valueAdded);
+    document.getElementById('result-recovered')!.textContent = lowROI + '-' + highROI + '%';
+    document.getElementById('result-netcost')!.textContent = fmt(netCost);
+    document.getElementById('result-newhome')!.textContent = fmt(newHomeValue);
+    document.getElementById('result-percent')!.textContent = (costPercent * 100).toFixed(1) + '%';
+  }
+
+  document.querySelectorAll('#cost-calc select, #cost-calc input').forEach(el => {
     el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
   });
 
-  // Calculate on load with defaults
   calculate();
 </script>

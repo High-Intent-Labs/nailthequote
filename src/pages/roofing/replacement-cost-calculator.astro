@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How much does a new Roofing system cost?",
+      "name": "How much does a roof replacement cost?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A new Roofing system typically costs between $5,000 and $15,000 installed, depending on system type, efficiency level, home size, and region. A standard efficiency primary systems for a average home averages around $6,500, while a high-efficiency high-efficiency system can run $11,500 or more before regional and complexity adjustments."
+        "text": "A full roof replacement typically costs between $350 and $550 per square (100 sq ft) for asphalt shingles, or $7,000 to $16,500 for an average 30-square roof. Metal roofing runs $600 to $1,200 per square. Tile and slate range from $1,000 to $2,500 per square. The total depends on material type, roof pitch, number of layers to tear off, complexity, and local labor rates."
       }
     },
     {
       "@type": "Question",
-      "name": "What size Roofing system do I need?",
+      "name": "How do I calculate the number of roofing squares?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "System size is measured in tons and depends on your home's square footage, insulation, climate, and layout. A rough rule of thumb is 1 ton per 500-600 square feet, but a proper Manual J load calculation is required for accurate sizing. Oversized systems short-cycle and waste energy, while undersized systems can't keep up on extreme days."
+        "text": "Measure the total roof area in square feet and divide by 100. One roofing square equals 100 square feet. For a simple gable roof, multiply the footprint area by a pitch multiplier: 4/12 pitch uses 1.054, 6/12 uses 1.118, 8/12 uses 1.202, 10/12 uses 1.302, 12/12 uses 1.414. A 2,000 sq ft footprint at 6/12 pitch is roughly 2,236 sq ft or about 22.4 squares."
       }
     },
     {
       "@type": "Question",
-      "name": "Are there tax credits for new Roofing systems?",
+      "name": "How long does a roof replacement take?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. The federal 25C energy efficiency tax credit offers up to $2,000 for qualifying high-efficiency systems installed in your primary residence. The system must meet specific efficiency requirements (CEE Tier 1 or higher). Standard air conditioners and systems may qualify for a smaller $600 credit. Check with your tax advisor for current eligibility details."
+        "text": "A typical asphalt shingle replacement on a 25 to 35 square roof takes a crew of 4 to 6 workers about 1 to 3 days. A single-layer tear-off on a simple gable roof can finish in a day. Multiple layers to remove, steep pitch, cut-up rooflines with dormers and valleys, or bad weather extend the timeline. Metal and tile roofs typically take 3 to 5 days depending on complexity."
       }
     },
     {
       "@type": "Question",
-      "name": "How long does Roofing installation take?",
+      "name": "What is included in a roof replacement quote?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A straightforward like-for-like replacement typically takes 1 day (6-10 hours). If new system work is required, expect 2-3 days. Converting from one system type to another (e.g., system to high-efficiency option) may take 1-2 days. Complex multi-zone premium installations can take 2-4 days depending on the number of indoor units and line set routing."
+        "text": "A complete roof replacement quote should include tear-off and disposal of existing material, new underlayment, drip edge, flashing, ridge cap, and the roofing material itself. It should also cover labor, permits, dumpster rental, and cleanup. Items often quoted separately include gutter replacement, soffit and fascia repair, skylight re-flashing, and chimney flashing. Always itemize so the homeowner sees exactly what they are paying for."
       }
     }
   ]
@@ -49,72 +49,62 @@ const faqSchema = {
     <!-- Input Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="systemType">System Type</label>
-        <select id="systemType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="standard-system">Standard System</option>
-          <option value="heat-pump">Premium Option</option>
-          <option value="mini-1">Option 1-Zone</option>
-          <option value="mini-2">Option 2-Zone</option>
-          <option value="mini-3">Option 3-Zone</option>
-          <option value="mini-4">Option 4-Zone</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roofSquares">Roof Size (squares)</label>
+        <input type="number" id="roofSquares" value="30" min="5" max="200" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">1 square = 100 sq ft of roof area</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="roofPitch">Roof Pitch</label>
+        <select id="roofPitch" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="low">Low (3/12 - 5/12)</option>
+          <option value="standard" selected>Standard (6/12 - 8/12)</option>
+          <option value="steep">Steep (9/12 - 12/12)</option>
+          <option value="extreme">Extreme (12/12+)</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="efficiency">Efficiency Level</label>
-        <select id="efficiency" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="standard">Standard (14 efficiency / 80% efficiency)</option>
-          <option value="mid" selected>Mid-Range (16 efficiency / 96% efficiency)</option>
-          <option value="high">High Efficiency (high-efficiency)</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="materialType">Material Type</label>
+        <select id="materialType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="3tab">3-Tab Asphalt Shingle</option>
+          <option value="architectural" selected>Architectural Shingle</option>
+          <option value="premium-shingle">Premium/Designer Shingle</option>
+          <option value="metal-standing">Standing Seam Metal</option>
+          <option value="metal-corrugated">Corrugated Metal</option>
+          <option value="tile">Clay / Concrete Tile</option>
+          <option value="slate">Slate</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tons">System Size (Tons)</label>
-        <select id="tons" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.5">1.5 Ton</option>
-          <option value="2">2 Ton</option>
-          <option value="2.5">2.5 Ton</option>
-          <option value="3" selected>3 Ton</option>
-          <option value="3.5">3.5 Ton</option>
-          <option value="4">4 Ton</option>
-          <option value="5">5 Ton</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="layersToRemove">Layers to Tear Off</label>
+        <select id="layersToRemove" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="1" selected>1 Layer</option>
+          <option value="2">2 Layers</option>
+          <option value="3">3 Layers</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="region">Region</label>
-        <select id="region" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="0.85">Southeast</option>
-          <option value="0.90">Midwest</option>
-          <option value="0.95">South</option>
-          <option value="1.00" selected>National Average</option>
-          <option value="1.05">Mountain</option>
-          <option value="1.10">Northeast</option>
-          <option value="1.10">Pacific NW</option>
-          <option value="1.15">West</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="complexity">Roof Complexity</label>
+        <select id="complexity" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="simple">Simple (gable, few penetrations)</option>
+          <option value="moderate" selected>Moderate (hip, some valleys)</option>
+          <option value="complex">Complex (dormers, valleys, skylights)</option>
+          <option value="very-complex">Very Complex (multi-level, turrets)</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="homeType">Home Type</label>
-        <select id="homeType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.0" selected>Single Story</option>
-          <option value="1.1">Multi-Story</option>
-          <option value="1.15">Attic Installation</option>
-          <option value="1.1">Crawlspace</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="ductwork">Project Complexity</label>
-        <select id="ductwork" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.0" selected>Existing (good condition)</option>
-          <option value="1.15">Partial Modification Needed</option>
-          <option value="1.5">Major Renovation Required</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="deckRepair">Deck Repair Needed</label>
+        <select id="deckRepair" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="none" selected>None</option>
+          <option value="minor">Minor (a few sheets)</option>
+          <option value="moderate">Moderate (10-20% of deck)</option>
+          <option value="major">Major (20%+ of deck)</option>
         </select>
       </div>
     </div>
 
-
     <!-- Results -->
     <div id="results" class="mt-8 border-t border-border pt-8">
-      <h3 class="font-heading font-bold text-xl mb-6">Your Estimated Cost</h3>
+      <h3 class="font-heading font-bold text-xl mb-6">Your Estimate</h3>
 
       <!-- Cost Range Bar -->
       <div class="bg-bg-dark rounded-xl p-6 mb-6">
@@ -139,26 +129,32 @@ const faqSchema = {
         </div>
       </div>
 
-      <!-- Monthly Financing + Tax Credit -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <!-- Breakdown Cards -->
+      <h3 class="font-heading font-bold text-lg mb-4">Cost Breakdown</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">60-Month Financing</div>
-          <div id="result-monthly60" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">per month</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Materials</div>
+          <div id="result-materials" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">shingles, underlayment, flashing</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">120-Month Financing</div>
-          <div id="result-monthly120" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">per month</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Labor</div>
+          <div id="result-labor" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">installation crew</div>
         </div>
-        <div id="tax-credit-card" class="hidden bg-bg-dark rounded-xl p-5 text-center border border-green-500/30">
-          <div class="text-green-400 text-xs font-medium uppercase tracking-wider mb-2">Federal Tax Credit</div>
-          <div class="font-heading font-extrabold text-2xl text-green-400">Up to $2,000</div>
-          <div class="text-text-muted text-xs mt-1">25C credit for qualifying high-efficiency options</div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Tear-Off & Disposal</div>
+          <div id="result-tearoff" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">removal + dumpster</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Cost per Square</div>
+          <div id="result-persquare" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">all-in per 100 sq ft</div>
         </div>
       </div>
 
-      <p class="text-text-muted text-sm italic">This is a ballpark estimate based on national averages. Actual costs vary by contractor, equipment brand, and job-specific conditions. Get exact pricing from a licensed Roofing contractor in your area.</p>
+      <p class="text-text-muted text-sm italic">Ballpark estimate for budgeting and quoting. Actual costs depend on local labor rates, material brand, waste factor, permit fees, and on-site conditions. Always measure and inspect the deck before finalizing your quote.</p>
     </div>
   </div>
 
@@ -169,22 +165,22 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Estimator</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Select your system type.</strong> Choose between a traditional primary systems combo, a high-efficiency option, or a premium system. Premium options are priced by the number of indoor zones.</p>
-          <p><strong class="text-text-primary">2. Pick your efficiency level.</strong> Standard efficiency costs less upfront but more to operate. High-efficiency systems cost more to install but lower monthly energy bills and may qualify for federal tax credits.</p>
-          <p><strong class="text-text-primary">3. Set the system size and your region.</strong> Tonnage should match your home's load calculation. Regional labor and material costs vary significantly, with the Southeast being most affordable and the West Coast being most expensive.</p>
-          <p><strong class="text-text-primary">4. Adjust for complexity.</strong> Multi-story homes, difficult access, and special requirements add labor time. Major system changes can add 50% to the total project cost.</p>
+          <p><strong class="text-text-primary">1. Enter the roof size in squares.</strong> If you know the roof area in square feet, divide by 100 to get squares. If you only have the home footprint, apply the pitch multiplier first. A 2,000 sq ft footprint at 6/12 pitch equals roughly 22 squares.</p>
+          <p><strong class="text-text-primary">2. Set the pitch and material.</strong> Steeper roofs require more safety equipment, slow down production, and increase material waste. Material type is the single biggest cost variable, from budget 3-tab shingles to premium slate.</p>
+          <p><strong class="text-text-primary">3. Specify layers and complexity.</strong> Multiple existing layers mean more tear-off labor and heavier dumpster loads. Complex rooflines with valleys, dormers, skylights, and chimney penetrations dramatically increase flashing and cut-in time.</p>
+          <p><strong class="text-text-primary">4. Add deck repair if needed.</strong> You will not know the full extent of deck damage until tear-off, but estimate what you can from the attic inspection. Build a per-sheet allowance into your quote for surprises.</p>
         </div>
       </section>
 
       <!-- What Affects Cost -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">What Affects Roofing Replacement Cost</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">What Affects Roof Replacement Cost</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">System type and efficiency.</strong> The biggest cost driver is the equipment itself. A basic standard efficiency system is the most affordable option. High-efficiency options cost slightly less for the equipment but provide both heating and cooling. High-efficiency units (high-efficiency) can cost double the standard models.</p>
-          <p><strong class="text-text-primary">System size.</strong> Larger homes need larger systems. The cost scales roughly proportionally with tonnage. A 5-ton system costs significantly more than a 2-ton system in both equipment and labor.</p>
-          <p><strong class="text-text-primary">Regional pricing.</strong> Labor rates, permit costs, and material availability vary by region. Southeastern states tend to have the lowest installation costs, while the West Coast and Northeast are the most expensive markets.</p>
-          <p><strong class="text-text-primary">Home complexity.</strong> Multi-story homes require more additional materials, longer runs, and difficult access. Work in tight spaces, at height, or in extreme weather adds difficulty and time. Complex jobs with multiple components take longer and cost more.</p>
-          <p><strong class="text-text-primary">System condition.</strong> If your existing existing systems are in good shape, the contractor simply connects the new system. Partial modifications (adding a return, resizing a trunk line) add moderate cost. A full system overhaul is a major project that can increase the total price by 50%.</p>
+          <p><strong class="text-text-primary">Material choice is the biggest variable.</strong> Three-tab asphalt is the most affordable at $80-120 per square for materials. Architectural shingles run $100-180 per square and are the most popular choice. Standing seam metal costs $300-700 per square but lasts 40-60 years. Tile and slate are premium options at $500-1,500+ per square with 75-100 year lifespans.</p>
+          <p><strong class="text-text-primary">Tear-off labor compounds with layers.</strong> Removing a single layer of asphalt shingles costs roughly $100-150 per square in labor and disposal. Each additional layer adds $50-75 per square because the material is heavier and harder to strip. A three-layer tear-off on a 30-square roof can add $4,500-6,750 to the job versus a single layer.</p>
+          <p><strong class="text-text-primary">Pitch affects everything.</strong> Low-slope roofs (3/12 to 5/12) are walkable and fast. Standard pitch (6/12 to 8/12) requires some safety gear but is still efficient. Steep roofs (9/12+) need roof jacks, harnesses, and toe boards which cut production speed by 30-50% and increase the risk factor you need to price for.</p>
+          <p><strong class="text-text-primary">Complexity drives labor hours.</strong> A simple gable roof with two planes can be torn off and re-roofed quickly. Every valley, hip, dormer, skylight, and pipe penetration adds flashing work, cutting, and detail time. Complex roofs can take twice the crew-hours of a simple roof with the same square footage.</p>
+          <p><strong class="text-text-primary">Deck condition is the wildcard.</strong> Rotted or damaged decking has to be replaced before new roofing goes on. OSB or plywood runs $50-75 per sheet installed. On older homes, you may find skip sheathing that needs full re-decking. Always inspect from the attic and build a contingency into your bid.</p>
         </div>
       </section>
 
@@ -192,9 +188,9 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">During sales visits.</strong> Pull this up on your tablet while sitting at the kitchen table with a homeowner. Walk through the options together, show them how efficiency level and system condition affect the price, and set realistic expectations before running your detailed proposal.</p>
-          <p><strong class="text-text-primary">Phone estimates.</strong> When a homeowner calls asking "how much for a new AC?" you can walk them through a few questions and give a ballpark range on the spot. This builds trust and qualifies the lead before scheduling an in-home visit.</p>
-          <p><strong class="text-text-primary">Website lead generation.</strong> Embed this calculator on your website so homeowners can self-educate on pricing. Visitors who use the tool and then call you are better-informed and more likely to convert because they already have realistic price expectations.</p>
+          <p><strong class="text-text-primary">Qualifying leads before the site visit.</strong> When a homeowner calls for a roof quote, ask for the approximate home size and current roofing material. Plug the numbers in and give them a ballpark range over the phone. This sets expectations and filters out callers who are not ready to invest in a quality replacement.</p>
+          <p><strong class="text-text-primary">On-site estimating.</strong> After your roof inspection, enter the actual measurements, pitch, layer count, and complexity. Show the homeowner the breakdown on your tablet so they can see where the money goes. Transparency builds trust and shortens the sales cycle.</p>
+          <p><strong class="text-text-primary">Bid review and margin checking.</strong> Run your upcoming bids through this calculator to see if your pricing is in the right range. If you are consistently below the mid estimate, you may need to raise prices. If you are above, make sure your value proposition justifies the premium.</p>
         </div>
       </section>
 
@@ -203,20 +199,20 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a new Roofing system cost?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A new Roofing system typically costs between $5,000 and $15,000 installed, depending on system type, efficiency level, home size, and region. A standard efficiency primary systems for a average home averages around $6,500, while a high-efficiency high-efficiency system can run $11,500 or more before regional and complexity adjustments.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a roof replacement cost?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A full roof replacement typically costs between $350 and $550 per square (100 sq ft) for asphalt shingles, or $7,000 to $16,500 for an average 30-square roof. Metal roofing runs $600 to $1,200 per square. Tile and slate range from $1,000 to $2,500 per square. The total depends on material type, roof pitch, number of layers to tear off, complexity, and local labor rates.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What size Roofing system do I need?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">System size is measured in tons and depends on your home's square footage, insulation, climate, and layout. A rough rule of thumb is 1 ton per 500-600 square feet, but a proper Manual J load calculation is required for accurate sizing. Oversized systems short-cycle and waste energy, while undersized systems can't keep up on extreme days.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate the number of roofing squares?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Measure the total roof area in square feet and divide by 100. One roofing square equals 100 square feet. For a simple gable roof, multiply the footprint area by a pitch multiplier: 4/12 pitch uses 1.054, 6/12 uses 1.118, 8/12 uses 1.202, 10/12 uses 1.302, 12/12 uses 1.414. A 2,000 sq ft footprint at 6/12 pitch is roughly 2,236 sq ft or about 22.4 squares.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Are there tax credits for new Roofing systems?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. The federal 25C energy efficiency tax credit offers up to $2,000 for qualifying high-efficiency systems installed in your primary residence. The system must meet specific efficiency requirements (CEE Tier 1 or higher). Standard air conditioners and systems may qualify for a smaller $600 credit. Check with your tax advisor for current eligibility details.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does a roof replacement take?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A typical asphalt shingle replacement on a 25 to 35 square roof takes a crew of 4 to 6 workers about 1 to 3 days. A single-layer tear-off on a simple gable roof can finish in a day. Multiple layers to remove, steep pitch, cut-up rooflines with dormers and valleys, or bad weather extend the timeline. Metal and tile roofs typically take 3 to 5 days depending on complexity.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does Roofing installation take?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A straightforward like-for-like replacement typically takes 1 day (6-10 hours). If new system work is required, expect 2-3 days. Converting from one system type to another (e.g., system to high-efficiency option) may take 1-2 days. Complex multi-zone premium installations can take 2-4 days depending on the number of indoor units and line set routing.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is included in a roof replacement quote?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A complete roof replacement quote should include tear-off and disposal of existing material, new underlayment, drip edge, flashing, ridge cap, and the roofing material itself. It should also cover labor, permits, dumpster rental, and cleanup. Items often quoted separately include gutter replacement, soffit and fascia repair, skylight re-flashing, and chimney flashing. Always itemize so the homeowner sees exactly what they are paying for.</div>
           </details>
         </div>
       </section>
@@ -225,55 +221,102 @@ const faqSchema = {
 </ToolLayout>
 
 <script>
-  function calculate() {
-    const systemType = (document.getElementById('systemType') as HTMLSelectElement).value;
-    const efficiency = (document.getElementById('efficiency') as HTMLSelectElement).value;
-    const tons = parseFloat((document.getElementById('tons') as HTMLSelectElement).value);
-    const region = parseFloat((document.getElementById('region') as HTMLSelectElement).value);
-    const homeType = parseFloat((document.getElementById('homeType') as HTMLSelectElement).value);
-    const ductwork = parseFloat((document.getElementById('ductwork') as HTMLSelectElement).value);
+  function calculate(): void {
+    const squares = parseFloat((document.getElementById('roofSquares') as HTMLInputElement).value) || 30;
+    const pitch = (document.getElementById('roofPitch') as HTMLSelectElement).value;
+    const materialType = (document.getElementById('materialType') as HTMLSelectElement).value;
+    const layers = parseInt((document.getElementById('layersToRemove') as HTMLSelectElement).value);
+    const complexity = (document.getElementById('complexity') as HTMLSelectElement).value;
+    const deckRepair = (document.getElementById('deckRepair') as HTMLSelectElement).value;
 
-    // Base prices by system type and efficiency
-    const basePrices: Record<string, Record<string, number>> = {
-      'standard-system': { standard: 6500, mid: 9000, high: 13000 },
-      'heat-pump': { standard: 5500, mid: 8000, high: 11500 },
-      'mini-1': { standard: 4500, mid: 4500, high: 4500 },
-      'mini-2': { standard: 7000, mid: 7000, high: 7000 },
-      'mini-3': { standard: 10000, mid: 10000, high: 10000 },
-      'mini-4': { standard: 13000, mid: 13000, high: 13000 },
+    // Material cost per square (materials only)
+    const materialCosts: Record<string, { low: number; high: number }> = {
+      '3tab':              { low: 80,   high: 120  },
+      'architectural':     { low: 100,  high: 180  },
+      'premium-shingle':   { low: 160,  high: 280  },
+      'metal-standing':    { low: 300,  high: 700  },
+      'metal-corrugated':  { low: 200,  high: 400  },
+      'tile':              { low: 500,  high: 1000 },
+      'slate':             { low: 800,  high: 1500 },
     };
 
-    const basePrice = basePrices[systemType]?.[efficiency] ?? 9000;
+    // Base labor cost per square (installation only)
+    const laborCosts: Record<string, { low: number; high: number }> = {
+      '3tab':              { low: 150, high: 220 },
+      'architectural':     { low: 160, high: 250 },
+      'premium-shingle':   { low: 180, high: 280 },
+      'metal-standing':    { low: 250, high: 450 },
+      'metal-corrugated':  { low: 200, high: 350 },
+      'tile':              { low: 350, high: 600 },
+      'slate':             { low: 500, high: 900 },
+    };
 
-    // Formula: Base_Price x Regional x (Tons/3.0) x Complexity x Complexity
-    const estimatedCost = basePrice * region * (size / 1.0) * homeType * ductwork;
+    // Pitch multiplier (affects labor)
+    const pitchMultiplier: Record<string, number> = {
+      low: 0.90,
+      standard: 1.00,
+      steep: 1.25,
+      extreme: 1.50,
+    };
+    const pitchFactor = pitchMultiplier[pitch] ?? 1.0;
 
-    const low = Math.round(estimatedCost * 0.8);
-    const mid = Math.round(estimatedCost);
-    const high = Math.round(estimatedCost * 1.2);
-    const monthly60 = Math.round(mid / 60);
-    const monthly120 = Math.round(mid / 120);
+    // Complexity multiplier
+    const complexityMultiplier: Record<string, number> = {
+      simple: 0.85,
+      moderate: 1.00,
+      complex: 1.20,
+      'very-complex': 1.45,
+    };
+    const complexFactor = complexityMultiplier[complexity] ?? 1.0;
 
-    // Format currency
-    const fmt = (n: number) => '$' + n.toLocaleString();
+    // Tear-off cost per square per layer
+    const tearoffPerSquarePerLayer = 110; // average including disposal
+    const tearoffTotal = squares * layers * tearoffPerSquarePerLayer * pitchFactor;
 
-    document.getElementById('result-low')!.textContent = fmt(low);
-    document.getElementById('result-mid')!.textContent = fmt(mid);
-    document.getElementById('result-high')!.textContent = fmt(high);
-    document.getElementById('result-monthly60')!.textContent = fmt(monthly60);
-    document.getElementById('result-monthly120')!.textContent = fmt(monthly120);
+    // Deck repair cost
+    const deckCosts: Record<string, number> = {
+      none: 0,
+      minor: squares * 15,
+      moderate: squares * 40,
+      major: squares * 75,
+    };
+    const deckCost = deckCosts[deckRepair] ?? 0;
 
-    // Show/hide tax credit for high-efficiency option and premium option systems
-    const taxCreditCard = document.getElementById('tax-credit-card')!;
-    const isHeatPump = systemType === 'heat-pump' || systemType.startsWith('mini-');
-    taxCreditCard.classList.toggle('hidden', !isHeatPump);
+    // Materials
+    const matRange = materialCosts[materialType] ?? materialCosts.architectural;
+    const matLow = squares * matRange.low;
+    const matHigh = squares * matRange.high;
 
+    // Labor (affected by pitch and complexity)
+    const labRange = laborCosts[materialType] ?? laborCosts.architectural;
+    const labLow = squares * labRange.low * pitchFactor * complexFactor;
+    const labHigh = squares * labRange.high * pitchFactor * complexFactor;
+
+    // Totals
+    const totalLow = Math.round(matLow + labLow + tearoffTotal + deckCost);
+    const totalHigh = Math.round(matHigh + labHigh + tearoffTotal + deckCost);
+    const totalMid = Math.round((totalLow + totalHigh) / 2);
+
+    // Breakdown at mid point
+    const materialsMid = Math.round((matLow + matHigh) / 2);
+    const laborMid = Math.round((labLow + labHigh) / 2);
+    const tearoffMid = Math.round(tearoffTotal);
+
+    const fmt = (n: number): string => '$' + n.toLocaleString();
+
+    document.getElementById('result-low')!.textContent = fmt(totalLow);
+    document.getElementById('result-mid')!.textContent = fmt(totalMid);
+    document.getElementById('result-high')!.textContent = fmt(totalHigh);
+    document.getElementById('result-materials')!.textContent = fmt(materialsMid);
+    document.getElementById('result-labor')!.textContent = fmt(laborMid);
+    document.getElementById('result-tearoff')!.textContent = fmt(tearoffMid);
+    document.getElementById('result-persquare')!.textContent = fmt(Math.round(totalMid / squares));
   }
 
-
-  // Auto-calculate on input change
-  document.querySelectorAll('#cost-calc select').forEach(el => {
+  // Auto-calculate on any input change
+  document.querySelectorAll('#cost-calc select, #cost-calc input').forEach(el => {
     el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
   });
 
   // Calculate on load with defaults

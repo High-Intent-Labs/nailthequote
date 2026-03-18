@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How much does a new Handyman system cost?",
+      "name": "How much should a handyman charge per hour?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A new Handyman system typically costs between $5,000 and $15,000 installed, depending on system type, efficiency level, home size, and region. A standard efficiency primary systems for a average home averages around $6,500, while a high-efficiency high-efficiency system can run $11,500 or more before regional and complexity adjustments."
+        "text": "Most handymen charge between $75 and $150 per hour depending on the market, skill level, and job type. Major metros and specialized tasks push toward the higher end. When you factor in drive time, quoting time, and overhead, your effective hourly rate needs to be at least $75 to stay profitable as a solo operator. Many experienced handymen target $100-125/hr as their billable rate."
       }
     },
     {
       "@type": "Question",
-      "name": "What size Handyman system do I need?",
+      "name": "Should I charge a trip charge or minimum fee?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "System size is measured in tons and depends on your home's square footage, insulation, climate, and layout. A rough rule of thumb is 1 ton per 500-600 square feet, but a proper Manual J load calculation is required for accurate sizing. Oversized systems short-cycle and waste energy, while undersized systems can't keep up on extreme days."
+        "text": "Yes. A trip charge or minimum fee (typically $75-150) covers your drive time, vehicle costs, and the fixed overhead of showing up. Without it, small 30-minute jobs become money losers after you account for travel, quoting, and invoicing. Some handymen fold the trip charge into a minimum job price instead of listing it separately."
       }
     },
     {
       "@type": "Question",
-      "name": "Are there tax credits for new Handyman systems?",
+      "name": "How much should I mark up materials?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. The federal 25C energy efficiency tax credit offers up to $2,000 for qualifying high-efficiency systems installed in your primary residence. The system must meet specific efficiency requirements (CEE Tier 1 or higher). Standard air conditioners and systems may qualify for a smaller $600 credit. Check with your tax advisor for current eligibility details."
+        "text": "A standard materials markup for handyman work is 15-25%. This covers your time sourcing and picking up materials, fuel for supply runs, and the risk of buying the wrong item. Some handymen use a flat markup percentage while others charge materials at cost plus a separate supply run fee. Either way, never pass materials through at your cost — your time and vehicle have value."
       }
     },
     {
       "@type": "Question",
-      "name": "How long does Handyman installation take?",
+      "name": "How do I price a handyman job I have never done before?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A straightforward like-for-like replacement typically takes 1 day (6-10 hours). If new system work is required, expect 2-3 days. Converting from one system type to another (e.g., system to high-efficiency option) may take 1-2 days. Complex multi-zone premium installations can take 2-4 days depending on the number of indoor units and line set routing."
+        "text": "Estimate the hours honestly, then add a 25-30% buffer for unknowns. Research material costs before quoting. If the job type is completely new to you, be upfront with the customer about providing a time-and-materials quote rather than a fixed price. As you complete more of those jobs, you will build a reference library of actual times that makes future bids more accurate."
       }
     }
   ]
@@ -49,174 +49,149 @@ const faqSchema = {
     <!-- Input Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="systemType">System Type</label>
-        <select id="systemType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="standard-system">Standard System</option>
-          <option value="heat-pump">Premium Option</option>
-          <option value="mini-1">Option 1-Zone</option>
-          <option value="mini-2">Option 2-Zone</option>
-          <option value="mini-3">Option 3-Zone</option>
-          <option value="mini-4">Option 4-Zone</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="jobType">Job Type</label>
+        <select id="jobType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="drywall-patch" selected>Drywall Patch / Repair</option>
+          <option value="door-install">Interior Door Install</option>
+          <option value="faucet-replacement">Faucet Replacement</option>
+          <option value="ceiling-fan">Ceiling Fan Install</option>
+          <option value="shelving">Shelving / Mounting</option>
+          <option value="tile-repair">Tile Repair</option>
+          <option value="general-repair">General Repair</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="efficiency">Efficiency Level</label>
-        <select id="efficiency" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="standard">Standard (14 efficiency / 80% efficiency)</option>
-          <option value="mid" selected>Mid-Range (16 efficiency / 96% efficiency)</option>
-          <option value="high">High Efficiency (high-efficiency)</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="estimatedHours">Estimated Hours</label>
+        <input type="number" id="estimatedHours" value="2" min="0.5" max="40" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="hourlyRate">Your Hourly Rate ($)</label>
+        <input type="number" id="hourlyRate" value="100" min="50" max="300" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="materialsCost">Materials Cost ($)</label>
+        <input type="number" id="materialsCost" value="50" min="0" max="5000" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="markupPercent">Materials Markup (%)</label>
+        <select id="markupPercent" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="0">0% (pass-through)</option>
+          <option value="15">15%</option>
+          <option value="20" selected>20%</option>
+          <option value="25">25%</option>
+          <option value="30">30%</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tons">System Size (Tons)</label>
-        <select id="tons" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.5">1.5 Ton</option>
-          <option value="2">2 Ton</option>
-          <option value="2.5">2.5 Ton</option>
-          <option value="3" selected>3 Ton</option>
-          <option value="3.5">3.5 Ton</option>
-          <option value="4">4 Ton</option>
-          <option value="5">5 Ton</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="region">Region</label>
-        <select id="region" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="0.85">Southeast</option>
-          <option value="0.90">Midwest</option>
-          <option value="0.95">South</option>
-          <option value="1.00" selected>National Average</option>
-          <option value="1.05">Mountain</option>
-          <option value="1.10">Northeast</option>
-          <option value="1.10">Pacific NW</option>
-          <option value="1.15">West</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="homeType">Home Type</label>
-        <select id="homeType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.0" selected>Single Story</option>
-          <option value="1.1">Multi-Story</option>
-          <option value="1.15">Attic Installation</option>
-          <option value="1.1">Crawlspace</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="ductwork">Project Complexity</label>
-        <select id="ductwork" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="1.0" selected>Existing (good condition)</option>
-          <option value="1.15">Partial Modification Needed</option>
-          <option value="1.5">Major Renovation Required</option>
-        </select>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="tripCharge">Trip Charge ($)</label>
+        <input type="number" id="tripCharge" value="75" min="0" max="300" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
     </div>
 
-
     <!-- Results -->
     <div id="results" class="mt-8 border-t border-border pt-8">
-      <h3 class="font-heading font-bold text-xl mb-6">Your Estimated Cost</h3>
+      <h3 class="font-heading font-bold text-xl mb-6">Job Price Breakdown</h3>
 
-      <!-- Cost Range Bar -->
+      <!-- Total Price -->
       <div class="bg-bg-dark rounded-xl p-6 mb-6">
         <div class="flex justify-between items-end mb-3">
           <div class="text-center">
-            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Low</div>
-            <div id="result-low" class="font-heading font-extrabold text-xl text-text-secondary">--</div>
+            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Labor</div>
+            <div id="result-labor" class="font-heading font-extrabold text-xl text-text-secondary">--</div>
           </div>
           <div class="text-center">
-            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Mid Estimate</div>
-            <div id="result-mid" class="font-heading font-extrabold text-3xl text-accent">--</div>
+            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Total Price</div>
+            <div id="result-total" class="font-heading font-extrabold text-3xl text-accent">--</div>
           </div>
           <div class="text-center">
-            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">High</div>
-            <div id="result-high" class="font-heading font-extrabold text-xl text-text-secondary">--</div>
+            <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Materials (w/ markup)</div>
+            <div id="result-materials" class="font-heading font-extrabold text-xl text-text-secondary">--</div>
           </div>
         </div>
-        <!-- Visual range bar -->
         <div class="relative h-3 bg-bg-card rounded-full overflow-hidden mt-4">
           <div id="range-bar" class="absolute inset-y-0 left-[10%] right-[10%] rounded-full bg-gradient-to-r from-accent/40 via-accent to-accent/40"></div>
           <div id="range-marker" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-accent rounded-full border-2 border-white shadow-lg"></div>
         </div>
       </div>
 
-      <!-- Monthly Financing + Tax Credit -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <!-- Detail Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">60-Month Financing</div>
-          <div id="result-monthly60" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">per month</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Effective Hourly Rate</div>
+          <div id="result-effective" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">all-in per hour</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">120-Month Financing</div>
-          <div id="result-monthly120" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
-          <div class="text-text-muted text-xs mt-1">per month</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Trip Charge</div>
+          <div id="result-trip" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">included in total</div>
         </div>
-        <div id="tax-credit-card" class="hidden bg-bg-dark rounded-xl p-5 text-center border border-green-500/30">
-          <div class="text-green-400 text-xs font-medium uppercase tracking-wider mb-2">Federal Tax Credit</div>
-          <div class="font-heading font-extrabold text-2xl text-green-400">Up to $2,000</div>
-          <div class="text-text-muted text-xs mt-1">25C credit for qualifying high-efficiency options</div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Markup Earned</div>
+          <div id="result-markup" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">on materials</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Your Gross Profit</div>
+          <div id="result-profit" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">before overhead</div>
         </div>
       </div>
 
-      <p class="text-text-muted text-sm italic">This is a ballpark estimate based on national averages. Actual costs vary by contractor, equipment brand, and job-specific conditions. Get exact pricing from a licensed Handyman contractor in your area.</p>
+      <p class="text-text-muted text-sm italic">Use this as a starting point for your quote. Always adjust for job-specific complexity, access difficulty, and any factors that could extend the work beyond your initial hour estimate.</p>
     </div>
   </div>
 
   <!-- Content sections -->
   <Fragment slot="content">
     <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
-      <!-- How to Use -->
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Estimator</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Select your system type.</strong> Choose between a traditional primary systems combo, a high-efficiency option, or a premium system. Premium options are priced by the number of indoor zones.</p>
-          <p><strong class="text-text-primary">2. Pick your efficiency level.</strong> Standard efficiency costs less upfront but more to operate. High-efficiency systems cost more to install but lower monthly energy bills and may qualify for federal tax credits.</p>
-          <p><strong class="text-text-primary">3. Set the system size and your region.</strong> Tonnage should match your home's load calculation. Regional labor and material costs vary significantly, with the Southeast being most affordable and the West Coast being most expensive.</p>
-          <p><strong class="text-text-primary">4. Adjust for complexity.</strong> Multi-story homes, difficult access, and special requirements add labor time. Major system changes can add 50% to the total project cost.</p>
+          <p><strong class="text-text-primary">1. Select the job type.</strong> This sets context for the estimate. Different jobs have different typical hour ranges and material needs. The job type also helps you sanity-check your hour estimate against typical completion times.</p>
+          <p><strong class="text-text-primary">2. Enter your estimated hours and hourly rate.</strong> Be honest about how long the job will take including setup, the work itself, and cleanup. Your hourly rate should cover your labor, insurance, vehicle, tools, and profit margin.</p>
+          <p><strong class="text-text-primary">3. Add materials cost and markup.</strong> Enter what the materials will cost you at the store. The markup percentage covers your time shopping, driving to the supply house, and the risk of returns or wrong parts. A 20% markup is standard in the industry.</p>
+          <p><strong class="text-text-primary">4. Set your trip charge.</strong> This covers your drive time and vehicle costs for showing up. It ensures you get paid even on short jobs. The total price combines labor, marked-up materials, and the trip charge.</p>
         </div>
       </section>
 
-      <!-- What Affects Cost -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">What Affects Handyman Replacement Cost</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">How It Works</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">System type and efficiency.</strong> The biggest cost driver is the equipment itself. A basic standard efficiency system is the most affordable option. High-efficiency options cost slightly less for the equipment but provide both heating and cooling. High-efficiency units (high-efficiency) can cost double the standard models.</p>
-          <p><strong class="text-text-primary">System size.</strong> Larger homes need larger systems. The cost scales roughly proportionally with tonnage. A 5-ton system costs significantly more than a 2-ton system in both equipment and labor.</p>
-          <p><strong class="text-text-primary">Regional pricing.</strong> Labor rates, permit costs, and material availability vary by region. Southeastern states tend to have the lowest installation costs, while the West Coast and Northeast are the most expensive markets.</p>
-          <p><strong class="text-text-primary">Home complexity.</strong> Multi-story homes require more additional materials, longer runs, and difficult access. Work in tight spaces, at height, or in extreme weather adds difficulty and time. Complex jobs with multiple components take longer and cost more.</p>
-          <p><strong class="text-text-primary">System condition.</strong> If your existing existing systems are in good shape, the contractor simply connects the new system. Partial modifications (adding a return, resizing a trunk line) add moderate cost. A full system overhaul is a major project that can increase the total price by 50%.</p>
+          <p><strong class="text-text-primary">Labor is hours times your rate.</strong> Simple multiplication, but the key is estimating hours accurately. Track your actual job times for a few months and you will build a personal database of how long things really take. Most new handymen underestimate by 25-50%.</p>
+          <p><strong class="text-text-primary">Materials markup protects your time.</strong> That 20 minutes at Home Depot plus the drive is unbillable time. The markup compensates you for procurement. It also covers the risk of buying something that does not work and needing to make a return trip.</p>
+          <p><strong class="text-text-primary">Trip charge sets your minimum.</strong> Without a trip charge or minimum, a 30-minute job across town costs you money after drive time and overhead. A $75-150 trip charge ensures every job is worth leaving the shop for.</p>
+          <p><strong class="text-text-primary">Effective hourly rate is your real metric.</strong> The calculator shows your total price divided by estimated hours. This is what you are actually making per hour on the job. If it drops below your target rate, you need to raise the hours estimate, the rate, or both.</p>
         </div>
       </section>
 
-      <!-- When To Use This -->
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">During sales visits.</strong> Pull this up on your tablet while sitting at the kitchen table with a homeowner. Walk through the options together, show them how efficiency level and system condition affect the price, and set realistic expectations before running your detailed proposal.</p>
-          <p><strong class="text-text-primary">Phone estimates.</strong> When a homeowner calls asking "how much for a new AC?" you can walk them through a few questions and give a ballpark range on the spot. This builds trust and qualifies the lead before scheduling an in-home visit.</p>
-          <p><strong class="text-text-primary">Website lead generation.</strong> Embed this calculator on your website so homeowners can self-educate on pricing. Visitors who use the tool and then call you are better-informed and more likely to convert because they already have realistic price expectations.</p>
+          <p><strong class="text-text-primary">Quoting customers on the spot.</strong> A homeowner asks you to fix a few things while you are already there. Pull this up, plug in the job, and give them a price on the spot instead of saying you will follow up later. Speed in quoting wins jobs.</p>
+          <p><strong class="text-text-primary">Building a task list price book.</strong> Run common jobs through the calculator to build your own price sheet. After you know that a standard faucet swap is always around $275, you can quote it instantly without even pulling out the calculator.</p>
+          <p><strong class="text-text-primary">Checking profitability on past jobs.</strong> Plug in what you actually charged and the hours you actually worked. If your effective rate keeps coming in below your target, it is time to raise your prices or get faster at specific task types.</p>
         </div>
       </section>
 
-      <!-- FAQ -->
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much does a new Handyman system cost?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A new Handyman system typically costs between $5,000 and $15,000 installed, depending on system type, efficiency level, home size, and region. A standard efficiency primary systems for a average home averages around $6,500, while a high-efficiency high-efficiency system can run $11,500 or more before regional and complexity adjustments.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much should a handyman charge per hour?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most handymen charge between $75 and $150 per hour depending on the market, skill level, and job type. Major metros and specialized tasks push toward the higher end. When you factor in drive time, quoting time, and overhead, your effective hourly rate needs to be at least $75 to stay profitable as a solo operator. Many experienced handymen target $100-125/hr as their billable rate.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What size Handyman system do I need?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">System size is measured in tons and depends on your home's square footage, insulation, climate, and layout. A rough rule of thumb is 1 ton per 500-600 square feet, but a proper Manual J load calculation is required for accurate sizing. Oversized systems short-cycle and waste energy, while undersized systems can't keep up on extreme days.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I charge a trip charge or minimum fee?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. A trip charge or minimum fee (typically $75-150) covers your drive time, vehicle costs, and the fixed overhead of showing up. Without it, small 30-minute jobs become money losers after you account for travel, quoting, and invoicing. Some handymen fold the trip charge into a minimum job price instead of listing it separately.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Are there tax credits for new Handyman systems?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Yes. The federal 25C energy efficiency tax credit offers up to $2,000 for qualifying high-efficiency systems installed in your primary residence. The system must meet specific efficiency requirements (CEE Tier 1 or higher). Standard air conditioners and systems may qualify for a smaller $600 credit. Check with your tax advisor for current eligibility details.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much should I mark up materials?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A standard materials markup for handyman work is 15-25%. This covers your time sourcing and picking up materials, fuel for supply runs, and the risk of buying the wrong item. Some handymen use a flat markup percentage while others charge materials at cost plus a separate supply run fee. Either way, never pass materials through at your cost — your time and vehicle have value.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How long does Handyman installation take?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A straightforward like-for-like replacement typically takes 1 day (6-10 hours). If new system work is required, expect 2-3 days. Converting from one system type to another (e.g., system to high-efficiency option) may take 1-2 days. Complex multi-zone premium installations can take 2-4 days depending on the number of indoor units and line set routing.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I price a handyman job I have never done before?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Estimate the hours honestly, then add a 25-30% buffer for unknowns. Research material costs before quoting. If the job type is completely new to you, be upfront with the customer about providing a time-and-materials quote rather than a fixed price. As you complete more of those jobs, you will build a reference library of actual times that makes future bids more accurate.</div>
           </details>
         </div>
       </section>
@@ -225,57 +200,50 @@ const faqSchema = {
 </ToolLayout>
 
 <script>
-  function calculate() {
-    const systemType = (document.getElementById('systemType') as HTMLSelectElement).value;
-    const efficiency = (document.getElementById('efficiency') as HTMLSelectElement).value;
-    const tons = parseFloat((document.getElementById('tons') as HTMLSelectElement).value);
-    const region = parseFloat((document.getElementById('region') as HTMLSelectElement).value);
-    const homeType = parseFloat((document.getElementById('homeType') as HTMLSelectElement).value);
-    const ductwork = parseFloat((document.getElementById('ductwork') as HTMLSelectElement).value);
-
-    // Base prices by system type and efficiency
-    const basePrices: Record<string, Record<string, number>> = {
-      'standard-system': { standard: 6500, mid: 9000, high: 13000 },
-      'heat-pump': { standard: 5500, mid: 8000, high: 11500 },
-      'mini-1': { standard: 4500, mid: 4500, high: 4500 },
-      'mini-2': { standard: 7000, mid: 7000, high: 7000 },
-      'mini-3': { standard: 10000, mid: 10000, high: 10000 },
-      'mini-4': { standard: 13000, mid: 13000, high: 13000 },
-    };
-
-    const basePrice = basePrices[systemType]?.[efficiency] ?? 9000;
-
-    // Formula: Base_Price x Regional x (Tons/3.0) x Complexity x Complexity
-    const estimatedCost = basePrice * region * (size / 1.0) * homeType * ductwork;
-
-    const low = Math.round(estimatedCost * 0.8);
-    const mid = Math.round(estimatedCost);
-    const high = Math.round(estimatedCost * 1.2);
-    const monthly60 = Math.round(mid / 60);
-    const monthly120 = Math.round(mid / 120);
-
-    // Format currency
-    const fmt = (n: number) => '$' + n.toLocaleString();
-
-    document.getElementById('result-low')!.textContent = fmt(low);
-    document.getElementById('result-mid')!.textContent = fmt(mid);
-    document.getElementById('result-high')!.textContent = fmt(high);
-    document.getElementById('result-monthly60')!.textContent = fmt(monthly60);
-    document.getElementById('result-monthly120')!.textContent = fmt(monthly120);
-
-    // Show/hide tax credit for high-efficiency option and premium option systems
-    const taxCreditCard = document.getElementById('tax-credit-card')!;
-    const isHeatPump = systemType === 'heat-pump' || systemType.startsWith('mini-');
-    taxCreditCard.classList.toggle('hidden', !isHeatPump);
-
+  interface JobInputs {
+    jobType: string;
+    estimatedHours: number;
+    hourlyRate: number;
+    materialsCost: number;
+    markupPercent: number;
+    tripCharge: number;
   }
 
+  function calculate(): void {
+    const jobType = (document.getElementById('jobType') as HTMLSelectElement).value;
+    const estimatedHours = parseFloat((document.getElementById('estimatedHours') as HTMLInputElement).value) || 2;
+    const hourlyRate = parseFloat((document.getElementById('hourlyRate') as HTMLInputElement).value) || 100;
+    const materialsCost = parseFloat((document.getElementById('materialsCost') as HTMLInputElement).value) || 0;
+    const markupPercent = parseFloat((document.getElementById('markupPercent') as HTMLSelectElement).value) / 100;
+    const tripCharge = parseFloat((document.getElementById('tripCharge') as HTMLInputElement).value) || 0;
 
-  // Auto-calculate on input change
-  document.querySelectorAll('#cost-calc select').forEach(el => {
+    // Calculate components
+    const laborCost = estimatedHours * hourlyRate;
+    const markupAmount = materialsCost * markupPercent;
+    const materialsWithMarkup = materialsCost + markupAmount;
+    const totalPrice = laborCost + materialsWithMarkup + tripCharge;
+
+    // Effective hourly rate (total divided by hours)
+    const effectiveRate = totalPrice / estimatedHours;
+
+    // Gross profit (total minus raw materials cost)
+    const grossProfit = totalPrice - materialsCost;
+
+    const fmt = (n: number): string => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+    document.getElementById('result-labor')!.textContent = fmt(laborCost);
+    document.getElementById('result-total')!.textContent = fmt(totalPrice);
+    document.getElementById('result-materials')!.textContent = fmt(materialsWithMarkup);
+    document.getElementById('result-effective')!.textContent = fmt(Math.round(effectiveRate));
+    document.getElementById('result-trip')!.textContent = fmt(tripCharge);
+    document.getElementById('result-markup')!.textContent = fmt(Math.round(markupAmount));
+    document.getElementById('result-profit')!.textContent = fmt(Math.round(grossProfit));
+  }
+
+  document.querySelectorAll('#cost-calc select, #cost-calc input').forEach(el => {
     el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
   });
 
-  // Calculate on load with defaults
   calculate();
 </script>

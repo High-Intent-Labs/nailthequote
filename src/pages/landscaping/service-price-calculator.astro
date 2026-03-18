@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How much should I charge for a Landscaping service call?",
+      "name": "How much should I charge for lawn mowing?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Most Landscaping service calls range from $200 to $600 total. This includes a diagnostic fee of $75-$125, labor at $100-$175 per hour, and marked-up parts. Your price depends on your market, overhead, and target profit margin. Use a service call price calculator to build the total from your actual costs and ensure you are hitting at least a 40-50% gross margin."
+        "text": "Most landscapers charge $35 to $75 per visit for a standard residential lawn (5,000-10,000 sq ft) for basic mowing, edging, and blowing. Smaller properties under 5,000 sq ft typically run $30 to $50. Larger properties over a quarter acre range from $60 to $120+. Your price needs to cover your labor, equipment wear, fuel, travel time, and profit. A good rule of thumb is to charge at least $1 per minute on site with a minimum of $35 per stop."
       }
     },
     {
       "@type": "Question",
-      "name": "What markup should I put on Landscaping parts?",
+      "name": "How do I price a full maintenance contract?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The industry standard is 200-300% markup on small parts like capacitors and contactors, 100-200% on mid-range parts like blower motors and control boards, and 50-100% on major components like compressors. This typically results in a 50-75% margin on parts, which is necessary to cover truck inventory, warranty, and overhead."
+        "text": "A full maintenance contract bundles mowing, edging, blowing, trimming, bed maintenance, and seasonal cleanup into a monthly or annual price. Start by calculating your per-visit cost for each service, multiply by the number of visits per year, add seasonal work like spring and fall cleanups, then divide by 12 for a monthly price. Full maintenance contracts typically run 2x to 3x the cost of mow-only service because of the additional labor and materials."
       }
     },
     {
       "@type": "Question",
-      "name": "Should I charge tax on Landscaping labor?",
+      "name": "How many visits per year should I plan for?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "In most US states, labor for repair and maintenance services is not subject to sales tax, but parts and materials are taxable. However, tax rules vary by state and locality. Some states tax all services, some tax none. Check your state's department of revenue for specific rules. When in doubt, consult a tax professional."
+        "text": "In most US climates, plan for 28 to 34 mowing visits per year (weekly during the growing season). Southern states may need 36 to 42 visits. Northern states with short seasons may only need 24 to 28. Full maintenance adds 2 to 4 seasonal cleanup visits, 3 to 6 hedge trimming visits, and monthly bed maintenance. Build your annual visit count based on your local growing season and the specific services included."
       }
     },
     {
       "@type": "Question",
-      "name": "How do I calculate profit margin on a service call?",
+      "name": "Should I charge monthly or per visit for landscaping services?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Subtract your total costs from the customer total to get gross profit. Divide gross profit by the customer total and multiply by 100 for the margin percentage. For example, if you charge $450 and your costs are $180, your gross profit is $270 and your margin is 60%. A healthy Landscaping service call margin is 40-60%."
+        "text": "Monthly billing is better for your cash flow and customer retention. Calculate your annual revenue for the property, divide by 12, and bill the same amount every month regardless of visit count. This smooths out seasonal variation and keeps revenue predictable through slower months. Per-visit billing works for mow-only customers who want flexibility, but your revenue drops to zero in the off-season."
       }
     }
   ]
@@ -46,144 +46,104 @@ const faqSchema = {
 
 <ToolLayout tool={tool} extraSchema={[faqSchema]}>
   <div id="service-calc">
-    <!-- Service Details -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Service Details</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <!-- Input Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="diagnostic-fee">Diagnostic Fee ($)</label>
-        <input type="number" id="diagnostic-fee" value="89" min="0" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="labor-hours">Labor Hours</label>
-        <input type="number" id="labor-hours" value="1.5" min="0" step="0.25" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="billable-rate">Billable Rate ($/hr)</label>
-        <input type="number" id="billable-rate" value="125" min="0" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="loaded-wage">
-          Your Loaded Wage ($/hr)
-          <span class="inline-block ml-1 text-text-muted cursor-help" title="Your actual cost per hour including benefits, insurance, workers comp, payroll taxes">&#9432;</span>
-        </label>
-        <input type="number" id="loaded-wage" value="45" min="0" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-    </div>
-
-    <!-- Parts Section -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Parts</h3>
-    <div class="mb-2 text-sm text-text-muted">Add parts used on this service call. Select a preset or enter custom values.</div>
-    <div id="parts-table" class="space-y-3 mb-4">
-      <!-- Part rows inserted here by JS -->
-    </div>
-    <button id="add-part-btn" class="bg-bg-dark border border-border rounded-lg px-5 py-2.5 text-sm text-text-secondary hover:border-accent hover:text-accent transition-colors cursor-pointer">
-      + Add Part
-    </button>
-
-    <!-- Materials Section -->
-    <h3 class="font-heading font-bold text-lg mt-8 mb-4 text-text-primary">Materials (optional)</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="refrigerant-type">Material Type</label>
-        <select id="refrigerant-type" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="none">None</option>
-          <option value="r410a">R-410A</option>
-          <option value="r22">R-22</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="serviceType">Service Type</label>
+        <select id="serviceType" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="mow-only" selected>Mow / Edge / Blow Only</option>
+          <option value="basic-maintenance">Basic Maintenance (mow + trim + beds)</option>
+          <option value="full-maintenance">Full Maintenance (all services)</option>
+          <option value="seasonal">Seasonal Cleanup Only</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="refrigerant-lbs">Quantity Added</label>
-        <input type="number" id="refrigerant-lbs" value="0" min="0" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="propertySize">Property Size</label>
+        <select id="propertySize" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="small">Small (under 5,000 sq ft)</option>
+          <option value="medium" selected>Medium (5,000 - 10,000 sq ft)</option>
+          <option value="large">Large (10,000 - 20,000 sq ft)</option>
+          <option value="xlarge">X-Large (20,000 - 43,560 sq ft / 1 acre)</option>
+          <option value="estate">Estate (1+ acre)</option>
+        </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="refrigerant-cost">Your Cost per Unit ($)</label>
-        <input type="number" id="refrigerant-cost" value="0" min="0" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" disabled />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="visitFrequency">Visit Frequency</label>
+        <select id="visitFrequency" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="weekly" selected>Weekly</option>
+          <option value="biweekly">Biweekly</option>
+          <option value="10day">Every 10 Days</option>
+          <option value="seasonal-only">Seasonal Only (spring/fall)</option>
+        </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="refrigerant-price">Customer Price per Unit ($)</label>
-        <input type="number" id="refrigerant-price" value="0" min="0" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" disabled />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="growingSeason">Growing Season (weeks)</label>
+        <input type="number" id="growingSeason" value="30" min="16" max="48" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Typical: 24-28 North, 30-34 Mid, 36-42 South</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="propertyCondition">Lawn Condition</label>
+        <select id="propertyCondition" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="well-kept" selected>Well-Kept</option>
+          <option value="average">Average</option>
+          <option value="overgrown">Overgrown / Neglected</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="obstacles">Obstacles / Difficulty</label>
+        <select id="obstacles" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="easy" selected>Easy (open yard, few beds)</option>
+          <option value="moderate">Moderate (fenced, beds, trees)</option>
+          <option value="difficult">Difficult (slopes, tight gates, many beds)</option>
+        </select>
       </div>
     </div>
-
-    <!-- Other -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Other</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="permit-fee">Permit Fee ($)</label>
-        <input type="number" id="permit-fee" value="0" min="0" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tax-rate">
-          Tax Rate (%)
-        </label>
-        <input type="number" id="tax-rate" value="0" min="0" max="20" step="0.1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-        <p class="text-text-muted text-xs mt-1.5">Applied to parts and materials only &mdash; labor is typically not taxed.</p>
-      </div>
-    </div>
-
 
     <!-- Results -->
     <div id="results" class="mt-8 border-t border-border pt-8">
-      <h3 class="font-heading font-bold text-xl mb-6">Customer Price Breakdown</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Customer Total</div>
-          <div id="result-customer-total" class="font-heading font-extrabold text-3xl text-accent">&mdash;</div>
+      <h3 class="font-heading font-bold text-xl mb-6">Your Pricing</h3>
+
+      <!-- Primary Results -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-bg-dark rounded-xl p-6 text-center border border-accent/30">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Price per Visit</div>
+          <div id="result-per-visit" class="font-heading font-extrabold text-3xl text-accent">--</div>
         </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Parts Revenue</div>
-          <div id="result-parts-revenue" class="font-heading font-extrabold text-xl text-text-primary">&mdash;</div>
+        <div class="bg-bg-dark rounded-xl p-6 text-center border border-accent/30">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Monthly Price</div>
+          <div id="result-monthly" class="font-heading font-extrabold text-3xl text-accent">--</div>
+          <div class="text-text-muted text-xs mt-1">billed 12 months</div>
         </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Labor Revenue</div>
-          <div id="result-labor-revenue" class="font-heading font-extrabold text-xl text-text-primary">&mdash;</div>
-        </div>
-        <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Materials Revenue</div>
-          <div id="result-refrigerant-revenue" class="font-heading font-extrabold text-xl text-text-primary">&mdash;</div>
+        <div class="bg-bg-dark rounded-xl p-6 text-center border border-accent/30">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Annual Revenue</div>
+          <div id="result-annual" class="font-heading font-extrabold text-3xl text-accent">--</div>
         </div>
       </div>
 
-      <h3 class="font-heading font-bold text-xl mb-6">Your Profitability</h3>
+      <!-- Detail Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Gross Profit</div>
-          <div id="result-gross-profit" class="font-heading font-extrabold text-3xl text-[#34D399]">&mdash;</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Visits per Year</div>
+          <div id="result-visits" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Profit Margin</div>
-          <div id="result-profit-margin" class="font-heading font-extrabold text-3xl">&mdash;</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Est. Time on Site</div>
+          <div id="result-time" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">minutes per visit</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Your Total Cost</div>
-          <div id="result-total-cost" class="font-heading font-extrabold text-xl text-text-primary">&mdash;</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Revenue per Hour</div>
+          <div id="result-per-hour" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">on-site time</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Profit per Hour</div>
-          <div id="result-profit-per-hour" class="font-heading font-extrabold text-xl text-text-primary">&mdash;</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Revenue per Sq Ft</div>
+          <div id="result-per-sqft" class="font-heading font-extrabold text-2xl text-text-primary">--</div>
+          <div class="text-text-muted text-xs mt-1">per visit</div>
         </div>
       </div>
 
-      <!-- Benchmark Bar -->
-      <div class="bg-bg-dark rounded-xl p-5 mt-6">
-        <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Benchmark &mdash; Average Landscaping Service Call: $200 &ndash; $600</h4>
-        <div class="relative h-6 bg-bg-card rounded-full overflow-hidden border border-border">
-          <div class="absolute inset-0 flex">
-            <div class="w-1/3 bg-[rgba(52,211,153,0.15)] border-r border-border"></div>
-            <div class="w-1/3 bg-[rgba(251,191,36,0.1)] border-r border-border"></div>
-            <div class="w-1/3 bg-[rgba(239,68,68,0.1)]"></div>
-          </div>
-          <div id="benchmark-marker" class="absolute top-0 h-full w-1 bg-accent rounded transition-all" style="left: 0%"></div>
-        </div>
-        <div class="flex justify-between text-xs text-text-muted mt-2">
-          <span>$0</span>
-          <span>$200</span>
-          <span>$400</span>
-          <span>$600</span>
-          <span>$800+</span>
-        </div>
-        <p id="benchmark-text" class="text-text-secondary text-sm mt-3">Your price: &mdash;</p>
-      </div>
+      <p class="text-text-muted text-sm italic">Pricing estimate based on industry averages. Adjust for your local market, overhead, crew size, and target profit margins. Travel time and drive distance between stops should also factor into your per-property pricing.</p>
     </div>
   </div>
 
@@ -194,26 +154,21 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Enter your service details.</strong> Set your diagnostic fee, estimated labor hours, your billable hourly rate, and your loaded wage (your true cost per hour including benefits, insurance, and workers comp).</p>
-          <p><strong class="text-text-primary">2. Add parts.</strong> Use the preset dropdown to quickly add common Landscaping parts with typical wholesale costs, or enter custom parts and costs. Set your markup percentage for each part individually.</p>
-          <p><strong class="text-text-primary">3. Add materials if applicable.</strong> Select the type and quantity. The calculator provides typical cost and pricing guidance.</p>
-          <p><strong class="text-text-primary">4. Review the breakdown.</strong> The calculator shows the customer's total price, your total cost, gross profit, profit margin, and profit per hour. Compare your price to the industry benchmark range.</p>
+          <p><strong class="text-text-primary">1. Select the service type.</strong> Mow-only is your base service. Basic maintenance adds hedge trimming and bed weeding. Full maintenance includes everything from mowing to seasonal cleanups, pruning, and bed care. Seasonal-only covers spring and fall cleanup visits.</p>
+          <p><strong class="text-text-primary">2. Set the property size and visit frequency.</strong> Larger properties take more time per visit and cost more. Weekly visits are standard during the growing season. Biweekly is cheaper per month but costs more per visit because the grass is taller and takes longer to cut.</p>
+          <p><strong class="text-text-primary">3. Enter your growing season length.</strong> This determines the number of mowing visits per year. Northern climates might get 24 weeks. Southern climates can stretch to 42 weeks. The calculator uses this to compute annual revenue and monthly billing amounts.</p>
+          <p><strong class="text-text-primary">4. Review the pricing breakdown.</strong> The per-visit price is what each stop earns. The monthly price is for 12-month billing. The annual revenue is the total contract value. Compare revenue per hour to make sure the property is worth your time.</p>
         </div>
       </section>
 
       <!-- How Pricing Works -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">How Service Call Pricing Works</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Recurring Service Pricing Works</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p>A service call price is built from four components: <strong class="text-text-primary">diagnostic fee, labor, parts, and materials</strong>. Each one contributes to revenue differently and has different margin characteristics.</p>
-          <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
-            <p>Customer Total = Diagnostic + (Hours x Rate) + Parts Revenue + Materials Revenue + Permit + Tax</p>
-            <p>Your Cost = (Hours x Loaded Wage) + Wholesale Parts + Materials Cost + Permit</p>
-            <p>Gross Profit = Customer Total - Your Cost</p>
-          </div>
-          <p><strong class="text-text-primary">Why parts markup matters.</strong> Parts are often the highest-margin component of a service call. A 200% markup on a $25 contactor means you charge $75 and keep $50. That $50 covers the cost of stocking the part on your truck, the warehouse overhead, and your diagnostic expertise. Without healthy parts margins, it is very difficult to run a profitable service department.</p>
-          <p><strong class="text-text-primary">Labor vs parts profitability.</strong> Labor revenue depends on how fast you work. If you bill 1.5 hours at $125/hr but the job takes 2 hours, your effective rate drops. Parts profit is locked in the moment you set the price. The most profitable service companies maximize both: fast techs with strong parts margins.</p>
-          <p><strong class="text-text-primary">Tax treatment.</strong> In most US states, sales tax applies to parts and materials but not to labor for repair services. Materials are typically taxable. Always check your local tax rules because some states tax all services and some tax none.</p>
+          <p><strong class="text-text-primary">Price per minute is your core metric.</strong> You need to know how many minutes each property takes and what you earn per minute on site. If your target is $1.50 per minute and a property takes 40 minutes, your minimum price is $60 per visit. Everything else flows from there.</p>
+          <p><strong class="text-text-primary">Monthly billing smooths your revenue.</strong> Calculate the total annual value of the contract, then divide by 12. The customer pays the same amount January through December even though you mow 30 times in summer and zero times in winter. This keeps your cash flow steady and reduces seasonal revenue swings.</p>
+          <p><strong class="text-text-primary">Full maintenance contracts are more profitable.</strong> Bundling services into one contract increases the per-property revenue without proportionally increasing your travel time and overhead. A full maintenance contract might be 2.5x the mow-only price, but it does not take 2.5x the time because you are already on site.</p>
+          <p><strong class="text-text-primary">Biweekly customers need a premium.</strong> Cutting every two weeks means taller grass, more clippings, and slower mowing. Biweekly per-visit prices should be 20-30% higher than weekly prices. Do not give a discount for fewer visits because each visit takes longer and creates more wear on your equipment.</p>
         </div>
       </section>
 
@@ -221,9 +176,9 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">On-the-fly pricing in the field.</strong> You have diagnosed the problem, you know the parts needed, and you need to give the customer a price before you start work. Pull up this calculator on your phone, plug in the parts and labor, and present a confident total. No guessing, no calling the office, no accidentally undercharging.</p>
-          <p><strong class="text-text-primary">Training new technicians on pricing.</strong> New techs often struggle with pricing because they do not see the full picture. Walk them through the calculator to show how diagnostic fees, labor, parts markup, and materials all add up. Show them what happens to profit margin when they discount the diagnostic fee or undercharge on parts.</p>
-          <p><strong class="text-text-primary">Comparing time-and-materials to flat rate.</strong> Enter a few common repair scenarios in this calculator and compare the totals to your flat rate price book. If your flat rate prices are consistently lower than what this calculator produces, you may be leaving money on the table. If they are higher, you have room to be competitive.</p>
+          <p><strong class="text-text-primary">Quoting new customers.</strong> Walk the property, estimate the size and difficulty, then plug those numbers into this calculator. Give the homeowner a per-visit or monthly price on the spot. Quick quoting closes more deals because the customer does not have to wait for a follow-up email or call.</p>
+          <p><strong class="text-text-primary">Upselling existing mow-only customers.</strong> Run the numbers for basic or full maintenance and show your mow-only customer the monthly difference. When they see that full service is only $80 more per month than mowing alone, many will upgrade because the convenience is worth it.</p>
+          <p><strong class="text-text-primary">Annual price reviews.</strong> Every year your costs go up for fuel, insurance, labor, and equipment. Run your route through this calculator with current rates to see if your pricing is still hitting your margin targets. If not, it is time for a price increase letter.</p>
         </div>
       </section>
 
@@ -232,20 +187,20 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much should I charge for a Landscaping service call?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most Landscaping service calls range from $200 to $600 total. This includes a diagnostic fee of $75-$125, labor at $100-$175 per hour, and marked-up parts. Your price depends on your market, overhead, and target profit margin. Use this calculator to build the total from your actual costs and ensure you are hitting at least a 40-50% gross margin.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much should I charge for lawn mowing?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most landscapers charge $35 to $75 per visit for a standard residential lawn (5,000-10,000 sq ft) for basic mowing, edging, and blowing. Smaller properties under 5,000 sq ft typically run $30 to $50. Larger properties over a quarter acre range from $60 to $120+. Your price needs to cover your labor, equipment wear, fuel, travel time, and profit. A good rule of thumb is to charge at least $1 per minute on site with a minimum of $35 per stop.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What markup should I put on Landscaping parts?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">The industry standard is 200-300% markup on small parts like capacitors and contactors, 100-200% on mid-range parts like blower motors and control boards, and 50-100% on major components like compressors. This typically results in a 50-75% margin on parts, which is necessary to cover truck inventory, warranty, and overhead.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I price a full maintenance contract?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A full maintenance contract bundles mowing, edging, blowing, trimming, bed maintenance, and seasonal cleanup into a monthly or annual price. Start by calculating your per-visit cost for each service, multiply by the number of visits per year, add seasonal work like spring and fall cleanups, then divide by 12 for a monthly price. Full maintenance contracts typically run 2x to 3x the cost of mow-only service because of the additional labor and materials.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I charge tax on Landscaping labor?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">In most US states, labor for repair and maintenance services is not subject to sales tax, but parts and materials are taxable. However, tax rules vary by state and locality. Some states tax all services, some tax none. Check your state's department of revenue for specific rules. When in doubt, consult a tax professional.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many visits per year should I plan for?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">In most US climates, plan for 28 to 34 mowing visits per year (weekly during the growing season). Southern states may need 36 to 42 visits. Northern states with short seasons may only need 24 to 28. Full maintenance adds 2 to 4 seasonal cleanup visits, 3 to 6 hedge trimming visits, and monthly bed maintenance. Build your annual visit count based on your local growing season and the specific services included.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I calculate profit margin on a service call?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Subtract your total costs from the customer total to get gross profit. Divide gross profit by the customer total and multiply by 100 for the margin percentage. For example, if you charge $450 and your costs are $180, your gross profit is $270 and your margin is 60%. A healthy Landscaping service call margin is 40-60%.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Should I charge monthly or per visit for landscaping services?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Monthly billing is better for your cash flow and customer retention. Calculate your annual revenue for the property, divide by 12, and bill the same amount every month regardless of visit count. This smooths out seasonal variation and keeps revenue predictable through slower months. Per-visit billing works for mow-only customers who want flexibility, but your revenue drops to zero in the off-season.</div>
           </details>
         </div>
       </section>
@@ -254,228 +209,134 @@ const faqSchema = {
 </ToolLayout>
 
 <script>
-  // Preset parts with wholesale costs
-  const presetParts: Record<string, number> = {
-    'Capacitor': 18,
-    'Contactor': 25,
-    'Blower Motor': 175,
-    'TXV Valve': 85,
-    'Compressor': 650,
-    'Control Board': 175,
-    'Timer': 35,
-  };
+  function calculate(): void {
+    const serviceType = (document.getElementById('serviceType') as HTMLSelectElement).value;
+    const propertySize = (document.getElementById('propertySize') as HTMLSelectElement).value;
+    const visitFrequency = (document.getElementById('visitFrequency') as HTMLSelectElement).value;
+    const growingSeason = parseInt((document.getElementById('growingSeason') as HTMLInputElement).value) || 30;
+    const condition = (document.getElementById('propertyCondition') as HTMLSelectElement).value;
+    const obstacles = (document.getElementById('obstacles') as HTMLSelectElement).value;
 
-  const refrigerantPricing: Record<string, { cost: number; price: number }> = {
-    'r410a': { cost: 40, price: 85 },
-    'r22': { cost: 60, price: 175 },
-  };
+    // Base per-visit price by property size (mow-only)
+    const basePrices: Record<string, number> = {
+      small: 40,
+      medium: 55,
+      large: 80,
+      xlarge: 120,
+      estate: 200,
+    };
+    const basePrice = basePrices[propertySize] ?? 55;
 
-  let partCounter = 0;
+    // Approximate sq ft for revenue per sq ft calculation
+    const sqftEstimate: Record<string, number> = {
+      small: 3500,
+      medium: 7500,
+      large: 15000,
+      xlarge: 30000,
+      estate: 50000,
+    };
+    const sqft = sqftEstimate[propertySize] ?? 7500;
 
-  function addPartRow(name = '', cost = 0, markup = 200) {
-    const id = partCounter++;
-    const table = document.getElementById('parts-table')!;
-    const row = document.createElement('div');
-    row.className = 'grid grid-cols-1 md:grid-cols-[1fr_1fr_120px_120px_40px] gap-3 items-end part-row';
-    row.dataset.partId = String(id);
+    // Time on site in minutes (mow-only base)
+    const baseTimes: Record<string, number> = {
+      small: 25,
+      medium: 40,
+      large: 60,
+      xlarge: 90,
+      estate: 150,
+    };
+    const baseTime = baseTimes[propertySize] ?? 40;
 
-    const presetOptions = Object.entries(presetParts).map(([n, c]) =>
-      `<option value="${n}" ${n === name ? 'selected' : ''}>${n} &mdash; $${c}</option>`
-    ).join('');
+    // Service type multiplier (affects price and time)
+    const serviceMultipliers: Record<string, { price: number; time: number }> = {
+      'mow-only':          { price: 1.0,  time: 1.0  },
+      'basic-maintenance': { price: 1.6,  time: 1.4  },
+      'full-maintenance':  { price: 2.5,  time: 2.0  },
+      'seasonal':          { price: 3.0,  time: 3.5  }, // per visit is higher, fewer visits
+    };
+    const serviceFactor = serviceMultipliers[serviceType] ?? serviceMultipliers['mow-only'];
 
-    row.innerHTML = `
-      <div>
-        <label class="block text-xs font-medium text-text-muted mb-1">Part</label>
-        <select class="part-preset w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors">
-          <option value="">Custom part...</option>
-          ${presetOptions}
-        </select>
-      </div>
-      <div>
-        <label class="block text-xs font-medium text-text-muted mb-1">Wholesale Cost ($)</label>
-        <input type="number" class="part-cost w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" value="${cost}" min="0" step="0.01" />
-      </div>
-      <div>
-        <label class="block text-xs font-medium text-text-muted mb-1">Markup %</label>
-        <input type="number" class="part-markup w-full bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors" value="${markup}" min="0" step="1" />
-      </div>
-      <div>
-        <label class="block text-xs font-medium text-text-muted mb-1">Sell Price</label>
-        <div class="part-sell-price bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-accent text-sm font-medium">&mdash;</div>
-      </div>
-      <div>
-        <button class="remove-part-btn mt-5 text-text-muted hover:text-red-400 transition-colors cursor-pointer text-lg leading-none" title="Remove part">&times;</button>
-      </div>
-    `;
+    // Condition multiplier
+    const conditionMultipliers: Record<string, number> = {
+      'well-kept': 1.0,
+      'average': 1.1,
+      'overgrown': 1.3,
+    };
+    const condFactor = conditionMultipliers[condition] ?? 1.0;
 
-    table.appendChild(row);
+    // Obstacle multiplier
+    const obstacleMultipliers: Record<string, number> = {
+      easy: 1.0,
+      moderate: 1.15,
+      difficult: 1.30,
+    };
+    const obstFactor = obstacleMultipliers[obstacles] ?? 1.0;
 
-    // Preset dropdown change
-    const presetSelect = row.querySelector('.part-preset') as HTMLSelectElement;
-    const costInput = row.querySelector('.part-cost') as HTMLInputElement;
+    // Frequency multiplier (biweekly costs more per visit)
+    const freqPriceMultiplier: Record<string, number> = {
+      weekly: 1.0,
+      biweekly: 1.25,
+      '10day': 1.10,
+      'seasonal-only': 1.0,
+    };
+    const freqPriceFactor = freqPriceMultiplier[visitFrequency] ?? 1.0;
 
-    presetSelect.addEventListener('change', () => {
-      const selected = presetSelect.value;
-      if (selected && presetParts[selected] !== undefined) {
-        costInput.value = String(presetParts[selected]);
-      }
-      calculate();
-    });
-
-    // Input change listeners
-    row.querySelectorAll('input').forEach(input => {
-      input.addEventListener('input', calculate);
-    });
-
-    // Remove button
-    row.querySelector('.remove-part-btn')!.addEventListener('click', () => {
-      row.remove();
-      calculate();
-    });
-
-    // If a name was passed and it matches a preset, auto-fill cost
-    if (name && presetParts[name] !== undefined && cost === 0) {
-      costInput.value = String(presetParts[name]);
+    // Calculate visits per year
+    let visitsPerYear: number;
+    if (serviceType === 'seasonal') {
+      visitsPerYear = 4; // spring + fall cleanups
+    } else if (visitFrequency === 'weekly') {
+      visitsPerYear = growingSeason;
+    } else if (visitFrequency === 'biweekly') {
+      visitsPerYear = Math.round(growingSeason / 2);
+    } else if (visitFrequency === '10day') {
+      visitsPerYear = Math.round((growingSeason * 7) / 10);
+    } else {
+      visitsPerYear = 4;
     }
 
-    updatePartSellPrice(row);
-    calculate();
+    // Add seasonal cleanup visits for maintenance plans
+    if (serviceType === 'basic-maintenance') {
+      visitsPerYear += 2; // spring + fall light cleanup
+    } else if (serviceType === 'full-maintenance') {
+      visitsPerYear += 6; // spring cleanup, fall cleanup, extra trim/bed visits
+    }
+
+    // Final per-visit price
+    const perVisit = Math.round(basePrice * serviceFactor.price * condFactor * obstFactor * freqPriceFactor);
+
+    // Time on site
+    const timeOnSite = Math.round(baseTime * serviceFactor.time * condFactor * obstFactor);
+
+    // Annual revenue
+    const annualRevenue = perVisit * visitsPerYear;
+
+    // Monthly price (12-month billing)
+    const monthlyPrice = Math.round(annualRevenue / 12);
+
+    // Revenue per hour (on-site time)
+    const revenuePerHour = timeOnSite > 0 ? Math.round((perVisit / timeOnSite) * 60) : 0;
+
+    // Revenue per sq ft
+    const revenuePerSqFt = sqft > 0 ? (perVisit / sqft) : 0;
+
+    const fmt = (n: number): string => '$' + n.toLocaleString();
+
+    document.getElementById('result-per-visit')!.textContent = fmt(perVisit);
+    document.getElementById('result-monthly')!.textContent = fmt(monthlyPrice);
+    document.getElementById('result-annual')!.textContent = fmt(annualRevenue);
+    document.getElementById('result-visits')!.textContent = visitsPerYear.toString();
+    document.getElementById('result-time')!.textContent = timeOnSite.toString();
+    document.getElementById('result-per-hour')!.textContent = fmt(revenuePerHour);
+    document.getElementById('result-per-sqft')!.textContent = '$' + revenuePerSqFt.toFixed(3);
   }
 
-  function updatePartSellPrice(row: Element) {
-    const cost = parseFloat((row.querySelector('.part-cost') as HTMLInputElement).value) || 0;
-    const markup = parseFloat((row.querySelector('.part-markup') as HTMLInputElement).value) || 0;
-    const sellPrice = cost * (1 + markup / 100);
-    (row.querySelector('.part-sell-price') as HTMLElement).textContent = `$${sellPrice.toFixed(2)}`;
-  }
-
-  function calculate() {
-    // Service details
-    const diagnosticFee = parseFloat((document.getElementById('diagnostic-fee') as HTMLInputElement).value) || 0;
-    const laborHours = parseFloat((document.getElementById('labor-hours') as HTMLInputElement).value) || 0;
-    const billableRate = parseFloat((document.getElementById('billable-rate') as HTMLInputElement).value) || 0;
-    const loadedWage = parseFloat((document.getElementById('loaded-wage') as HTMLInputElement).value) || 0;
-
-    // Labor calculations
-    const laborRevenue = laborHours * billableRate;
-    const laborCost = laborHours * loadedWage;
-
-    // Parts calculations
-    let partsRevenue = 0;
-    let partsCost = 0;
-    document.querySelectorAll('.part-row').forEach(row => {
-      updatePartSellPrice(row);
-      const cost = parseFloat((row.querySelector('.part-cost') as HTMLInputElement).value) || 0;
-      const markup = parseFloat((row.querySelector('.part-markup') as HTMLInputElement).value) || 0;
-      const sellPrice = cost * (1 + markup / 100);
-      partsCost += cost;
-      partsRevenue += sellPrice;
-    });
-
-    // Materials calculations
-    const refType = (document.getElementById('refrigerant-type') as HTMLSelectElement).value;
-    const refLbs = parseFloat((document.getElementById('refrigerant-lbs') as HTMLInputElement).value) || 0;
-    const refCostPerLb = parseFloat((document.getElementById('refrigerant-cost') as HTMLInputElement).value) || 0;
-    const refPricePerLb = parseFloat((document.getElementById('refrigerant-price') as HTMLInputElement).value) || 0;
-    const refrigerantCost = refLbs * refCostPerLb;
-    const refrigerantRevenue = refLbs * refPricePerLb;
-
-    // Other
-    const permitFee = parseFloat((document.getElementById('permit-fee') as HTMLInputElement).value) || 0;
-    const taxRate = parseFloat((document.getElementById('tax-rate') as HTMLInputElement).value) || 0;
-
-    // Tax applies to parts and materials only
-    const taxableAmount = partsRevenue + refrigerantRevenue;
-    const taxAmount = taxableAmount * (taxRate / 100);
-
-    // Totals
-    const customerTotal = diagnosticFee + laborRevenue + partsRevenue + refrigerantRevenue + permitFee + taxAmount;
-    const totalCost = laborCost + partsCost + refrigerantCost + permitFee;
-    const grossProfit = customerTotal - totalCost;
-    const profitMargin = customerTotal > 0 ? (grossProfit / customerTotal) * 100 : 0;
-    const profitPerHour = laborHours > 0 ? grossProfit / laborHours : 0;
-
-    // Update customer side results
-    document.getElementById('result-customer-total')!.textContent = `$${customerTotal.toFixed(0)}`;
-    document.getElementById('result-parts-revenue')!.textContent = `$${partsRevenue.toFixed(0)}`;
-    document.getElementById('result-labor-revenue')!.textContent = `$${(diagnosticFee + laborRevenue).toFixed(0)}`;
-    document.getElementById('result-refrigerant-revenue')!.textContent = `$${refrigerantRevenue.toFixed(0)}`;
-
-    // Update profitability results
-    document.getElementById('result-gross-profit')!.textContent = `$${grossProfit.toFixed(0)}`;
-    document.getElementById('result-total-cost')!.textContent = `$${totalCost.toFixed(0)}`;
-    document.getElementById('result-profit-per-hour')!.textContent = `$${profitPerHour.toFixed(0)}/hr`;
-
-    // Profit margin with color coding
-    const marginEl = document.getElementById('result-profit-margin')!;
-    marginEl.textContent = `${profitMargin.toFixed(1)}%`;
-    marginEl.className = 'font-heading font-extrabold text-3xl';
-    if (profitMargin < 30) {
-      marginEl.classList.add('text-red-400');
-    } else if (profitMargin < 50) {
-      marginEl.classList.add('text-yellow-400');
-    } else {
-      marginEl.classList.add('text-[#34D399]');
-    }
-
-    // Benchmark bar (range $0 - $800+)
-    const maxBenchmark = 800;
-    const markerPct = Math.min((customerTotal / maxBenchmark) * 100, 100);
-    const marker = document.getElementById('benchmark-marker')!;
-    marker.style.left = `${markerPct}%`;
-
-    let benchmarkNote = '';
-    if (customerTotal < 200) {
-      benchmarkNote = 'Below average range. Make sure your margins are healthy.';
-    } else if (customerTotal <= 600) {
-      benchmarkNote = 'Within the typical range for Landscaping service calls.';
-    } else {
-      benchmarkNote = 'Above average. Justified for major repairs or premium service.';
-    }
-    document.getElementById('benchmark-text')!.textContent = `Your price: $${customerTotal.toFixed(0)} \u2014 ${benchmarkNote}`;
-
-    // Show results
-  }
-
-  // Materials type change handler
-  document.getElementById('refrigerant-type')?.addEventListener('change', () => {
-    const refType = (document.getElementById('refrigerant-type') as HTMLSelectElement).value;
-    const costInput = document.getElementById('refrigerant-cost') as HTMLInputElement;
-    const priceInput = document.getElementById('refrigerant-price') as HTMLInputElement;
-
-    if (refType === 'none') {
-      costInput.value = '0';
-      priceInput.value = '0';
-      costInput.disabled = true;
-      priceInput.disabled = true;
-      (document.getElementById('refrigerant-lbs') as HTMLInputElement).value = '0';
-    } else {
-      const pricing = refrigerantPricing[refType];
-      costInput.value = String(pricing.cost);
-      priceInput.value = String(pricing.price);
-      costInput.disabled = false;
-      priceInput.disabled = false;
-    }
-    calculate();
-  });
-
-  // Calculate button
-
-  // Add Part button
-  document.getElementById('add-part-btn')?.addEventListener('click', () => addPartRow());
-
-  // Auto-calculate on any input/select change within the calculator
-  document.querySelectorAll('#service-calc > .grid input, #service-calc > .grid select, #service-calc input[id="permit-fee"], #service-calc input[id="tax-rate"]').forEach(el => {
-    el.addEventListener('input', calculate);
+  // Auto-calculate on any input change
+  document.querySelectorAll('#service-calc select, #service-calc input').forEach(el => {
     el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
   });
 
-  // Also listen on materials inputs
-  document.getElementById('refrigerant-lbs')?.addEventListener('input', calculate);
-  document.getElementById('refrigerant-cost')?.addEventListener('input', calculate);
-  document.getElementById('refrigerant-price')?.addEventListener('input', calculate);
-
-  // Initialize with one empty part row and run initial calculation
-  addPartRow('Capacitor', 18, 200);
+  // Calculate on load with defaults
   calculate();
 </script>

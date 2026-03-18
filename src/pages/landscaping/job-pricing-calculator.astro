@@ -10,34 +10,34 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How do I price a Landscaping installation?",
+      "name": "How do I price a landscaping job?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Start with your equipment wholesale cost and apply a markup of 30-50%. Add labor by multiplying crew size by hours by your billable rate. Add marked-up materials, permit fees, disposal, and miscellaneous costs. The total should land you at a 25-40% gross margin on residential installs. Use a pricing calculator to test different scenarios before you quote."
+        "text": "Start with your total materials cost and apply a markup of 15-30%. Add labor by multiplying crew size by hours by your billable rate per worker. Add equipment rental or usage fees, delivery charges, disposal fees, and permit costs. The total should land you at a 30-50% gross margin on most residential landscaping jobs. Use a pricing calculator to test different scenarios before you send the quote."
       }
     },
     {
       "@type": "Question",
-      "name": "What profit margin should I target on installs?",
+      "name": "What profit margin should I target on landscaping jobs?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Most successful Landscaping companies target 25-40% gross margin on installations. The industry average sits around 30%. Below 20% means you are likely losing money after overhead. Above 40% is strong but may limit your close rate in competitive markets. The sweet spot for most shops is 30-35%, which covers overhead and leaves healthy net profit."
+        "text": "Most profitable landscaping companies target 30-50% gross margin on installation work. Maintenance contracts tend to run 40-55% margin because material costs are lower. Below 25% means you are likely losing money after overhead, insurance, and truck costs. The sweet spot for most landscaping businesses is 35-45%, which covers overhead and leaves healthy net profit."
       }
     },
     {
       "@type": "Question",
-      "name": "What is a good price per ton for Landscaping?",
+      "name": "How much should I charge per square foot for landscaping?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Price per ton varies by system type and region. For a standard residential primary systems install, $2,500 to $4,000 per ton is typical. High-efficiency option systems run $3,000 to $5,000 per ton. Premium options can range from $1,500 to $3,000 per ton. Premium brands and complex installs push toward the higher end. Track your price per ton to benchmark against competitors."
+        "text": "Price per square foot varies widely by job type and region. Basic lawn installs with sod typically run $1 to $3 per square foot. Full landscape design and install jobs range from $5 to $15 per square foot. Hardscaping with pavers can run $10 to $30 per square foot depending on materials and complexity. Track your price per square foot across jobs to benchmark your pricing against competitors in your market."
       }
     },
     {
       "@type": "Question",
-      "name": "How much should I mark up Landscaping equipment?",
+      "name": "How much should I mark up landscaping materials?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A 30-50% markup on equipment is standard in the Landscaping industry. A 40% markup on a $2,200 condenser means you sell it for $3,080 and keep $880. This covers your purchasing, warehousing, warranty handling, and profit. Some contractors go higher in markets with less competition. Never sell equipment at cost hoping to make it up on labor."
+        "text": "A 15-30% markup on materials is standard in the landscaping industry. A 20% markup on $2,000 in plants, mulch, and soil means you charge the customer $2,400 and keep $400. This covers your time sourcing, transporting, and handling materials plus profit. Some contractors go higher on specialty items like specimen trees or custom stone. Never sell materials at cost hoping to make it up on labor."
       }
     }
   ]
@@ -46,43 +46,23 @@ const faqSchema = {
 
 <ToolLayout tool={tool} extraSchema={[faqSchema]}>
   <div id="install-calc">
-    <!-- Equipment Section -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Equipment</h3>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Job Details Section -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Job Details</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="system-type">System Type</label>
-        <select id="system-type" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-          <option value="standard-system" selected>Standard System</option>
-          <option value="heat-pump">Premium Option</option>
-          <option value="premium option">Mini-Split</option>
-          <option value="package-unit">Package Unit</option>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="job-type">Job Type</label>
+        <select id="job-type" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          <option value="lawn-install" selected>Lawn Install (Sod/Seed)</option>
+          <option value="hardscaping">Hardscaping (Pavers/Retaining Walls)</option>
+          <option value="garden-bed">Garden Bed Install</option>
+          <option value="full-landscape">Full Landscape Design &amp; Install</option>
+          <option value="maintenance-setup">Maintenance Setup</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="equipment-cost">Equipment Cost ($)</label>
-        <input type="number" id="equipment-cost" value="2200" min="0" step="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="equipment-markup">Equipment Markup (%)</label>
-        <input type="number" id="equipment-markup" value="40" min="0" max="200" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-    </div>
-
-    <!-- Labor Section -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Labor</h3>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="crew-size">Crew Size</label>
-        <input type="number" id="crew-size" value="2" min="1" max="10" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="install-hours">Install Hours</label>
-        <input type="number" id="install-hours" value="8" min="0.5" max="100" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-        <p class="text-text-muted text-xs mt-1">Auto-fills based on system type</p>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="billable-rate">Billable Rate per Tech ($/hr)</label>
-        <input type="number" id="billable-rate" value="125" min="0" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="job-sqft">Job Area (sq ft)</label>
+        <input type="number" id="job-sqft" value="2000" min="1" step="100" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">For price-per-sq-ft calculation</p>
       </div>
     </div>
 
@@ -91,11 +71,11 @@ const faqSchema = {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
       <div>
         <label class="block text-sm font-medium text-text-secondary mb-2" for="materials-cost">Materials Cost ($)</label>
-        <input type="number" id="materials-cost" value="350" min="0" step="25" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <input type="number" id="materials-cost" value="1800" min="0" step="50" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
         <label class="block text-sm font-medium text-text-secondary mb-2" for="materials-markup">Materials Markup (%)</label>
-        <input type="number" id="materials-markup" value="100" min="0" max="500" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <input type="number" id="materials-markup" value="20" min="0" max="200" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
     </div>
 
@@ -104,63 +84,81 @@ const faqSchema = {
       <p class="text-sm font-medium text-text-secondary mb-3">Common Material Items <span class="text-text-muted">(check to include in materials cost)</span></p>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         <label class="flex items-center gap-2 text-sm text-text-secondary cursor-pointer hover:text-text-primary transition-colors">
-          <input type="checkbox" class="material-item accent-accent" data-cost="125" checked />
-          Copper line set &mdash; $125
+          <input type="checkbox" class="material-item accent-accent" data-cost="600" checked />
+          Sod / seed &mdash; $600
         </label>
         <label class="flex items-center gap-2 text-sm text-text-secondary cursor-pointer hover:text-text-primary transition-colors">
-          <input type="checkbox" class="material-item accent-accent" data-cost="50" checked />
-          Concrete pad &mdash; $50
+          <input type="checkbox" class="material-item accent-accent" data-cost="350" checked />
+          Plants &amp; shrubs &mdash; $350
         </label>
         <label class="flex items-center gap-2 text-sm text-text-secondary cursor-pointer hover:text-text-primary transition-colors">
-          <input type="checkbox" class="material-item accent-accent" data-cost="30" checked />
-          Electrical disconnect &mdash; $30
+          <input type="checkbox" class="material-item accent-accent" data-cost="250" checked />
+          Mulch &mdash; $250
         </label>
         <label class="flex items-center gap-2 text-sm text-text-secondary cursor-pointer hover:text-text-primary transition-colors">
-          <input type="checkbox" class="material-item accent-accent" data-cost="20" checked />
-          Electrical whip &mdash; $20
+          <input type="checkbox" class="material-item accent-accent" data-cost="200" checked />
+          Topsoil / fill dirt &mdash; $200
         </label>
         <label class="flex items-center gap-2 text-sm text-text-secondary cursor-pointer hover:text-text-primary transition-colors">
-          <input type="checkbox" class="material-item accent-accent" data-cost="20" checked />
-          Control wire &mdash; $20
+          <input type="checkbox" class="material-item accent-accent" data-cost="150" checked />
+          Edging &amp; borders &mdash; $150
         </label>
         <label class="flex items-center gap-2 text-sm text-text-secondary cursor-pointer hover:text-text-primary transition-colors">
-          <input type="checkbox" class="material-item accent-accent" data-cost="15" checked />
-          PVC drain line &mdash; $15
+          <input type="checkbox" class="material-item accent-accent" data-cost="100" checked />
+          Landscape fabric &mdash; $100
         </label>
         <label class="flex items-center gap-2 text-sm text-text-secondary cursor-pointer hover:text-text-primary transition-colors">
-          <input type="checkbox" class="material-item accent-accent" data-cost="40" checked />
-          Duct transitions &mdash; $40
+          <input type="checkbox" class="material-item accent-accent" data-cost="75" />
+          Irrigation supplies &mdash; $75
         </label>
         <label class="flex items-center gap-2 text-sm text-text-secondary cursor-pointer hover:text-text-primary transition-colors">
-          <input type="checkbox" class="material-item accent-accent" data-cost="25" checked />
-          Pipe insulation &mdash; $25
+          <input type="checkbox" class="material-item accent-accent" data-cost="40" />
+          Fertilizer &amp; amendments &mdash; $40
         </label>
         <label class="flex items-center gap-2 text-sm text-text-secondary cursor-pointer hover:text-text-primary transition-colors">
-          <input type="checkbox" class="material-item accent-accent" data-cost="25" checked />
-          Misc &mdash; $25
+          <input type="checkbox" class="material-item accent-accent" data-cost="35" checked />
+          Misc supplies &mdash; $35
         </label>
       </div>
     </div>
 
-    <!-- Other Costs Section -->
-    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Other Costs</h3>
+    <!-- Labor Section -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Labor</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="crew-size">Crew Size</label>
+        <input type="number" id="crew-size" value="3" min="1" max="20" step="1" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="job-hours">Hours on Job</label>
+        <input type="number" id="job-hours" value="12" min="0.5" max="500" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Auto-fills based on job type</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="billable-rate">Billable Rate per Worker ($/hr)</label>
+        <input type="number" id="billable-rate" value="65" min="0" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+      </div>
+    </div>
+
+    <!-- Equipment & Other Costs Section -->
+    <h3 class="font-heading font-bold text-lg mb-4 text-text-primary">Equipment &amp; Other Costs</h3>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="permit-fee">Permit ($)</label>
-        <input type="number" id="permit-fee" value="150" min="0" step="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="equipment-cost">Equipment Rental / Usage ($)</label>
+        <input type="number" id="equipment-cost" value="350" min="0" step="25" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <p class="text-text-muted text-xs mt-1">Skid steer, mini excavator, etc.</p>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="disposal-fee">Disposal Fee ($)</label>
-        <input type="number" id="disposal-fee" value="75" min="0" step="5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="delivery-fee">Delivery ($)</label>
+        <input type="number" id="delivery-fee" value="150" min="0" step="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="misc-fee">Misc ($)</label>
-        <input type="number" id="misc-fee" value="100" min="0" step="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="disposal-fee">Disposal ($)</label>
+        <input type="number" id="disposal-fee" value="200" min="0" step="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="system-tons">System Tons</label>
-        <input type="number" id="system-tons" value="3" min="0.5" max="20" step="0.5" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-        <p class="text-text-muted text-xs mt-1">For price-per-ton calculation</p>
+        <label class="block text-sm font-medium text-text-secondary mb-2" for="permit-fee">Permits &amp; Misc ($)</label>
+        <input type="number" id="permit-fee" value="0" min="0" step="10" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
       </div>
     </div>
 
@@ -174,7 +172,7 @@ const faqSchema = {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label class="block text-sm font-medium text-text-secondary mb-2" for="target-price">Target Sell Price ($)</label>
-            <input type="number" id="target-price" value="7500" min="0" step="100" class="w-full bg-bg-dark border border-[rgba(255,107,43,0.4)] rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+            <input type="number" id="target-price" value="8000" min="0" step="100" class="w-full bg-bg-dark border border-[rgba(255,107,43,0.4)] rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
           </div>
           <div class="flex items-end">
             <div class="bg-bg-card border border-border rounded-lg p-4 w-full">
@@ -190,11 +188,15 @@ const faqSchema = {
 
     <!-- Results -->
     <div id="results" class="mt-8 border-t border-border pt-8">
-      <h3 class="font-heading font-bold text-xl mb-6">Install Pricing Summary</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <h3 class="font-heading font-bold text-xl mb-6">Job Pricing Summary</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Install Price</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Job Price</div>
           <div id="result-total-sell" class="font-heading font-extrabold text-3xl text-accent">&mdash;</div>
+        </div>
+        <div class="bg-bg-dark rounded-xl p-5 text-center">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Total Cost</div>
+          <div id="result-total-cost" class="font-heading font-extrabold text-3xl text-text-primary">&mdash;</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
           <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Gross Profit</div>
@@ -205,8 +207,8 @@ const faqSchema = {
           <div id="result-margin" class="font-heading font-extrabold text-3xl">&mdash;</div>
         </div>
         <div class="bg-bg-dark rounded-xl p-5 text-center">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Price per Ton</div>
-          <div id="result-price-per-ton" class="font-heading font-extrabold text-3xl text-text-primary">&mdash;</div>
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-2">Price per Sq Ft</div>
+          <div id="result-price-per-sqft" class="font-heading font-extrabold text-3xl text-text-primary">&mdash;</div>
         </div>
       </div>
 
@@ -215,10 +217,10 @@ const faqSchema = {
         <h4 class="font-heading font-bold text-sm uppercase tracking-wider text-text-muted mb-4">Cost &amp; Sell Breakdown</h4>
         <div class="space-y-3">
           <div class="flex justify-between items-center text-sm py-2 border-b border-border">
-            <span class="text-text-secondary">Equipment</span>
+            <span class="text-text-secondary">Materials</span>
             <div class="flex gap-6">
-              <span class="text-text-muted w-24 text-right">Cost: <span id="breakdown-equip-cost" class="text-text-primary">$0</span></span>
-              <span class="text-text-muted w-24 text-right">Sell: <span id="breakdown-equip-sell" class="text-accent">$0</span></span>
+              <span class="text-text-muted w-24 text-right">Cost: <span id="breakdown-mat-cost" class="text-text-primary">$0</span></span>
+              <span class="text-text-muted w-24 text-right">Sell: <span id="breakdown-mat-sell" class="text-accent">$0</span></span>
             </div>
           </div>
           <div class="flex justify-between items-center text-sm py-2 border-b border-border">
@@ -229,14 +231,14 @@ const faqSchema = {
             </div>
           </div>
           <div class="flex justify-between items-center text-sm py-2 border-b border-border">
-            <span class="text-text-secondary">Materials</span>
+            <span class="text-text-secondary">Equipment</span>
             <div class="flex gap-6">
-              <span class="text-text-muted w-24 text-right">Cost: <span id="breakdown-mat-cost" class="text-text-primary">$0</span></span>
-              <span class="text-text-muted w-24 text-right">Sell: <span id="breakdown-mat-sell" class="text-accent">$0</span></span>
+              <span class="text-text-muted w-24 text-right">Cost: <span id="breakdown-equip-cost" class="text-text-primary">$0</span></span>
+              <span class="text-text-muted w-24 text-right">Sell: <span id="breakdown-equip-sell" class="text-accent">$0</span></span>
             </div>
           </div>
           <div class="flex justify-between items-center text-sm py-2">
-            <span class="text-text-secondary">Other <span class="text-text-muted text-xs">(permit + disposal + misc)</span></span>
+            <span class="text-text-secondary">Other <span class="text-text-muted text-xs">(delivery + disposal + permits)</span></span>
             <div class="flex gap-6">
               <span class="text-text-muted w-24 text-right">Cost: <span id="breakdown-other-cost" class="text-text-primary">$0</span></span>
               <span class="text-text-muted w-24 text-right">Sell: <span id="breakdown-other-sell" class="text-accent">$0</span></span>
@@ -261,29 +263,30 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">1. Select the system type.</strong> Choose the type of Landscaping system you are installing. The calculator auto-fills typical install hours based on your selection: Standard System defaults to 8 hours, high-efficiency options to 10, premium options to 4, and package units to 6.</p>
-          <p><strong class="text-text-primary">2. Enter equipment cost and markup.</strong> Use your wholesale cost from the distributor. A 40% markup is a common starting point, but adjust based on your market and competition. The calculator shows what the customer pays for equipment.</p>
-          <p><strong class="text-text-primary">3. Set labor details.</strong> Enter crew size, install hours, and your billable rate per technician. The billable rate is what you charge the customer per tech per hour, not the tech's wage.</p>
-          <p><strong class="text-text-primary">4. Configure materials.</strong> Use the checklist to toggle common material items on or off. The total auto-fills the materials cost field. Set your materials markup percentage to calculate the customer-facing price.</p>
-          <p><strong class="text-text-primary">5. Add other costs and review.</strong> Include permit fees, disposal fees, and miscellaneous costs. Enter the system tonnage so the calculator can show your price per ton. Hit calculate to see the full breakdown, profit, and margin.</p>
+          <p><strong class="text-text-primary">1. Select the job type.</strong> Choose the type of landscaping work you are pricing. The calculator auto-fills typical crew hours based on your selection: lawn installs default to 12 hours, hardscaping to 20, garden beds to 8, full landscape jobs to 32, and maintenance setups to 6.</p>
+          <p><strong class="text-text-primary">2. Enter your materials cost and markup.</strong> Use your wholesale cost from the nursery, supply yard, or distributor. A 20% markup is a common starting point for landscaping materials, but adjust based on your market. Use the checklist to toggle common items on or off and the total auto-fills.</p>
+          <p><strong class="text-text-primary">3. Set labor details.</strong> Enter your crew size, the total hours on the job, and your billable rate per worker per hour. The billable rate is what you charge the customer per crew member per hour, not the worker's wage. Most landscaping companies bill between $45 and $85 per worker per hour.</p>
+          <p><strong class="text-text-primary">4. Add equipment and other costs.</strong> Enter equipment rental or usage fees for machines like skid steers, mini excavators, or plate compactors. Add delivery charges, disposal fees for debris removal, and any permit costs.</p>
+          <p><strong class="text-text-primary">5. Review and adjust.</strong> Enter the job area in square feet so the calculator shows your price per square foot. Check the total price, profit, and margin. If the margin is below 30%, increase your markups or reduce costs before sending the quote.</p>
         </div>
       </section>
 
-      <!-- How Install Pricing Works -->
+      <!-- How Job Pricing Works -->
       <section>
-        <h2 class="font-heading font-bold text-2xl mb-4">How Install Pricing Works</h2>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Landscaping Job Pricing Works</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">Cost-plus pricing is the foundation.</strong> You start with your actual costs for equipment, labor, and materials, then add a markup to each category. The markup covers your overhead, warranty reserve, and profit. This method ensures you never sell a job below cost.</p>
+          <p><strong class="text-text-primary">Cost-plus pricing is the foundation.</strong> You start with your actual costs for materials, labor, and equipment, then add a markup to materials and charge a billable labor rate that covers wages plus overhead and profit. Equipment and other costs are passed through at face value. This method ensures you never sell a job below cost.</p>
           <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">
-            <p>Equipment_Sell = Equipment_Cost x (1 + Markup / 100)</p>
+            <p>Materials_Sell = Materials_Cost x (1 + Markup / 100)</p>
             <p>Labor_Sell = Crew_Size x Hours x Billable_Rate</p>
-            <p>Materials_Sell = Materials_Cost x (1 + Materials_Markup / 100)</p>
-            <p>Total_Sell = Equipment_Sell + Labor_Sell + Materials_Sell + Permit + Disposal + Misc</p>
+            <p>Other_Costs = Equipment + Delivery + Disposal + Permits</p>
+            <p>Total_Sell = Materials_Sell + Labor_Sell + Other_Costs</p>
+            <p>Total_Cost = Materials_Cost + Labor_Cost + Other_Costs</p>
             <p>Gross_Profit = Total_Sell - Total_Cost</p>
             <p>Margin = (Gross_Profit / Total_Sell) x 100</p>
           </div>
-          <p><strong class="text-text-primary">Target margin drives your pricing.</strong> Most Landscaping install companies aim for 25-40% gross margin. If the calculator shows you below 25%, you need to increase your markups, reduce costs, or both. Use the reverse calculator toggle to enter a target sell price and see what margin it gives you before sending the proposal.</p>
-          <p><strong class="text-text-primary">Price per ton is a quick benchmark.</strong> Dividing total sell price by system tonnage gives you a per-ton number you can compare across jobs and against competitors. Residential AC installs typically run $2,500 to $4,000 per ton. High-efficiency option systems tend toward $3,000 to $5,000 per ton. If your number is significantly outside these ranges, investigate why.</p>
+          <p><strong class="text-text-primary">Target margin drives your pricing.</strong> Most profitable landscaping companies aim for 30-50% gross margin on installation work. If the calculator shows you below 25%, you need to increase your markups, raise your billable rate, or reduce costs. Use the reverse calculator toggle to enter a target sell price and see what margin it gives you before you send the proposal.</p>
+          <p><strong class="text-text-primary">Price per square foot is your benchmark.</strong> Dividing total sell price by the job area gives you a per-square-foot number you can compare across jobs and against competitors. Basic lawn installs typically run $1 to $3 per square foot. Full landscape design and install jobs range from $5 to $15 per square foot. Hardscaping with pavers can run $10 to $30. If your number falls far outside these ranges for the job type, investigate why.</p>
         </div>
       </section>
 
@@ -291,9 +294,9 @@ const faqSchema = {
       <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
-          <p><strong class="text-text-primary">Building a quote in the field.</strong> You have finished the site survey and need to quote the customer before you leave. Plug in your equipment cost from the distributor, set your standard markups, and adjust the hours based on the difficulty of the install. Walk the customer through the price with confidence because you know the margin is healthy.</p>
-          <p><strong class="text-text-primary">Comparing system options for the customer.</strong> Run the calculator for a standard primary systems, then again for a high-efficiency option. Show the customer both price points side by side. The tonnage, hours, and equipment cost change, so the total and price per ton shift. This helps the customer make an informed decision and positions you as a consultant, not just a bidder.</p>
-          <p><strong class="text-text-primary">Training your sales team on pricing.</strong> New salespeople often discount too aggressively to close deals. Have them use this calculator to see exactly what happens to profit margin when they knock $500 off the price. When they see the margin drop from 32% to 22%, they learn to protect the price or find other ways to add value.</p>
+          <p><strong class="text-text-primary">Quoting a job after the site visit.</strong> You have walked the property, measured the areas, and know what the customer wants. Plug in your materials from the supply yard quote, set your crew size and hours based on the scope, and add equipment if you need a skid steer or mini excavator. You get a total price with a margin you are comfortable with before you send the proposal.</p>
+          <p><strong class="text-text-primary">Comparing options for the customer.</strong> Run the calculator for a basic lawn and garden bed install, then again for a full landscape with hardscaping. Show the customer both price points side by side. The materials, hours, and equipment costs change, so the total and price per square foot shift. This positions you as a consultant who helps them choose, not just a contractor who gives a number.</p>
+          <p><strong class="text-text-primary">Training your team on pricing.</strong> New estimators and salespeople often discount too aggressively to win jobs. Have them use this calculator to see exactly what happens to profit margin when they knock $500 off the price. When they see the margin drop from 38% to 28%, they learn to protect the price or find other ways to add value instead of cutting into profit.</p>
         </div>
       </section>
 
@@ -302,20 +305,20 @@ const faqSchema = {
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I price a Landscaping installation?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Start with your equipment wholesale cost and apply a markup of 30-50%. Add labor by multiplying crew size by hours by your billable rate. Add marked-up materials, permit fees, disposal, and miscellaneous costs. The total should land you at a 25-40% gross margin on residential installs. Use a pricing calculator to test different scenarios before you quote.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How do I price a landscaping job?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Start with your total materials cost and apply a markup of 15-30%. Add labor by multiplying crew size by hours by your billable rate per worker. Add equipment rental or usage fees, delivery charges, disposal fees, and permit costs. The total should land you at a 30-50% gross margin on most residential landscaping jobs. Use a pricing calculator to test different scenarios before you send the quote.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What profit margin should I target on installs?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most successful Landscaping companies target 25-40% gross margin on installations. The industry average sits around 30%. Below 20% means you are likely losing money after overhead. Above 40% is strong but may limit your close rate in competitive markets. The sweet spot for most shops is 30-35%, which covers overhead and leaves healthy net profit.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What profit margin should I target on landscaping jobs?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most profitable landscaping companies target 30-50% gross margin on installation work. Maintenance contracts tend to run 40-55% margin because material costs are lower. Below 25% means you are likely losing money after overhead, insurance, and truck costs. The sweet spot for most landscaping businesses is 35-45%, which covers overhead and leaves healthy net profit.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What is a good price per ton for Landscaping?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Price per ton varies by system type and region. For a standard residential primary systems install, $2,500 to $4,000 per ton is typical. High-efficiency option systems run $3,000 to $5,000 per ton. Premium options can range from $1,500 to $3,000 per ton. Premium brands and complex installs push toward the higher end. Track your price per ton to benchmark against competitors.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much should I charge per square foot for landscaping?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Price per square foot varies widely by job type and region. Basic lawn installs with sod typically run $1 to $3 per square foot. Full landscape design and install jobs range from $5 to $15 per square foot. Hardscaping with pavers can run $10 to $30 per square foot depending on materials and complexity. Track your price per square foot across jobs to benchmark your pricing against competitors in your market.</div>
           </details>
           <details class="bg-bg-card border border-border rounded-lg">
-            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much should I mark up Landscaping equipment?</summary>
-            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A 30-50% markup on equipment is standard in the Landscaping industry. A 40% markup on a $2,200 condenser means you sell it for $3,080 and keep $880. This covers your purchasing, warehousing, warranty handling, and profit. Some contractors go higher in markets with less competition. Never sell equipment at cost hoping to make it up on labor.</div>
+            <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How much should I mark up landscaping materials?</summary>
+            <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A 15-30% markup on materials is standard in the landscaping industry. A 20% markup on $2,000 in plants, mulch, and soil means you charge the customer $2,400 and keep $400. This covers your time sourcing, transporting, and handling materials plus profit. Some contractors go higher on specialty items like specimen trees or custom stone. Never sell materials at cost hoping to make it up on labor.</div>
           </details>
         </div>
       </section>
@@ -324,16 +327,17 @@ const faqSchema = {
 </ToolLayout>
 
 <script>
-  // Typical install hours by system type
-  const systemHours: Record<string, number> = {
-    'standard-system': 8,
-    'heat-pump': 10,
-    'premium option': 4,
-    'package-unit': 6,
+  // Typical job hours by job type
+  const jobHours: Record<string, number> = {
+    'lawn-install': 12,
+    'hardscaping': 20,
+    'garden-bed': 8,
+    'full-landscape': 32,
+    'maintenance-setup': 6,
   };
 
-  // Assumed loaded wage for cost calculation (internal cost per tech per hour)
-  const LOADED_WAGE = 45;
+  // Assumed loaded wage for cost calculation (internal cost per worker per hour)
+  const LOADED_WAGE = 25;
 
   // Update materials cost from checklist
   function updateMaterialsFromChecklist() {
@@ -347,11 +351,11 @@ const faqSchema = {
     (document.getElementById('materials-cost') as HTMLInputElement).value = String(total);
   }
 
-  // System type change: auto-fill install hours
-  document.getElementById('system-type')?.addEventListener('change', () => {
-    const systemType = (document.getElementById('system-type') as HTMLSelectElement).value;
-    const hours = systemHours[systemType] || 8;
-    (document.getElementById('install-hours') as HTMLInputElement).value = String(hours);
+  // Job type change: auto-fill job hours
+  document.getElementById('job-type')?.addEventListener('change', () => {
+    const jobType = (document.getElementById('job-type') as HTMLSelectElement).value;
+    const hours = jobHours[jobType] || 12;
+    (document.getElementById('job-hours') as HTMLInputElement).value = String(hours);
     calculate();
   });
 
@@ -360,6 +364,7 @@ const faqSchema = {
     const checked = (document.getElementById('reverse-toggle') as HTMLInputElement).checked;
     const section = document.getElementById('reverse-section')!;
     if (checked) {
+      section.classList.remove('hidden');
     } else {
       section.classList.add('hidden');
     }
@@ -375,46 +380,45 @@ const faqSchema = {
   });
 
   function calculate() {
-    // Equipment
-    const equipmentCost = parseFloat((document.getElementById('equipment-cost') as HTMLInputElement).value) || 0;
-    const equipmentMarkup = parseFloat((document.getElementById('equipment-markup') as HTMLInputElement).value) || 0;
-    const equipmentSell = equipmentCost * (1 + equipmentMarkup / 100);
-
-    // Labor
-    const crewSize = parseFloat((document.getElementById('crew-size') as HTMLInputElement).value) || 0;
-    const installHours = parseFloat((document.getElementById('install-hours') as HTMLInputElement).value) || 0;
-    const billableRate = parseFloat((document.getElementById('billable-rate') as HTMLInputElement).value) || 0;
-    const laborSell = crewSize * installHours * billableRate;
-    const laborCost = crewSize * installHours * LOADED_WAGE;
-
     // Materials
     const materialsCost = parseFloat((document.getElementById('materials-cost') as HTMLInputElement).value) || 0;
     const materialsMarkup = parseFloat((document.getElementById('materials-markup') as HTMLInputElement).value) || 0;
     const materialsSell = materialsCost * (1 + materialsMarkup / 100);
 
-    // Other costs (pass-through, no markup)
-    const permitFee = parseFloat((document.getElementById('permit-fee') as HTMLInputElement).value) || 0;
-    const disposalFee = parseFloat((document.getElementById('disposal-fee') as HTMLInputElement).value) || 0;
-    const miscFee = parseFloat((document.getElementById('misc-fee') as HTMLInputElement).value) || 0;
-    const otherTotal = permitFee + disposalFee + miscFee;
+    // Labor
+    const crewSize = parseFloat((document.getElementById('crew-size') as HTMLInputElement).value) || 0;
+    const jobHoursVal = parseFloat((document.getElementById('job-hours') as HTMLInputElement).value) || 0;
+    const billableRate = parseFloat((document.getElementById('billable-rate') as HTMLInputElement).value) || 0;
+    const laborSell = crewSize * jobHoursVal * billableRate;
+    const laborCost = crewSize * jobHoursVal * LOADED_WAGE;
 
-    // Tonnage
-    const systemTons = parseFloat((document.getElementById('system-tons') as HTMLInputElement).value) || 1;
+    // Equipment (pass-through, no markup)
+    const equipmentCost = parseFloat((document.getElementById('equipment-cost') as HTMLInputElement).value) || 0;
+
+    // Other costs (pass-through, no markup)
+    const deliveryFee = parseFloat((document.getElementById('delivery-fee') as HTMLInputElement).value) || 0;
+    const disposalFee = parseFloat((document.getElementById('disposal-fee') as HTMLInputElement).value) || 0;
+    const permitFee = parseFloat((document.getElementById('permit-fee') as HTMLInputElement).value) || 0;
+    const otherTotal = deliveryFee + disposalFee + permitFee;
+
+    // Job area
+    const jobSqft = parseFloat((document.getElementById('job-sqft') as HTMLInputElement).value) || 1;
 
     // Totals
-    const totalCost = equipmentCost + laborCost + materialsCost + otherTotal;
-    const totalSell = equipmentSell + laborSell + materialsSell + otherTotal;
+    const totalCost = materialsCost + laborCost + equipmentCost + otherTotal;
+    const totalSell = materialsSell + laborSell + equipmentCost + otherTotal;
     const grossProfit = totalSell - totalCost;
     const margin = totalSell > 0 ? (grossProfit / totalSell) * 100 : 0;
-    const pricePerTon = totalSell / systemTons;
+    const pricePerSqft = totalSell / jobSqft;
 
     // Format currency
     const fmt = (n: number) => '$' + Math.round(n).toLocaleString();
 
     // Main results
     document.getElementById('result-total-sell')!.textContent = fmt(totalSell);
+    document.getElementById('result-total-cost')!.textContent = fmt(totalCost);
     document.getElementById('result-gross-profit')!.textContent = fmt(grossProfit);
-    document.getElementById('result-price-per-ton')!.textContent = fmt(pricePerTon);
+    document.getElementById('result-price-per-sqft')!.textContent = '$' + pricePerSqft.toFixed(2);
 
     // Profit color
     const profitEl = document.getElementById('result-gross-profit')!;
@@ -438,12 +442,12 @@ const faqSchema = {
     }
 
     // Breakdown
-    document.getElementById('breakdown-equip-cost')!.textContent = fmt(equipmentCost);
-    document.getElementById('breakdown-equip-sell')!.textContent = fmt(equipmentSell);
-    document.getElementById('breakdown-labor-cost')!.textContent = fmt(laborCost);
-    document.getElementById('breakdown-labor-sell')!.textContent = fmt(laborSell);
     document.getElementById('breakdown-mat-cost')!.textContent = fmt(materialsCost);
     document.getElementById('breakdown-mat-sell')!.textContent = fmt(materialsSell);
+    document.getElementById('breakdown-labor-cost')!.textContent = fmt(laborCost);
+    document.getElementById('breakdown-labor-sell')!.textContent = fmt(laborSell);
+    document.getElementById('breakdown-equip-cost')!.textContent = fmt(equipmentCost);
+    document.getElementById('breakdown-equip-sell')!.textContent = fmt(equipmentCost);
     document.getElementById('breakdown-other-cost')!.textContent = fmt(otherTotal);
     document.getElementById('breakdown-other-sell')!.textContent = fmt(otherTotal);
     document.getElementById('breakdown-total-cost')!.textContent = fmt(totalCost);
@@ -467,11 +471,7 @@ const faqSchema = {
         reverseMarginEl.classList.add('text-[#EF4444]');
       }
     }
-
-    // Show results
   }
-
-  // Calculate button
 
   // Auto-calculate on any input change
   document.querySelectorAll('#install-calc input[type="number"], #install-calc select').forEach(el => {
