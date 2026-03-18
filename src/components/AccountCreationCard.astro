@@ -135,7 +135,27 @@ const saveMsg = saveMessaging[category] || saveMessaging.technical;
 
         if (!token) throw new Error('No session');
 
-        await fetch('/api/dashboard/save-calculation', {
+        // Collect calculator inputs from the page
+        const inputs: Record<string, string> = {};
+        document.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
+          'input[type="number"], input[type="text"], select'
+        ).forEach(el => {
+          const label = el.closest('div')?.querySelector('label')?.textContent?.trim()
+            || el.getAttribute('data-field')
+            || el.name
+            || el.id;
+          if (label && el.value) inputs[label] = el.value;
+        });
+
+        // Collect calculator outputs from the page
+        const outputs: Record<string, string> = {};
+        document.querySelectorAll('[id*="result"], [id*="output"], [class*="result"]').forEach(el => {
+          const label = el.querySelector('[class*="muted"], [class*="label"], [class*="uppercase"]')?.textContent?.trim();
+          const value = el.querySelector('[class*="accent"], [class*="primary"], [class*="bold"]')?.textContent?.trim();
+          if (label && value) outputs[label] = value;
+        });
+
+        const res = await fetch('/api/dashboard/save-calculation', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -143,12 +163,14 @@ const saveMsg = saveMessaging[category] || saveMessaging.technical;
           },
           body: JSON.stringify({
             toolSlug: card.dataset.toolSlug,
-            tradeSlug: card.dataset.tradeSlug,
-            toolName: card.dataset.toolName,
-            tradeName: card.dataset.tradeName,
-            url: window.location.href,
+            trade: card.dataset.tradeSlug,
+            label: card.dataset.toolName,
+            inputs: Object.keys(inputs).length > 0 ? inputs : { url: window.location.href },
+            outputs: Object.keys(outputs).length > 0 ? outputs : null,
           }),
         });
+
+        if (!res.ok) throw new Error('Save failed');
 
         btnText.textContent = 'Saved';
         saveIcon?.classList.add('hidden');
