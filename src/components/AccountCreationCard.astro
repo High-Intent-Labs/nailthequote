@@ -9,8 +9,8 @@ interface Props {
 
 const { toolName, toolSlug, tradeSlug, tradeName, category } = Astro.props;
 
-// Contextual messaging based on tool category
-const messaging: Record<string, { icon: string; title: string; description: string }> = {
+// Contextual messaging for logged-out users
+const signupMessaging: Record<string, { icon: string; title: string; description: string }> = {
   technical: {
     icon: '📊',
     title: 'Save this calculation to your account',
@@ -33,29 +33,46 @@ const messaging: Record<string, { icon: string; title: string; description: stri
   },
 };
 
-const msg = messaging[category] || messaging.technical;
+// Contextual messaging for logged-in users
+const saveMessaging: Record<string, { icon: string; title: string }> = {
+  technical: { icon: '📊', title: 'Save this calculation to your account' },
+  business: { icon: '📊', title: 'Save this calculation to your account' },
+  template: { icon: '📄', title: `Save this ${toolName.toLowerCase().includes('invoice') ? 'invoice' : toolName.toLowerCase().includes('estimate') ? 'estimate' : toolName.toLowerCase().includes('agreement') ? 'agreement' : 'document'} to your account` },
+  sales: { icon: '📥', title: 'Download a branded PDF' },
+};
+
+const signupMsg = signupMessaging[category] || signupMessaging.technical;
+const saveMsg = saveMessaging[category] || saveMessaging.technical;
 ---
 
+<!-- Logged-out state: signup prompt -->
 <div
   id="account-creation-card"
+  data-tool-slug={toolSlug}
+  data-trade-slug={tradeSlug}
+  data-tool-name={toolName}
+  data-trade-name={tradeName}
   class="bg-bg-card border border-border rounded-2xl p-6 md:p-8 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center gap-5 hover:border-[#3A4755] transition-colors"
 >
-  <!-- Left accent bar -->
   <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent"></div>
 
-  <!-- Icon -->
   <div class="shrink-0 w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-2xl">
-    {msg.icon}
+    {signupMsg.icon}
   </div>
 
-  <!-- Body -->
-  <div class="flex-1 min-w-0">
-    <h3 class="font-heading font-bold text-base md:text-lg text-text-primary mb-1">{msg.title}</h3>
-    <p class="text-text-secondary text-sm leading-relaxed">{msg.description}</p>
+  <!-- Logged-out body -->
+  <div id="card-signup-body" class="flex-1 min-w-0">
+    <h3 class="font-heading font-bold text-base md:text-lg text-text-primary mb-1">{signupMsg.title}</h3>
+    <p class="text-text-secondary text-sm leading-relaxed">{signupMsg.description}</p>
   </div>
 
-  <!-- CTA -->
-  <div class="shrink-0 flex flex-col items-center">
+  <!-- Logged-in body (hidden by default) -->
+  <div id="card-save-body" class="hidden flex-1 min-w-0">
+    <h3 class="font-heading font-bold text-base md:text-lg text-text-primary">{saveMsg.title}</h3>
+  </div>
+
+  <!-- Logged-out CTA -->
+  <div id="card-signup-cta" class="shrink-0 flex flex-col items-center">
     <button
       id="account-card-cta"
       type="button"
@@ -71,36 +88,105 @@ const msg = messaging[category] || messaging.technical;
       Maybe later
     </button>
   </div>
+
+  <!-- Logged-in CTA (hidden by default) -->
+  <div id="card-save-cta" class="hidden shrink-0">
+    <button
+      id="account-card-save"
+      type="button"
+      class="bg-accent hover:bg-accent-hover text-white font-bold px-6 py-2.5 rounded-lg transition-colors whitespace-nowrap text-sm flex items-center gap-2"
+    >
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" class="text-white">
+        <path d="M5 10l3 3 7-7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="save-check" class="hidden"/>
+        <path d="M3 5a2 2 0 012-2h8.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V15a2 2 0 01-2 2H5a2 2 0 01-2-2V5z" stroke="currentColor" stroke-width="1.5" id="save-icon"/>
+        <path d="M7 3v4h6V3M7 17v-5h6v5" stroke="currentColor" stroke-width="1.5" id="save-icon2"/>
+      </path>
+      </svg>
+      <span id="save-btn-text">Save</span>
+    </button>
+  </div>
 </div>
 
 <script>
-  // CTA opens signup modal
-  document.getElementById('account-card-cta')?.addEventListener('click', () => {
-    document.getElementById('signup-modal')?.classList.remove('hidden');
-    document.getElementById('signup-modal')?.setAttribute('data-trigger', 'account_creation_card');
-  });
+  const card = document.getElementById('account-creation-card');
+  const hasAccount = localStorage.getItem('ntq_has_account');
 
-  // Dismiss hides the card
-  document.getElementById('account-card-dismiss')?.addEventListener('click', () => {
-    const card = document.getElementById('account-creation-card');
-    if (card) {
-      card.style.transition = 'opacity 0.2s, margin 0.2s, padding 0.2s, max-height 0.3s';
-      card.style.opacity = '0';
-      card.style.maxHeight = '0';
-      card.style.overflow = 'hidden';
-      card.style.marginBottom = '0';
-      card.style.paddingTop = '0';
-      card.style.paddingBottom = '0';
-      setTimeout(() => card.remove(), 300);
-      // Remember dismissal for this session
-      try { sessionStorage.setItem('ntq_account_card_dismissed', '1'); } catch {}
-    }
-  });
+  if (hasAccount && card) {
+    // Switch to logged-in save mode
+    document.getElementById('card-signup-body')?.classList.add('hidden');
+    document.getElementById('card-signup-cta')?.classList.add('hidden');
+    document.getElementById('card-save-body')?.classList.remove('hidden');
+    document.getElementById('card-save-cta')?.classList.remove('hidden');
 
-  // Hide if already dismissed this session
-  try {
-    if (sessionStorage.getItem('ntq_account_card_dismissed') === '1') {
-      document.getElementById('account-creation-card')?.remove();
-    }
-  } catch {}
+    // Save button handler
+    document.getElementById('account-card-save')?.addEventListener('click', async () => {
+      const btn = document.getElementById('account-card-save') as HTMLButtonElement;
+      const btnText = document.getElementById('save-btn-text')!;
+      const saveIcon = document.getElementById('save-icon');
+      const saveIcon2 = document.getElementById('save-icon2');
+      const checkIcon = document.getElementById('save-check');
+
+      btn.disabled = true;
+      btnText.textContent = 'Saving...';
+
+      try {
+        const session = JSON.parse(localStorage.getItem('ntq_session') || '{}');
+        const token = session.access_token;
+
+        if (!token) throw new Error('No session');
+
+        await fetch('/api/dashboard/save-calculation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            toolSlug: card.dataset.toolSlug,
+            tradeSlug: card.dataset.tradeSlug,
+            toolName: card.dataset.toolName,
+            tradeName: card.dataset.tradeName,
+            url: window.location.href,
+          }),
+        });
+
+        btnText.textContent = 'Saved';
+        saveIcon?.classList.add('hidden');
+        saveIcon2?.classList.add('hidden');
+        checkIcon?.classList.remove('hidden');
+        btn.classList.remove('bg-accent', 'hover:bg-accent-hover');
+        btn.classList.add('bg-[#059669]');
+      } catch {
+        btnText.textContent = 'Save';
+        btn.disabled = false;
+      }
+    });
+  } else {
+    // Logged-out: signup CTA
+    document.getElementById('account-card-cta')?.addEventListener('click', () => {
+      (window as any).openSignupModal?.('tier1_upsell');
+    });
+
+    // Dismiss
+    document.getElementById('account-card-dismiss')?.addEventListener('click', () => {
+      if (card) {
+        card.style.transition = 'opacity 0.2s, margin 0.2s, padding 0.2s, max-height 0.3s';
+        card.style.opacity = '0';
+        card.style.maxHeight = '0';
+        card.style.overflow = 'hidden';
+        card.style.marginBottom = '0';
+        card.style.paddingTop = '0';
+        card.style.paddingBottom = '0';
+        setTimeout(() => card.remove(), 300);
+        try { sessionStorage.setItem('ntq_account_card_dismissed', '1'); } catch {}
+      }
+    });
+
+    // Hide if dismissed this session
+    try {
+      if (sessionStorage.getItem('ntq_account_card_dismissed') === '1') {
+        card?.remove();
+      }
+    } catch {}
+  }
 </script>

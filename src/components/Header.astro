@@ -34,7 +34,14 @@ const liveTrades = getLiveTrades();
     <span class="bg-[rgba(255,107,43,0.12)] text-accent text-[11px] font-semibold px-2.5 py-1 rounded-full tracking-wider uppercase">100% Free</span>
 
     <!-- Auth: swapped via JS based on login state -->
-    <a href="/dashboard" id="header-dashboard-link" class="hidden text-sm font-medium text-text-primary no-underline hover:text-accent transition-colors">Dashboard</a>
+    <a href="/dashboard" id="header-dashboard-link" class="hidden items-center gap-2 text-sm font-medium text-text-primary no-underline hover:text-accent transition-colors">
+      <span class="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" class="text-accent">
+          <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 0114 0H3z" fill="currentColor"/>
+        </svg>
+      </span>
+      My Account
+    </a>
     <button id="header-login-btn" type="button" class="text-sm font-medium text-accent hover:text-accent-hover transition-colors cursor-pointer">Log In</button>
   </div>
 </nav>
@@ -72,6 +79,7 @@ const liveTrades = getLiveTrades();
 
   if (hasAccount) {
     dashboardLink?.classList.remove('hidden');
+    dashboardLink?.classList.add('flex');
     loginBtn?.classList.add('hidden');
     mobileDashboard?.classList.remove('hidden');
     mobileLogin?.classList.add('hidden');
