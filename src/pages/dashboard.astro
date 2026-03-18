@@ -37,7 +37,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <h1 class="font-heading font-bold text-3xl">Welcome back<span id="dash-name"></span></h1>
           <p class="text-text-secondary mt-1">Here's your saved work and business profile.</p>
         </div>
-        <button id="dash-logout" type="button" class="text-text-muted text-sm hover:text-text-secondary transition-colors self-start">Log out</button>
+        <button id="dash-logout" type="button" class="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-[#EF4444] border border-border hover:border-[#EF4444]/30 rounded-lg px-4 py-2 transition-colors self-start">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17H4a2 2 0 01-2-2V5a2 2 0 012-2h3M14 14l4-4-4-4M18 10H7"/>
+          </svg>
+          Log out
+        </button>
       </div>
 
       <!-- Quick Actions -->
