@@ -197,8 +197,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     // Try to get user data from Supabase session
     try {
-      const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2' as any);
-
       // Get session from stored tokens
       const storedSession = localStorage.getItem('ntq_session');
       if (!storedSession) {
@@ -206,10 +204,27 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         return;
       }
 
-      const session = JSON.parse(storedSession);
-      const res = await fetch('/api/auth/me', {
+      let session = JSON.parse(storedSession);
+      let res = await fetch('/api/auth/me', {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
+
+      // If token expired, try refreshing
+      if (res.status === 401 && session.refresh_token) {
+        const refreshRes = await fetch('/api/auth/refresh', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refresh_token: session.refresh_token }),
+        });
+        if (refreshRes.ok) {
+          const newTokens = await refreshRes.json();
+          session = { ...session, ...newTokens };
+          try { localStorage.setItem('ntq_session', JSON.stringify(session)); } catch {}
+          res = await fetch('/api/auth/me', {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          });
+        }
+      }
 
       if (!res.ok) {
         showGuest();

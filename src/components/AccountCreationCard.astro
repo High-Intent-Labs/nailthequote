@@ -129,8 +129,8 @@ const saveMsg = saveMessaging[category] || saveMessaging.technical;
       btnText.textContent = 'Saving...';
 
       try {
-        const session = JSON.parse(localStorage.getItem('ntq_session') || '{}');
-        const token = session.access_token;
+        let session = JSON.parse(localStorage.getItem('ntq_session') || '{}');
+        let token = session.access_token;
 
         if (!token) throw new Error('No session');
 
@@ -139,6 +139,8 @@ const saveMsg = saveMessaging[category] || saveMessaging.technical;
         document.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
           'input[type="number"], input[type="text"], select'
         ).forEach(el => {
+          // Skip inputs inside account/email cards
+          if (el.closest('#email-capture-card') || el.closest('#signup-modal')) return;
           const label = el.closest('div')?.querySelector('label')?.textContent?.trim()
             || el.getAttribute('data-field')
             || el.name
@@ -154,20 +156,39 @@ const saveMsg = saveMessaging[category] || saveMessaging.technical;
           if (label && value) outputs[label] = value;
         });
 
-        const res = await fetch('/api/dashboard/save-calculation', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            toolSlug: card.dataset.toolSlug,
-            trade: card.dataset.tradeSlug,
-            label: card.dataset.toolName,
-            inputs: Object.keys(inputs).length > 0 ? inputs : { url: window.location.href },
-            outputs: Object.keys(outputs).length > 0 ? outputs : null,
-          }),
+        const payload = JSON.stringify({
+          toolSlug: card.dataset.toolSlug,
+          trade: card.dataset.tradeSlug,
+          label: card.dataset.toolName,
+          inputs: Object.keys(inputs).length > 0 ? inputs : { url: window.location.href },
+          outputs: Object.keys(outputs).length > 0 ? outputs : null,
         });
+
+        let res = await fetch('/api/dashboard/save-calculation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: payload,
+        });
+
+        // If token expired, try refreshing and retry once
+        if (res.status === 401 && session.refresh_token) {
+          const refreshRes = await fetch('/api/auth/refresh', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh_token: session.refresh_token }),
+          });
+          if (refreshRes.ok) {
+            const newTokens = await refreshRes.json();
+            session = { ...session, ...newTokens };
+            try { localStorage.setItem('ntq_session', JSON.stringify(session)); } catch {}
+            token = newTokens.access_token;
+            res = await fetch('/api/dashboard/save-calculation', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+              body: payload,
+            });
+          }
+        }
 
         if (!res.ok) throw new Error('Save failed');
 
