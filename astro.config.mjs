@@ -6,6 +6,7 @@ import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
   site: 'https://nailthequote.com',
+  trailingSlash: 'always',
   adapter: cloudflare(),
   integrations: [sitemap()],
   vite: {
