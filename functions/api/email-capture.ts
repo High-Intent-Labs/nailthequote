@@ -71,6 +71,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           unsubscribed: false,
           firstName: '',
           lastName: '',
+          data: {
+            source: 'nailthequote.com',
+            trade: tradeSlug || '',
+            tool: toolSlug || '',
+            signup_type: 'email_capture',
+            signup_date: new Date().toISOString().split('T')[0],
+          },
         });
       }
     }

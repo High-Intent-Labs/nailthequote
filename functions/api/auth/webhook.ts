@@ -45,6 +45,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         unsubscribed: false,
         firstName: record.raw_user_meta_data?.owner_name || '',
         lastName: '',
+        data: {
+          source: 'nailthequote.com',
+          trade: record.raw_user_meta_data?.trade || '',
+          signup_type: 'account_creation',
+          signup_date: new Date().toISOString().split('T')[0],
+        },
       }).catch(() => {});
     }
 
