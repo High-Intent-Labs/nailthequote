@@ -580,4 +580,7 @@ Prevent emergencies — ask about our annual plumbing inspection.</textarea>
 
   document.getElementById('taxRate')?.addEventListener('input', recalculate);
   document.getElementById('generate-pdf-btn')?.addEventListener('click', generatePDF);
+
+  (window as any).__ntqGetState = () => ({ lineItems, nextId });
+  (window as any).__ntqSetState = (s: any) => { lineItems = s.lineItems; nextId = s.nextId || lineItems.length + 1; renderLineItems(); };
 </script>

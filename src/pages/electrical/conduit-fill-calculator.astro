@@ -297,4 +297,7 @@ const faqSchema = {
   }
 
   renderWireRows();
+
+  (window as any).__ntqGetState = () => ({ wireRows, nextWireId });
+  (window as any).__ntqSetState = (s: any) => { wireRows = s.wireRows; nextWireId = s.nextWireId || wireRows.length + 1; renderWireRows(); };
 </script>
