@@ -150,21 +150,124 @@ const webAppSchema = {
     </a>
   </div>
 
-  <!-- Restore inputs from URL parameters (runs before profile auto-fill) -->
+  <!-- Generic state collection helper (used by AccountCreationCard save) -->
   <script>
-    (() => {
+    (window as any).__ntqCollectState = () => {
+      const skip = (el: Element) => !!el.closest('#email-capture-card, #signup-modal, #account-creation-card');
+      const inputs: Record<string, string> = {};
+      const textareas: Record<string, string> = {};
+      const checkboxes: Record<string, boolean> = {};
+
+      document.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
+        'input[type="number"], input[type="text"], input[type="tel"], input[type="email"], input[type="hidden"], select'
+      ).forEach(el => {
+        if (skip(el)) return;
+        const key = el.id || el.name;
+        if (key && el.value) inputs[key] = el.value;
+      });
+
+      document.querySelectorAll<HTMLTextAreaElement>('textarea').forEach(el => {
+        if (skip(el)) return;
+        const key = el.id || el.name;
+        if (key && el.value) textareas[key] = el.value;
+      });
+
+      document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]').forEach(el => {
+        if (skip(el)) return;
+        const key = el.id || el.name || el.getAttribute('data-field');
+        if (key) checkboxes[key] = el.checked;
+      });
+
+      const custom = (window as any).__ntqGetState?.() || null;
+
+      return { version: 1, type: custom ? 'custom' : 'generic', inputs, textareas, checkboxes, custom };
+    };
+  </script>
+
+  <!-- Restore saved state from ?restore=<id> -->
+  <script>
+    (async () => {
       try {
-        const params = new URLSearchParams(window.location.search);
-        if (params.size === 0) return;
-        params.forEach((value, key) => {
-          const el = document.getElementById(key) as HTMLInputElement | HTMLSelectElement | null
-            || document.querySelector<HTMLInputElement | HTMLSelectElement>(`[name="${key}"]`);
-          if (!el) return;
-          // Skip inputs inside account/email cards
-          if (el.closest('#email-capture-card') || el.closest('#signup-modal')) return;
-          el.value = value;
-          el.dispatchEvent(new Event('input', { bubbles: true }));
+        const restoreId = new URLSearchParams(window.location.search).get('restore');
+        if (!restoreId) return;
+
+        let session: any = {};
+        try { session = JSON.parse(localStorage.getItem('ntq_session') || '{}'); } catch {}
+        if (!session.access_token) return;
+
+        const res = await fetch(`/api/dashboard/calculation/${restoreId}`, {
+          headers: { Authorization: `Bearer ${session.access_token}` },
         });
+        if (!res.ok) return;
+
+        const calc = await res.json();
+        const state = calc.full_state;
+        if (!state) {
+          // Fallback: try URL params from old saves
+          if (calc.url && calc.url.includes('?')) {
+            const params = new URLSearchParams(calc.url.split('?')[1]);
+            params.forEach((value, key) => {
+              const el = document.getElementById(key) as HTMLInputElement | HTMLSelectElement | null;
+              if (el && !el.closest('#email-capture-card, #signup-modal')) {
+                el.value = value;
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+              }
+            });
+          }
+          return;
+        }
+
+        // Wait for page scripts to initialize
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+        // 1. Restore custom state first (creates dynamic rows)
+        if (state.custom && (window as any).__ntqSetState) {
+          (window as any).__ntqSetState(state.custom);
+        }
+
+        // 2. Restore inputs and selects
+        if (state.inputs) {
+          for (const [key, value] of Object.entries(state.inputs)) {
+            const el = document.getElementById(key) as HTMLInputElement | HTMLSelectElement | null
+              || document.querySelector<HTMLInputElement | HTMLSelectElement>(`[name="${key}"]`);
+            if (!el || el.closest('#email-capture-card, #signup-modal')) continue;
+            el.value = value as string;
+          }
+        }
+
+        // 3. Restore textareas
+        if (state.textareas) {
+          for (const [key, value] of Object.entries(state.textareas)) {
+            const el = document.getElementById(key) as HTMLTextAreaElement | null
+              || document.querySelector<HTMLTextAreaElement>(`textarea[name="${key}"]`);
+            if (el) el.value = value as string;
+          }
+        }
+
+        // 4. Restore checkboxes
+        if (state.checkboxes) {
+          for (const [key, checked] of Object.entries(state.checkboxes)) {
+            const el = document.getElementById(key) as HTMLInputElement | null
+              || document.querySelector<HTMLInputElement>(`input[type="checkbox"][name="${key}"]`)
+              || document.querySelector<HTMLInputElement>(`input[type="checkbox"][data-field="${key}"]`);
+            if (el) el.checked = checked as boolean;
+          }
+        }
+
+        // 5. Dispatch events to trigger recalculations
+        document.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+          'input, select, textarea'
+        ).forEach(el => {
+          if (!el.closest('#email-capture-card, #signup-modal')) {
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        });
+
+        // 6. Clean URL
+        const cleanUrl = window.location.pathname;
+        history.replaceState(null, '', cleanUrl);
+
       } catch { /* silent */ }
     })();
   </script>
