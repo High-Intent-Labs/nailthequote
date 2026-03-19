@@ -231,6 +231,8 @@
           email,
           marketingConsent: consentCheckbox.checked,
           trigger: modal.getAttribute('data-trigger') || 'direct',
+          trade: document.querySelector('[data-trade-slug]')?.getAttribute('data-trade-slug') || '',
+          toolSlug: document.querySelector('[data-tool-slug]')?.getAttribute('data-tool-slug') || '',
         }),
       });
 

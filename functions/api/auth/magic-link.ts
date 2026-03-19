@@ -4,7 +4,7 @@ import { getResend, getAudienceId } from '../../_lib/resend';
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
-    const { email, marketingConsent, trigger }: any = await context.request.json();
+    const { email, marketingConsent, trigger, trade, toolSlug }: any = await context.request.json();
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return new Response(JSON.stringify({ error: 'Invalid email' }), { status: 400 });
@@ -40,6 +40,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           unsubscribed: false,
           firstName: '',
           lastName: '',
+          data: {
+            source: 'nailthequote.com',
+            trade: trade || '',
+            tool: toolSlug || '',
+            signup_type: trigger === 'tier1_upsell' ? 'account_upsell' : trigger === 'repeat_visit' ? 'repeat_visit' : 'account_creation',
+            signup_trigger: trigger || 'direct',
+            signup_date: new Date().toISOString().split('T')[0],
+          },
         }).catch(() => {}); // Non-blocking
       }
     }
