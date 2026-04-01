@@ -244,7 +244,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     list.innerHTML = users.map((u: any) => {
       const created = new Date(u.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      const lastLogin = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Never';
+      const lastActive = u.last_active ? new Date(u.last_active).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No activity';
 
       const toolEntries = Object.entries(u.tools_used || {});
       const totalToolUses = toolEntries.reduce((sum: number, [, count]: any) => sum + count, 0);
@@ -308,7 +308,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
                 </div>
                 <div class="flex items-center gap-4 text-xs text-text-muted">
                   <span>Joined ${created}</span>
-                  <span>Last login: ${lastLogin}</span>
+                  <span>Last active: ${lastActive}</span>
                   <span>${totalToolUses} calculation${totalToolUses !== 1 ? 's' : ''} saved</span>
                   ${u.documents.length > 0 ? `<span>${u.documents.length} document${u.documents.length !== 1 ? 's' : ''}</span>` : ''}
                 </div>

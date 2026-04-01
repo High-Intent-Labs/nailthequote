@@ -13,24 +13,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     const supabase = getSupabaseAdmin(context.env);
 
-    // 1. Fetch all auth users from Supabase (paginate to get all)
-    let allAuthUsers: any[] = [];
-    let page = 1;
-    while (true) {
-      const { data, error: authError } = await supabase.auth.admin.listUsers({
-        page,
-        perPage: 500,
-      });
-      if (authError) {
-        return new Response(JSON.stringify({ error: 'Failed to list auth users', detail: authError.message }), { status: 500 });
-      }
-      const users = data?.users || [];
-      allAuthUsers = allAuthUsers.concat(users);
-      if (users.length < 500) break;
-      page++;
-    }
-
-    // 2. Fetch all profiles
+    // 1. Fetch all profiles (service role bypasses RLS)
+    //    Profiles are created on account creation and reference auth.users(id)
     const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
       .select('*')
@@ -39,7 +23,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return new Response(JSON.stringify({ error: 'Failed to load profiles', detail: profilesError.message }), { status: 500 });
     }
 
-    // 3. Fetch all saved calculations (grouped counts per user/tool)
+    // 2. Fetch all saved calculations
     const { data: calculations, error: calcsError } = await supabase
       .from('saved_calculations')
       .select('user_id, tool_slug, trade, label, created_at')
@@ -48,7 +32,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return new Response(JSON.stringify({ error: 'Failed to load calculations', detail: calcsError.message }), { status: 500 });
     }
 
-    // 4. Fetch all saved documents
+    // 3. Fetch all saved documents
     const { data: documents, error: docsError } = await supabase
       .from('saved_documents')
       .select('user_id, doc_type, client_name, amount, status, created_at')
@@ -57,19 +41,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return new Response(JSON.stringify({ error: 'Failed to load documents', detail: docsError.message }), { status: 500 });
     }
 
-    // 5. Fetch email captures
+    // 4. Fetch email captures
     const { data: emailCaptures, error: emailError } = await supabase
       .from('email_captures')
       .select('*')
       .order('created_at', { ascending: false });
     if (emailError) {
       return new Response(JSON.stringify({ error: 'Failed to load email captures', detail: emailError.message }), { status: 500 });
-    }
-
-    // Build profile map
-    const profileMap: Record<string, any> = {};
-    for (const p of profiles || []) {
-      profileMap[p.id] = p;
     }
 
     // Build activity per user
@@ -97,16 +75,14 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // Merge into user objects
-    const users = allAuthUsers.map((authUser: any) => {
-      const profile = profileMap[authUser.id] || {};
-      const activity = activityMap[authUser.id] || { tools: {}, totalCalcs: 0, documents: [], lastActive: null };
+    // Build user objects from profiles
+    const users = (profiles || []).map((profile: any) => {
+      const activity = activityMap[profile.id] || { tools: {}, totalCalcs: 0, documents: [], lastActive: null };
 
       return {
-        id: authUser.id,
-        email: authUser.email,
-        created_at: authUser.created_at,
-        last_sign_in_at: authUser.last_sign_in_at,
+        id: profile.id,
+        email: profile.email,
+        created_at: profile.created_at,
         // Profile fields
         business_name: profile.business_name || null,
         owner_name: profile.owner_name || null,
@@ -117,6 +93,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         license_number: profile.license_number || null,
         default_hourly_rate: profile.default_hourly_rate || null,
         default_markup: profile.default_markup || null,
+        marketing_consent: profile.marketing_consent,
         // Activity
         tools_used: activity.tools,
         total_calculations: activity.totalCalcs,
@@ -124,9 +101,6 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         last_active: activity.lastActive,
       };
     });
-
-    // Sort by most recently created
-    users.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     return new Response(JSON.stringify({
       users,
