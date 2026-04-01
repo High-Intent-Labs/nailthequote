@@ -1,0 +1,399 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Admin — NailTheQuote"
+  description="Admin portal"
+  currentPath="/admin"
+  noindex={true}
+>
+  <div class="max-w-[1200px] mx-auto px-6 md:px-12 py-8">
+
+    <!-- Login gate -->
+    <div id="admin-login" class="flex items-center justify-center py-24">
+      <div class="bg-bg-card border border-border rounded-2xl p-8 w-full max-w-sm">
+        <h1 class="font-heading font-bold text-2xl mb-2 text-center">Admin Portal</h1>
+        <p class="text-text-secondary text-sm text-center mb-6">Enter the admin password to continue.</p>
+        <input
+          type="password"
+          id="admin-password"
+          placeholder="Password"
+          class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-base focus:border-accent focus:outline-none transition-colors mb-4"
+        />
+        <button
+          id="admin-login-btn"
+          type="button"
+          class="w-full bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+        >
+          Log in
+        </button>
+        <p id="admin-login-error" class="hidden text-[#EF4444] text-sm mt-3 text-center"></p>
+      </div>
+    </div>
+
+    <!-- Admin content (hidden until authenticated) -->
+    <div id="admin-content" class="hidden">
+
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 class="font-heading font-bold text-3xl">Admin Portal</h1>
+          <p class="text-text-secondary mt-1">User accounts, activity, and email captures.</p>
+        </div>
+        <button id="admin-refresh" type="button" class="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-accent border border-border hover:border-accent/30 rounded-lg px-4 py-2 transition-colors self-start">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.5 3.333v5h-5M2.5 16.667v-5h5"/>
+            <path d="M4.108 7.5a7.5 7.5 0 0112.284-2.392L17.5 8.333M2.5 11.667l1.108 3.225A7.5 7.5 0 0015.892 12.5"/>
+          </svg>
+          Refresh
+        </button>
+      </div>
+
+      <!-- Summary cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+        <div class="bg-bg-card border border-border rounded-xl p-5">
+          <p class="text-text-muted text-xs uppercase tracking-wider mb-1">Total Users</p>
+          <p id="stat-users" class="font-heading font-bold text-2xl text-accent">--</p>
+        </div>
+        <div class="bg-bg-card border border-border rounded-xl p-5">
+          <p class="text-text-muted text-xs uppercase tracking-wider mb-1">Email Captures</p>
+          <p id="stat-emails" class="font-heading font-bold text-2xl text-accent">--</p>
+        </div>
+        <div class="bg-bg-card border border-border rounded-xl p-5">
+          <p class="text-text-muted text-xs uppercase tracking-wider mb-1">Saved Calculations</p>
+          <p id="stat-calcs" class="font-heading font-bold text-2xl text-accent">--</p>
+        </div>
+        <div class="bg-bg-card border border-border rounded-xl p-5">
+          <p class="text-text-muted text-xs uppercase tracking-wider mb-1">Saved Documents</p>
+          <p id="stat-docs" class="font-heading font-bold text-2xl text-accent">--</p>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-1 mb-6 border-b border-border">
+        <button data-tab="users" class="admin-tab px-5 py-3 text-sm font-semibold text-accent border-b-2 border-accent transition-colors">Registered Users</button>
+        <button data-tab="emails" class="admin-tab px-5 py-3 text-sm font-semibold text-text-muted border-b-2 border-transparent hover:text-text-secondary transition-colors">Email Captures</button>
+      </div>
+
+      <!-- Users tab -->
+      <div id="tab-users">
+        <!-- Search -->
+        <div class="mb-4">
+          <input
+            type="text"
+            id="user-search"
+            placeholder="Search by name, email, company, or trade..."
+            class="w-full sm:max-w-md bg-bg-dark border border-border rounded-lg px-4 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors"
+          />
+        </div>
+        <div id="users-list" class="space-y-4"></div>
+        <div id="users-empty" class="hidden text-center py-12 text-text-muted">No registered users yet.</div>
+      </div>
+
+      <!-- Email captures tab -->
+      <div id="tab-emails" class="hidden">
+        <div class="mb-4">
+          <input
+            type="text"
+            id="email-search"
+            placeholder="Search by email or trade..."
+            class="w-full sm:max-w-md bg-bg-dark border border-border rounded-lg px-4 py-2.5 text-text-primary text-sm focus:border-accent focus:outline-none transition-colors"
+          />
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border text-left">
+                <th class="pb-3 pr-4 font-semibold text-text-muted text-xs uppercase tracking-wider">Email</th>
+                <th class="pb-3 pr-4 font-semibold text-text-muted text-xs uppercase tracking-wider">Trade</th>
+                <th class="pb-3 pr-4 font-semibold text-text-muted text-xs uppercase tracking-wider">Tool</th>
+                <th class="pb-3 pr-4 font-semibold text-text-muted text-xs uppercase tracking-wider">Consent</th>
+                <th class="pb-3 font-semibold text-text-muted text-xs uppercase tracking-wider">Date</th>
+              </tr>
+            </thead>
+            <tbody id="emails-tbody"></tbody>
+          </table>
+        </div>
+        <div id="emails-empty" class="hidden text-center py-12 text-text-muted">No email captures yet.</div>
+      </div>
+
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="admin-loading" class="hidden fixed inset-0 bg-bg-dark/70 flex items-center justify-center z-50">
+      <div class="w-8 h-8 border-3 border-border border-t-accent rounded-full animate-spin"></div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  let adminKey = '';
+  let cachedData: any = null;
+
+  // --- Login ---
+  const loginSection = document.getElementById('admin-login')!;
+  const contentSection = document.getElementById('admin-content')!;
+  const passwordInput = document.getElementById('admin-password') as HTMLInputElement;
+  const loginBtn = document.getElementById('admin-login-btn')!;
+  const loginError = document.getElementById('admin-login-error')!;
+
+  // Check for saved session
+  const savedKey = sessionStorage.getItem('ntq_admin_key');
+  if (savedKey) {
+    adminKey = savedKey;
+    loginSection.classList.add('hidden');
+    contentSection.classList.remove('hidden');
+    loadData();
+  }
+
+  loginBtn.addEventListener('click', attemptLogin);
+  passwordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') attemptLogin(); });
+
+  async function attemptLogin() {
+    const pw = passwordInput.value.trim();
+    if (!pw) return;
+
+    loginBtn.textContent = 'Checking...';
+    loginError.classList.add('hidden');
+
+    try {
+      const res = await fetch('/api/admin/users', {
+        headers: { 'X-Admin-Key': pw },
+      });
+
+      if (res.status === 401) {
+        loginError.textContent = 'Wrong password.';
+        loginError.classList.remove('hidden');
+        loginBtn.textContent = 'Log in';
+        return;
+      }
+
+      if (!res.ok) throw new Error('Server error');
+
+      adminKey = pw;
+      sessionStorage.setItem('ntq_admin_key', pw);
+      cachedData = await res.json();
+
+      loginSection.classList.add('hidden');
+      contentSection.classList.remove('hidden');
+      renderData(cachedData);
+    } catch {
+      loginError.textContent = 'Something went wrong. Try again.';
+      loginError.classList.remove('hidden');
+      loginBtn.textContent = 'Log in';
+    }
+  }
+
+  // --- Data loading ---
+  async function loadData() {
+    const loading = document.getElementById('admin-loading')!;
+    loading.classList.remove('hidden');
+
+    try {
+      const res = await fetch('/api/admin/users', {
+        headers: { 'X-Admin-Key': adminKey },
+      });
+
+      if (res.status === 401) {
+        sessionStorage.removeItem('ntq_admin_key');
+        loginSection.classList.remove('hidden');
+        contentSection.classList.add('hidden');
+        loading.classList.add('hidden');
+        return;
+      }
+
+      if (!res.ok) throw new Error('Failed');
+
+      cachedData = await res.json();
+      renderData(cachedData);
+    } catch {
+      // Silently handle
+    } finally {
+      loading.classList.add('hidden');
+    }
+  }
+
+  document.getElementById('admin-refresh')?.addEventListener('click', loadData);
+
+  // --- Render ---
+  function renderData(data: any) {
+    // Summary
+    document.getElementById('stat-users')!.textContent = data.summary.total_users.toLocaleString();
+    document.getElementById('stat-emails')!.textContent = data.summary.total_email_captures.toLocaleString();
+    document.getElementById('stat-calcs')!.textContent = data.summary.total_calculations.toLocaleString();
+    document.getElementById('stat-docs')!.textContent = data.summary.total_documents.toLocaleString();
+
+    renderUsers(data.users);
+    renderEmails(data.email_captures);
+  }
+
+  function renderUsers(users: any[]) {
+    const list = document.getElementById('users-list')!;
+    const empty = document.getElementById('users-empty')!;
+
+    if (users.length === 0) {
+      list.innerHTML = '';
+      empty.classList.remove('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+
+    list.innerHTML = users.map((u: any) => {
+      const created = new Date(u.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const lastLogin = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Never';
+
+      const toolEntries = Object.entries(u.tools_used || {});
+      const totalToolUses = toolEntries.reduce((sum: number, [, count]: any) => sum + count, 0);
+
+      const toolRows = toolEntries.length > 0
+        ? toolEntries
+            .sort((a: any, b: any) => b[1] - a[1])
+            .map(([tool, count]: any) => {
+              const parts = tool.split('/');
+              const trade = parts[0];
+              const slug = parts[1];
+              return `<div class="flex items-center justify-between py-1.5 px-3 rounded hover:bg-bg-dark/50">
+                <div class="flex items-center gap-2">
+                  <span class="text-text-muted text-xs uppercase">${trade}</span>
+                  <span class="text-text-secondary text-sm">${slug.replace(/-/g, ' ')}</span>
+                </div>
+                <span class="text-accent font-semibold text-sm">${count}x</span>
+              </div>`;
+            }).join('')
+        : '<p class="text-text-muted text-sm px-3 py-2">No saved calculations yet</p>';
+
+      const docRows = u.documents.length > 0
+        ? u.documents.slice(0, 5).map((d: any) => {
+            const docDate = new Date(d.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            return `<div class="flex items-center justify-between py-1.5 px-3 rounded hover:bg-bg-dark/50">
+              <div class="flex items-center gap-2">
+                <span class="text-xs px-1.5 py-0.5 rounded ${d.status === 'sent' ? 'bg-[rgba(52,211,153,0.15)] text-[#34D399]' : 'bg-accent/15 text-accent'}">${d.status}</span>
+                <span class="text-text-secondary text-sm">${d.doc_type.replace(/_/g, ' ')}</span>
+                ${d.client ? `<span class="text-text-muted text-xs">- ${d.client}</span>` : ''}
+              </div>
+              <span class="text-text-muted text-xs">${docDate}</span>
+            </div>`;
+          }).join('')
+        : '';
+
+      const infoFields = [
+        u.owner_name && `<span class="text-text-secondary">${u.owner_name}</span>`,
+        u.business_name && `<span class="text-text-secondary">${u.business_name}</span>`,
+        u.trade && `<span class="text-xs px-2 py-0.5 rounded bg-accent/15 text-accent uppercase font-semibold tracking-wider">${u.trade}</span>`,
+      ].filter(Boolean).join('<span class="text-border mx-1">|</span>');
+
+      const detailFields = [
+        u.phone && `<span class="text-text-muted text-xs"><span class="text-text-secondary">Phone:</span> ${u.phone}</span>`,
+        u.address && `<span class="text-text-muted text-xs"><span class="text-text-secondary">Address:</span> ${u.address}</span>`,
+        u.zip_code && `<span class="text-text-muted text-xs"><span class="text-text-secondary">ZIP:</span> ${u.zip_code}</span>`,
+        u.license_number && `<span class="text-text-muted text-xs"><span class="text-text-secondary">License:</span> ${u.license_number}</span>`,
+        u.default_hourly_rate && `<span class="text-text-muted text-xs"><span class="text-text-secondary">Rate:</span> $${u.default_hourly_rate}/hr</span>`,
+        u.default_markup && `<span class="text-text-muted text-xs"><span class="text-text-secondary">Markup:</span> ${u.default_markup}%</span>`,
+      ].filter(Boolean);
+
+      return `
+        <div class="bg-bg-card border border-border rounded-xl overflow-hidden user-card"
+             data-search="${[u.email, u.owner_name, u.business_name, u.trade, u.phone].filter(Boolean).join(' ').toLowerCase()}">
+          <!-- Header -->
+          <div class="p-5 cursor-pointer hover:bg-bg-card-hover transition-colors" onclick="this.closest('.user-card').querySelector('.user-detail').classList.toggle('hidden')">
+            <div class="flex items-start justify-between gap-4">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 flex-wrap mb-1">
+                  <span class="font-heading font-bold text-text-primary">${u.email}</span>
+                  ${infoFields ? `<span class="text-border">|</span>${infoFields}` : ''}
+                </div>
+                <div class="flex items-center gap-4 text-xs text-text-muted">
+                  <span>Joined ${created}</span>
+                  <span>Last login: ${lastLogin}</span>
+                  <span>${totalToolUses} calculation${totalToolUses !== 1 ? 's' : ''} saved</span>
+                  ${u.documents.length > 0 ? `<span>${u.documents.length} document${u.documents.length !== 1 ? 's' : ''}</span>` : ''}
+                </div>
+              </div>
+              <svg class="shrink-0 text-text-muted mt-1" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 8l4 4 4-4"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Expandable detail -->
+          <div class="user-detail hidden border-t border-border">
+            ${detailFields.length > 0 ? `
+              <div class="px-5 py-3 border-b border-border/50 flex flex-wrap gap-x-4 gap-y-1">
+                ${detailFields.join('')}
+              </div>
+            ` : ''}
+
+            <div class="p-5">
+              <p class="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">Tools Used (saved calculations)</p>
+              <div class="space-y-0.5 mb-4">${toolRows}</div>
+
+              ${docRows ? `
+                <p class="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2 mt-4">Recent Documents</p>
+                <div class="space-y-0.5">${docRows}</div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderEmails(captures: any[]) {
+    const tbody = document.getElementById('emails-tbody')!;
+    const empty = document.getElementById('emails-empty')!;
+
+    if (captures.length === 0) {
+      tbody.innerHTML = '';
+      empty.classList.remove('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+
+    tbody.innerHTML = captures.map((c: any) => {
+      const date = new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      return `
+        <tr class="border-b border-border/50 email-row" data-search="${[c.email, c.trade, c.tool_slug].join(' ').toLowerCase()}">
+          <td class="py-3 pr-4 text-text-primary">${c.email}</td>
+          <td class="py-3 pr-4"><span class="text-xs px-2 py-0.5 rounded bg-accent/15 text-accent uppercase font-semibold tracking-wider">${c.trade}</span></td>
+          <td class="py-3 pr-4 text-text-secondary">${c.tool_slug.replace(/-/g, ' ')}</td>
+          <td class="py-3 pr-4">${c.marketing_consent ? '<span class="text-[#34D399] text-xs font-semibold">Yes</span>' : '<span class="text-text-muted text-xs">No</span>'}</td>
+          <td class="py-3 text-text-muted text-xs">${date}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // --- Tabs ---
+  document.querySelectorAll('.admin-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = (tab as HTMLElement).dataset.tab;
+      document.querySelectorAll('.admin-tab').forEach(t => {
+        t.classList.remove('text-accent', 'border-accent');
+        t.classList.add('text-text-muted', 'border-transparent');
+      });
+      tab.classList.remove('text-text-muted', 'border-transparent');
+      tab.classList.add('text-accent', 'border-accent');
+
+      document.getElementById('tab-users')!.classList.toggle('hidden', target !== 'users');
+      document.getElementById('tab-emails')!.classList.toggle('hidden', target !== 'emails');
+    });
+  });
+
+  // --- Search ---
+  document.getElementById('user-search')?.addEventListener('input', (e) => {
+    const q = (e.target as HTMLInputElement).value.toLowerCase();
+    document.querySelectorAll('.user-card').forEach(card => {
+      const searchData = (card as HTMLElement).dataset.search || '';
+      (card as HTMLElement).style.display = searchData.includes(q) ? '' : 'none';
+    });
+  });
+
+  document.getElementById('email-search')?.addEventListener('input', (e) => {
+    const q = (e.target as HTMLInputElement).value.toLowerCase();
+    document.querySelectorAll('.email-row').forEach(row => {
+      const searchData = (row as HTMLElement).dataset.search || '';
+      (row as HTMLElement).style.display = searchData.includes(q) ? '' : 'none';
+    });
+  });
+</script>
