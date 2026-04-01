@@ -30,7 +30,6 @@ const liveTrades = getLiveTrades();
         currentPath.startsWith(`/${trade.slug}`) ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'
       ]}>{trade.name}</a>
     ))}
-    <a href="/#trades" class="text-text-secondary text-sm font-medium no-underline hover:text-text-primary transition-colors">All Trades</a>
     <!-- Auth: swapped via JS based on login state -->
     <a href="/dashboard" id="header-dashboard-link" class="hidden items-center gap-2 text-sm font-medium text-text-primary no-underline hover:text-accent transition-colors">
       <span class="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center">
@@ -53,7 +52,6 @@ const liveTrades = getLiveTrades();
         currentPath.startsWith(`/${trade.slug}`) ? 'text-text-primary' : 'text-text-secondary'
       ]}>{trade.name}</a>
     ))}
-    <a href="/#trades" class="text-text-secondary text-sm font-medium no-underline">All Trades</a>
     <a href="/dashboard" id="mobile-dashboard-link" class="hidden text-sm font-medium text-text-primary no-underline">Dashboard</a>
     <button id="mobile-login-btn" type="button" class="bg-accent hover:bg-accent-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors text-left cursor-pointer w-fit">Log In</button>
   </div>
