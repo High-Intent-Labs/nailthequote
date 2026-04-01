@@ -11,6 +11,15 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
     }
 
+    // Debug: verify env vars are available
+    if (!context.env.SUPABASE_URL || !context.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return new Response(JSON.stringify({
+        error: 'Missing env vars',
+        hasUrl: !!context.env.SUPABASE_URL,
+        hasKey: !!context.env.SUPABASE_SERVICE_ROLE_KEY,
+      }), { status: 500 });
+    }
+
     const supabase = getSupabaseAdmin(context.env);
 
     // 1. Fetch all profiles (service role bypasses RLS)
