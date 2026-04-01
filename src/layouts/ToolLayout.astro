@@ -150,6 +150,122 @@ const webAppSchema = {
     </a>
   </div>
 
+  <!-- PostHog custom tool analytics -->
+  <script define:vars={{ toolSlug: tool.slug, tradeSlug: tool.tradeSlug, tradeName: tool.tradeName, toolName: tool.name, category: tool.category }}>
+    window.__ntqToolMeta = { toolSlug, tradeSlug, tradeName, toolName, category };
+  </script>
+  <script>
+    (() => {
+      const meta = (window as any).__ntqToolMeta;
+      if (!meta || typeof (window as any).posthog === 'undefined') return;
+      const ph = (window as any).posthog;
+      const props = {
+        tool_slug: meta.toolSlug,
+        trade_slug: meta.tradeSlug,
+        trade_name: meta.tradeName,
+        tool_name: meta.toolName,
+        tool_category: meta.category,
+      };
+
+      // 1. Tool Viewed — fires on page load
+      ph.capture('tool_viewed', props);
+
+      // 2. Tool Used — fires when user interacts with any calculator input
+      //    (debounced: only fires once per session per tool)
+      let toolUsedFired = false;
+      const toolArea = document.querySelector('.bg-bg-card.border');
+      if (toolArea) {
+        toolArea.addEventListener('input', () => {
+          if (toolUsedFired) return;
+          toolUsedFired = true;
+          ph.capture('tool_used', props);
+        }, { once: true });
+      }
+
+      // 3. Calculation Completed — fires when result values change
+      //    (debounced to 1.5s after last input)
+      let calcTimer: ReturnType<typeof setTimeout> | null = null;
+      let calcCount = 0;
+      const resultEls = document.querySelectorAll('[id*="result"], [id*="output"]');
+      if (resultEls.length > 0 && toolArea) {
+        const observer = new MutationObserver(() => {
+          if (calcTimer) clearTimeout(calcTimer);
+          calcTimer = setTimeout(() => {
+            calcCount++;
+            // Only fire on the first meaningful calculation (skip the auto-calc on load)
+            if (calcCount === 2) {
+              ph.capture('calculation_completed', props);
+            }
+          }, 1500);
+        });
+        resultEls.forEach(el => observer.observe(el, { childList: true, characterData: true, subtree: true }));
+      }
+
+      // 4. PDF Generated — fires when Generate PDF/Estimate button is clicked
+      document.querySelectorAll('#generate-btn, #generate-pdf-btn, [data-generate-pdf]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          ph.capture('pdf_generated', props);
+        });
+      });
+
+      // 5. Calculation Saved — fires when save button succeeds
+      const saveBtn = document.getElementById('account-card-save');
+      if (saveBtn) {
+        const origClick = saveBtn.onclick;
+        saveBtn.addEventListener('click', () => {
+          // Watch for the button text to change to "Saved"
+          const observer = new MutationObserver(() => {
+            const text = document.getElementById('save-btn-text')?.textContent;
+            if (text === 'Saved') {
+              ph.capture('calculation_saved', props);
+              observer.disconnect();
+            }
+          });
+          const btnText = document.getElementById('save-btn-text');
+          if (btnText) observer.observe(btnText, { childList: true, characterData: true, subtree: true });
+          // Auto-disconnect after 10s to avoid leaks
+          setTimeout(() => observer.disconnect(), 10000);
+        });
+      }
+
+      // 6. Signup Prompt Shown — fires when the signup modal opens from a tool page
+      const modalObserver = new MutationObserver(() => {
+        const modal = document.getElementById('signup-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+          ph.capture('signup_prompt_shown', {
+            ...props,
+            trigger: 'tool_page',
+          });
+        }
+      });
+      const modal = document.getElementById('signup-modal');
+      if (modal) modalObserver.observe(modal, { attributes: true, attributeFilter: ['class'] });
+
+      // 7. Account CTA Clicked — fires when "Create Free Account" is clicked from tool page
+      document.getElementById('account-card-cta')?.addEventListener('click', () => {
+        ph.capture('account_cta_clicked', {
+          ...props,
+          location: 'tool_card',
+        });
+      });
+
+      // 8. Related Tool Clicked — fires when a related tool link is clicked
+      document.querySelectorAll('a[href]').forEach(link => {
+        const href = (link as HTMLAnchorElement).getAttribute('href') || '';
+        if (href.match(/^\/[a-z-]+\/[a-z-]+/) && link.closest('section')?.querySelector('h2')?.textContent?.includes('Related')) {
+          link.addEventListener('click', () => {
+            const targetSlug = href.split('/').filter(Boolean).pop() || '';
+            ph.capture('related_tool_clicked', {
+              ...props,
+              target_tool: targetSlug,
+              target_url: href,
+            });
+          });
+        }
+      });
+    })();
+  </script>
+
   <!-- Generic state collection helper (used by AccountCreationCard save) -->
   <script>
     (window as any).__ntqCollectState = () => {
