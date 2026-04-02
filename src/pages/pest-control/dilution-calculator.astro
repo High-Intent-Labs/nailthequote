@@ -109,6 +109,38 @@ const faqSchema = {
       </section>
 
       <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Pesticide Dilution Chart — Common Rates by Tank Size</h2>
+        <p class="text-text-secondary text-sm mb-4">Quick-reference chart for the most common percent solutions across standard sprayer sizes. All values in fluid ounces of concentrate.</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border-collapse">
+            <thead>
+              <tr class="bg-bg-card">
+                <th class="px-4 py-3 text-left font-semibold text-text-primary border border-border">Concentration</th>
+                <th class="px-4 py-3 text-right font-semibold text-text-primary border border-border">1 gal</th>
+                <th class="px-4 py-3 text-right font-semibold text-text-primary border border-border">4 gal</th>
+                <th class="px-4 py-3 text-right font-semibold text-text-primary border border-border">10 gal</th>
+                <th class="px-4 py-3 text-right font-semibold text-text-primary border border-border">25 gal</th>
+                <th class="px-4 py-3 text-right font-semibold text-text-primary border border-border">50 gal</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-secondary">
+              {[0.5, 1, 2, 3, 5].map((pct, i) => (
+                <tr class={i % 2 === 0 ? 'bg-bg-dark' : ''}>
+                  <td class="px-4 py-2 border border-border font-medium text-text-primary">{pct}%</td>
+                  <td class="px-4 py-2 border border-border text-right">{(pct / 100 * 128 * 1).toFixed(1)} oz</td>
+                  <td class="px-4 py-2 border border-border text-right">{(pct / 100 * 128 * 4).toFixed(1)} oz</td>
+                  <td class="px-4 py-2 border border-border text-right">{(pct / 100 * 128 * 10).toFixed(1)} oz</td>
+                  <td class="px-4 py-2 border border-border text-right">{(pct / 100 * 128 * 25).toFixed(1)} oz</td>
+                  <td class="px-4 py-2 border border-border text-right">{(pct / 100 * 128 * 50).toFixed(1)} oz</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="text-text-muted text-xs mt-3">Values calculated as: (% ÷ 100) × 128 × tank size. Always verify against the product label.</p>
+      </section>
+
+      <section>
         <h2 class="font-heading font-bold text-2xl mb-4">How the Dilution Formula Works</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
           <div class="bg-bg-card border border-border rounded-lg p-4 font-mono text-sm space-y-1">

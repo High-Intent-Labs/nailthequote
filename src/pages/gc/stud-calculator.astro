@@ -129,6 +129,43 @@ const faqSchema = {
       </section>
 
       <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">How Many Studs Do I Need? Quick-Reference Table</h2>
+        <p class="text-text-secondary text-sm mb-4">Stud counts for common wall lengths at 16" OC and 24" OC spacing (not including waste). Add 10% for doors, corners, and waste.</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border-collapse">
+            <thead>
+              <tr class="bg-bg-card">
+                <th class="px-4 py-3 text-left font-semibold text-text-primary border border-border">Wall Length</th>
+                <th class="px-4 py-3 text-right font-semibold text-text-primary border border-border">16" OC (studs)</th>
+                <th class="px-4 py-3 text-right font-semibold text-text-primary border border-border">24" OC (studs)</th>
+                <th class="px-4 py-3 text-right font-semibold text-text-primary border border-border">Plates (LF)</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-secondary">
+              {[
+                { ft: 8,  in: 96  },
+                { ft: 10, in: 120 },
+                { ft: 12, in: 144 },
+                { ft: 16, in: 192 },
+                { ft: 20, in: 240 },
+                { ft: 24, in: 288 },
+                { ft: 32, in: 384 },
+                { ft: 40, in: 480 },
+              ].map(({ ft, in: inches }, i) => (
+                <tr class={i % 2 === 0 ? 'bg-bg-dark' : ''}>
+                  <td class="px-4 py-2 border border-border font-medium text-text-primary">{ft} ft</td>
+                  <td class="px-4 py-2 border border-border text-right">{Math.floor(inches / 16) + 1}</td>
+                  <td class="px-4 py-2 border border-border text-right">{Math.floor(inches / 24) + 1}</td>
+                  <td class="px-4 py-2 border border-border text-right">{ft * 2} LF</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="text-text-muted text-xs mt-3">Plate LF = wall length × 2 (bottom plate + top plate). Double top plate adds another {0} LF.</p>
+      </section>
+
+      <section>
         <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
         <div class="space-y-4">
           <details class="bg-bg-card border border-border rounded-lg">

@@ -1,0 +1,157 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const trades = [
+  {
+    name: 'HVAC',
+    slug: 'hvac',
+    icon: '❄️',
+    description: 'Equipment fields, refrigerant tracking, warranty terms, and PDF export.',
+  },
+  {
+    name: 'Electrical',
+    slug: 'electrical',
+    icon: '⚡',
+    description: 'Circuit and panel details, permit fields, labor and materials breakdown.',
+  },
+  {
+    name: 'Roofing',
+    slug: 'roofing',
+    icon: '🏠',
+    description: 'Material fields, square footage, warranty terms, and PDF export.',
+  },
+  {
+    name: 'Painting',
+    slug: 'painting',
+    icon: '🖌️',
+    description: 'Room-by-room breakdown, paint brand and color fields, prep labor.',
+  },
+  {
+    name: 'Landscaping',
+    slug: 'landscaping',
+    icon: '🌿',
+    description: 'Per-service line items, materials, recurring maintenance billing.',
+  },
+  {
+    name: 'General Contractor',
+    slug: 'gc',
+    icon: '🛠️',
+    description: 'Phase-based billing, subcontractor line items, change order fields.',
+  },
+  {
+    name: 'Handyman',
+    slug: 'handyman',
+    icon: '🧰',
+    description: 'Multi-job invoicing, hourly and flat-rate line items, parts markup.',
+  },
+  {
+    name: 'Cleaning',
+    slug: 'cleaning',
+    icon: '✨',
+    description: 'Room count, frequency, add-on services, and recurring billing format.',
+  },
+  {
+    name: 'Plumbing',
+    slug: 'plumbing',
+    icon: '🔧',
+    description: 'Fixture and parts fields, permit tracking, warranty and labor terms.',
+  },
+];
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nailthequote.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Free Contractor Invoice Templates" }
+  ]
+};
+
+const itemListSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Free Contractor Invoice Templates by Trade",
+  "numberOfItems": trades.length,
+  "itemListElement": trades.map((t, i) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "url": `https://nailthequote.com/${t.slug}/invoice-generator/`,
+    "name": `Free ${t.name} Invoice Template`
+  }))
+};
+---
+
+<BaseLayout
+  title="Free Contractor Invoice Templates — All Trades | NailTheQuote"
+  description="Free invoice templates for every trade. HVAC, plumbing, electrical, roofing, landscaping, painting, GC, handyman, and cleaning. Trade-specific fields, PDF export. No login required."
+  currentPath="/invoice-templates/"
+  schema={[breadcrumbSchema, itemListSchema]}
+>
+  <!-- Hero -->
+  <section class="max-w-[1080px] mx-auto px-6 md:px-12 pt-10 pb-6">
+    <nav class="text-sm text-text-muted mb-6" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-text-secondary no-underline transition-colors">Home</a>
+      <span class="mx-2">/</span>
+      <span class="text-text-secondary">Invoice Templates</span>
+    </nav>
+
+    <h1 class="font-heading font-extrabold text-4xl md:text-5xl tracking-tight mb-4">
+      Free Contractor <span class="text-accent">Invoice Templates</span>
+    </h1>
+    <p class="text-text-secondary text-lg max-w-2xl mb-3">
+      Professional invoices for every trade — built with the right fields for your work. Fill in your job details, generate a PDF, and send it to the customer. No login, no subscription, no watermarks.
+    </p>
+    <p class="text-text-muted text-sm">9 trades covered · PDF export on every template · Free forever</p>
+  </section>
+
+  <!-- Trade Grid -->
+  <section class="max-w-[1080px] mx-auto px-6 md:px-12 pb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {trades.map(trade => (
+        <a
+          href={`/${trade.slug}/invoice-generator/`}
+          class="bg-bg-card border border-border rounded-xl p-6 no-underline hover:border-accent hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,107,43,0.1)] transition-all"
+        >
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-[rgba(255,107,43,0.12)] rounded-lg flex items-center justify-center text-xl flex-shrink-0">
+              {trade.icon}
+            </div>
+            <h2 class="font-heading font-bold text-lg text-text-primary">{trade.name} Invoice Template</h2>
+          </div>
+          <p class="text-text-secondary text-sm leading-relaxed mb-4">{trade.description}</p>
+          <span class="text-accent text-sm font-semibold">Use free template →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Why section -->
+  <section class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16">
+    <div class="border-t border-border pt-12">
+      <h2 class="font-heading font-bold text-2xl mb-6">Why use a trade-specific invoice template?</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-text-secondary text-sm leading-relaxed">
+        <div>
+          <h3 class="font-heading font-bold text-base text-text-primary mb-2">Right fields for your trade</h3>
+          <p>A generic invoice template doesn't have fields for refrigerant type, roof squares, fixture model, or circuit panel details. These templates do — so you don't have to improvise with a blank document every time.</p>
+        </div>
+        <div>
+          <h3 class="font-heading font-bold text-base text-text-primary mb-2">PDF in one click</h3>
+          <p>Fill in the job details and export a clean PDF you can email or print on the spot. No formatting issues, no copy-pasting into Word, no saving as a spreadsheet.</p>
+        </div>
+        <div>
+          <h3 class="font-heading font-bold text-base text-text-primary mb-2">Nothing to install or pay for</h3>
+          <p>These are free browser tools — no app download, no subscription, no account required. Open it on your phone on the job site and you're done in two minutes.</p>
+        </div>
+      </div>
+
+      <div class="mt-10">
+        <h2 class="font-heading font-bold text-2xl mb-4">What should a contractor invoice include?</h2>
+        <div class="text-text-secondary text-sm leading-relaxed space-y-3 max-w-3xl">
+          <p>A professional contractor invoice should always include: your business name and contact information, the customer's name and address, a unique invoice number, the date of service and due date, an itemized list of work performed with individual line-item costs, any materials used with their cost, applicable taxes, and your total amount due.</p>
+          <p>Trade-specific invoices add fields relevant to the job — for HVAC that means equipment model numbers and refrigerant amounts; for roofing it's squares of material and shingle type; for plumbing it's fixture details and permit numbers. These details protect you and the customer by documenting exactly what work was done.</p>
+          <p>Always include your payment terms (e.g., "Net 30" or "Due on receipt") and any warranty language relevant to the work performed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

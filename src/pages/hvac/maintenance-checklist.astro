@@ -507,6 +507,58 @@ const faqSchema = {
       </section>
 
       <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Spring AC Tune-Up Checklist</h2>
+        <p class="text-text-secondary text-sm mb-4">Run this before cooling season starts (March–May). Goal: verify the AC is ready to run efficiently before the first hot day.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            'Replace or inspect air filter',
+            'Check thermostat — cool mode, all stages',
+            'Inspect and clean condenser coil',
+            'Check refrigerant pressures — superheat & subcooling',
+            'Measure capacitor µF (compressor + fan)',
+            'Check contactor for pitting or burning',
+            'Clear condensate drain — flush with water',
+            'Measure amp draws vs. nameplate ratings',
+            'Clean evaporator coil if accessible',
+            'Verify temperature split (target 15–20°F)',
+            'Check all electrical connections and wiring',
+            'Inspect refrigerant line insulation',
+          ].map(item => (
+            <div class="flex items-start gap-2 bg-bg-card border border-border rounded-lg px-4 py-3 text-sm text-text-secondary">
+              <span class="text-accent mt-0.5 flex-shrink-0">✓</span>
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h2 class="font-heading font-bold text-2xl mb-4">Fall Furnace Checklist — Heating Season Tune-Up</h2>
+        <p class="text-text-secondary text-sm mb-4">Run this before heating season starts (September–November). Goal: confirm the furnace is safe and efficient before the first cold night.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            'Replace or inspect air filter',
+            'Check thermostat — heat mode, all stages',
+            'Inspect heat exchanger — cracks or corrosion',
+            'Test for carbon monoxide (CO) — mandatory',
+            'Clean burners and check ignition system',
+            'Verify gas pressure (manifold and supply)',
+            'Test high-limit switch operation',
+            'Check pressure switches and rollout switches',
+            'Measure inducer motor amp draw',
+            'Inspect flue pipe and venting',
+            'Clean flame sensor',
+            'Verify temperature rise (target per nameplate)',
+          ].map(item => (
+            <div class="flex items-start gap-2 bg-bg-card border border-border rounded-lg px-4 py-3 text-sm text-text-secondary">
+              <span class="text-accent mt-0.5 flex-shrink-0">✓</span>
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section>
         <h2 class="font-heading font-bold text-2xl mb-4">When To Use This</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
           <p><strong class="text-text-primary">Routine maintenance visits.</strong> Use this as your standard operating procedure for every tune-up. It ensures nothing gets skipped, readings get recorded, and the customer sees a professional report documenting every step.</p>

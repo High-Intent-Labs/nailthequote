@@ -49,7 +49,7 @@ const webAppSchema = {
   "@type": "WebApplication",
   "name": tool.name,
   "description": tool.metaDescription,
-  "url": `https://nailthequote.com/${tool.tradeSlug}/${tool.slug}`,
+  "url": `https://nailthequote.com/${tool.tradeSlug}/${tool.slug}/`,
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Any",
   "offers": {
@@ -67,7 +67,7 @@ const webAppSchema = {
 <BaseLayout
   title={tool.seoTitle}
   description={tool.metaDescription}
-  currentPath={`/${tool.tradeSlug}/${tool.slug}`}
+  currentPath={`/${tool.tradeSlug}/${tool.slug}/`}
   schema={[breadcrumbSchema, webAppSchema, ...extraSchema]}
 >
   <!-- Breadcrumb -->
@@ -130,7 +130,7 @@ const webAppSchema = {
         {relatedTools.map(rt => {
           const rc = categoryColors[rt.category];
           return (
-            <a href={`/${rt.tradeSlug}/${rt.slug}`} class="bg-bg-card border border-border rounded-xl p-5 no-underline hover:border-[#3A4755] hover:bg-bg-card-hover hover:-translate-y-0.5 transition-all">
+            <a href={`/${rt.tradeSlug}/${rt.slug}/`} class="bg-bg-card border border-border rounded-xl p-5 no-underline hover:border-[#3A4755] hover:bg-bg-card-hover hover:-translate-y-0.5 transition-all">
               <span class:list={["text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded inline-block mb-2", rc.text, rc.bg]}>
                 {rt.categoryLabel}
               </span>

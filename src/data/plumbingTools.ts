@@ -249,7 +249,7 @@ export const plumbingTools: Tool[] = [
     description: 'Build flat-rate pricing for common plumbing repairs. Pre-loaded task library with national average comparisons.',
     shortDescription: 'Build flat-rate prices for common repairs. Compare to national averages.',
     seoTitle: 'Plumbing Flat Rate Price Builder — Free Tool | NailTheQuote',
-    metaDescription: 'Free flat rate price builder for plumbing pros. Build flat-rate pricing for common repairs with national average comparisons. No login required.',
+    metaDescription: 'Stop guessing how to price plumbing jobs. Build flat-rate prices for common repairs in minutes — pre-loaded task library with national average comparisons. Free, no login.',
     primaryKeyword: 'plumbing flat rate pricing',
     secondaryKeywords: ['flat rate price book plumbing', 'plumbing flat rate pricing guide'],
     monthlySV: 1400,

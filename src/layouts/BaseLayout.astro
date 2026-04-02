@@ -67,8 +67,8 @@ const canonical = canonicalUrl || `${siteUrl}${currentPath}`;
     <script type="application/ld+json" set:html={JSON.stringify(s)} />
   ))}
 
-  <!-- Cloudflare Analytics -->
-  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": ""}'></script>
+  <!-- Cloudflare Analytics: uncomment and add token when ready -->
+  <!-- <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "YOUR_TOKEN_HERE"}'></script> -->
 </head>
 <body class="min-h-screen flex flex-col">
   <Header currentPath={currentPath} />
