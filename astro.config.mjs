@@ -6,7 +6,9 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://nailthequote.com',
   trailingSlash: 'always',
-  integrations: [sitemap()],
+  integrations: [sitemap({
+    filter: (page) => !page.includes('/dashboard/'),
+  })],
   vite: {
     plugins: [tailwindcss()]
   }
