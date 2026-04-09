@@ -143,6 +143,8 @@ const { toolName, toolSlug, tradeSlug, tradeName } = Astro.props;
           marketing_consent: consent.checked,
         });
       }
+      // Google Ads conversion: NTQ - Email Captured
+      if (typeof gtag === 'function') gtag('event', 'conversion', {'send_to': 'AW-17899660858/rqouCLin75gcELrMnNdC'});
     } catch {
       errorEl.textContent = 'Something went wrong. Please try again.';
       errorEl.classList.remove('hidden');

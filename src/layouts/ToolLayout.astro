@@ -179,6 +179,8 @@ const webAppSchema = {
           if (toolUsedFired) return;
           toolUsedFired = true;
           ph.capture('tool_used', props);
+          // Google Ads conversion: NTQ - Tool Used
+          if (typeof gtag === 'function') gtag('event', 'conversion', {'send_to': 'AW-17899660858/cBlqCOfI6JgcELrMnNdC'});
         }, { once: true });
       }
 

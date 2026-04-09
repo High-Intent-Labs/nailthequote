@@ -245,6 +245,10 @@
       signupSubheading.classList.add('hidden');
       signupTabs.classList.add('hidden');
       contextBanner.classList.add('hidden');
+      // Google Ads conversion: NTQ - Account Created (fires on signup tab only)
+      if (modal.getAttribute('data-tab') === 'signup' && typeof gtag === 'function') {
+        gtag('event', 'conversion', {'send_to': 'AW-17899660858/3iajCKT51pgcELrMnNdC'});
+      }
     } catch {
       signupError.textContent = 'Something went wrong. Please try again.';
       signupError.classList.remove('hidden');
@@ -268,7 +272,13 @@
         }),
       });
       const data = await res.json();
-      if (data.url) window.location.href = data.url;
+      if (data.url) {
+        // Google Ads conversion: NTQ - Account Created (fires on signup tab only)
+        if (modal.getAttribute('data-tab') === 'signup' && typeof gtag === 'function') {
+          gtag('event', 'conversion', {'send_to': 'AW-17899660858/3iajCKT51pgcELrMnNdC'});
+        }
+        window.location.href = data.url;
+      }
     } catch {
       signupError.textContent = 'Could not connect to Google. Please try the email option.';
       signupError.classList.remove('hidden');
