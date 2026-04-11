@@ -158,7 +158,10 @@ const webAppSchema = {
     (() => {
       const meta = (window as any).__ntqToolMeta;
       if (!meta || typeof (window as any).posthog === 'undefined') return;
-      const ph = (window as any).posthog;
+      // IMPORTANT: Do NOT cache window.posthog in a variable for deferred calls.
+      // PostHog's real library replaces the stub object on window.posthog after async load.
+      // Synchronous calls (tool_viewed) can use the stub safely, but event handler
+      // callbacks must reference window.posthog directly to get the real instance.
       const props = {
         tool_slug: meta.toolSlug,
         trade_slug: meta.tradeSlug,
@@ -167,8 +170,8 @@ const webAppSchema = {
         tool_category: meta.category,
       };
 
-      // 1. Tool Viewed — fires on page load
-      ph.capture('tool_viewed', props);
+      // 1. Tool Viewed — fires on page load (safe to use stub)
+      (window as any).posthog.capture('tool_viewed', props);
 
       // 2. Tool Used — fires when user interacts with any calculator input
       //    (debounced: only fires once per session per tool)
@@ -178,7 +181,7 @@ const webAppSchema = {
         toolArea.addEventListener('input', () => {
           if (toolUsedFired) return;
           toolUsedFired = true;
-          ph.capture('tool_used', props);
+          (window as any).posthog?.capture('tool_used', props);
           // Google Ads conversion: NTQ - Tool Used
           if (typeof gtag === 'function') gtag('event', 'conversion', {'send_to': 'AW-17899660858/cBlqCOfI6JgcELrMnNdC'});
         }, { once: true });
@@ -196,7 +199,7 @@ const webAppSchema = {
             calcCount++;
             // Only fire on the first meaningful calculation (skip the auto-calc on load)
             if (calcCount === 2) {
-              ph.capture('calculation_completed', props);
+              (window as any).posthog?.capture('calculation_completed', props);
             }
           }, 1500);
         });
@@ -206,7 +209,7 @@ const webAppSchema = {
       // 4. PDF Generated — fires when Generate PDF/Estimate button is clicked
       document.querySelectorAll('#generate-btn, #generate-pdf-btn, [data-generate-pdf]').forEach(btn => {
         btn.addEventListener('click', () => {
-          ph.capture('pdf_generated', props);
+          (window as any).posthog?.capture('pdf_generated', props);
         });
       });
 
@@ -219,7 +222,7 @@ const webAppSchema = {
           const observer = new MutationObserver(() => {
             const text = document.getElementById('save-btn-text')?.textContent;
             if (text === 'Saved') {
-              ph.capture('calculation_saved', props);
+              (window as any).posthog?.capture('calculation_saved', props);
               observer.disconnect();
             }
           });
@@ -234,7 +237,7 @@ const webAppSchema = {
       const modalObserver = new MutationObserver(() => {
         const modal = document.getElementById('signup-modal');
         if (modal && !modal.classList.contains('hidden')) {
-          ph.capture('signup_prompt_shown', {
+          (window as any).posthog?.capture('signup_prompt_shown', {
             ...props,
             trigger: 'tool_page',
           });
@@ -245,7 +248,7 @@ const webAppSchema = {
 
       // 7. Account CTA Clicked — fires when "Create Free Account" is clicked from tool page
       document.getElementById('account-card-cta')?.addEventListener('click', () => {
-        ph.capture('account_cta_clicked', {
+        (window as any).posthog?.capture('account_cta_clicked', {
           ...props,
           location: 'tool_card',
         });
@@ -257,7 +260,7 @@ const webAppSchema = {
         if (href.match(/^\/[a-z-]+\/[a-z-]+/) && link.closest('section')?.querySelector('h2')?.textContent?.includes('Related')) {
           link.addEventListener('click', () => {
             const targetSlug = href.split('/').filter(Boolean).pop() || '';
-            ph.capture('related_tool_clicked', {
+            (window as any).posthog?.capture('related_tool_clicked', {
               ...props,
               target_tool: targetSlug,
               target_url: href,

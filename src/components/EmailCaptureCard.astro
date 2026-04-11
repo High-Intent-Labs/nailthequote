@@ -130,11 +130,10 @@ const { toolName, toolSlug, tradeSlug, tradeName } = Astro.props;
       form.classList.add('hidden');
       success.classList.remove('hidden');
 
-      // PostHog: track email capture
-      const ph = (window as any).posthog;
+      // PostHog: track email capture (use window.posthog directly — cached ref goes stale)
       const meta = (window as any).__ntqToolMeta;
-      if (ph && meta) {
-        ph.capture('email_captured', {
+      if ((window as any).posthog && meta) {
+        (window as any).posthog.capture('email_captured', {
           tool_slug: meta.toolSlug,
           trade_slug: meta.tradeSlug,
           trade_name: meta.tradeName,
