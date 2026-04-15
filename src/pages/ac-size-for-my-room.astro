@@ -55,8 +55,8 @@ const webAppSchema = {
   currentPath={`/${TOOL_SLUG}/`}
   schema={[breadcrumbSchema, webAppSchema, faqSchema]}
 >
-  <!-- Breadcrumb -->
-  <nav class="max-w-[1080px] mx-auto px-6 md:px-12 pt-4 pb-2" aria-label="Breadcrumb">
+  <!-- Breadcrumb (desktop only) -->
+  <nav class="hidden md:block max-w-[1080px] mx-auto px-6 md:px-12 pt-4 pb-2" aria-label="Breadcrumb">
     <ol class="flex items-center gap-2 text-sm text-text-muted">
       <li><a href="/" class="hover:text-text-secondary transition-colors no-underline">Home</a></li>
       <li class="before:content-['/'] before:mx-2 text-text-secondary">What Size AC Do I Need?</li>
@@ -64,24 +64,31 @@ const webAppSchema = {
   </nav>
 
   <!-- Header -->
-  <div class="max-w-[1080px] mx-auto px-6 md:px-12 pt-6 pb-8">
-    <div class="flex items-center gap-3 mb-4">
-      <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-accent/15 text-accent">For homeowners</span>
-      <span class="text-text-muted text-xs">Free</span>
-    </div>
+  <div class="max-w-[1080px] mx-auto px-6 md:px-12 pt-6 md:pt-6 pb-6 md:pb-8">
     <h1 class="font-heading font-extrabold text-3xl md:text-5xl tracking-tight mb-3">What Size AC Do I Need?</h1>
-    <p class="text-text-secondary text-lg max-w-2xl">Answer a few questions about the room you want to cool. Get the right BTU size, the unit type that fits (mini-split, window, through-wall), and a ballpark installed cost.</p>
+    <p class="text-text-secondary text-base md:text-lg max-w-2xl">Answer a few questions about the room you want to cool. Get the right BTU size, unit type, and installed cost.</p>
   </div>
 
   <!-- Calculator -->
   <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16">
     <div id="ac-calc" class="bg-bg-card border border-border rounded-2xl p-6 md:p-8">
 
+      <!-- Step indicator -->
+      <div id="step-indicator" class="mb-6 flex items-center gap-3">
+        <span class="text-text-muted text-xs font-medium whitespace-nowrap">Step <span id="step-current">1</span> of 4</span>
+        <div class="flex-1 h-1 bg-bg-dark rounded-full overflow-hidden">
+          <div id="step-progress" class="h-full bg-accent transition-all duration-200" style="width: 25%"></div>
+        </div>
+      </div>
+
+      <!-- Wizard -->
+      <div id="wizard">
+
       <!-- Step 1: Space picker -->
-      <div class="mb-8">
-        <div class="flex items-baseline gap-2 mb-3">
-          <span class="text-accent font-heading font-bold text-sm">STEP 1</span>
-          <label class="block text-lg font-semibold text-text-primary">What space are you cooling?</label>
+      <div class="wizard-step" data-step="1">
+        <div class="mb-4">
+          <label class="block text-lg md:text-xl font-heading font-bold text-text-primary">What space are you cooling?</label>
+          <p class="text-text-muted text-sm mt-1">Tap the one that fits.</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="space-pills">
           {spaces.map((s) => (
@@ -105,11 +112,11 @@ const webAppSchema = {
         </div>
       </div>
 
-      <!-- Step 2: Size + ZIP -->
-      <div id="step-2" class="mb-8 hidden">
-        <div class="flex items-baseline gap-2 mb-3">
-          <span class="text-accent font-heading font-bold text-sm">STEP 2</span>
-          <label class="block text-lg font-semibold text-text-primary">Size of the space</label>
+      <!-- Step 2: Size -->
+      <div id="step-2" class="wizard-step hidden" data-step="2">
+        <div class="mb-4">
+          <label class="block text-lg md:text-xl font-heading font-bold text-text-primary">How big is the space?</label>
+          <p class="text-text-muted text-sm mt-1">Length and width in feet.</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
@@ -143,18 +150,22 @@ const webAppSchema = {
         <p class="text-text-muted text-xs">
           <span class="text-text-secondary">Floor area:</span> <span id="d-sqft">400</span> sq ft
         </p>
+        <div class="wizard-nav flex items-center justify-between pt-5 mt-5 border-t border-border">
+          <button type="button" class="wizard-back text-text-muted hover:text-text-primary text-sm font-medium">← Back</button>
+          <button type="button" data-next="3" class="wizard-next bg-accent hover:bg-accent-hover text-white font-heading font-semibold text-base px-6 py-2.5 rounded-lg transition-colors">Next →</button>
+        </div>
       </div>
 
       <!-- Step 3: ZIP -->
-      <div id="step-3" class="mb-8 hidden">
-        <div class="flex items-baseline gap-2 mb-3">
-          <span class="text-accent font-heading font-bold text-sm">STEP 3</span>
-          <label class="block text-lg font-semibold text-text-primary" for="zip">Where is your home?</label>
+      <div id="step-3" class="wizard-step hidden" data-step="3">
+        <div class="mb-4">
+          <label class="block text-lg md:text-xl font-heading font-bold text-text-primary" for="zip">Where is your home?</label>
+          <p class="text-text-muted text-sm mt-1">We use your ZIP to factor in your local climate.</p>
         </div>
         <div class="flex flex-col sm:flex-row sm:items-center gap-3">
           <input type="text" id="zip" inputmode="numeric" maxlength="5" placeholder="ZIP code, e.g. 02108"
             class="w-full sm:max-w-[220px] bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-          <div id="zip-display" class="text-text-secondary text-sm">We use this to factor in your local climate.</div>
+          <div id="zip-display" class="text-text-secondary text-sm"></div>
         </div>
         <div id="zip-fallback" class="hidden mt-3">
           <p class="text-text-muted text-xs mb-2">ZIP not found — pick your climate:</p>
@@ -166,13 +177,17 @@ const webAppSchema = {
             <button type="button" data-region="cold"  class="region-pill bg-bg-dark border border-border rounded-lg px-3 py-1.5 text-sm hover:border-accent transition-colors">Cold (MN, ME, MT)</button>
           </div>
         </div>
+        <div class="wizard-nav flex items-center justify-between pt-5 mt-5 border-t border-border">
+          <button type="button" class="wizard-back text-text-muted hover:text-text-primary text-sm font-medium">← Back</button>
+          <button type="button" data-next="4" class="wizard-next bg-accent hover:bg-accent-hover text-white font-heading font-semibold text-base px-6 py-2.5 rounded-lg transition-colors">Next →</button>
+        </div>
       </div>
 
       <!-- Step 4: A few details -->
-      <div id="step-4" class="mb-8 hidden">
-        <div class="flex items-baseline gap-2 mb-3">
-          <span class="text-accent font-heading font-bold text-sm">STEP 4</span>
-          <label class="block text-lg font-semibold text-text-primary">A few details that change the answer</label>
+      <div id="step-4" class="wizard-step hidden" data-step="4">
+        <div class="mb-4">
+          <label class="block text-lg md:text-xl font-heading font-bold text-text-primary">A few details that change the answer</label>
+          <p class="text-text-muted text-sm mt-1">Insulation, sun, and glass are the biggest drivers after size.</p>
         </div>
         <div class="space-y-5">
           <div>
@@ -200,16 +215,17 @@ const webAppSchema = {
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Calculate button -->
-      <div id="calc-btn-area" class="mt-2 hidden">
-        <button id="calculate-btn" type="button"
-          class="w-full bg-accent hover:bg-accent-hover text-white font-heading font-bold text-lg px-8 py-4 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-          Show My Size Recommendation
-        </button>
+        <div class="wizard-nav flex items-center justify-between pt-5 mt-5 border-t border-border gap-4">
+          <button type="button" class="wizard-back text-text-muted hover:text-text-primary text-sm font-medium shrink-0">← Back</button>
+          <button id="calculate-btn" type="button"
+            class="flex-1 sm:flex-initial bg-accent hover:bg-accent-hover text-white font-heading font-bold text-base md:text-lg px-6 py-3 md:py-3.5 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            Show My Size →
+          </button>
+        </div>
         <p id="calc-hint" class="hidden mt-3 text-sm text-[#EF4444]"></p>
       </div>
+
+      </div><!-- /#wizard -->
 
       <!-- Email gate (only shown when the recommendation needs a pro) -->
       <div id="email-gate" class="hidden mt-8 border-t border-border pt-8">
@@ -310,8 +326,9 @@ const webAppSchema = {
     </div>
   </div>
 
-  <!-- Content sections -->
-  <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+  <!-- Content sections (desktop only — kept for SEO but hidden on mobile to keep
+       the tool distraction-free) -->
+  <div class="hidden md:block max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
     <section>
       <h2 class="font-heading font-bold text-2xl mb-4">How This Works</h2>
       <div class="text-text-secondary leading-relaxed space-y-3">
@@ -534,17 +551,50 @@ const webAppSchema = {
   };
 
   // ---------------------------------------------------------------------
-  // Step reveal helpers
+  // Wizard navigation
   // ---------------------------------------------------------------------
-  function revealStep(id: string) {
-    const el = document.getElementById(id);
-    if (el && el.classList.contains('hidden')) {
-      el.classList.remove('hidden');
-    }
+  const TOTAL_STEPS = 4;
+  let currentStep = 1;
+
+  function goToStep(n: number) {
+    currentStep = n;
+    document.querySelectorAll<HTMLElement>('.wizard-step').forEach(el => {
+      const s = Number(el.dataset.step);
+      el.classList.toggle('hidden', s !== n);
+    });
+    const curEl = document.getElementById('step-current');
+    const progEl = document.getElementById('step-progress');
+    if (curEl) curEl.textContent = String(n);
+    if (progEl) progEl.style.width = `${(n / TOTAL_STEPS) * 100}%`;
+    // Scroll the calculator to top of viewport on mobile so user sees the new step.
+    const calcEl = document.getElementById('ac-calc');
+    if (calcEl) calcEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  // Back buttons — always go to previous step
+  document.querySelectorAll<HTMLButtonElement>('.wizard-back').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (currentStep > 1) goToStep(currentStep - 1);
+    });
+  });
+
+  // Next buttons — validate then advance
+  document.querySelectorAll<HTMLButtonElement>('.wizard-next').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = Number(btn.dataset.next);
+      // Step 3 → Step 4: require a valid climate lookup
+      if (target === 4 && !climate) {
+        const zd = document.getElementById('zip-display')!;
+        zd.innerHTML = `<span class="text-[#EF4444]">Enter a valid US ZIP or pick your climate below.</span>`;
+        document.getElementById('zip-fallback')!.classList.remove('hidden');
+        return;
+      }
+      goToStep(target);
+    });
+  });
+
   // ---------------------------------------------------------------------
-  // Space pill handlers
+  // Space pill handlers — auto-advance to step 2 on pick
   // ---------------------------------------------------------------------
   document.querySelectorAll<HTMLButtonElement>('.space-pill').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -557,18 +607,14 @@ const webAppSchema = {
       btn.classList.add('border-accent');
 
       if (v === 'whole-house') {
-        // Redirect suggestion — hide all further steps + show redirect card
+        // Redirect suggestion — stay on step 1, show redirect card, hide the wizard nav
         document.getElementById('whole-house-redirect')!.classList.remove('hidden');
-        ['step-2', 'step-3', 'step-4', 'calc-btn-area'].forEach(id => {
-          document.getElementById(id)!.classList.add('hidden');
-        });
-      } else {
-        document.getElementById('whole-house-redirect')!.classList.add('hidden');
-        revealStep('step-2');
-        revealStep('step-3');
-        revealStep('step-4');
-        revealStep('calc-btn-area');
+        document.getElementById('step-indicator')!.classList.add('hidden');
+        return;
       }
+      document.getElementById('whole-house-redirect')!.classList.add('hidden');
+      document.getElementById('step-indicator')!.classList.remove('hidden');
+      goToStep(2);
     });
   });
 
@@ -583,7 +629,7 @@ const webAppSchema = {
     const zip = raw.replace(/\D/g, '').slice(0, 5);
     if (zip.length < 3) {
       climate = null;
-      zipDisplay.textContent = 'We use this to factor in your local climate.';
+      zipDisplay.textContent = '';
       zipFallback.classList.add('hidden');
       return;
     }
@@ -659,12 +705,12 @@ const webAppSchema = {
 
   function readInputs(): RoomInputs | null {
     if (!space || space === 'whole-house') {
-      calcHint.textContent = 'Please pick a space above.';
+      calcHint.textContent = 'Please pick a space on Step 1.';
       calcHint.classList.remove('hidden');
       return null;
     }
     if (!climate) {
-      calcHint.textContent = 'Please enter a valid ZIP code or pick a climate.';
+      calcHint.textContent = 'Please enter a valid ZIP on Step 3.';
       calcHint.classList.remove('hidden');
       return null;
     }
@@ -701,9 +747,12 @@ const webAppSchema = {
       closestStandardLabel: pendingResult.closestStandardLabel,
     });
 
+    // Hide the wizard chrome once we're past the form
+    document.getElementById('wizard')!.classList.add('hidden');
+    document.getElementById('step-indicator')!.classList.add('hidden');
+
     if (pendingRec.needsPro) {
       // Show email gate
-      document.getElementById('calc-btn-area')!.classList.add('hidden');
       document.getElementById('email-gate')!.classList.remove('hidden');
       (document.getElementById('gate-email') as HTMLInputElement).focus();
       (window as any).posthog?.capture('gate_shown', {
@@ -720,7 +769,6 @@ const webAppSchema = {
         recommended_unit_type: pendingRec.unitType,
         space,
       });
-      document.getElementById('calc-btn-area')!.classList.add('hidden');
       renderResults(/* emailSent */ false);
     }
   });
