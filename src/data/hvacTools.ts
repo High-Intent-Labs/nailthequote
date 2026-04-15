@@ -516,6 +516,27 @@ export const hvacTools: Tool[] = [
     tradeName: 'HVAC',
     tradeSlug: 'hvac',
   },
+  {
+    id: 'A8',
+    slug: 'manual-j-calculator',
+    name: 'Manual J Calculator',
+    shortName: 'Manual J Calculator',
+    category: 'technical',
+    categoryLabel: 'Technical',
+    description: 'Simplified Manual J residential load calculation. Get cooling BTU, heating BTU, tonnage, and size range in 60 seconds.',
+    shortDescription: 'Simplified Manual J — get cooling/heating BTU and tonnage for the whole house.',
+    seoTitle: 'Manual J Calculator — Free HVAC Load Calculation | NailTheQuote',
+    metaDescription: 'Free simplified Manual J calculator for HVAC pros. Get cooling BTU, heating BTU, tonnage, and size range. Enter home details, get results by email.',
+    primaryKeyword: 'manual j calculator',
+    secondaryKeywords: ['manual j calculation', 'manual j load calculation', 'manual j calc', 'residential load calculation'],
+    monthlySV: 5400,
+    difficulty: 2,
+    layer: '3',
+    cluster: 'sizing-airflow',
+    relatedTools: ['load-calculator', 'btu-calculator', 'cfm-calculator', 'duct-size-calculator'],
+    tradeName: 'HVAC',
+    tradeSlug: 'hvac',
+  },
 ];
 
 const { getToolBySlug, getToolsByCategory, getRelatedTools } = createToolUtils(hvacTools);

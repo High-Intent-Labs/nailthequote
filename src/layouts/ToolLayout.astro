@@ -7,9 +7,11 @@ import { categoryColors, type Tool } from '../data/types';
 interface Props {
   tool: Tool;
   extraSchema?: Record<string, unknown>[];
+  /** Hide the default AccountCreationCard and EmailCaptureCard (use when the page has its own gate) */
+  hideCards?: boolean;
 }
 
-const { tool, extraSchema = [] } = Astro.props;
+const { tool, extraSchema = [], hideCards = false } = Astro.props;
 
 // Dynamic imports — resolve the trade's tool utilities at build time
 const tradeModules: Record<string, () => Promise<{ getRelatedTools: (slug: string) => Tool[] }>> = {
@@ -98,26 +100,30 @@ const webAppSchema = {
     </div>
   </div>
 
-  <!-- Account creation card -->
-  <div class="max-w-[1080px] mx-auto px-6 md:px-12 -mt-8 pb-4">
-    <AccountCreationCard
-      toolName={tool.name}
-      toolSlug={tool.slug}
-      tradeSlug={tool.tradeSlug}
-      tradeName={tool.tradeName}
-      category={tool.category}
-    />
-  </div>
+  {!hideCards && (
+    <>
+      {/* Account creation card */}
+      <div class="max-w-[1080px] mx-auto px-6 md:px-12 -mt-8 pb-4">
+        <AccountCreationCard
+          toolName={tool.name}
+          toolSlug={tool.slug}
+          tradeSlug={tool.tradeSlug}
+          tradeName={tool.tradeName}
+          category={tool.category}
+        />
+      </div>
 
-  <!-- Email capture card -->
-  <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16">
-    <EmailCaptureCard
-      toolName={tool.name}
-      toolSlug={tool.slug}
-      tradeSlug={tool.tradeSlug}
-      tradeName={tool.tradeName}
-    />
-  </div>
+      {/* Email capture card */}
+      <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16">
+        <EmailCaptureCard
+          toolName={tool.name}
+          toolSlug={tool.slug}
+          tradeSlug={tool.tradeSlug}
+          tradeName={tool.tradeName}
+        />
+      </div>
+    </>
+  )}
 
   <!-- Content sections (How to Use, How It Works, etc.) -->
   <slot name="content" />
