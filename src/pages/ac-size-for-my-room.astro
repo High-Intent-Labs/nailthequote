@@ -1,0 +1,899 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const TOOL_NAME = 'What Size AC Do I Need?';
+const TOOL_SLUG = 'ac-size-for-my-room';
+const SEO_TITLE = 'What Size AC Do I Need? — Room-by-Room Calculator | NailTheQuote';
+const META_DESC = 'Free AC size calculator for homeowners. Answer a few questions about your room — get the right BTU size, unit type recommendation (mini-split, window, through-wall), and installed cost range.';
+
+const spaces = [
+  { v: 'garage',       l: 'Garage',            icon: '🚗', sub: 'Gym, workshop, conversion, ADU' },
+  { v: 'addition',     l: 'Addition / Sunroom', icon: '☀️', sub: 'Bonus room, finished attic, 3-season' },
+  { v: 'bedroom',      l: 'Bedroom',           icon: '🛏️', sub: 'Hot upstairs or master bedroom' },
+  { v: 'basement',     l: 'Finished Basement', icon: '🏠', sub: 'Needs cooling + dehumidification' },
+  { v: 'home-office',  l: 'Home Office',       icon: '💻', sub: 'Spare room, detached, ADU, shed' },
+  { v: 'other',        l: 'Other single room', icon: '➕', sub: 'Any other single space' },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What size AC do I need for a 400 sq ft garage?", "acceptedAnswer": { "@type": "Answer", "text": "A typical 400 sq ft garage needs ~12,000–14,000 BTU (1 ton) of cooling in a mixed climate, more in hot climates. Garages almost always need a ductless mini-split because there's no existing ductwork and walls are usually uninsulated — a window AC can't mount on most garage doors or walls. Enter your specifics above for an exact size." } },
+    { "@type": "Question", "name": "How many BTU do I need for a bedroom?", "acceptedAnswer": { "@type": "Answer", "text": "A 12×14 ft (168 sq ft) bedroom typically needs 6,000–9,000 BTU. Upstairs master bedrooms with west-facing windows need more — often 10,000–12,000 BTU. If the room is smaller than 400 sq ft in a mild climate, a window AC is often the cheapest fix. For a master suite or above a hot garage, a mini-split is usually worth the cost." } },
+    { "@type": "Question", "name": "Can I install a mini-split myself?", "acceptedAnswer": { "@type": "Answer", "text": "Most mini-splits require a licensed HVAC pro to install because the line set needs to be vacuumed and the refrigerant charge verified — work that needs EPA certification and specialized tools. DIY line-set kits like MRCOOL exist, but most homeowners hire a pro ($3,800–$6,500 installed for a single zone). You'll also usually need a 240V electrical circuit." } },
+    { "@type": "Question", "name": "Is a window AC enough for my room?", "acceptedAnswer": { "@type": "Answer", "text": "A window AC works well for bedrooms under 400 sq ft in mild climates, small offices in well-insulated rooms, and any space that has a double-hung window to mount the unit. It does NOT work in garages (no mountable window), basements (no exterior window), additions without windows to the outside, or very hot climates on rooms with strong afternoon sun." } },
+    { "@type": "Question", "name": "What does 1 ton of AC mean?", "acceptedAnswer": { "@type": "Answer", "text": "1 ton = 12,000 BTU of cooling per hour. It's a legacy term from when AC capacity was measured by how much ice the system could melt. A typical single-zone mini-split comes in 9,000 / 12,000 / 18,000 / 24,000 / 36,000 BTU — so 0.75, 1, 1.5, 2, or 3 tons." } }
+  ]
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nailthequote.com/" },
+    { "@type": "ListItem", "position": 2, "name": "What Size AC Do I Need?" }
+  ]
+};
+
+const webAppSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": TOOL_NAME,
+  "description": META_DESC,
+  "url": `https://nailthequote.com/${TOOL_SLUG}/`,
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "creator": { "@type": "Organization", "name": "NailTheQuote" }
+};
+---
+
+<BaseLayout
+  title={SEO_TITLE}
+  description={META_DESC}
+  currentPath={`/${TOOL_SLUG}/`}
+  schema={[breadcrumbSchema, webAppSchema, faqSchema]}
+>
+  <!-- Breadcrumb -->
+  <nav class="max-w-[1080px] mx-auto px-6 md:px-12 pt-4 pb-2" aria-label="Breadcrumb">
+    <ol class="flex items-center gap-2 text-sm text-text-muted">
+      <li><a href="/" class="hover:text-text-secondary transition-colors no-underline">Home</a></li>
+      <li class="before:content-['/'] before:mx-2 text-text-secondary">What Size AC Do I Need?</li>
+    </ol>
+  </nav>
+
+  <!-- Header -->
+  <div class="max-w-[1080px] mx-auto px-6 md:px-12 pt-6 pb-8">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-accent/15 text-accent">For homeowners</span>
+      <span class="text-text-muted text-xs">Free</span>
+    </div>
+    <h1 class="font-heading font-extrabold text-3xl md:text-5xl tracking-tight mb-3">What Size AC Do I Need?</h1>
+    <p class="text-text-secondary text-lg max-w-2xl">Answer a few questions about the room you want to cool. Get the right BTU size, the unit type that fits (mini-split, window, through-wall), and a ballpark installed cost — no signup, no sales pitch.</p>
+  </div>
+
+  <!-- Calculator -->
+  <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16">
+    <div id="ac-calc" class="bg-bg-card border border-border rounded-2xl p-6 md:p-8">
+
+      <!-- Step 1: Space picker -->
+      <div class="mb-8">
+        <div class="flex items-baseline gap-2 mb-3">
+          <span class="text-accent font-heading font-bold text-sm">STEP 1</span>
+          <label class="block text-lg font-semibold text-text-primary">What space are you cooling?</label>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="space-pills">
+          {spaces.map((s) => (
+            <button type="button" data-space={s.v}
+              class="space-pill text-left bg-bg-dark border border-border rounded-xl px-4 py-3 hover:border-accent transition-colors">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">{s.icon}</span>
+                <span class="font-heading font-semibold text-text-primary">{s.l}</span>
+              </div>
+              <p class="text-text-muted text-xs mt-1 leading-snug">{s.sub}</p>
+            </button>
+          ))}
+          <button type="button" data-space="whole-house"
+            class="space-pill text-left bg-bg-dark border border-border border-dashed rounded-xl px-4 py-3 hover:border-accent transition-colors">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">🏡</span>
+              <span class="font-heading font-semibold text-text-primary">Whole house</span>
+            </div>
+            <p class="text-text-muted text-xs mt-1 leading-snug">Use our whole-house load calculator instead</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Size + ZIP -->
+      <div id="step-2" class="mb-8 hidden">
+        <div class="flex items-baseline gap-2 mb-3">
+          <span class="text-accent font-heading font-bold text-sm">STEP 2</span>
+          <label class="block text-lg font-semibold text-text-primary">Size of the space</label>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-2" for="length">Length (ft)</label>
+            <div class="number-stepper flex items-stretch bg-bg-dark border border-border rounded-lg focus-within:border-accent transition-colors overflow-hidden">
+              <button type="button" aria-label="Decrease length" class="stepper-minus px-4 text-text-secondary hover:text-accent text-2xl font-bold leading-none select-none">−</button>
+              <input type="number" id="length" value="20" min="4" max="100" step="1"
+                class="flex-1 bg-transparent text-text-primary text-lg text-center focus:outline-none min-w-0 py-3 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+              <button type="button" aria-label="Increase length" class="stepper-plus px-4 text-text-secondary hover:text-accent text-2xl font-bold leading-none select-none">+</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-2" for="width">Width (ft)</label>
+            <div class="number-stepper flex items-stretch bg-bg-dark border border-border rounded-lg focus-within:border-accent transition-colors overflow-hidden">
+              <button type="button" aria-label="Decrease width" class="stepper-minus px-4 text-text-secondary hover:text-accent text-2xl font-bold leading-none select-none">−</button>
+              <input type="number" id="width" value="20" min="4" max="100" step="1"
+                class="flex-1 bg-transparent text-text-primary text-lg text-center focus:outline-none min-w-0 py-3 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+              <button type="button" aria-label="Increase width" class="stepper-plus px-4 text-text-secondary hover:text-accent text-2xl font-bold leading-none select-none">+</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-2" for="ceiling">Ceiling (ft)</label>
+            <div class="number-stepper flex items-stretch bg-bg-dark border border-border rounded-lg focus-within:border-accent transition-colors overflow-hidden">
+              <button type="button" aria-label="Decrease ceiling" class="stepper-minus px-4 text-text-secondary hover:text-accent text-2xl font-bold leading-none select-none">−</button>
+              <input type="number" id="ceiling" value="8" min="7" max="20" step="0.5"
+                class="flex-1 bg-transparent text-text-primary text-lg text-center focus:outline-none min-w-0 py-3 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+              <button type="button" aria-label="Increase ceiling" class="stepper-plus px-4 text-text-secondary hover:text-accent text-2xl font-bold leading-none select-none">+</button>
+            </div>
+          </div>
+        </div>
+        <p class="text-text-muted text-xs">
+          <span class="text-text-secondary">Floor area:</span> <span id="d-sqft">400</span> sq ft
+        </p>
+      </div>
+
+      <!-- Step 3: ZIP -->
+      <div id="step-3" class="mb-8 hidden">
+        <div class="flex items-baseline gap-2 mb-3">
+          <span class="text-accent font-heading font-bold text-sm">STEP 3</span>
+          <label class="block text-lg font-semibold text-text-primary" for="zip">Where is your home?</label>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+          <input type="text" id="zip" inputmode="numeric" maxlength="5" placeholder="ZIP code, e.g. 02108"
+            class="w-full sm:max-w-[220px] bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
+          <div id="zip-display" class="text-text-secondary text-sm">We use this to factor in your local climate.</div>
+        </div>
+        <div id="zip-fallback" class="hidden mt-3">
+          <p class="text-text-muted text-xs mb-2">ZIP not found — pick your climate:</p>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" data-region="hot"   class="region-pill bg-bg-dark border border-border rounded-lg px-3 py-1.5 text-sm hover:border-accent transition-colors">Hot (FL, TX, AZ)</button>
+            <button type="button" data-region="warm"  class="region-pill bg-bg-dark border border-border rounded-lg px-3 py-1.5 text-sm hover:border-accent transition-colors">Warm (GA, NC, CA)</button>
+            <button type="button" data-region="mixed" class="region-pill bg-bg-dark border border-border rounded-lg px-3 py-1.5 text-sm hover:border-accent transition-colors">Mixed (VA, TN, MO)</button>
+            <button type="button" data-region="cool"  class="region-pill bg-bg-dark border border-border rounded-lg px-3 py-1.5 text-sm hover:border-accent transition-colors">Cool (OH, PA, OR)</button>
+            <button type="button" data-region="cold"  class="region-pill bg-bg-dark border border-border rounded-lg px-3 py-1.5 text-sm hover:border-accent transition-colors">Cold (MN, ME, MT)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: A few details -->
+      <div id="step-4" class="mb-8 hidden">
+        <div class="flex items-baseline gap-2 mb-3">
+          <span class="text-accent font-heading font-bold text-sm">STEP 4</span>
+          <label class="block text-lg font-semibold text-text-primary">A few details that change the answer</label>
+        </div>
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-2">Insulation</label>
+            <div class="flex flex-wrap gap-2" id="insulation-pills">
+              <button type="button" data-ins="good"    class="ins-pill bg-bg-dark border border-border rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Well insulated (new-ish home)</button>
+              <button type="button" data-ins="average" class="ins-pill bg-bg-dark border-accent rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Average</button>
+              <button type="button" data-ins="poor"    class="ins-pill bg-bg-dark border border-border rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Poor (older home, uninsulated)</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-2">Sun exposure in the afternoon</label>
+            <div class="flex flex-wrap gap-2" id="sun-pills">
+              <button type="button" data-sun="shaded" class="sun-pill bg-bg-dark border border-border rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Mostly shaded</button>
+              <button type="button" data-sun="some"   class="sun-pill bg-bg-dark border-accent rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Some afternoon sun</button>
+              <button type="button" data-sun="lots"   class="sun-pill bg-bg-dark border border-border rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Lots of direct sun</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-2">How much window glass?</label>
+            <div class="flex flex-wrap gap-2" id="glass-pills">
+              <button type="button" data-glass="little"  class="glass-pill bg-bg-dark border border-border rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">A little</button>
+              <button type="button" data-glass="average" class="glass-pill bg-bg-dark border-accent rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Average</button>
+              <button type="button" data-glass="lots"    class="glass-pill bg-bg-dark border border-border rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Lots of glass</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calculate button -->
+      <div id="calc-btn-area" class="mt-2 hidden">
+        <button id="calculate-btn" type="button"
+          class="w-full bg-accent hover:bg-accent-hover text-white font-heading font-bold text-lg px-8 py-4 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          Show My Size Recommendation
+        </button>
+        <p id="calc-hint" class="hidden mt-3 text-sm text-[#EF4444]"></p>
+      </div>
+
+      <!-- Email gate (only shown when the recommendation needs a pro) -->
+      <div id="email-gate" class="hidden mt-8 border-t border-border pt-8">
+        <div class="max-w-xl mx-auto text-center">
+          <div class="w-14 h-14 rounded-2xl bg-accent/15 flex items-center justify-center mx-auto mb-4">
+            <svg width="28" height="28" viewBox="0 0 20 20" fill="none" class="text-accent">
+              <path d="M2.5 6.667L9.025 11.05a1.667 1.667 0 001.95 0L17.5 6.667M4.167 15h11.666A1.667 1.667 0 0017.5 13.333V6.667A1.667 1.667 0 0015.833 5H4.167A1.667 1.667 0 002.5 6.667v6.666A1.667 1.667 0 004.167 15z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 id="gate-headline" class="font-heading font-bold text-xl text-text-primary mb-2">Your size recommendation is ready</h3>
+          <p id="gate-subhead" class="text-text-secondary text-sm mb-6">Enter your email to see the full report plus installer shortlist.</p>
+          <div class="flex flex-col sm:flex-row gap-3 mb-3">
+            <label for="gate-email" class="sr-only">Your email</label>
+            <input type="email" id="gate-email" placeholder="you@email.com" required
+              class="flex-1 bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-base focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted" />
+            <button id="gate-submit" type="button"
+              class="bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-lg transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
+              See My Results
+            </button>
+          </div>
+          <label class="flex items-center justify-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="gate-consent" checked class="w-4 h-4 rounded border-border bg-bg-dark accent-accent" />
+            <span class="text-text-muted text-xs">Also send me cost estimates and installer matches. Unsubscribe anytime.</span>
+          </label>
+          <p class="text-text-muted text-[11px] mt-3">By submitting, you agree we may share your ZIP + project type with licensed installers so they can quote you.</p>
+          <div id="gate-error" class="hidden mt-3 text-sm text-[#EF4444]"></div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="results" class="hidden mt-8 border-t border-border pt-8">
+        <div id="sent-banner" class="hidden mb-6 bg-[rgba(52,211,153,0.08)] border border-[rgba(52,211,153,0.25)] rounded-xl p-4 flex items-start gap-3">
+          <div class="shrink-0 w-8 h-8 rounded-full bg-[rgba(52,211,153,0.15)] flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" class="text-[#34D399]">
+              <path d="M16.667 5L7.5 14.167 3.333 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-text-primary font-semibold text-sm">We've also sent these results to your inbox</p>
+            <p class="text-text-secondary text-xs mt-0.5">Don't see it? Check your Spam or Promotions folder.</p>
+          </div>
+        </div>
+
+        <h3 class="font-heading font-bold text-xl mb-2"><span id="r-space-intro">For your space</span></h3>
+        <p class="text-text-secondary text-sm mb-6"><span id="r-location"></span></p>
+
+        <!-- BTU number -->
+        <div class="bg-bg-dark rounded-xl p-5 mb-4">
+          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">You need approximately</div>
+          <div class="font-heading font-extrabold text-4xl text-accent" id="r-btu">— BTU</div>
+          <div class="text-text-secondary text-sm mt-1" id="r-tonnage"></div>
+        </div>
+
+        <!-- Unit recommendation card -->
+        <div class="bg-bg-dark rounded-xl p-5 mb-4 border border-accent/30">
+          <div class="flex items-start gap-3 mb-3">
+            <div class="shrink-0 w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
+              <span class="text-accent text-lg">✓</span>
+            </div>
+            <div>
+              <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Best fit</div>
+              <div class="font-heading font-bold text-lg text-text-primary" id="r-unit-label">—</div>
+            </div>
+          </div>
+          <p class="text-text-secondary text-sm leading-relaxed mb-3" id="r-unit-why"></p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+            <div class="bg-bg-card rounded-lg p-3">
+              <div class="text-text-muted text-[11px] uppercase tracking-wider mb-0.5">Typical installed cost</div>
+              <div class="font-heading font-bold text-base text-text-primary" id="r-cost">—</div>
+            </div>
+            <div class="bg-bg-card rounded-lg p-3">
+              <div class="text-text-muted text-[11px] uppercase tracking-wider mb-0.5">Install</div>
+              <div class="font-heading font-bold text-base text-text-primary" id="r-pro">—</div>
+            </div>
+          </div>
+          <p class="text-text-secondary text-xs leading-relaxed mt-3" id="r-install-notes"></p>
+          <p class="text-text-muted text-xs italic mt-3 hidden" id="r-alt-note"></p>
+        </div>
+
+        <!-- Installer-match CTA (shown only for Angi-lead recommendations) -->
+        <div id="installer-cta" class="hidden bg-[linear-gradient(135deg,rgba(255,107,43,0.15),rgba(255,107,43,0.05))] border border-accent/40 rounded-xl p-5 mb-4 text-center">
+          <div class="font-heading font-bold text-lg text-text-primary mb-1">Get matched with 3 installers near you</div>
+          <p class="text-text-secondary text-sm mb-4" id="installer-blurb">Share your ZIP with licensed HVAC pros — get quotes in 24–48 hours. Free, no commitment.</p>
+          <a id="installer-link"
+            href="https://www.angi.com/nearme/hvac/?utm_source=nailthequote&utm_medium=calculator&utm_campaign=ac-size-for-my-room"
+            target="_blank" rel="noopener"
+            class="inline-block bg-accent hover:bg-accent-hover text-white font-heading font-bold text-base px-8 py-3 rounded-lg transition-colors no-underline">
+            Find Installers Near Me →
+          </a>
+        </div>
+
+        <p class="text-text-muted text-xs italic mt-4">Estimate only. Sizing, costs, and unit-type recommendations are ballparks based on typical 2026 US installs. A licensed HVAC installer can give you a firm quote based on your specific home.</p>
+      </div>
+
+      <!-- Whole-house redirect -->
+      <div id="whole-house-redirect" class="hidden mt-6 bg-bg-dark border border-border rounded-xl p-5 text-center">
+        <div class="font-heading font-bold text-lg text-text-primary mb-2">Use our whole-house Load Calculator</div>
+        <p class="text-text-secondary text-sm mb-4">Whole-house sizing has different inputs — square footage, insulation grade, climate zone — and gives you the central system tonnage.</p>
+        <a href="/hvac/load-calculator/" class="inline-block bg-accent hover:bg-accent-hover text-white font-heading font-bold text-sm px-6 py-2.5 rounded-lg transition-colors no-underline">
+          Go to Load Calculator →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content sections -->
+  <div class="max-w-[1080px] mx-auto px-6 md:px-12 pb-16 space-y-12">
+    <section>
+      <h2 class="font-heading font-bold text-2xl mb-4">How This Works</h2>
+      <div class="text-text-secondary leading-relaxed space-y-3">
+        <p><strong class="text-text-primary">Step 1: Pick your space.</strong> We ask what room because the answer dramatically changes what unit makes sense. Garages almost always need a mini-split; small bedrooms can often get by with a window unit.</p>
+        <p><strong class="text-text-primary">Step 2: Tell us how big.</strong> Length × width × ceiling. A 20×20 garage with a 10 ft ceiling has very different needs from a 12×14 bedroom with an 8 ft ceiling.</p>
+        <p><strong class="text-text-primary">Step 3: Your ZIP.</strong> Phoenix in August needs more than Seattle in August. We adjust the load by your climate region automatically.</p>
+        <p><strong class="text-text-primary">Step 4: A few details.</strong> Insulation, afternoon sun, and window glass — the three biggest drivers after size and climate.</p>
+        <p><strong class="text-text-primary">What you get:</strong> the right BTU size, the recommended unit type (mini-split / window / through-wall / central zone), a ballpark installed cost, and — if you need one — a shortlist of installers near you.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="font-heading font-bold text-2xl mb-4">When to Pick Each Unit Type</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-bg-card border border-border rounded-xl p-5">
+          <h3 class="font-heading font-bold text-base text-accent mb-2">Ductless mini-split</h3>
+          <p class="text-text-secondary text-sm leading-relaxed">Garage conversions, additions, sunrooms, hot master bedrooms, finished basements, detached home offices. No ducts needed, quiet, efficient, heats in winter. $3,800–$6,500 installed for single zone. Needs a licensed pro.</p>
+        </div>
+        <div class="bg-bg-card border border-border rounded-xl p-5">
+          <h3 class="font-heading font-bold text-base text-accent mb-2">Window AC</h3>
+          <p class="text-text-secondary text-sm leading-relaxed">Small bedrooms and in-home offices in mild climates. Cheap ($250–$700), fully DIY. Won't work in garages (no window) or basements (no exterior window), and struggles in hot climates with west-facing rooms.</p>
+        </div>
+        <div class="bg-bg-card border border-border rounded-xl p-5">
+          <h3 class="font-heading font-bold text-base text-accent mb-2">Through-the-wall AC</h3>
+          <p class="text-text-secondary text-sm leading-relaxed">Small garages, apartments, or rooms where a mini-split is overkill but a window unit isn't viable. $1,800–$3,200 installed. Usually needs a pro to cut the wall and run 240V.</p>
+        </div>
+        <div class="bg-bg-card border border-border rounded-xl p-5">
+          <h3 class="font-heading font-bold text-base text-accent mb-2">Central-AC zone extension</h3>
+          <p class="text-text-secondary text-sm leading-relaxed">For a hot upstairs bedroom when you already have a central system with unused capacity. A pro extends ductwork to the problem room. $2,500–$5,500. Your existing system needs room in the budget — a pro confirms.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="font-heading font-bold text-2xl mb-4">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        <details class="bg-bg-card border border-border rounded-lg">
+          <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What size AC do I need for a 400 sq ft garage?</summary>
+          <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A typical 400 sq ft garage needs ~12,000–14,000 BTU (1 ton) in a mixed climate, more in hot climates. You'll almost certainly need a ductless mini-split — garage doors and walls can't mount a window unit.</div>
+        </details>
+        <details class="bg-bg-card border border-border rounded-lg">
+          <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">How many BTU do I need for a bedroom?</summary>
+          <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">A 12×14 ft bedroom typically needs 6,000–9,000 BTU. Master bedrooms facing west or above a hot garage may need 10,000–12,000 BTU. Small mild-climate bedrooms often work fine with a window AC.</div>
+        </details>
+        <details class="bg-bg-card border border-border rounded-lg">
+          <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Can I install a mini-split myself?</summary>
+          <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Most mini-splits require a licensed HVAC pro because the line set needs vacuuming and the refrigerant charge verified — work that needs EPA certification. Pre-charged line-set kits exist for DIY but most homeowners still hire a pro. Budget $3,800–$6,500 installed for a single zone.</div>
+        </details>
+        <details class="bg-bg-card border border-border rounded-lg">
+          <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">Is a window AC enough for my room?</summary>
+          <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">Window ACs work well for bedrooms under 400 sq ft in mild climates. They don't work in garages (no mountable window), basements (no exterior window), or hot-climate rooms with heavy afternoon sun.</div>
+        </details>
+        <details class="bg-bg-card border border-border rounded-lg">
+          <summary class="px-5 py-4 cursor-pointer text-text-primary font-medium hover:text-accent transition-colors">What does 1 ton of AC mean?</summary>
+          <div class="px-5 pb-4 text-text-secondary text-sm leading-relaxed">1 ton = 12,000 BTU of cooling per hour. A single-zone mini-split typically comes in 9k / 12k / 18k / 24k / 36k BTU — so 0.75, 1, 1.5, 2, or 3 tons.</div>
+        </details>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<!-- -------------------------------------------------------------------- -->
+<!-- PostHog + Google Ads analytics (mirrors ToolLayout pattern — inline   -->
+<!-- because this page uses BaseLayout directly for consumer URL routing)  -->
+<!-- -------------------------------------------------------------------- -->
+<script define:vars={{ toolSlug: TOOL_SLUG, toolName: TOOL_NAME }}>
+  window.__ntqToolMeta = {
+    toolSlug,
+    tradeSlug: 'hvac',
+    tradeName: 'HVAC',
+    toolName,
+    category: 'consumer',
+  };
+</script>
+
+<script>
+  (() => {
+    const meta = (window as any).__ntqToolMeta;
+    if (!meta || typeof (window as any).posthog === 'undefined') return;
+    // Never cache window.posthog — real lib replaces the stub after async load.
+    const props = {
+      tool_slug: meta.toolSlug,
+      trade_slug: meta.tradeSlug,
+      trade_name: meta.tradeName,
+      tool_name: meta.toolName,
+      tool_category: meta.category,
+    };
+    // Tool Viewed — safe to use stub, fires synchronously
+    (window as any).posthog.capture('tool_viewed', props);
+
+    // Tool Used — first interaction with calculator
+    let toolUsedFired = false;
+    const calcArea = document.getElementById('ac-calc');
+    if (calcArea) {
+      const fireToolUsed = () => {
+        if (toolUsedFired) return;
+        toolUsedFired = true;
+        (window as any).posthog?.capture('tool_used', props);
+        if (typeof (window as any).gtag === 'function') {
+          (window as any).gtag('event', 'conversion', { send_to: 'AW-17899660858/cBlqCOfI6JgcELrMnNdC' });
+        }
+      };
+      calcArea.addEventListener('input', fireToolUsed, { once: true });
+      calcArea.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest('.space-pill, .region-pill, .ins-pill, .sun-pill, .glass-pill')) fireToolUsed();
+      }, { once: true });
+    }
+  })();
+</script>
+
+<!-- Main calculator logic -->
+<script>
+  import { lookupZip, lookupRegion, REGIONS } from '../lib/climate';
+  import type { ClimateLookup, Region } from '../lib/climate';
+  import { calcRoom } from '../lib/hvac-calc';
+  import type { RoomInputs, RoomResult, RoomType, Orientation, ExposedWalls, RoomInsulation } from '../lib/hvac-calc';
+  import { recommendUnit, formatCost } from '../lib/unit-recommender';
+  import type { SpaceType, Recommendation } from '../lib/unit-recommender';
+  import { initSteppers } from '../lib/stepper';
+
+  initSteppers();
+
+  // ---------------------------------------------------------------------
+  // A/B/C copy test on the email gate (experiment: acsize_gate_copy)
+  // ---------------------------------------------------------------------
+  const AB_EXPERIMENT = 'acsize_gate_copy';
+  const AB_KEY = 'ntq_ab_acsize_gate';
+  const AB_ASSIGNED_KEY = 'ntq_ab_acsize_gate_fired';
+  const VARIANTS = {
+    A: {
+      headline: 'Get 3 installers near you with your results',
+      subhead: "Enter your email — we'll send your sizing report plus a shortlist of HVAC pros in your ZIP.",
+      cta: 'See Installers + Results',
+    },
+    B: {
+      headline: 'Email me my full sizing report',
+      subhead: 'Your BTU size, recommended unit type, and estimated install cost — delivered to your inbox so you can share with a contractor.',
+      cta: 'Email My Report',
+    },
+    C: {
+      headline: 'See what this install typically costs in your area',
+      subhead: "We'll email your sizing results plus a local installed cost range based on 2026 HVAC installs in your ZIP.",
+      cta: 'See My Cost Estimate',
+    },
+  } as const;
+  type Variant = keyof typeof VARIANTS;
+
+  function pickVariant(): Variant {
+    const keys: Variant[] = ['A', 'B', 'C'];
+    try {
+      const stored = localStorage.getItem(AB_KEY);
+      if (stored === 'A' || stored === 'B' || stored === 'C') return stored;
+      const chosen = keys[Math.floor(Math.random() * keys.length)];
+      localStorage.setItem(AB_KEY, chosen);
+      return chosen;
+    } catch {
+      return keys[Math.floor(Math.random() * keys.length)];
+    }
+  }
+  const abVariant = pickVariant();
+  const copy = VARIANTS[abVariant];
+  document.getElementById('gate-headline')!.textContent = copy.headline;
+  document.getElementById('gate-subhead')!.textContent = copy.subhead;
+  document.getElementById('gate-submit')!.textContent = copy.cta;
+
+  try {
+    if (!localStorage.getItem(AB_ASSIGNED_KEY)) {
+      (window as any).posthog?.capture('ab_variant_assigned', {
+        experiment: AB_EXPERIMENT,
+        ab_variant: abVariant,
+        tool_slug: 'ac-size-for-my-room',
+      });
+      localStorage.setItem(AB_ASSIGNED_KEY, '1');
+    }
+  } catch { /* ignore storage errors */ }
+
+  // ---------------------------------------------------------------------
+  // State
+  // ---------------------------------------------------------------------
+  let space: SpaceType | null = null;
+  let climate: ClimateLookup | null = null;
+  let insulation: RoomInsulation = 'average';
+  let sun: 'shaded' | 'some' | 'lots' = 'some';
+  let glass: 'little' | 'average' | 'lots' = 'average';
+
+  // Sun exposure → Orientation (rough mapping; consumer doesn't know compass)
+  const SUN_TO_ORIENT: Record<typeof sun, Orientation> = {
+    shaded: 'N',
+    some: 'E',
+    lots: 'S',
+  };
+  // Glass amount → sq ft of window (rough; varies by space type, see computeWindowArea)
+  function computeWindowArea(sqft: number, g: typeof glass): number {
+    // base ratio scales with room size, then we bracket by user pick
+    const base = sqft * 0.10; // 10% of floor area is the "average" envelope default
+    if (g === 'little') return Math.round(base * 0.5);
+    if (g === 'lots')   return Math.round(base * 2.0);
+    return Math.round(base);
+  }
+  // Default exposed-walls count by space type
+  const SPACE_TO_EXPOSED: Record<SpaceType, ExposedWalls> = {
+    'garage': 2,
+    'addition': 2,
+    'bedroom': 2,
+    'basement': 1,
+    'home-office': 2,
+    'whole-house': 2,
+    'other': 2,
+  };
+  // Map space → roomType for internal-gains baseline in calcRoom
+  const SPACE_TO_ROOMTYPE: Record<SpaceType, RoomType> = {
+    'garage': 'other',
+    'addition': 'living',
+    'bedroom': 'bedroom',
+    'basement': 'living',
+    'home-office': 'office',
+    'whole-house': 'living',
+    'other': 'other',
+  };
+
+  // ---------------------------------------------------------------------
+  // Step reveal helpers
+  // ---------------------------------------------------------------------
+  function revealStep(id: string) {
+    const el = document.getElementById(id);
+    if (el && el.classList.contains('hidden')) {
+      el.classList.remove('hidden');
+    }
+  }
+
+  // ---------------------------------------------------------------------
+  // Space pill handlers
+  // ---------------------------------------------------------------------
+  document.querySelectorAll<HTMLButtonElement>('.space-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const v = btn.dataset.space as SpaceType;
+      space = v;
+      document.querySelectorAll<HTMLButtonElement>('.space-pill').forEach(b => {
+        b.classList.remove('border-accent');
+        if (!b.classList.contains('border-dashed')) b.classList.add('border-border');
+      });
+      btn.classList.add('border-accent');
+
+      if (v === 'whole-house') {
+        // Redirect suggestion — hide all further steps + show redirect card
+        document.getElementById('whole-house-redirect')!.classList.remove('hidden');
+        ['step-2', 'step-3', 'step-4', 'calc-btn-area'].forEach(id => {
+          document.getElementById(id)!.classList.add('hidden');
+        });
+      } else {
+        document.getElementById('whole-house-redirect')!.classList.add('hidden');
+        revealStep('step-2');
+        revealStep('step-3');
+        revealStep('step-4');
+        revealStep('calc-btn-area');
+      }
+    });
+  });
+
+  // ---------------------------------------------------------------------
+  // ZIP handler
+  // ---------------------------------------------------------------------
+  const zipInput = document.getElementById('zip') as HTMLInputElement;
+  const zipDisplay = document.getElementById('zip-display')!;
+  const zipFallback = document.getElementById('zip-fallback')!;
+
+  function setClimateFromZip(raw: string) {
+    const zip = raw.replace(/\D/g, '').slice(0, 5);
+    if (zip.length < 3) {
+      climate = null;
+      zipDisplay.textContent = 'We use this to factor in your local climate.';
+      zipFallback.classList.add('hidden');
+      return;
+    }
+    const lookup = lookupZip(zip);
+    if (lookup) {
+      climate = lookup;
+      zipDisplay.innerHTML = `<span class="text-text-primary font-medium">${lookup.state}</span> &middot; <span class="text-accent font-medium">${lookup.regionLabel} climate</span>`;
+      zipFallback.classList.add('hidden');
+    } else if (zip.length >= 3) {
+      climate = null;
+      zipDisplay.textContent = 'ZIP not recognized.';
+      zipFallback.classList.remove('hidden');
+    }
+  }
+  zipInput.addEventListener('input', () => setClimateFromZip(zipInput.value));
+
+  document.querySelectorAll<HTMLButtonElement>('.region-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const region = btn.dataset.region as Region;
+      climate = lookupRegion(region, zipInput.value, '');
+      const meta = REGIONS[region];
+      zipDisplay.innerHTML = `<span class="text-accent font-medium">${meta.label} climate</span> <span class="text-text-muted">(manually selected)</span>`;
+      zipFallback.classList.add('hidden');
+      document.querySelectorAll<HTMLButtonElement>('.region-pill').forEach(b => b.classList.remove('border-accent'));
+      btn.classList.add('border-accent');
+    });
+  });
+
+  // ---------------------------------------------------------------------
+  // Pill handlers: insulation / sun / glass
+  // ---------------------------------------------------------------------
+  function wirePills(selector: string, handler: (val: string) => void) {
+    document.querySelectorAll<HTMLButtonElement>(selector).forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll<HTMLButtonElement>(selector).forEach(b => {
+          b.classList.remove('border-accent');
+          b.classList.add('border', 'border-border');
+        });
+        btn.classList.remove('border-border');
+        btn.classList.add('border-accent');
+        const data = Object.values(btn.dataset)[0];
+        if (data) handler(data);
+      });
+    });
+  }
+  wirePills('.ins-pill',   v => { insulation = v as RoomInsulation; });
+  wirePills('.sun-pill',   v => { sun = v as typeof sun; });
+  wirePills('.glass-pill', v => { glass = v as typeof glass; });
+
+  // ---------------------------------------------------------------------
+  // Derived sqft display
+  // ---------------------------------------------------------------------
+  function updateDerived() {
+    const l = parseFloat((document.getElementById('length') as HTMLInputElement).value) || 0;
+    const w = parseFloat((document.getElementById('width') as HTMLInputElement).value) || 0;
+    document.getElementById('d-sqft')!.textContent = (l * w).toLocaleString();
+  }
+  ['length', 'width'].forEach(id => {
+    document.getElementById(id)!.addEventListener('input', updateDerived);
+  });
+  updateDerived();
+
+  // ---------------------------------------------------------------------
+  // Calculate — runs the load formula + unit recommender, then either
+  // shows the gate (pro-grade install) or shows results inline (window /
+  // portable — not worth the email capture)
+  // ---------------------------------------------------------------------
+  let pendingInputs: RoomInputs | null = null;
+  let pendingResult: RoomResult | null = null;
+  let pendingRec: Recommendation | null = null;
+  const calcBtn = document.getElementById('calculate-btn') as HTMLButtonElement;
+  const calcHint = document.getElementById('calc-hint')!;
+
+  function readInputs(): RoomInputs | null {
+    if (!space || space === 'whole-house') {
+      calcHint.textContent = 'Please pick a space above.';
+      calcHint.classList.remove('hidden');
+      return null;
+    }
+    if (!climate) {
+      calcHint.textContent = 'Please enter a valid ZIP code or pick a climate.';
+      calcHint.classList.remove('hidden');
+      return null;
+    }
+    calcHint.classList.add('hidden');
+    const length = parseFloat((document.getElementById('length') as HTMLInputElement).value) || 20;
+    const width = parseFloat((document.getElementById('width') as HTMLInputElement).value) || 20;
+    const sqft = length * width;
+    return {
+      climate,
+      roomType: SPACE_TO_ROOMTYPE[space],
+      orientation: SUN_TO_ORIENT[sun],
+      length,
+      width,
+      ceilingHeight: parseFloat((document.getElementById('ceiling') as HTMLInputElement).value) || 8,
+      exposedWalls: SPACE_TO_EXPOSED[space],
+      windowAreaSqFt: computeWindowArea(sqft, glass),
+      doorAreaSqFt: space === 'garage' ? 60 : 0, // garages have big uninsulated doors
+      insulation,
+    };
+  }
+
+  calcBtn.addEventListener('click', () => {
+    const inputs = readInputs();
+    if (!inputs || !space) return;
+    pendingInputs = inputs;
+    pendingResult = calcRoom(inputs);
+    pendingRec = recommendUnit({
+      space,
+      sqft: pendingResult.sqft,
+      region: inputs.climate.region,
+      insulation: insulation === 'average' ? 'average' : insulation,
+      coolingBTU: pendingResult.coolingBTU,
+      closestStandardBTU: pendingResult.closestStandardBTU,
+      closestStandardLabel: pendingResult.closestStandardLabel,
+    });
+
+    if (pendingRec.needsPro) {
+      // Show email gate
+      document.getElementById('calc-btn-area')!.classList.add('hidden');
+      document.getElementById('email-gate')!.classList.remove('hidden');
+      (document.getElementById('gate-email') as HTMLInputElement).focus();
+      (window as any).posthog?.capture('gate_shown', {
+        experiment: AB_EXPERIMENT,
+        ab_variant: abVariant,
+        tool_slug: 'ac-size-for-my-room',
+        recommended_unit_type: pendingRec.unitType,
+        space,
+      });
+    } else {
+      // Low-value cases (window / portable) — skip the gate, show results inline
+      (window as any).posthog?.capture('gate_skipped_low_value', {
+        tool_slug: 'ac-size-for-my-room',
+        recommended_unit_type: pendingRec.unitType,
+        space,
+      });
+      document.getElementById('calc-btn-area')!.classList.add('hidden');
+      renderResults(/* emailSent */ false);
+    }
+  });
+
+  // ---------------------------------------------------------------------
+  // Render results — assembles the result card from pendingResult + pendingRec
+  // ---------------------------------------------------------------------
+  function renderResults(emailSent: boolean) {
+    if (!pendingResult || !pendingRec || !pendingInputs) return;
+    const r = pendingResult;
+    const rec = pendingRec;
+    const inputs = pendingInputs;
+
+    // Header
+    const spaceLabel = space === 'garage' ? 'garage'
+      : space === 'addition' ? 'addition'
+      : space === 'bedroom' ? 'bedroom'
+      : space === 'basement' ? 'basement'
+      : space === 'home-office' ? 'home office'
+      : 'space';
+    document.getElementById('r-space-intro')!.textContent = `For your ${r.sqft} sq ft ${spaceLabel}`;
+    document.getElementById('r-location')!.textContent = `${inputs.climate.state ? inputs.climate.state + ' — ' : ''}${inputs.climate.regionLabel} climate`;
+
+    // BTU + tonnage
+    document.getElementById('r-btu')!.textContent = `${r.coolingBTU.toLocaleString()} BTU`;
+    document.getElementById('r-tonnage')!.textContent = `That's about ${r.tonnage} ton${r.tonnage !== 1 ? 's' : ''}. Closest standard size: ${r.closestStandardLabel.replace(' mini-split', '')}.`;
+
+    // Unit recommendation
+    document.getElementById('r-unit-label')!.textContent = rec.unitLabel;
+    document.getElementById('r-unit-why')!.textContent = rec.why;
+    document.getElementById('r-cost')!.textContent = formatCost(rec.installCostLow, rec.installCostHigh);
+    document.getElementById('r-pro')!.textContent = rec.needsPro ? 'Needs a licensed pro' : 'Fully DIY';
+    document.getElementById('r-install-notes')!.textContent = rec.installNotes;
+
+    const altEl = document.getElementById('r-alt-note')!;
+    if (rec.alternativeNote) {
+      altEl.textContent = rec.alternativeNote;
+      altEl.classList.remove('hidden');
+    } else {
+      altEl.classList.add('hidden');
+    }
+
+    // Installer CTA — shown only for Angi-lead recommendations
+    const ctaEl = document.getElementById('installer-cta')!;
+    if (rec.isAngiLead) {
+      ctaEl.classList.remove('hidden');
+      // Pass ZIP + unit type to the Angi handoff URL (Alison to confirm final URL)
+      const zip5 = (zipInput.value || '').replace(/\D/g, '').slice(0, 5);
+      const link = document.getElementById('installer-link') as HTMLAnchorElement;
+      const url = new URL(link.href);
+      if (zip5) url.searchParams.set('zip', zip5);
+      url.searchParams.set('unit', rec.unitType);
+      url.searchParams.set('space', space || '');
+      link.href = url.toString();
+    } else {
+      ctaEl.classList.add('hidden');
+    }
+
+    // "Results also sent to your inbox" banner — only if we actually sent an email
+    const sentBanner = document.getElementById('sent-banner')!;
+    if (emailSent) sentBanner.classList.remove('hidden');
+    else sentBanner.classList.add('hidden');
+
+    const resultsEl = document.getElementById('results')!;
+    resultsEl.classList.remove('hidden');
+    resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Track installer CTA clicks (the KPI that matters most)
+  document.getElementById('installer-link')?.addEventListener('click', () => {
+    (window as any).posthog?.capture('installer_match_clicked', {
+      tool_slug: 'ac-size-for-my-room',
+      recommended_unit_type: pendingRec?.unitType,
+      space,
+    });
+  });
+
+  // ---------------------------------------------------------------------
+  // Email gate submission
+  // ---------------------------------------------------------------------
+  const gateSubmit = document.getElementById('gate-submit') as HTMLButtonElement;
+  const gateEmail = document.getElementById('gate-email') as HTMLInputElement;
+  const gateConsent = document.getElementById('gate-consent') as HTMLInputElement;
+  const gateError = document.getElementById('gate-error')!;
+
+  gateSubmit.addEventListener('click', async () => {
+    const email = gateEmail.value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      gateError.textContent = 'Please enter a valid email address.';
+      gateError.classList.remove('hidden');
+      return;
+    }
+    if (!pendingResult || !pendingInputs || !pendingRec) return;
+    gateError.classList.add('hidden');
+    gateSubmit.disabled = true;
+    gateSubmit.textContent = 'Sending...';
+
+    try {
+      const res = await fetch('/api/email-capture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          toolSlug: 'ac-size-for-my-room',
+          toolName: 'What Size AC Do I Need?',
+          tradeSlug: 'hvac',
+          tradeName: 'HVAC',
+          marketingConsent: gateConsent.checked,
+          sourceUrl: window.location.pathname,
+          calculationResults: {
+            mode: 'ac-room',
+            space,
+            coolingBTU: pendingResult.coolingBTU,
+            heatingBTU: pendingResult.heatingBTU,
+            tonnage: pendingResult.tonnage,
+            closestStandardBTU: pendingResult.closestStandardBTU,
+            closestStandardLabel: pendingResult.closestStandardLabel,
+            sqft: pendingResult.sqft,
+            state: pendingInputs.climate.state,
+            region: pendingInputs.climate.regionLabel,
+            dimensions: `${pendingInputs.length} × ${pendingInputs.width} ft`,
+            insulation: pendingInputs.insulation,
+            sun,
+            recommendedUnitType: pendingRec.unitType,
+            recommendedUnitLabel: pendingRec.unitLabel,
+            recommendedUnitWhy: pendingRec.why,
+            installCostLow: pendingRec.installCostLow,
+            installCostHigh: pendingRec.installCostHigh,
+            installNotes: pendingRec.installNotes,
+            isAngiLead: pendingRec.isAngiLead,
+          },
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to send');
+
+      document.getElementById('email-gate')!.classList.add('hidden');
+      renderResults(/* emailSent */ true);
+
+      const meta = (window as any).__ntqToolMeta;
+      if ((window as any).posthog && meta) {
+        (window as any).posthog.capture('email_captured', {
+          tool_slug: meta.toolSlug,
+          trade_slug: meta.tradeSlug,
+          trade_name: meta.tradeName,
+          tool_name: meta.toolName,
+          tool_category: meta.category,
+          marketing_consent: gateConsent.checked,
+          gated: true,
+          mode: 'ac-room',
+          experiment: AB_EXPERIMENT,
+          ab_variant: abVariant,
+          recommended_unit_type: pendingRec.unitType,
+          is_angi_lead: pendingRec.isAngiLead,
+          space,
+        });
+      }
+      if (typeof (window as any).gtag === 'function') {
+        (window as any).gtag('event', 'conversion', { send_to: 'AW-17899660858/rqouCLin75gcELrMnNdC' });
+      }
+    } catch {
+      gateError.textContent = 'Something went wrong. Please try again.';
+      gateError.classList.remove('hidden');
+      gateSubmit.disabled = false;
+      gateSubmit.textContent = copy.cta;
+    }
+  });
+
+  gateEmail.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') gateSubmit.click();
+  });
+</script>

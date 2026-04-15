@@ -196,6 +196,45 @@ function buildResultsEmailWithData(
       results.insulation ? row('Insulation', results.insulation) : '',
       (results.windowArea || results.windowArea === 0) ? row('Window area', `${fmt(results.windowArea)} sq ft`) : '',
     ].join('');
+  } else if (mode === 'ac-room') {
+    // Consumer "What Size AC Do I Need?" tool — plain, homeowner-voiced email.
+    // Renders a full recommendation card (unit type + why + cost + install notes)
+    // plus the inputs used. Installer-match CTA is appended below in this branch
+    // so it only shows for ac-room captures, not the pro tools.
+    const spaceLabelMap: Record<string, string> = {
+      'garage': 'Garage',
+      'addition': 'Addition / Sunroom',
+      'bedroom': 'Bedroom',
+      'basement': 'Finished Basement',
+      'home-office': 'Home Office',
+      'other': 'Other single room',
+    };
+    const spaceLabel = spaceLabelMap[String(results.space)] || 'Your space';
+    const costStr =
+      (results.installCostLow || results.installCostLow === 0) && results.installCostHigh
+        ? `$${fmt(results.installCostLow)}–$${fmt(results.installCostHigh)}`
+        : '—';
+    // Use a custom renderer for this mode (not the generic table layout)
+    return renderAcRoomEmail({
+      toolUrl,
+      toolName,
+      spaceLabel,
+      sqft: results.sqft,
+      state: results.state,
+      region: results.region,
+      coolingBTU: results.coolingBTU,
+      closestStandardLabel: results.closestStandardLabel,
+      tonnage: results.tonnage,
+      recommendedUnitLabel: results.recommendedUnitLabel,
+      recommendedUnitWhy: results.recommendedUnitWhy,
+      installNotes: results.installNotes,
+      costStr,
+      isAngiLead: !!results.isAngiLead,
+      dimensions: results.dimensions,
+      insulation: results.insulation,
+      sun: results.sun,
+      displayUrl,
+    });
   } else {
     // Legacy fallback (pre-mode calculationResults — old Manual J shape)
     resultRows = [
@@ -239,6 +278,114 @@ function buildResultsEmailWithData(
 
     <p style="font-size:14px;color:#333;margin:0;">
       Run another calculation: <a href="${toolUrl}" style="color:#FF6B2B;text-decoration:underline;">${displayUrl}</a>
+    </p>
+
+  </div>
+</body>
+</html>`;
+}
+
+// ---------------------------------------------------------------------------
+// Consumer "What Size AC Do I Need?" email template
+// ---------------------------------------------------------------------------
+// Homeowner-voiced, transactional-style (plain HTML, no unsubscribe footer —
+// Gmail-Promotions-tab avoidance — header `Auto-Submitted: auto-generated`
+// is set at send time, same as the mini-split transactional path).
+// Always ends with the installer-match CTA when isAngiLead is true.
+function renderAcRoomEmail(params: {
+  toolUrl: string;
+  toolName: string;
+  spaceLabel: string;
+  sqft?: number;
+  state?: string;
+  region?: string;
+  coolingBTU?: number;
+  closestStandardLabel?: string;
+  tonnage?: number;
+  recommendedUnitLabel?: string;
+  recommendedUnitWhy?: string;
+  installNotes?: string;
+  costStr: string;
+  isAngiLead: boolean;
+  dimensions?: string;
+  insulation?: string;
+  sun?: string;
+  displayUrl: string;
+}): string {
+  const fmt = (n?: number) =>
+    n === 0 || !!n ? n.toLocaleString('en-US') : '—';
+  const {
+    toolUrl, spaceLabel, sqft, state, region, coolingBTU, closestStandardLabel,
+    tonnage, recommendedUnitLabel, recommendedUnitWhy, installNotes, costStr,
+    isAngiLead, dimensions, insulation, sun, displayUrl,
+  } = params;
+  const locStr = state ? `${state}, ${region} climate` : (region ? `${region} climate` : '');
+  const tonsSuffix = tonnage !== undefined ? ` (${tonnage} ton${tonnage !== 1 ? 's' : ''})` : '';
+  const standardLine = closestStandardLabel
+    ? `Closest standard size: ${String(closestStandardLabel).replace(' mini-split', '')}.`
+    : '';
+  // Build the Angi installer CTA — URL params let the pros see what the
+  // homeowner is actually looking to install.
+  const installerUrl = `https://www.angi.com/nearme/hvac/?utm_source=nailthequote&utm_medium=email&utm_campaign=ac-size-for-my-room`;
+
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:24px;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#111;">
+  <div style="max-width:560px;margin:0 auto;">
+
+    <p style="font-size:15px;margin:0 0 8px 0;">Here are your sizing results for your ${spaceLabel.toLowerCase()}${sqft ? ` (${fmt(sqft)} sq ft)` : ''}${locStr ? `, ${locStr}` : ''}:</p>
+
+    <div style="background:#F8F9FB;border-radius:8px;padding:20px;margin:16px 0 20px 0;">
+      <p style="font-size:12px;color:#6B7280;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px 0;">You need approximately</p>
+      <p style="font-size:32px;font-weight:800;color:#FF6B2B;margin:0 0 4px 0;line-height:1.1;">${fmt(coolingBTU)} BTU${tonsSuffix}</p>
+      ${standardLine ? `<p style="font-size:13px;color:#555;margin:0;">${standardLine}</p>` : ''}
+    </div>
+
+    ${recommendedUnitLabel ? `
+    <div style="border:1px solid #FFD4BD;border-radius:8px;padding:18px;margin:0 0 20px 0;">
+      <p style="font-size:12px;color:#6B7280;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px 0;">Best fit for your space</p>
+      <p style="font-size:18px;font-weight:700;color:#111;margin:0 0 8px 0;">${recommendedUnitLabel}</p>
+      ${recommendedUnitWhy ? `<p style="font-size:14px;color:#444;line-height:1.5;margin:0 0 12px 0;">${recommendedUnitWhy}</p>` : ''}
+      <p style="font-size:14px;color:#111;margin:0 0 4px 0;"><strong>Typical installed cost:</strong> ${costStr}</p>
+      ${installNotes ? `<p style="font-size:13px;color:#555;line-height:1.5;margin:8px 0 0 0;">${installNotes}</p>` : ''}
+    </div>
+    ` : ''}
+
+    ${isAngiLead ? `
+    <div style="background:#FFF5EF;border:1px solid #FFD4BD;border-radius:8px;padding:18px;margin:0 0 20px 0;text-align:center;">
+      <p style="font-size:16px;font-weight:700;color:#111;margin:0 0 6px 0;">Get matched with 3 installers near you</p>
+      <p style="font-size:13px;color:#555;margin:0 0 14px 0;line-height:1.5;">Free, no commitment — licensed HVAC pros in your ZIP will send you quotes in 24–48 hours.</p>
+      <a href="${installerUrl}" style="display:inline-block;background:#FF6B2B;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;padding:12px 28px;border-radius:8px;">
+        Find Installers Near Me →
+      </a>
+    </div>
+    ` : ''}
+
+    <p style="font-size:14px;color:#444;margin:0 0 6px 0;font-weight:600;">What to ask an installer</p>
+    <ul style="font-size:13px;color:#555;line-height:1.6;margin:0 0 20px 0;padding-left:20px;">
+      <li>Do you recommend a different size for my ${spaceLabel.toLowerCase()}? Why?</li>
+      <li>What brand and model do you typically install in this BTU range, and why?</li>
+      <li>What's the warranty on parts and labor?</li>
+      <li>Is permitting included in the quote? Electrical permits?</li>
+      <li>What's the lead time from signed quote to installed?</li>
+    </ul>
+
+    ${(dimensions || insulation || sun) ? `
+    <p style="font-size:13px;color:#6B7280;margin:0 0 6px 0;font-weight:600;">Your inputs</p>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;color:#555;margin:0 0 20px 0;">
+      ${dimensions ? `<tr><td style="padding:4px 0;">Dimensions</td><td style="padding:4px 0;text-align:right;color:#111;">${dimensions}${sqft ? ` (${fmt(sqft)} sq ft)` : ''}</td></tr>` : ''}
+      ${insulation ? `<tr><td style="padding:4px 0;">Insulation</td><td style="padding:4px 0;text-align:right;color:#111;">${insulation}</td></tr>` : ''}
+      ${sun ? `<tr><td style="padding:4px 0;">Afternoon sun</td><td style="padding:4px 0;text-align:right;color:#111;">${sun}</td></tr>` : ''}
+    </table>
+    ` : ''}
+
+    <p style="font-size:12px;color:#888;line-height:1.5;margin:0 0 20px 0;">
+      Estimate only. Sizing, costs, and unit-type recommendations are ballparks. Your licensed HVAC installer can give you a firm quote based on your specific home.
+    </p>
+
+    <p style="font-size:13px;color:#333;margin:0;">
+      Change any inputs: <a href="${toolUrl}" style="color:#FF6B2B;text-decoration:underline;">${displayUrl}</a>
     </p>
 
   </div>
