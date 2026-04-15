@@ -234,7 +234,7 @@ function buildResultsEmailWithData(
     ` : ''}
 
     <p style="font-size:13px;color:#666;line-height:1.5;margin:0 0 24px 0;">
-      Estimate only. For permit-ready Manual J, use ACCA-accredited software like CoolCalc.
+      Estimate only. For permit-ready Manual J, use ACCA-accredited software.
     </p>
 
     <p style="font-size:14px;color:#333;margin:0;">
