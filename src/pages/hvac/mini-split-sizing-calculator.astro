@@ -942,7 +942,7 @@ const roomTypes = [
 
   function readInputs(): RoomInputs | null {
     if (!climate) {
-      calcHint.textContent = 'Please enter a valid ZIP code or pick a climate region.';
+      calcHint.textContent = 'Please enter a valid ZIP code.';
       calcHint.classList.remove('hidden');
       return null;
     }
