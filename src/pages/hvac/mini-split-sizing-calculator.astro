@@ -425,6 +425,24 @@ const roomTypes = [
       <p id="calc-hint" class="hidden mt-3 text-sm text-[#EF4444]"></p>
     </div>
 
+    <!-- Segment gate: shown after Calculate, before the email gate.
+         Pro vs homeowner split, feeds analytics + downstream routing. -->
+    <div id="segment-gate" class="hidden mt-8 border-t border-border pt-8">
+      <div class="max-w-lg mx-auto text-center">
+        <h3 class="font-heading font-bold text-xl text-text-primary mb-6">Who's this for?</h3>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button type="button" data-segment="home"
+            class="segment-pill flex-1 bg-bg-dark border border-border rounded-lg px-4 py-4 text-text-primary text-base hover:border-accent transition-colors">
+            My own home
+          </button>
+          <button type="button" data-segment="customer"
+            class="segment-pill flex-1 bg-bg-dark border border-border rounded-lg px-4 py-4 text-text-primary text-base hover:border-accent transition-colors">
+            A customer's job
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div id="email-gate" class="hidden mt-8 border-t border-border pt-8">
       <div class="max-w-lg mx-auto text-center">
         <div class="w-14 h-14 rounded-2xl bg-accent/15 flex items-center justify-center mx-auto mb-4">
@@ -937,6 +955,9 @@ const roomTypes = [
 
   let pendingResult: RoomResult | null = null;
   let pendingInputs: RoomInputs | null = null;
+  // User self-identified segment: 'home' (homeowner) vs 'customer' (pro
+  // sizing for a client). Captured between Calculate and the email gate.
+  let segment: 'home' | 'customer' | null = null;
   const calcBtn = document.getElementById('calculate-btn') as HTMLButtonElement;
   const calcHint = document.getElementById('calc-hint')!;
 
@@ -977,15 +998,40 @@ const roomTypes = [
     if (!inputs) return;
     pendingInputs = inputs;
     pendingResult = calcRoom(inputs);
+    segment = null; // reset in case the user is running a second estimate
     document.getElementById('calc-btn-area')!.classList.add('hidden');
-    document.getElementById('email-gate')!.classList.remove('hidden');
-    (document.getElementById('gate-email') as HTMLInputElement).focus();
+    document.getElementById('segment-gate')!.classList.remove('hidden');
 
-    // A/B/C: record that the gate was shown to this arm (denominator for conversion rate)
-    (window as any).posthog?.capture('gate_shown', {
-      experiment: AB_EXPERIMENT,
-      ab_variant: abVariant,
+    // Segment step reached — useful for measuring drop-off between
+    // Calculate and segment pick.
+    (window as any).posthog?.capture('segment_shown', {
       tool_slug: 'mini-split-sizing-calculator',
+      trade_slug: 'hvac',
+    });
+  });
+
+  // Segment pill pick → advance to email gate.
+  document.querySelectorAll<HTMLButtonElement>('.segment-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      segment = (btn.dataset.segment || 'home') as 'home' | 'customer';
+      document.getElementById('segment-gate')!.classList.add('hidden');
+      document.getElementById('email-gate')!.classList.remove('hidden');
+      (document.getElementById('gate-email') as HTMLInputElement).focus();
+
+      (window as any).posthog?.capture('segment_picked', {
+        tool_slug: 'mini-split-sizing-calculator',
+        trade_slug: 'hvac',
+        segment,
+      });
+      // A/B/C: record that the email gate was shown (denominator for
+      // conversion rate). Fires after segment pick so users who bail
+      // at the segment step are excluded from the A/B denominator.
+      (window as any).posthog?.capture('gate_shown', {
+        experiment: AB_EXPERIMENT,
+        ab_variant: abVariant,
+        tool_slug: 'mini-split-sizing-calculator',
+        segment,
+      });
     });
   });
 
@@ -1027,6 +1073,7 @@ const roomTypes = [
           tradeName: 'HVAC',
           marketingConsent: gateConsent.checked,
           sourceUrl: window.location.pathname,
+          segment, // 'home' | 'customer' — captured on the segment gate
           calculationResults: {
             mode: 'mini-split',
             coolingBTU: pendingResult.coolingBTU,
@@ -1063,6 +1110,7 @@ const roomTypes = [
           marketing_consent: gateConsent.checked,
           gated: true,
           mode: 'mini-split',
+          segment, // 'home' | 'customer'
           // A/B/C test tagging — pairs with gate_shown for conversion rate
           experiment: AB_EXPERIMENT,
           ab_variant: abVariant,
