@@ -66,7 +66,7 @@ const webAppSchema = {
   <!-- Header -->
   <div class="max-w-[1080px] mx-auto px-6 md:px-12 pt-6 md:pt-6 pb-6 md:pb-8">
     <h1 class="font-heading font-extrabold text-3xl md:text-5xl tracking-tight mb-3">What Size AC Do I Need?</h1>
-    <p class="text-text-secondary text-base md:text-lg max-w-2xl">Answer a few questions about the room you want to cool. Get the right BTU size, unit type, and installed cost.</p>
+    <p class="text-text-primary text-base md:text-lg max-w-2xl">Answer a few questions about the room you want to cool. Get the right BTU size, unit type, and installed cost.</p>
   </div>
 
   <!-- Calculator -->
@@ -75,7 +75,7 @@ const webAppSchema = {
 
       <!-- Step indicator -->
       <div id="step-indicator" class="mb-6 flex items-center gap-3">
-        <span class="text-text-muted text-xs font-medium whitespace-nowrap">Step <span id="step-current">1</span> of 4</span>
+        <span class="text-text-primary text-xs font-medium whitespace-nowrap">Step <span id="step-current">1</span> of 4</span>
         <div class="flex-1 h-1 bg-bg-dark rounded-full overflow-hidden">
           <div id="step-progress" class="h-full bg-accent transition-all duration-200" style="width: 25%"></div>
         </div>
@@ -88,7 +88,7 @@ const webAppSchema = {
       <div class="wizard-step" data-step="1">
         <div class="mb-4">
           <label class="block text-lg md:text-xl font-heading font-bold text-text-primary">What space are you cooling?</label>
-          <p class="text-text-muted text-sm mt-1">Tap the one that fits.</p>
+          <p class="text-text-primary text-sm mt-1">Tap the one that fits.</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="space-pills">
           {spaces.map((s) => (
@@ -98,7 +98,7 @@ const webAppSchema = {
                 <span class="text-xl">{s.icon}</span>
                 <span class="font-heading font-semibold text-text-primary">{s.l}</span>
               </div>
-              <p class="text-text-muted text-xs mt-1 leading-snug">{s.sub}</p>
+              <p class="text-text-primary text-xs mt-1 leading-snug">{s.sub}</p>
             </button>
           ))}
           <button type="button" data-space="whole-house"
@@ -107,7 +107,7 @@ const webAppSchema = {
               <span class="text-xl">🏡</span>
               <span class="font-heading font-semibold text-text-primary">Whole house</span>
             </div>
-            <p class="text-text-muted text-xs mt-1 leading-snug">Use our whole-house load calculator instead</p>
+            <p class="text-text-primary text-xs mt-1 leading-snug">Use our whole-house load calculator instead</p>
           </button>
         </div>
       </div>
@@ -116,42 +116,42 @@ const webAppSchema = {
       <div id="step-2" class="wizard-step hidden" data-step="2">
         <div class="mb-4">
           <label class="block text-lg md:text-xl font-heading font-bold text-text-primary">How big is the space?</label>
-          <p class="text-text-muted text-sm mt-1">Length and width in feet.</p>
+          <p class="text-text-primary text-sm mt-1">Length and width in feet.</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-2" for="length">Length (ft)</label>
+            <label class="block text-sm font-medium text-text-primary mb-2" for="length">Length (ft)</label>
             <div class="number-stepper flex items-stretch bg-bg-dark border border-border rounded-lg focus-within:border-accent transition-colors overflow-hidden">
-              <button type="button" aria-label="Decrease length" class="stepper-minus px-4 text-text-secondary hover:text-accent text-2xl font-bold leading-none select-none">−</button>
+              <button type="button" aria-label="Decrease length" class="stepper-minus px-4 text-text-primary hover:text-accent text-2xl font-bold leading-none select-none">−</button>
               <input type="number" id="length" value="20" min="4" max="100" step="1"
                 class="flex-1 bg-transparent text-text-primary text-lg text-center focus:outline-none min-w-0 py-3 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
-              <button type="button" aria-label="Increase length" class="stepper-plus px-4 text-text-secondary hover:text-accent text-2xl font-bold leading-none select-none">+</button>
+              <button type="button" aria-label="Increase length" class="stepper-plus px-4 text-text-primary hover:text-accent text-2xl font-bold leading-none select-none">+</button>
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-2" for="width">Width (ft)</label>
+            <label class="block text-sm font-medium text-text-primary mb-2" for="width">Width (ft)</label>
             <div class="number-stepper flex items-stretch bg-bg-dark border border-border rounded-lg focus-within:border-accent transition-colors overflow-hidden">
-              <button type="button" aria-label="Decrease width" class="stepper-minus px-4 text-text-secondary hover:text-accent text-2xl font-bold leading-none select-none">−</button>
+              <button type="button" aria-label="Decrease width" class="stepper-minus px-4 text-text-primary hover:text-accent text-2xl font-bold leading-none select-none">−</button>
               <input type="number" id="width" value="20" min="4" max="100" step="1"
                 class="flex-1 bg-transparent text-text-primary text-lg text-center focus:outline-none min-w-0 py-3 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
-              <button type="button" aria-label="Increase width" class="stepper-plus px-4 text-text-secondary hover:text-accent text-2xl font-bold leading-none select-none">+</button>
+              <button type="button" aria-label="Increase width" class="stepper-plus px-4 text-text-primary hover:text-accent text-2xl font-bold leading-none select-none">+</button>
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-2" for="ceiling">Ceiling (ft)</label>
+            <label class="block text-sm font-medium text-text-primary mb-2" for="ceiling">Ceiling (ft)</label>
             <div class="number-stepper flex items-stretch bg-bg-dark border border-border rounded-lg focus-within:border-accent transition-colors overflow-hidden">
-              <button type="button" aria-label="Decrease ceiling" class="stepper-minus px-4 text-text-secondary hover:text-accent text-2xl font-bold leading-none select-none">−</button>
+              <button type="button" aria-label="Decrease ceiling" class="stepper-minus px-4 text-text-primary hover:text-accent text-2xl font-bold leading-none select-none">−</button>
               <input type="number" id="ceiling" value="8" min="7" max="20" step="0.5"
                 class="flex-1 bg-transparent text-text-primary text-lg text-center focus:outline-none min-w-0 py-3 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
-              <button type="button" aria-label="Increase ceiling" class="stepper-plus px-4 text-text-secondary hover:text-accent text-2xl font-bold leading-none select-none">+</button>
+              <button type="button" aria-label="Increase ceiling" class="stepper-plus px-4 text-text-primary hover:text-accent text-2xl font-bold leading-none select-none">+</button>
             </div>
           </div>
         </div>
-        <p class="text-text-muted text-xs">
-          <span class="text-text-secondary">Floor area:</span> <span id="d-sqft">400</span> sq ft
+        <p class="text-text-primary text-xs">
+          <span class="text-text-primary">Floor area:</span> <span id="d-sqft">400</span> sq ft
         </p>
         <div class="wizard-nav flex items-center justify-between pt-5 mt-5 border-t border-border">
-          <button type="button" class="wizard-back text-text-muted hover:text-text-primary text-sm font-medium">← Back</button>
+          <button type="button" class="wizard-back text-text-primary hover:text-accent text-sm font-medium">← Back</button>
           <button type="button" data-next="3" class="wizard-next bg-accent hover:bg-accent-hover text-white font-heading font-semibold text-base px-6 py-2.5 rounded-lg transition-colors">Next →</button>
         </div>
       </div>
@@ -160,15 +160,15 @@ const webAppSchema = {
       <div id="step-3" class="wizard-step hidden" data-step="3">
         <div class="mb-4">
           <label class="block text-lg md:text-xl font-heading font-bold text-text-primary" for="zip">Where is your home?</label>
-          <p class="text-text-muted text-sm mt-1">We use your ZIP to factor in your local climate.</p>
+          <p class="text-text-primary text-sm mt-1">We use your ZIP to factor in your local climate.</p>
         </div>
         <div class="flex flex-col sm:flex-row sm:items-center gap-3">
           <input type="text" id="zip" inputmode="numeric" maxlength="5" placeholder="ZIP code, e.g. 02108"
             class="w-full sm:max-w-[220px] bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-          <div id="zip-display" class="text-text-secondary text-sm"></div>
+          <div id="zip-display" class="text-text-primary text-sm"></div>
         </div>
         <div id="zip-fallback" class="hidden mt-3">
-          <p class="text-text-muted text-xs mb-2">ZIP not found — pick your climate:</p>
+          <p class="text-text-primary text-xs mb-2">ZIP not found — pick your climate:</p>
           <div class="flex flex-wrap gap-2">
             <button type="button" data-region="hot"   class="region-pill bg-bg-dark border border-border rounded-lg px-3 py-1.5 text-sm hover:border-accent transition-colors">Hot (FL, TX, AZ)</button>
             <button type="button" data-region="warm"  class="region-pill bg-bg-dark border border-border rounded-lg px-3 py-1.5 text-sm hover:border-accent transition-colors">Warm (GA, NC, CA)</button>
@@ -178,7 +178,7 @@ const webAppSchema = {
           </div>
         </div>
         <div class="wizard-nav flex items-center justify-between pt-5 mt-5 border-t border-border">
-          <button type="button" class="wizard-back text-text-muted hover:text-text-primary text-sm font-medium">← Back</button>
+          <button type="button" class="wizard-back text-text-primary hover:text-accent text-sm font-medium">← Back</button>
           <button type="button" data-next="4" class="wizard-next bg-accent hover:bg-accent-hover text-white font-heading font-semibold text-base px-6 py-2.5 rounded-lg transition-colors">Next →</button>
         </div>
       </div>
@@ -187,11 +187,11 @@ const webAppSchema = {
       <div id="step-4" class="wizard-step hidden" data-step="4">
         <div class="mb-4">
           <label class="block text-lg md:text-xl font-heading font-bold text-text-primary">A few details that change the answer</label>
-          <p class="text-text-muted text-sm mt-1">Insulation, sun, and glass are the biggest drivers after size.</p>
+          <p class="text-text-primary text-sm mt-1">Insulation, sun, and glass are the biggest drivers after size.</p>
         </div>
         <div class="space-y-5">
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-2">Insulation</label>
+            <label class="block text-sm font-medium text-text-primary mb-2">Insulation</label>
             <div class="flex flex-wrap gap-2" id="insulation-pills">
               <button type="button" data-ins="good"    class="ins-pill bg-bg-dark border border-border rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Well insulated (new-ish home)</button>
               <button type="button" data-ins="average" class="ins-pill bg-bg-dark border-accent rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Average</button>
@@ -199,7 +199,7 @@ const webAppSchema = {
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-2">Sun exposure in the afternoon</label>
+            <label class="block text-sm font-medium text-text-primary mb-2">Sun exposure in the afternoon</label>
             <div class="flex flex-wrap gap-2" id="sun-pills">
               <button type="button" data-sun="shaded" class="sun-pill bg-bg-dark border border-border rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Mostly shaded</button>
               <button type="button" data-sun="some"   class="sun-pill bg-bg-dark border-accent rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Some afternoon sun</button>
@@ -207,7 +207,7 @@ const webAppSchema = {
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-text-secondary mb-2">How much window glass?</label>
+            <label class="block text-sm font-medium text-text-primary mb-2">How much window glass?</label>
             <div class="flex flex-wrap gap-2" id="glass-pills">
               <button type="button" data-glass="little"  class="glass-pill bg-bg-dark border border-border rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">A little</button>
               <button type="button" data-glass="average" class="glass-pill bg-bg-dark border-accent rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Average</button>
@@ -216,7 +216,7 @@ const webAppSchema = {
           </div>
         </div>
         <div class="wizard-nav flex items-center justify-between pt-5 mt-5 border-t border-border gap-4">
-          <button type="button" class="wizard-back text-text-muted hover:text-text-primary text-sm font-medium shrink-0">← Back</button>
+          <button type="button" class="wizard-back text-text-primary hover:text-accent text-sm font-medium shrink-0">← Back</button>
           <button id="calculate-btn" type="button"
             class="flex-1 sm:flex-initial bg-accent hover:bg-accent-hover text-white font-heading font-bold text-base md:text-lg px-6 py-3 md:py-3.5 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             Show My Size →
@@ -228,15 +228,15 @@ const webAppSchema = {
       </div><!-- /#wizard -->
 
       <!-- Email gate (only shown when the recommendation needs a pro) -->
-      <div id="email-gate" class="hidden mt-8 border-t border-border pt-8">
-        <div class="max-w-xl mx-auto text-center">
+      <div id="email-gate" class="hidden mt-8">
+        <div class="max-w-xl mx-auto rounded-2xl border-2 border-accent bg-accent/5 p-6 sm:p-8 text-center">
           <div class="w-14 h-14 rounded-2xl bg-accent/15 flex items-center justify-center mx-auto mb-4">
             <svg width="28" height="28" viewBox="0 0 20 20" fill="none" class="text-accent">
               <path d="M2.5 6.667L9.025 11.05a1.667 1.667 0 001.95 0L17.5 6.667M4.167 15h11.666A1.667 1.667 0 0017.5 13.333V6.667A1.667 1.667 0 0015.833 5H4.167A1.667 1.667 0 002.5 6.667v6.666A1.667 1.667 0 004.167 15z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
           <h3 id="gate-headline" class="font-heading font-bold text-xl text-text-primary mb-2">Your size recommendation is ready</h3>
-          <p id="gate-subhead" class="text-text-secondary text-sm mb-6">Enter your email to see the full report plus installer shortlist.</p>
+          <p id="gate-subhead" class="text-text-primary text-sm mb-6">Enter your email to see the full report plus installer shortlist.</p>
           <div class="flex flex-col sm:flex-row gap-3 mb-3">
             <label for="gate-email" class="sr-only">Your email</label>
             <input type="email" id="gate-email" placeholder="you@email.com" required
@@ -251,7 +251,8 @@ const webAppSchema = {
       </div>
 
       <!-- Results -->
-      <div id="results" class="hidden mt-8 border-t border-border pt-8">
+      <div id="results" class="hidden mt-8">
+        <div class="rounded-2xl border-2 border-accent bg-accent/5 p-6 sm:p-8">
         <div id="sent-banner" class="hidden mb-6 bg-[rgba(52,211,153,0.08)] border border-[rgba(52,211,153,0.25)] rounded-xl p-4 flex items-start gap-3">
           <div class="shrink-0 w-8 h-8 rounded-full bg-[rgba(52,211,153,0.15)] flex items-center justify-center">
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" class="text-[#34D399]">
@@ -265,13 +266,13 @@ const webAppSchema = {
         </div>
 
         <h3 class="font-heading font-bold text-xl mb-2"><span id="r-space-intro">For your space</span></h3>
-        <p class="text-text-secondary text-sm mb-6"><span id="r-location"></span></p>
+        <p class="text-text-primary text-sm mb-6"><span id="r-location"></span></p>
 
         <!-- BTU number -->
         <div class="bg-bg-dark rounded-xl p-5 mb-4">
-          <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">You need approximately</div>
+          <div class="text-text-primary text-xs font-medium uppercase tracking-wider mb-1">You need approximately</div>
           <div class="font-heading font-extrabold text-4xl text-accent" id="r-btu">— BTU</div>
-          <div class="text-text-secondary text-sm mt-1" id="r-tonnage"></div>
+          <div class="text-text-primary text-sm mt-1" id="r-tonnage"></div>
         </div>
 
         <!-- Unit recommendation card -->
@@ -281,29 +282,29 @@ const webAppSchema = {
               <span class="text-accent text-lg">✓</span>
             </div>
             <div>
-              <div class="text-text-muted text-xs font-medium uppercase tracking-wider mb-1">Best fit</div>
+              <div class="text-text-primary text-xs font-medium uppercase tracking-wider mb-1">Best fit</div>
               <div class="font-heading font-bold text-lg text-text-primary" id="r-unit-label">—</div>
             </div>
           </div>
-          <p class="text-text-secondary text-sm leading-relaxed mb-3" id="r-unit-why"></p>
+          <p class="text-text-primary text-sm leading-relaxed mb-3" id="r-unit-why"></p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             <div class="bg-bg-card rounded-lg p-3">
-              <div class="text-text-muted text-[11px] uppercase tracking-wider mb-0.5">Typical installed cost</div>
+              <div class="text-text-primary text-[11px] uppercase tracking-wider mb-0.5">Typical installed cost</div>
               <div class="font-heading font-bold text-base text-text-primary" id="r-cost">—</div>
             </div>
             <div class="bg-bg-card rounded-lg p-3">
-              <div class="text-text-muted text-[11px] uppercase tracking-wider mb-0.5">Install</div>
+              <div class="text-text-primary text-[11px] uppercase tracking-wider mb-0.5">Install</div>
               <div class="font-heading font-bold text-base text-text-primary" id="r-pro">—</div>
             </div>
           </div>
-          <p class="text-text-secondary text-xs leading-relaxed mt-3" id="r-install-notes"></p>
-          <p class="text-text-muted text-xs italic mt-3 hidden" id="r-alt-note"></p>
+          <p class="text-text-primary text-xs leading-relaxed mt-3" id="r-install-notes"></p>
+          <p class="text-text-primary text-xs italic mt-3 hidden" id="r-alt-note"></p>
         </div>
 
         <!-- Installer-match CTA (shown only for Angi-lead recommendations) -->
         <div id="installer-cta" class="hidden bg-[linear-gradient(135deg,rgba(255,107,43,0.15),rgba(255,107,43,0.05))] border border-accent/40 rounded-xl p-5 mb-4 text-center">
           <div class="font-heading font-bold text-lg text-text-primary mb-1">Get matched with 3 installers near you</div>
-          <p class="text-text-secondary text-sm mb-4" id="installer-blurb">Share your ZIP with licensed HVAC pros — get quotes in 24–48 hours. Free, no commitment.</p>
+          <p class="text-text-primary text-sm mb-4" id="installer-blurb">Share your ZIP with licensed HVAC pros — get quotes in 24–48 hours. Free, no commitment.</p>
           <a id="installer-link"
             href="https://www.angi.com/nearme/hvac/?utm_source=nailthequote&utm_medium=calculator&utm_campaign=ac-size-for-my-room"
             target="_blank" rel="noopener"
@@ -313,12 +314,13 @@ const webAppSchema = {
         </div>
 
         <p class="text-text-muted text-xs italic mt-4">Estimate only. Sizing, costs, and unit-type recommendations are ballparks based on typical 2026 US installs. A licensed HVAC installer can give you a firm quote based on your specific home.</p>
+        </div><!-- end accent-framed results card -->
       </div>
 
       <!-- Whole-house redirect -->
       <div id="whole-house-redirect" class="hidden mt-6 bg-bg-dark border border-border rounded-xl p-5 text-center">
         <div class="font-heading font-bold text-lg text-text-primary mb-2">Use our whole-house Load Calculator</div>
-        <p class="text-text-secondary text-sm mb-4">Whole-house sizing has different inputs — square footage, insulation grade, climate zone — and gives you the central system tonnage.</p>
+        <p class="text-text-primary text-sm mb-4">Whole-house sizing has different inputs — square footage, insulation grade, climate zone — and gives you the central system tonnage.</p>
         <a href="/hvac/load-calculator/" class="inline-block bg-accent hover:bg-accent-hover text-white font-heading font-bold text-sm px-6 py-2.5 rounded-lg transition-colors no-underline">
           Go to Load Calculator →
         </a>
