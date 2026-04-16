@@ -43,6 +43,10 @@ const roomTypes = [
   { v: 'bathroom', l: 'Bathroom' },
   { v: 'office',   l: 'Home Office' },
   { v: 'dining',   l: 'Dining Room' },
+  { v: 'garage',   l: 'Garage' },
+  { v: 'basement', l: 'Basement' },
+  { v: 'sunroom',  l: 'Sunroom' },
+  { v: 'addition', l: 'Addition' },
   { v: 'other',    l: 'Other' },
 ];
 ---
@@ -241,7 +245,7 @@ const roomTypes = [
         <h2 class="font-heading font-bold text-2xl mb-4">How to Use This Calculator</h2>
         <div class="text-text-secondary leading-relaxed space-y-3">
           <p><strong class="text-text-primary">1. Enter the ZIP of the job site.</strong> Auto-detects climate region — one of the top drivers of cooling load.</p>
-          <p><strong class="text-text-primary">2. Pick the room type.</strong> Bedroom, living room, kitchen, bathroom, office, dining. This sets internal gains automatically (kitchens get 4,000+ BTU extra for cooking).</p>
+          <p><strong class="text-text-primary">2. Pick the room type.</strong> Bedroom, living, kitchen, bathroom, office, dining, garage, basement, sunroom, or addition. This sets internal gains automatically (kitchens get 4,000+ BTU extra for cooking; bedrooms and bathrooms far less).</p>
           <p><strong class="text-text-primary">3. Measure the room.</strong> Inside wall to inside wall. Length × Width × Ceiling height. We derive floor area and volume automatically.</p>
           <p><strong class="text-text-primary">4. Count exposed walls.</strong> An interior room with 1 wall touching outside air behaves very differently from a 3-walled corner. This factor changes the load by up to 40%.</p>
           <p><strong class="text-text-primary">5. Pick the primary orientation.</strong> Which direction the main exterior wall faces. South and west take more solar load in summer.</p>

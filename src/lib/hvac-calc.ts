@@ -72,7 +72,8 @@ export function calcWholeHouse(i: WholeHouseInputs): WholeHouseResult {
 
 export type RoomType =
   | 'bedroom' | 'living' | 'kitchen' | 'bathroom'
-  | 'office' | 'dining' | 'other';
+  | 'office' | 'dining' | 'garage' | 'basement'
+  | 'sunroom' | 'addition' | 'other';
 export type Orientation = 'N' | 'E' | 'S' | 'W';
 export type ExposedWalls = 1 | 2 | 3 | 4;
 export type RoomInsulation = 'excellent' | 'good' | 'average' | 'poor' | 'bad';
@@ -106,9 +107,16 @@ const ORIENT_FACTOR: Record<Orientation, number> = { N: 0.95, E: 1.0, W: 1.10, S
 const ROOM_INS_FACTOR: Record<RoomInsulation, number> = {
   excellent: 0.85, good: 0.92, average: 1.0, poor: 1.15, bad: 1.30,
 };
+// Internal gains (BTU/hr) by room type.
+// Garage: 1-2 people + power tools / lights.
+// Basement: rec-room assumption (TV + 2-3 occupants).
+// Sunroom: 2-4 occupants; glass load dominates and is entered separately.
+// Addition: generic bonus-room / in-law-suite default.
 const ROOM_INTERNAL_BTU: Record<RoomType, number> = {
   bedroom: 460, living: 1400, kitchen: 4460, bathroom: 230,
-  office: 700, dining: 920, other: 700,
+  office: 700, dining: 920,
+  garage: 500, basement: 920, sunroom: 920, addition: 700,
+  other: 700,
 };
 
 // Standard mini-split sizes (BTU)
