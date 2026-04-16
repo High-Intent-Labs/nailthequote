@@ -75,8 +75,16 @@ const roomTypes = [
 
     <!-- Room type pill picker -->
     <div class="mb-6">
-      <label class="block text-sm font-medium text-text-secondary mb-2">Room Type</label>
-      <div class="flex flex-wrap gap-2" id="roomtype-pills">
+      <label class="block text-sm font-medium text-text-secondary mb-2" for="roomtype-select">Room Type</label>
+      <!-- Mobile: dropdown (11 pills wrap awkwardly on narrow screens) -->
+      <select id="roomtype-select"
+        class="md:hidden w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+        {roomTypes.map((r) => (
+          <option value={r.v}>{r.l}</option>
+        ))}
+      </select>
+      <!-- Desktop: pills (discoverable, one-click) -->
+      <div class="hidden md:flex flex-wrap gap-2" id="roomtype-pills">
         {roomTypes.map((r, i) => (
           <button type="button" data-roomtype={r.v}
             class={`roomtype-pill bg-bg-dark border ${i === 0 ? 'border-accent' : 'border-border'} rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors`}>
@@ -429,17 +437,28 @@ const roomTypes = [
     });
   });
 
-  // Room type pills
+  // Room type picker — pills (desktop) + select (mobile) share state.
+  const roomSelect = document.getElementById('roomtype-select') as HTMLSelectElement | null;
+  function setRoomType(v: RoomType) {
+    roomType = v;
+    document.querySelectorAll<HTMLButtonElement>('.roomtype-pill').forEach(b => {
+      if (b.dataset.roomtype === v) {
+        b.classList.remove('border-border');
+        b.classList.add('border-accent');
+      } else {
+        b.classList.remove('border-accent');
+        b.classList.add('border-border');
+      }
+    });
+    if (roomSelect && roomSelect.value !== v) roomSelect.value = v;
+  }
   document.querySelectorAll<HTMLButtonElement>('.roomtype-pill').forEach(btn => {
     btn.addEventListener('click', () => {
-      roomType = (btn.dataset.roomtype || 'bedroom') as RoomType;
-      document.querySelectorAll<HTMLButtonElement>('.roomtype-pill').forEach(b => {
-        b.classList.remove('border-accent');
-        b.classList.add('border', 'border-border');
-      });
-      btn.classList.remove('border-border');
-      btn.classList.add('border-accent');
+      setRoomType((btn.dataset.roomtype || 'bedroom') as RoomType);
     });
+  });
+  roomSelect?.addEventListener('change', () => {
+    setRoomType(roomSelect.value as RoomType);
   });
 
   // Orientation pills
