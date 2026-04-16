@@ -682,9 +682,61 @@ const roomTypes = [
     });
   });
 
+  // Per-room-type auto-fill defaults. Applied only on the FIRST change
+  // of room type away from the initial default (bedroom). Subsequent
+  // room-type picks preserve whatever the pro has edited. Primary
+  // Orientation is intentionally NOT included (too site-specific).
+  // If `?restore=` is present in the URL, we short-circuit this — the
+  // restored inputs should stand as-is.
+  interface RoomDefaults {
+    length: number;
+    width: number;
+    ceiling: number;
+    exposedWalls: number;
+    insulation: RoomInsulation;
+    windowArea: number;
+    doorArea: number;
+  }
+  const ROOM_DEFAULTS: Partial<Record<RoomType, RoomDefaults>> = {
+    bedroom:  { length: 12, width: 12, ceiling: 8, exposedWalls: 2, insulation: 'average', windowArea: 15, doorArea: 0 },
+    living:   { length: 16, width: 18, ceiling: 9, exposedWalls: 2, insulation: 'average', windowArea: 40, doorArea: 0 },
+    kitchen:  { length: 12, width: 14, ceiling: 8, exposedWalls: 1, insulation: 'average', windowArea: 20, doorArea: 0 },
+    bathroom: { length: 8,  width: 8,  ceiling: 8, exposedWalls: 1, insulation: 'average', windowArea: 6,  doorArea: 0 },
+    office:   { length: 10, width: 12, ceiling: 8, exposedWalls: 2, insulation: 'average', windowArea: 15, doorArea: 0 },
+    dining:   { length: 12, width: 14, ceiling: 9, exposedWalls: 2, insulation: 'average', windowArea: 20, doorArea: 0 },
+    garage:   { length: 20, width: 22, ceiling: 8, exposedWalls: 3, insulation: 'poor',    windowArea: 0,  doorArea: 128 },
+    basement: { length: 18, width: 18, ceiling: 8, exposedWalls: 3, insulation: 'poor',    windowArea: 6,  doorArea: 0 },
+    sunroom:  { length: 12, width: 14, ceiling: 9, exposedWalls: 3, insulation: 'poor',    windowArea: 80, doorArea: 0 },
+    addition: { length: 14, width: 16, ceiling: 8, exposedWalls: 3, insulation: 'average', windowArea: 30, doorArea: 0 },
+    // 'other' deliberately omitted — no auto-fill on pick
+  };
+  // Flag guards the "only on first change" behavior. Pre-set to true if
+  // we're mid-restore so we don't clobber restored values.
+  let roomTypeAutofillDone = new URLSearchParams(window.location.search).has('restore');
+
+  function applyRoomDefaults(type: RoomType) {
+    const d = ROOM_DEFAULTS[type];
+    if (!d) return;
+    const set = (id: string, value: string) => {
+      const el = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+      if (!el) return;
+      el.value = value;
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+    set('length', String(d.length));
+    set('width', String(d.width));
+    set('ceiling', String(d.ceiling));
+    set('exposed', String(d.exposedWalls));
+    set('insulation', d.insulation);
+    set('windowArea', String(d.windowArea));
+    set('doorArea', String(d.doorArea));
+  }
+
   // Room type picker — pills (desktop) + select (mobile) share state.
   const roomSelect = document.getElementById('roomtype-select') as HTMLSelectElement | null;
   function setRoomType(v: RoomType) {
+    const prev = roomType;
     roomType = v;
     document.querySelectorAll<HTMLButtonElement>('.roomtype-pill').forEach(b => {
       if (b.dataset.roomtype === v) {
@@ -696,6 +748,13 @@ const roomTypes = [
       }
     });
     if (roomSelect && roomSelect.value !== v) roomSelect.value = v;
+    // First-time change from the initial default: fill in likely values
+    // for the picked room type. Any subsequent change (even back to
+    // bedroom) does not auto-fill, preserving the pro's edits.
+    if (!roomTypeAutofillDone && v !== prev) {
+      roomTypeAutofillDone = true;
+      applyRoomDefaults(v);
+    }
   }
   document.querySelectorAll<HTMLButtonElement>('.roomtype-pill').forEach(btn => {
     btn.addEventListener('click', () => {
