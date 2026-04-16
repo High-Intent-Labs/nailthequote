@@ -75,7 +75,7 @@ export type RoomType =
   | 'office' | 'dining' | 'garage' | 'basement'
   | 'sunroom' | 'addition' | 'other';
 export type Orientation = 'N' | 'E' | 'S' | 'W';
-export type ExposedWalls = 1 | 2 | 3 | 4;
+export type ExposedWalls = 0 | 1 | 2 | 3 | 4;
 export type RoomInsulation = 'excellent' | 'good' | 'average' | 'poor' | 'bad';
 
 export interface RoomInputs {
@@ -102,7 +102,14 @@ export interface RoomResult {
   volume: number;
 }
 
-const EXPOSED_FACTOR: Record<ExposedWalls, number> = { 1: 0.85, 2: 1.0, 3: 1.15, 4: 1.25 };
+// Exposed-wall envelope factor. 0 = fully interior room (all walls border
+// other conditioned spaces). We use 0.5 — not 0 — because an interior
+// room still has some conduction through shared walls, ceiling (to attic
+// above), and floor (to crawlspace below). Internal gains dominate the
+// load for this case. Also: orientation is meaningless for 0 exposed
+// walls (no exterior wall to catch sun), so calcRoom() overrides the
+// orientation factor to 1.0 when exposedWalls === 0.
+const EXPOSED_FACTOR: Record<ExposedWalls, number> = { 0: 0.5, 1: 0.85, 2: 1.0, 3: 1.15, 4: 1.25 };
 const ORIENT_FACTOR: Record<Orientation, number> = { N: 0.95, E: 1.0, W: 1.10, S: 1.15 };
 const ROOM_INS_FACTOR: Record<RoomInsulation, number> = {
   excellent: 0.85, good: 0.92, average: 1.0, poor: 1.15, bad: 1.30,
@@ -135,7 +142,11 @@ export function calcRoom(i: RoomInputs): RoomResult {
   const base = sqft * 25;
   const heightMult = i.ceilingHeight / 8;
   const expF = EXPOSED_FACTOR[i.exposedWalls];
-  const oriF = ORIENT_FACTOR[i.orientation];
+  // Orientation only matters when there's an exterior wall to catch sun.
+  // For a fully interior room (0 exposed walls), the picked orientation
+  // is UI noise — force the factor to 1.0 so the result doesn't drift
+  // based on an arbitrary N/E/S/W pick.
+  const oriF = i.exposedWalls === 0 ? 1.0 : ORIENT_FACTOR[i.orientation];
   const insF = ROOM_INS_FACTOR[i.insulation];
   const winLoad = i.windowAreaSqFt * 870;
   const doorLoad = i.doorAreaSqFt * 50;

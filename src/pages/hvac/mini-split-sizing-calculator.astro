@@ -153,7 +153,8 @@ const roomTypes = [
         <div class="relative">
           <select id="exposed"
             class="appearance-none w-full bg-bg-dark border border-border rounded-lg px-4 pr-10 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-            <option value="1">1 — interior room</option>
+            <option value="0">0 — fully interior room</option>
+            <option value="1">1 — one exterior wall</option>
             <option value="2" selected>2 — corner room</option>
             <option value="3">3 walls</option>
             <option value="4">4 — detached</option>
@@ -167,14 +168,16 @@ const roomTypes = [
           <p class="font-medium text-text-primary mb-1">How to count exposed walls</p>
           <p class="mb-2">Count walls that touch <strong>outside air or an unconditioned space</strong>. Walls adjoining a heated/cooled hallway or room don't count.</p>
           <ul class="space-y-0.5 mb-2">
-            <li><strong>1</strong> — interior room with only one exterior wall</li>
+            <li><strong>0</strong> — fully interior room (media room, interior office, walk-in closet). All walls, ceiling, and floor border conditioned space.</li>
+            <li><strong>1</strong> — one exterior wall</li>
             <li><strong>2</strong> — corner room (most common)</li>
             <li><strong>3</strong> — bonus room or addition with three outside walls</li>
             <li><strong>4</strong> — detached garage, ADU, or freestanding structure</li>
           </ul>
           <p class="mb-1"><span class="text-text-primary">Also count:</span> walls bordering an unheated garage or unfinished attic; basement walls below grade.</p>
-          <p><span class="text-text-primary">Don't count:</span> walls between this room and a conditioned hallway or adjacent room.</p>
-          <p class="mt-2 text-text-muted">This factor changes the cooling load by up to 40%.</p>
+          <p class="mb-1"><span class="text-text-primary">Don't count:</span> walls between this room and a conditioned hallway or adjacent room.</p>
+          <p class="mb-2"><span class="text-text-primary">Picking 0:</span> internal gains (people, equipment) dominate the load; the orientation picker stops affecting the result (there's no exterior wall to catch sun).</p>
+          <p class="text-text-muted">This factor changes the cooling load by up to 50%.</p>
         </div>
       </div>
       <div>
