@@ -191,11 +191,37 @@ const webAppSchema = {
         </div>
         <div class="space-y-5">
           <div>
-            <label class="block text-sm font-medium text-text-primary mb-2">Insulation</label>
+            <div class="flex items-center gap-1.5 mb-2">
+              <label class="block text-sm font-medium text-text-primary">Insulation</label>
+              <button type="button"
+                data-help-toggle="insulation-help"
+                aria-expanded="false"
+                aria-controls="insulation-help"
+                aria-label="How to pick insulation level"
+                class="text-text-primary hover:text-accent transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+            </div>
             <div class="flex flex-wrap gap-2" id="insulation-pills">
               <button type="button" data-ins="good"    class="ins-pill bg-bg-dark border border-border rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Well insulated (new-ish home)</button>
               <button type="button" data-ins="average" class="ins-pill bg-bg-dark border-accent rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Average</button>
               <button type="button" data-ins="poor"    class="ins-pill bg-bg-dark border border-border rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Poor (older home, uninsulated)</button>
+            </div>
+            <div id="insulation-help" class="hidden relative mt-2 rounded-lg border border-border bg-bg-dark/60 p-3 pr-8 text-xs text-text-primary leading-relaxed">
+              <button type="button" data-help-toggle="insulation-help" aria-expanded="false" aria-controls="insulation-help" aria-label="Close help"
+                class="absolute top-2 right-2 text-text-primary hover:text-accent transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <ul class="space-y-0.5">
+                <li><strong>Well insulated</strong> — Post-2000 home with double-pane windows, attic insulation in place, no drafty spots.</li>
+                <li><strong>Average</strong> — Typical 1980s–2000s. Some weatherstripping, double-pane windows, but not upgraded recently.</li>
+                <li><strong>Poor</strong> — Pre-1980s with original single-pane windows, drafty doors, thin or no wall insulation.</li>
+              </ul>
             </div>
           </div>
           <div>
@@ -207,11 +233,37 @@ const webAppSchema = {
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-text-primary mb-2">How much window glass?</label>
+            <div class="flex items-center gap-1.5 mb-2">
+              <label class="block text-sm font-medium text-text-primary">How much window glass?</label>
+              <button type="button"
+                data-help-toggle="glass-help"
+                aria-expanded="false"
+                aria-controls="glass-help"
+                aria-label="How to estimate window glass"
+                class="text-text-primary hover:text-accent transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+            </div>
             <div class="flex flex-wrap gap-2" id="glass-pills">
               <button type="button" data-glass="little"  class="glass-pill bg-bg-dark border border-border rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">A little</button>
               <button type="button" data-glass="average" class="glass-pill bg-bg-dark border-accent rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Average</button>
               <button type="button" data-glass="lots"    class="glass-pill bg-bg-dark border border-border rounded-lg px-4 py-2 text-sm hover:border-accent transition-colors">Lots of glass</button>
+            </div>
+            <div id="glass-help" class="hidden relative mt-2 rounded-lg border border-border bg-bg-dark/60 p-3 pr-8 text-xs text-text-primary leading-relaxed">
+              <button type="button" data-help-toggle="glass-help" aria-expanded="false" aria-controls="glass-help" aria-label="Close help"
+                class="absolute top-2 right-2 text-text-primary hover:text-accent transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <ul class="space-y-0.5">
+                <li><strong>A little</strong> — Small windows only. Glass is less than ~10% of floor area.</li>
+                <li><strong>Average</strong> — Typical residential. Glass is ~10–20% of floor area.</li>
+                <li><strong>Lots of glass</strong> — Big sliding doors, floor-to-ceiling windows, or sunroom-style walls. More than ~20% glass.</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -433,11 +485,16 @@ const webAppSchema = {
           (window as any).gtag('event', 'conversion', { send_to: 'AW-17899660858/cBlqCOfI6JgcELrMnNdC' });
         }
       };
-      calcArea.addEventListener('input', fireToolUsed, { once: true });
+      // Listeners intentionally NOT `once:true` — a click on a help-icon
+      // button (or any non-pill area) would consume the listener before a
+      // real pill selection, losing the tool_used event. Gate on
+      // toolUsedFired inside the handler instead.
+      calcArea.addEventListener('input', () => { if (!toolUsedFired) fireToolUsed(); });
       calcArea.addEventListener('click', (e) => {
+        if (toolUsedFired) return;
         const target = e.target as HTMLElement;
         if (target.closest('.space-pill, .region-pill, .ins-pill, .sun-pill, .glass-pill')) fireToolUsed();
-      }, { once: true });
+      });
     }
   })();
 </script>
@@ -627,6 +684,23 @@ const webAppSchema = {
   const zipDisplay = document.getElementById('zip-display')!;
   const zipFallback = document.getElementById('zip-fallback')!;
 
+  // City cache keyed by ZIP5 — avoids repeat /api/zip-lookup fetches if the
+  // user navigates Back and re-enters the same ZIP. `null` is a valid cached
+  // value (upstream failed) so we use `in` to distinguish "not fetched" from
+  // "fetched and no city available".
+  const zipCityCache: Record<string, string | null> = {};
+
+  function escHtml(s: string): string {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function renderZipDisplay(lookup: ClimateLookup, city: string | null) {
+    const locationText = city ? `${escHtml(city)}, ${lookup.state}` : lookup.state;
+    zipDisplay.innerHTML = `<span class="text-text-primary font-medium">${locationText}</span> &middot; <span class="text-accent font-medium">${lookup.regionLabel} climate</span>`;
+  }
+
   function setClimateFromZip(raw: string) {
     const zip = raw.replace(/\D/g, '').slice(0, 5);
     if (zip.length < 3) {
@@ -638,8 +712,27 @@ const webAppSchema = {
     const lookup = lookupZip(zip);
     if (lookup) {
       climate = lookup;
-      zipDisplay.innerHTML = `<span class="text-text-primary font-medium">${lookup.state}</span> &middot; <span class="text-accent font-medium">${lookup.regionLabel} climate</span>`;
+      renderZipDisplay(lookup, zip in zipCityCache ? zipCityCache[zip] : null);
       zipFallback.classList.add('hidden');
+
+      // Kick off async city enrichment on a full 5-digit ZIP. Cached, so
+      // typing → deleting → retyping the same ZIP doesn't refetch.
+      if (zip.length === 5 && !(zip in zipCityCache)) {
+        fetch(`/api/zip-lookup?zip=${zip}`)
+          .then((r) => (r.ok ? r.json() : Promise.reject()))
+          .then((data: { city: string | null }) => {
+            zipCityCache[zip] = data.city;
+            // Only update if the current input still matches this ZIP
+            // (user may have typed more digits / cleared the field while in flight).
+            const currentZip = (zipInput.value || '').replace(/\D/g, '').slice(0, 5);
+            if (currentZip === zip && climate) renderZipDisplay(climate, data.city);
+          })
+          .catch(() => {
+            // Upstream failed — cache null so we don't retry. Display stays
+            // as "{State} · {Climate}" without the city prefix.
+            zipCityCache[zip] = null;
+          });
+      }
     } else if (zip.length >= 3) {
       climate = null;
       zipDisplay.textContent = 'ZIP not recognized.';
@@ -939,5 +1032,38 @@ const webAppSchema = {
 
   gateEmail.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') gateSubmit.click();
+  });
+
+  // ---------------------------------------------------------------------
+  // Generic help-panel toggle (mirrors pro-calc pattern).
+  // Every `[data-help-toggle="panel-id"]` button toggles `#panel-id` and
+  // fires a one-time `help_opened` PostHog event per panel-id per page load.
+  // The `data-help-wired` guard lets us call this idempotently if the
+  // script ever re-runs (it currently doesn't, but the guard is cheap).
+  // ---------------------------------------------------------------------
+  const helpFired: Record<string, boolean> = {};
+  document.querySelectorAll<HTMLButtonElement>('[data-help-toggle]').forEach((btn) => {
+    if (btn.hasAttribute('data-help-wired')) return;
+    btn.setAttribute('data-help-wired', '1');
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-help-toggle');
+      if (!id) return;
+      const panel = document.getElementById(id);
+      if (!panel) return;
+      const willShow = panel.classList.contains('hidden');
+      panel.classList.toggle('hidden');
+      // Keep aria-expanded in sync on every button that references this panel
+      // (both the trigger icon and the close X live in the DOM concurrently).
+      document.querySelectorAll<HTMLButtonElement>(`[data-help-toggle="${id}"]`).forEach((b) => {
+        b.setAttribute('aria-expanded', String(willShow));
+      });
+      if (willShow && !helpFired[id]) {
+        helpFired[id] = true;
+        (window as any).posthog?.capture('help_opened', {
+          tool_slug: 'ac-size-for-my-room',
+          help_id: id,
+        });
+      }
+    });
   });
 </script>
