@@ -175,19 +175,14 @@ const roomTypes = [
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-          <p class="font-medium text-text-primary mb-1">How to count exposed walls</p>
-          <p class="mb-2">Count walls that touch <strong>outside air or an unconditioned space</strong>. Walls adjoining a heated/cooled hallway or room don't count.</p>
-          <ul class="space-y-0.5 mb-2">
-            <li><strong>0</strong> — fully interior room (media room, interior office, walk-in closet). All walls, ceiling, and floor border conditioned space.</li>
+          <p class="mb-2">Count walls that touch <strong>outside air or an unconditioned space</strong> (garage, attic, below-grade).</p>
+          <ul class="space-y-0.5">
+            <li><strong>0</strong> — interior room, no outside walls</li>
             <li><strong>1</strong> — one exterior wall</li>
-            <li><strong>2</strong> — corner room (most common)</li>
-            <li><strong>3</strong> — bonus room or addition with three outside walls</li>
-            <li><strong>4</strong> — detached garage, ADU, or freestanding structure</li>
+            <li><strong>2</strong> — corner room</li>
+            <li><strong>3</strong> — three outside walls</li>
+            <li><strong>4</strong> — detached structure</li>
           </ul>
-          <p class="mb-1"><span class="text-text-primary">Also count:</span> walls bordering an unheated garage or unfinished attic; basement walls below grade.</p>
-          <p class="mb-1"><span class="text-text-primary">Don't count:</span> walls between this room and a conditioned hallway or adjacent room.</p>
-          <p class="mb-2"><span class="text-text-primary">Picking 0:</span> internal gains (people, equipment) dominate the load; the orientation picker stops affecting the result (there's no exterior wall to catch sun).</p>
-          <p class="text-text-primary">This factor changes the cooling load by up to 50%.</p>
         </div>
       </div>
       <div>
