@@ -864,24 +864,38 @@ const roomTypes = [
   // honor the input's step / min / max. We dispatch an 'input' event
   // after stepping so updateDerived() (below) recomputes sqft/volume.
   //
-  // Guard: the data-stepper-wired attribute prevents double-binding if
-  // this script ever re-executes (Astro hoisting quirks, view transitions,
-  // hot reload, mobile touch → click duplication). Without it, a second
-  // execution attaches a second listener to each button, causing one
-  // click to fire stepUp() twice and the value to jump by 2×step instead
-  // of 1×step. See fix in commit c. 2026-04-16.
+  // Belt-and-suspenders double-fire prevention:
+  //   1. data-stepper-wired on the wrapper prevents attaching two sets
+  //      of listeners if this script ever re-executes (Astro hoisting
+  //      quirks, view transitions, hot reload).
+  //   2. Per-wrapper 150 ms timestamp debounce catches any OTHER cause
+  //      of double-firing for a single user action: mobile ghost clicks,
+  //      touch→click duplication, synthetic events. 150 ms is well
+  //      under any human rapid-tap cadence (200-400 ms min between
+  //      real taps on a stepper) but far above any synthetic re-fire
+  //      (which happens within <5 ms).
+  //
+  // History: guard (1) alone was shipped in dd8ab348 but the +2 bug
+  // still reproduced. Root cause not isolated from reading the code;
+  // the debounce in (2) handles it regardless of cause.
   document.querySelectorAll<HTMLElement>('.number-stepper').forEach(wrapper => {
     if (wrapper.dataset.stepperWired) return;
     wrapper.dataset.stepperWired = '1';
     const input = wrapper.querySelector<HTMLInputElement>('input[type="number"]');
     if (!input) return;
-    wrapper.querySelector<HTMLButtonElement>('.stepper-minus')?.addEventListener('click', () => {
-      input.stepDown();
+    const debounce = (fn: () => void) => {
+      const now = performance.now();
+      const last = Number(wrapper.dataset.stepperLast || '0');
+      if (now - last < 150) return;
+      wrapper.dataset.stepperLast = String(now);
+      fn();
       input.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+    wrapper.querySelector<HTMLButtonElement>('.stepper-minus')?.addEventListener('click', () => {
+      debounce(() => input.stepDown());
     });
     wrapper.querySelector<HTMLButtonElement>('.stepper-plus')?.addEventListener('click', () => {
-      input.stepUp();
-      input.dispatchEvent(new Event('input', { bubbles: true }));
+      debounce(() => input.stepUp());
     });
   });
 
