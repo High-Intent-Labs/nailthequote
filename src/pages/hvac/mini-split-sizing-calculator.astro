@@ -1099,9 +1099,11 @@ const roomTypes = [
           tradeName: 'HVAC',
           marketingConsent: gateConsent.checked,
           sourceUrl: window.location.pathname,
-          segment, // 'home' | 'customer' — captured on the segment gate
+          segment,        // 'home' | 'customer' — captured on the segment gate
+          abVariant,      // 'A' | 'B' | 'C'    — email-gate copy experiment arm
           calculationResults: {
             mode: 'mini-split',
+            // Results
             coolingBTU: pendingResult.coolingBTU,
             heatingBTU: pendingResult.heatingBTU,
             tonnage: pendingResult.tonnage,
@@ -1109,14 +1111,21 @@ const roomTypes = [
             closestStandardLabel: pendingResult.closestStandardLabel,
             suggestedCFM: pendingResult.suggestedCFM,
             sqft: pendingResult.sqft,
+            // Climate context
+            zip: (document.getElementById('zip') as HTMLInputElement).value.trim(),
             state: pendingInputs.climate.state,
             region: pendingInputs.climate.regionLabel,
+            // Room inputs — raw values, not just the 'dimensions' string
             roomType: pendingInputs.roomType,
+            length: pendingInputs.length,
+            width: pendingInputs.width,
+            ceilingHeight: pendingInputs.ceilingHeight,
             dimensions: `${pendingInputs.length} × ${pendingInputs.width} ft`,
             exposedWalls: pendingInputs.exposedWalls,
             orientation: pendingInputs.orientation,
             insulation: pendingInputs.insulation,
             windowArea: pendingInputs.windowAreaSqFt,
+            doorArea: pendingInputs.doorAreaSqFt,
           },
         }),
       });

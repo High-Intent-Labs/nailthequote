@@ -39,7 +39,12 @@ function isDuplicate(email: string): boolean {
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
     const body: any = await context.request.json();
-    const { email, toolSlug, toolName, tradeSlug, tradeName, marketingConsent, sourceUrl, calculationResults } = body;
+    const {
+      email, toolSlug, toolName, tradeSlug, tradeName,
+      marketingConsent, sourceUrl, calculationResults,
+      segment,     // 'home' | 'customer' — from the "Who's this for?" gate
+      abVariant,   // 'A' | 'B' | 'C'    — email-gate copy experiment arm
+    } = body;
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return new Response(JSON.stringify({ error: 'Invalid email' }), { status: 400 });
@@ -94,13 +99,19 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       }
     }
 
-    // 3. Log to Supabase email_captures table
+    // 3. Log to Supabase email_captures table. Per migration 003, we now
+    // persist the full input+result snapshot (calculation_data jsonb) plus
+    // the segment and A/B variant so the admin per-tool deep-dive can
+    // inspect what users actually submitted.
     await supabase.from('email_captures').insert({
       email,
       trade: tradeSlug,
       tool_slug: toolSlug,
       source_url: sourceUrl || `/${tradeSlug}/${toolSlug}`,
       marketing_consent: marketingConsent ?? false,
+      calculation_data: calculationResults ?? null,
+      segment: segment ?? null,
+      ab_variant: abVariant ?? null,
     });
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
