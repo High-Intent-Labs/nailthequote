@@ -401,10 +401,7 @@ const faqSchema = {
             Send My Results
           </button>
         </div>
-        <label class="flex items-center justify-center gap-2 cursor-pointer select-none">
-          <input type="checkbox" id="gate-consent" checked class="w-4 h-4 rounded border-border bg-bg-dark accent-gray-500 opacity-70" />
-          <span class="text-text-primary text-xs">Also send me free tools and tips for pros. Unsubscribe anytime.</span>
-        </label>
+        <p class="text-text-muted text-xs mt-3">We'll also send occasional HVAC tips. Unsubscribe any time.</p>
         <div id="gate-error" class="hidden mt-3 text-sm text-[#EF4444]"></div>
       </div>
     </div>
@@ -837,7 +834,6 @@ const faqSchema = {
 
   const gateSubmit = document.getElementById('gate-submit') as HTMLButtonElement;
   const gateEmail = document.getElementById('gate-email') as HTMLInputElement;
-  const gateConsent = document.getElementById('gate-consent') as HTMLInputElement;
   const gateError = document.getElementById('gate-error')!;
 
   function showResults(r: WholeHouseResult) {
@@ -870,7 +866,7 @@ const faqSchema = {
           toolName: 'HVAC Load Calculator',
           tradeSlug: 'hvac',
           tradeName: 'HVAC',
-          marketingConsent: gateConsent.checked,
+          marketingConsent: true,
           sourceUrl: window.location.pathname,
           segment,        // 'home' | 'customer' — captured on the segment gate
           abVariant,      // 'A' | 'B' | 'C'    — email-gate copy experiment arm
@@ -910,7 +906,7 @@ const faqSchema = {
           trade_name: meta.tradeName,
           tool_name: meta.toolName,
           tool_category: meta.category,
-          marketing_consent: gateConsent.checked,
+          marketing_consent: true,
           gated: true,
           mode: 'whole-house',
           segment, // 'home' | 'customer'
