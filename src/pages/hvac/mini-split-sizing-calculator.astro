@@ -76,13 +76,23 @@ const roomTypes = [
     <!-- Room type pill picker -->
     <div class="mb-6">
       <label class="block text-sm font-medium text-text-secondary mb-2" for="roomtype-select">Room Type</label>
-      <!-- Mobile: dropdown (11 pills wrap awkwardly on narrow screens) -->
-      <select id="roomtype-select"
-        class="md:hidden w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
-        {roomTypes.map((r) => (
-          <option value={r.v}>{r.l}</option>
-        ))}
-      </select>
+      <!-- Mobile: dropdown (11 pills wrap awkwardly on narrow screens).
+           Wrapped in relative container with a chevron overlay so it reads
+           unmistakably as a dropdown on iOS/Android (native appearance can
+           be subtle or get reset by form-resets). -->
+      <div class="relative md:hidden">
+        <select id="roomtype-select"
+          class="appearance-none w-full bg-bg-dark border border-border rounded-lg px-4 pr-10 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
+          {roomTypes.map((r) => (
+            <option value={r.v}>{r.l}</option>
+          ))}
+        </select>
+        <svg
+          class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted"
+          fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
       <!-- Desktop: pills (discoverable, one-click) -->
       <div class="hidden md:flex flex-wrap gap-2" id="roomtype-pills">
         {roomTypes.map((r, i) => (
