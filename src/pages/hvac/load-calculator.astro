@@ -320,8 +320,11 @@ const faqSchema = {
 
     <!-- Segment gate: shown after Calculate, before the email gate.
          Pro vs homeowner split, feeds analytics + downstream routing. -->
-    <div id="segment-gate" class="hidden mt-8 border-t border-border pt-8">
-      <div class="max-w-lg mx-auto text-center">
+    <div id="segment-gate" class="hidden mt-8">
+      <!-- Accent-framed container so the segment step clearly reads as
+           the next action. Matches the Calculate CTA's orange without
+           competing — subtle bg tint + 2px accent border. -->
+      <div class="max-w-lg mx-auto rounded-2xl border-2 border-accent bg-accent/5 p-6 sm:p-8 text-center">
         <h3 class="font-heading font-bold text-xl text-text-primary mb-6">Who's this for?</h3>
         <div class="flex flex-col sm:flex-row gap-3">
           <button type="button" data-segment="home"
