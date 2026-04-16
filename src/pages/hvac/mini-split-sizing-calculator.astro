@@ -178,16 +178,52 @@ const roomTypes = [
         </div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2">Primary Orientation</label>
+        <div class="flex items-center gap-1.5 mb-2">
+          <label class="block text-sm font-medium text-text-secondary">Primary Orientation</label>
+          <button type="button"
+            data-help-toggle="orientation-help"
+            aria-expanded="false"
+            aria-controls="orientation-help"
+            aria-label="How to pick primary orientation"
+            class="text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+        </div>
         <div class="flex gap-2" id="orientation-pills">
           <button type="button" data-orient="N" class="orient-pill flex-1 bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-sm hover:border-accent transition-colors">N</button>
           <button type="button" data-orient="E" class="orient-pill flex-1 bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-sm hover:border-accent transition-colors">E</button>
           <button type="button" data-orient="S" class="orient-pill flex-1 bg-bg-dark border-accent rounded-lg px-3 py-2.5 text-sm hover:border-accent transition-colors">S</button>
           <button type="button" data-orient="W" class="orient-pill flex-1 bg-bg-dark border border-border rounded-lg px-3 py-2.5 text-sm hover:border-accent transition-colors">W</button>
         </div>
+        <div id="orientation-help" class="hidden mt-2 rounded-lg border border-border bg-bg-dark/60 p-3 text-xs text-text-secondary leading-relaxed">
+          <p class="font-medium text-text-primary mb-1">How to pick primary orientation</p>
+          <p class="mb-2">The direction the <strong>largest exterior wall</strong> faces — not the front door.</p>
+          <ul class="space-y-0.5 mb-2">
+            <li>Room with one exterior wall → that direction.</li>
+            <li>Corner room (2 exterior walls) → pick the wall with <strong>more window area</strong>.</li>
+            <li>3-4 exterior walls → pick the wall with the greatest combined window + door area.</li>
+          </ul>
+          <p class="text-text-muted">South and west walls take the most summer solar load; north the least. Factor range: 0.95 (N) to 1.15 (S).</p>
+        </div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="insulation">Insulation Level</label>
+        <div class="flex items-center gap-1.5 mb-2">
+          <label class="block text-sm font-medium text-text-secondary" for="insulation">Insulation Level</label>
+          <button type="button"
+            data-help-toggle="insulation-help"
+            aria-expanded="false"
+            aria-controls="insulation-help"
+            aria-label="How to pick insulation level"
+            class="text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+        </div>
         <div class="relative">
           <select id="insulation"
             class="appearance-none w-full bg-bg-dark border border-border rounded-lg px-4 pr-10 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
@@ -202,14 +238,51 @@ const roomTypes = [
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
+        <div id="insulation-help" class="hidden mt-2 rounded-lg border border-border bg-bg-dark/60 p-3 text-xs text-text-secondary leading-relaxed">
+          <p class="font-medium text-text-primary mb-1">How to pick insulation level</p>
+          <p class="mb-2">When in doubt, drop a tier — houses are usually a bit worse than they look.</p>
+          <ul class="space-y-0.5 mb-2">
+            <li><strong>Excellent</strong> — post-2018 code or deep retrofit. R-19+ walls, R-38+ attic, spray foam, blower-door tested.</li>
+            <li><strong>Good</strong> — 2010-era. R-15 walls, R-30 attic, double-pane low-E windows.</li>
+            <li><strong>Average</strong> — standard-code compliant. R-13 walls, R-30 attic, double-pane windows.</li>
+            <li><strong>Poor</strong> — pre-1990 unimproved. R-11 or less, single-pane windows, visibly drafty.</li>
+            <li><strong>Bad</strong> — no wall insulation. Pre-1950 construction; cold spots, daylight around outlets.</li>
+          </ul>
+          <p class="text-text-muted">Changes cooling load by up to 30%.</p>
+        </div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="windowArea">Window Area (sq ft)</label>
+        <div class="flex items-center gap-1.5 mb-2">
+          <label class="block text-sm font-medium text-text-secondary" for="windowArea">Window Area (sq ft)</label>
+          <button type="button"
+            data-help-toggle="windowArea-help"
+            aria-expanded="false"
+            aria-controls="windowArea-help"
+            aria-label="How to estimate window area"
+            class="text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+        </div>
         <div class="number-stepper flex items-stretch bg-bg-dark border border-border rounded-lg focus-within:border-accent transition-colors overflow-hidden">
           <button type="button" aria-label="Decrease window area" class="stepper-minus px-6 md:px-4 text-text-secondary hover:text-accent text-2xl font-bold leading-none select-none">−</button>
           <input type="number" id="windowArea" value="20" min="0" max="500" step="1"
             class="flex-1 bg-transparent text-text-primary text-lg text-center focus:outline-none min-w-0 py-3 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
           <button type="button" aria-label="Increase window area" class="stepper-plus px-6 md:px-4 text-text-secondary hover:text-accent text-2xl font-bold leading-none select-none">+</button>
+        </div>
+        <div id="windowArea-help" class="hidden mt-2 rounded-lg border border-border bg-bg-dark/60 p-3 text-xs text-text-secondary leading-relaxed">
+          <p class="font-medium text-text-primary mb-1">How to estimate window area</p>
+          <p class="mb-2">Total glass area in this room, in sqft. Measure the <strong>glass</strong>, not the rough opening — subtract ~10% for the frame if unsure.</p>
+          <ul class="space-y-0.5 mb-2">
+            <li>Standard double-hung: ~3 × 5 ft = <strong>15 sqft</strong></li>
+            <li>Large picture window: ~4 × 6 ft = <strong>24 sqft</strong></li>
+            <li>Sliding patio door: ~6 × 6.5 ft = <strong>39 sqft</strong> (count here, not in Door Area)</li>
+            <li>Count skylights too.</li>
+          </ul>
+          <p class="mb-2"><strong class="text-text-primary">Include sliding glass doors and French doors here</strong> — not in Door Area. They behave as windows for heat transfer.</p>
+          <p class="text-text-muted">Glass dominates the cooling load: 870 BTU/hr per sqft of window vs 25 BTU/hr per sqft of floor.</p>
         </div>
       </div>
       <div>
