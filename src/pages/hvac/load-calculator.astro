@@ -45,7 +45,7 @@ const faqSchema = {
       <div class="flex flex-col sm:flex-row sm:items-center gap-3">
         <input type="text" id="zip" inputmode="numeric" maxlength="5" placeholder="e.g. 85001"
           class="w-full sm:max-w-[180px] bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors" />
-        <div id="zip-display" class="text-text-secondary text-sm">Enter a 5-digit US ZIP to detect your climate region.</div>
+        <div id="zip-display" class="text-text-secondary text-sm"></div>
       </div>
       <div id="zip-fallback" class="hidden mt-3">
         <p class="text-text-muted text-xs mb-2">ZIP not found — pick your climate region:</p>
@@ -161,7 +161,7 @@ const faqSchema = {
         <p class="text-text-secondary text-sm mb-6">Enter your email to get your whole-house load calculation — cooling BTU, heating BTU, and system tonnage.</p>
         <div class="flex flex-col sm:flex-row gap-3 mb-3">
           <label for="gate-email" class="sr-only">Your work email</label>
-          <input type="email" id="gate-email" placeholder="you@company.com" required
+          <input type="email" id="gate-email" placeholder="your email" required
             class="flex-1 bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-base focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted" />
           <button id="gate-submit" type="button"
             class="bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-lg transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
@@ -302,7 +302,7 @@ const faqSchema = {
     const zip = raw.replace(/\D/g, '').slice(0, 5);
     if (zip.length < 3) {
       climate = null;
-      zipDisplay.textContent = 'Enter a 5-digit US ZIP to detect your climate region.';
+      zipDisplay.textContent = '';
       zipFallback.classList.add('hidden');
       return;
     }
@@ -338,7 +338,7 @@ const faqSchema = {
 
   function readInputs(): WholeHouseInputs | null {
     if (!climate) {
-      calcHint.textContent = 'Please enter a valid ZIP code or pick a climate region.';
+      calcHint.textContent = 'Please enter a valid ZIP code.';
       calcHint.classList.remove('hidden');
       return null;
     }
@@ -406,14 +406,24 @@ const faqSchema = {
           sourceUrl: window.location.pathname,
           calculationResults: {
             mode: 'whole-house',
+            // Results
             coolingBTU: pendingResult.coolingBTU,
             heatingBTU: pendingResult.heatingBTU,
             tonnage: pendingResult.tonnage,
+            // Climate context
+            zip: (document.getElementById('zip') as HTMLInputElement).value.trim(),
             state: pendingInputs.climate.state,
             region: pendingInputs.climate.regionLabel,
+            // All raw inputs so the admin view can inspect what pros submitted
             sqft: pendingInputs.sqft,
             ceilingHeight: pendingInputs.ceilingHeight,
             insulation: pendingInputs.insulation,
+            sun: pendingInputs.sun,
+            windows: pendingInputs.windows,
+            tightness: pendingInputs.tightness,
+            occupants: pendingInputs.occupants,
+            deviceWatts: pendingInputs.deviceWatts,
+            kitchen: pendingInputs.kitchen,
           },
         }),
       });
