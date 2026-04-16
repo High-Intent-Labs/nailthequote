@@ -97,7 +97,20 @@ const faqSchema = {
         </div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="insulation">Insulation Quality</label>
+        <div class="flex items-center gap-1.5 mb-2">
+          <label class="block text-sm font-medium text-text-secondary" for="insulation">Insulation Quality</label>
+          <button type="button"
+            data-help-toggle="insulation-help"
+            aria-expanded="false"
+            aria-controls="insulation-help"
+            aria-label="How to pick insulation quality"
+            class="text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+        </div>
         <select id="insulation" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
           <option value="excellent">Excellent</option>
           <option value="better">Better than average</option>
@@ -105,29 +118,121 @@ const faqSchema = {
           <option value="worse">Worse than average</option>
           <option value="bad">Bad</option>
         </select>
+        <div id="insulation-help" class="hidden relative mt-2 rounded-lg border border-border bg-bg-dark/60 p-3 pr-8 text-xs text-text-secondary leading-relaxed">
+          <button type="button" data-help-toggle="insulation-help" aria-expanded="false" aria-controls="insulation-help" aria-label="Close help"
+            class="absolute top-2 right-2 text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <ul class="space-y-0.5">
+            <li><strong>Excellent</strong> — post-2018 code or deep retrofit. R-19+ walls, R-38+ attic, spray foam.</li>
+            <li><strong>Better than average</strong> — 2010-era. R-15 walls, R-30 attic, double-pane low-E windows.</li>
+            <li><strong>Average</strong> — standard-code compliant. R-13 walls, R-30 attic, double-pane windows.</li>
+            <li><strong>Worse than average</strong> — pre-1990 unimproved. R-11 or less, single-pane windows, visibly drafty.</li>
+            <li><strong>Bad</strong> — no wall insulation. Pre-1950 construction; cold spots, daylight around outlets.</li>
+          </ul>
+        </div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="sun">Sun Exposure</label>
+        <div class="flex items-center gap-1.5 mb-2">
+          <label class="block text-sm font-medium text-text-secondary" for="sun">Sun Exposure</label>
+          <button type="button"
+            data-help-toggle="sun-help"
+            aria-expanded="false"
+            aria-controls="sun-help"
+            aria-label="How to pick sun exposure"
+            class="text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+        </div>
         <select id="sun" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
           <option value="lots">A large amount</option>
           <option value="medium" selected>A medium amount</option>
           <option value="little">Little or none</option>
         </select>
+        <div id="sun-help" class="hidden relative mt-2 rounded-lg border border-border bg-bg-dark/60 p-3 pr-8 text-xs text-text-secondary leading-relaxed">
+          <button type="button" data-help-toggle="sun-help" aria-expanded="false" aria-controls="sun-help" aria-label="Close help"
+            class="absolute top-2 right-2 text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <ul class="space-y-0.5">
+            <li><strong>A large amount</strong> — mostly south/west-facing with few trees or shade.</li>
+            <li><strong>A medium amount</strong> — mix of sun and shade across the day.</li>
+            <li><strong>Little or none</strong> — north-facing or heavily shaded by trees or neighbors.</li>
+          </ul>
+        </div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="windows">Amount of Windows</label>
+        <div class="flex items-center gap-1.5 mb-2">
+          <label class="block text-sm font-medium text-text-secondary" for="windows">Amount of Windows</label>
+          <button type="button"
+            data-help-toggle="windows-help"
+            aria-expanded="false"
+            aria-controls="windows-help"
+            aria-label="What counts as standard vs many windows"
+            class="text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+        </div>
         <select id="windows" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
           <option value="standard" selected>Standard amount</option>
           <option value="many">Many (more than standard)</option>
         </select>
+        <div id="windows-help" class="hidden relative mt-2 rounded-lg border border-border bg-bg-dark/60 p-3 pr-8 text-xs text-text-secondary leading-relaxed">
+          <button type="button" data-help-toggle="windows-help" aria-expanded="false" aria-controls="windows-help" aria-label="Close help"
+            class="absolute top-2 right-2 text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <ul class="space-y-0.5">
+            <li><strong>Standard</strong> — typical residential. Glass is ~15-20% of floor area.</li>
+            <li><strong>Many</strong> — large glass expanses, walls of windows, multiple skylights, sunroom-style spaces. More than 25% of floor area in glass.</li>
+          </ul>
+        </div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="tightness">Windows &amp; Doors Tightness</label>
+        <div class="flex items-center gap-1.5 mb-2">
+          <label class="block text-sm font-medium text-text-secondary" for="tightness">Windows &amp; Doors Tightness</label>
+          <button type="button"
+            data-help-toggle="tightness-help"
+            aria-expanded="false"
+            aria-controls="tightness-help"
+            aria-label="How to pick tightness"
+            class="text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+        </div>
         <select id="tightness" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
           <option value="sealed">Sealed tight &amp; double-paned</option>
           <option value="typical" selected>Typical fit and seal</option>
           <option value="leaky">Not well-sealed &amp; single-paned</option>
         </select>
+        <div id="tightness-help" class="hidden relative mt-2 rounded-lg border border-border bg-bg-dark/60 p-3 pr-8 text-xs text-text-secondary leading-relaxed">
+          <button type="button" data-help-toggle="tightness-help" aria-expanded="false" aria-controls="tightness-help" aria-label="Close help"
+            class="absolute top-2 right-2 text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <ul class="space-y-0.5">
+            <li><strong>Sealed tight &amp; double-paned</strong> — modern double-pane with weatherstripping. Newer construction or recent retrofit.</li>
+            <li><strong>Typical fit and seal</strong> — average 2000s-era double-pane, some minor drafts.</li>
+            <li><strong>Not well-sealed &amp; single-paned</strong> — old single-pane, visible drafts, weatherstripping gone.</li>
+          </ul>
+        </div>
       </div>
       <div>
         <label class="block text-sm font-medium text-text-secondary mb-2" for="occupants">Occupants</label>
@@ -140,7 +245,20 @@ const faqSchema = {
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="devices">Extra Devices (heat-generating)</label>
+        <div class="flex items-center gap-1.5 mb-2">
+          <label class="block text-sm font-medium text-text-secondary" for="devices">Extra Devices (heat-generating)</label>
+          <button type="button"
+            data-help-toggle="devices-help"
+            aria-expanded="false"
+            aria-controls="devices-help"
+            aria-label="What counts as a heat-generating device"
+            class="text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+        </div>
         <select id="devices" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
           <option value="0" selected>0</option>
           <option value="600">1</option>
@@ -150,13 +268,45 @@ const faqSchema = {
           <option value="3000">5</option>
           <option value="3600">6</option>
         </select>
+        <div id="devices-help" class="hidden relative mt-2 rounded-lg border border-border bg-bg-dark/60 p-3 pr-8 text-xs text-text-secondary leading-relaxed">
+          <button type="button" data-help-toggle="devices-help" aria-expanded="false" aria-controls="devices-help" aria-label="Close help"
+            class="absolute top-2 right-2 text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <p class="mb-1">Count: TVs, desktop computers, servers, halogen lighting. Each adds ~600 BTU/h.</p>
+          <p><strong>Skip:</strong> modern LED lighting, phone chargers, anything in standby. Baseline is 0; most homes don't need more than 2-3.</p>
+        </div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-2" for="kitchen">Kitchen?</label>
+        <div class="flex items-center gap-1.5 mb-2">
+          <label class="block text-sm font-medium text-text-secondary" for="kitchen">Kitchen?</label>
+          <button type="button"
+            data-help-toggle="kitchen-help"
+            aria-expanded="false"
+            aria-controls="kitchen-help"
+            aria-label="When to pick yes or no for kitchen"
+            class="text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+        </div>
         <select id="kitchen" class="w-full bg-bg-dark border border-border rounded-lg px-4 py-3 text-text-primary text-lg focus:border-accent focus:outline-none transition-colors">
           <option value="yes" selected>Yes</option>
           <option value="no">No</option>
         </select>
+        <div id="kitchen-help" class="hidden relative mt-2 rounded-lg border border-border bg-bg-dark/60 p-3 pr-8 text-xs text-text-secondary leading-relaxed">
+          <button type="button" data-help-toggle="kitchen-help" aria-expanded="false" aria-controls="kitchen-help" aria-label="Close help"
+            class="absolute top-2 right-2 text-text-muted hover:text-accent transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <p><strong>Yes</strong> if the space includes a kitchen — adds ~4,000 BTU for cooking + appliances. <strong>No</strong> for kitchen-less spaces (in-law suites, basement conversions without cooking) or when you're accounting for kitchen load elsewhere.</p>
+        </div>
       </div>
     </div>
 
@@ -168,6 +318,24 @@ const faqSchema = {
       <p id="calc-hint" class="hidden mt-3 text-sm text-[#EF4444]"></p>
     </div>
 
+    <!-- Segment gate: shown after Calculate, before the email gate.
+         Pro vs homeowner split, feeds analytics + downstream routing. -->
+    <div id="segment-gate" class="hidden mt-8 border-t border-border pt-8">
+      <div class="max-w-lg mx-auto text-center">
+        <h3 class="font-heading font-bold text-xl text-text-primary mb-6">Who's this for?</h3>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button type="button" data-segment="home"
+            class="segment-pill flex-1 bg-bg-dark border border-border rounded-lg px-4 py-4 text-text-primary text-base hover:border-accent transition-colors">
+            My own home
+          </button>
+          <button type="button" data-segment="customer"
+            class="segment-pill flex-1 bg-bg-dark border border-border rounded-lg px-4 py-4 text-text-primary text-base hover:border-accent transition-colors">
+            A customer's job
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div id="email-gate" class="hidden mt-8 border-t border-border pt-8">
       <div class="max-w-lg mx-auto text-center">
         <div class="w-14 h-14 rounded-2xl bg-accent/15 flex items-center justify-center mx-auto mb-4">
@@ -175,8 +343,8 @@ const faqSchema = {
             <path d="M2.5 6.667L9.025 11.05a1.667 1.667 0 001.95 0L17.5 6.667M4.167 15h11.666A1.667 1.667 0 0017.5 13.333V6.667A1.667 1.667 0 0015.833 5H4.167A1.667 1.667 0 002.5 6.667v6.666A1.667 1.667 0 004.167 15z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <h3 class="font-heading font-bold text-xl text-text-primary mb-2">Your results are ready</h3>
-        <p class="text-text-secondary text-sm mb-6">Enter your email to get your whole-house load calculation — cooling BTU, heating BTU, and system tonnage.</p>
+        <h3 id="gate-headline" class="font-heading font-bold text-xl text-text-primary mb-2">Your results are ready</h3>
+        <p id="gate-subhead" class="text-text-secondary text-sm mb-6">Enter your email to get your whole-house load calculation — cooling BTU, heating BTU, and system tonnage.</p>
         <div class="flex flex-col sm:flex-row gap-3 mb-3">
           <label for="gate-email" class="sr-only">Your work email</label>
           <input type="email" id="gate-email" placeholder="your email" required
@@ -310,6 +478,88 @@ const faqSchema = {
 
   // Wire up +/- buttons on numeric inputs (mobile-friendly)
   initSteppers();
+
+  // -------------------------------------------------------------------
+  // A/B/C test on the email-gate copy. Experiment: lc_gate_copy.
+  // Sticky per user via localStorage; random assignment fallback if
+  // localStorage is blocked. Fires ab_variant_assigned once on first
+  // assignment, then gate_shown + email_captured carry ab_variant as
+  // a property for analysis. Mirrors mss_gate_copy on the mini-split
+  // page — see §5 of mini-split-sizing-calculator.md for methodology.
+  // -------------------------------------------------------------------
+  const AB_EXPERIMENT = 'lc_gate_copy';
+  const VARIANT_COPY: Record<'A' | 'B' | 'C', { headline: string; subhead: string; cta: string }> = {
+    A: {
+      headline: 'Your load calculation is ready.',
+      subhead: 'Email yourself the full calc — cooling BTU, heating BTU, and system tonnage.',
+      cta: 'Email Me the Calc',
+    },
+    B: {
+      headline: 'Where should we send your results?',
+      subhead: "We'll email the full breakdown — cooling BTU, heating BTU, and system tonnage.",
+      cta: 'Email My Results',
+    },
+    C: {
+      headline: 'One email — so you have it saved.',
+      subhead: "We'll email the full breakdown — cooling BTU, heating BTU, and system tonnage.",
+      cta: 'Send My Results',
+    },
+  };
+  let abVariant: 'A' | 'B' | 'C';
+  try {
+    const stored = localStorage.getItem('ntq_ab_lc_gate');
+    if (stored === 'A' || stored === 'B' || stored === 'C') {
+      abVariant = stored;
+    } else {
+      const r = Math.random();
+      abVariant = r < 1 / 3 ? 'A' : r < 2 / 3 ? 'B' : 'C';
+      localStorage.setItem('ntq_ab_lc_gate', abVariant);
+      (window as any).posthog?.capture('ab_variant_assigned', {
+        experiment: AB_EXPERIMENT,
+        ab_variant: abVariant,
+        tool_slug: 'load-calculator',
+      });
+    }
+  } catch {
+    const r = Math.random();
+    abVariant = r < 1 / 3 ? 'A' : r < 2 / 3 ? 'B' : 'C';
+  }
+  // Apply variant copy to the gate (gate is hidden until Calculate — no FOUC)
+  {
+    const copy = VARIANT_COPY[abVariant];
+    document.getElementById('gate-headline')!.textContent = copy.headline;
+    document.getElementById('gate-subhead')!.textContent = copy.subhead;
+    document.getElementById('gate-submit')!.textContent = copy.cta;
+  }
+
+  // -------------------------------------------------------------------
+  // Generic help-toggle handler: any <button data-help-toggle="id">
+  // toggles the hidden <div id="id"> panel. Fires help_opened on open
+  // (not close). data-help-wired guard prevents double-binding if the
+  // script re-executes. Same pattern as the mini-split page.
+  // -------------------------------------------------------------------
+  document.querySelectorAll<HTMLButtonElement>('[data-help-toggle]').forEach(btn => {
+    if (btn.dataset.helpWired) return;
+    btn.dataset.helpWired = '1';
+    btn.addEventListener('click', () => {
+      const targetId = btn.dataset.helpToggle;
+      if (!targetId) return;
+      const target = document.getElementById(targetId);
+      if (!target) return;
+      const willBeOpen = target.classList.contains('hidden');
+      target.classList.toggle('hidden');
+      document.querySelectorAll<HTMLButtonElement>(`[data-help-toggle="${targetId}"]`).forEach(b => {
+        b.setAttribute('aria-expanded', String(willBeOpen));
+      });
+      if (willBeOpen) {
+        (window as any).posthog?.capture('help_opened', {
+          tool_slug: 'load-calculator',
+          trade_slug: 'hvac',
+          field: targetId.replace(/-help$/, ''),
+        });
+      }
+    });
+  });
 
   let climate: ReturnType<typeof lookupZip> = null;
   const zipInput = document.getElementById('zip') as HTMLInputElement;
@@ -468,6 +718,9 @@ const faqSchema = {
 
   let pendingResult: WholeHouseResult | null = null;
   let pendingInputs: WholeHouseInputs | null = null;
+  // User self-identified segment: 'home' (homeowner) vs 'customer' (pro
+  // sizing for a client). Captured between Calculate and the email gate.
+  let segment: 'home' | 'customer' | null = null;
   const calcBtn = document.getElementById('calculate-btn') as HTMLButtonElement;
   const calcHint = document.getElementById('calc-hint')!;
 
@@ -497,9 +750,38 @@ const faqSchema = {
     if (!inputs) return;
     pendingInputs = inputs;
     pendingResult = calcWholeHouse(inputs);
+    segment = null;
     document.getElementById('calc-btn-area')!.classList.add('hidden');
-    document.getElementById('email-gate')!.classList.remove('hidden');
-    (document.getElementById('gate-email') as HTMLInputElement).focus();
+    document.getElementById('segment-gate')!.classList.remove('hidden');
+    (window as any).posthog?.capture('segment_shown', {
+      tool_slug: 'load-calculator',
+      trade_slug: 'hvac',
+    });
+  });
+
+  // Segment pill pick → advance to email gate.
+  document.querySelectorAll<HTMLButtonElement>('.segment-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      segment = (btn.dataset.segment || 'home') as 'home' | 'customer';
+      document.getElementById('segment-gate')!.classList.add('hidden');
+      document.getElementById('email-gate')!.classList.remove('hidden');
+      (document.getElementById('gate-email') as HTMLInputElement).focus();
+
+      (window as any).posthog?.capture('segment_picked', {
+        tool_slug: 'load-calculator',
+        trade_slug: 'hvac',
+        segment,
+      });
+      // A/B/C: record that the email gate was shown — denominator for
+      // conversion rate. Fires after segment pick so drop-offs at the
+      // segment step don't inflate the denominator.
+      (window as any).posthog?.capture('gate_shown', {
+        experiment: AB_EXPERIMENT,
+        ab_variant: abVariant,
+        tool_slug: 'load-calculator',
+        segment,
+      });
+    });
   });
 
   const gateSubmit = document.getElementById('gate-submit') as HTMLButtonElement;
@@ -539,6 +821,8 @@ const faqSchema = {
           tradeName: 'HVAC',
           marketingConsent: gateConsent.checked,
           sourceUrl: window.location.pathname,
+          segment,        // 'home' | 'customer' — captured on the segment gate
+          abVariant,      // 'A' | 'B' | 'C'    — email-gate copy experiment arm
           calculationResults: {
             mode: 'whole-house',
             // Results
@@ -578,6 +862,10 @@ const faqSchema = {
           marketing_consent: gateConsent.checked,
           gated: true,
           mode: 'whole-house',
+          segment, // 'home' | 'customer'
+          // A/B/C tagging — pairs with gate_shown for per-arm conversion
+          experiment: AB_EXPERIMENT,
+          ab_variant: abVariant,
         });
       }
       if (typeof (window as any).gtag === 'function') {
