@@ -734,7 +734,16 @@ const roomTypes = [
   // minus button, a number input, and a plus button. stepUp()/stepDown()
   // honor the input's step / min / max. We dispatch an 'input' event
   // after stepping so updateDerived() (below) recomputes sqft/volume.
+  //
+  // Guard: the data-stepper-wired attribute prevents double-binding if
+  // this script ever re-executes (Astro hoisting quirks, view transitions,
+  // hot reload, mobile touch → click duplication). Without it, a second
+  // execution attaches a second listener to each button, causing one
+  // click to fire stepUp() twice and the value to jump by 2×step instead
+  // of 1×step. See fix in commit c. 2026-04-16.
   document.querySelectorAll<HTMLElement>('.number-stepper').forEach(wrapper => {
+    if (wrapper.dataset.stepperWired) return;
+    wrapper.dataset.stepperWired = '1';
     const input = wrapper.querySelector<HTMLInputElement>('input[type="number"]');
     if (!input) return;
     wrapper.querySelector<HTMLButtonElement>('.stepper-minus')?.addEventListener('click', () => {
