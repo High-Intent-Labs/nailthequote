@@ -381,6 +381,46 @@ const faqSchema = {
       </div>
     </div>
 
+    <!-- Q2: DIY check. Shown only for segment=home. Pro path skips this. -->
+    <div id="diy-gate" class="hidden mt-8">
+      <div class="max-w-lg mx-auto rounded-2xl border-2 border-accent bg-accent/5 p-6 sm:p-8 text-center">
+        <h3 class="font-heading font-bold text-xl text-text-primary mb-2">Is this a DIY project?</h3>
+        <p class="text-text-primary text-sm mb-6">We'll tailor your results to match.</p>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button type="button" data-diy="yes"
+            class="diy-pill flex-1 bg-bg-dark border border-border rounded-lg px-4 py-4 text-text-primary text-base hover:border-accent transition-colors">
+            Yes — I'm installing it myself
+          </button>
+          <button type="button" data-diy="no"
+            class="diy-pill flex-1 bg-bg-dark border border-border rounded-lg px-4 py-4 text-text-primary text-base hover:border-accent transition-colors">
+            No — I'm hiring a pro
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3: Contractor stage. Shown only after diy=no. -->
+    <div id="contractor-gate" class="hidden mt-8">
+      <div class="max-w-lg mx-auto rounded-2xl border-2 border-accent bg-accent/5 p-6 sm:p-8 text-center">
+        <h3 class="font-heading font-bold text-xl text-text-primary mb-2">Have you talked to an HVAC contractor yet?</h3>
+        <p class="text-text-primary text-sm mb-6">Helps us point you in the right direction.</p>
+        <div class="flex flex-col gap-3">
+          <button type="button" data-stage="not_yet"
+            class="contractor-pill bg-bg-dark border border-border rounded-lg px-4 py-4 text-text-primary text-base hover:border-accent transition-colors">
+            Not yet — I'm starting now
+          </button>
+          <button type="button" data-stage="has_estimates"
+            class="contractor-pill bg-bg-dark border border-border rounded-lg px-4 py-4 text-text-primary text-base hover:border-accent transition-colors">
+            Yes — I already have estimates
+          </button>
+          <button type="button" data-stage="researching"
+            class="contractor-pill bg-bg-dark border border-border rounded-lg px-4 py-4 text-text-primary text-base hover:border-accent transition-colors">
+            Just researching — not ready to hire
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div id="email-gate" class="hidden mt-8">
       <!-- Accent-framed container matching the segment gate + results
            sections — this is the primary next action. -->
@@ -769,6 +809,9 @@ const faqSchema = {
   // User self-identified segment: 'home' (homeowner) vs 'customer' (pro
   // sizing for a client). Captured between Calculate and the email gate.
   let segment: 'home' | 'customer' | null = null;
+  // Home-path qualifying answers. Null for pro path (segment=customer).
+  let isDiy: boolean | null = null;
+  let contractorStage: 'not_yet' | 'has_estimates' | 'researching' | null = null;
   const calcBtn = document.getElementById('calculate-btn') as HTMLButtonElement;
   const calcHint = document.getElementById('calc-hint')!;
 
@@ -799,36 +842,103 @@ const faqSchema = {
     pendingInputs = inputs;
     pendingResult = calcWholeHouse(inputs);
     segment = null;
+    isDiy = null;
+    contractorStage = null;
     document.getElementById('calc-btn-area')!.classList.add('hidden');
     document.getElementById('segment-gate')!.classList.remove('hidden');
+    document.getElementById('diy-gate')!.classList.add('hidden');
+    document.getElementById('contractor-gate')!.classList.add('hidden');
     (window as any).posthog?.capture('segment_shown', {
       tool_slug: 'load-calculator',
       trade_slug: 'hvac',
     });
   });
 
-  // Segment pill pick → advance to email gate.
+  // Centralize email-gate reveal. Called from three places:
+  // 1. segment=customer (direct — pro path skips Q2/Q3)
+  // 2. segment=home + diy=yes (skip Q3)
+  // 3. segment=home + diy=no + any contractor_stage
+  function openEmailGate() {
+    document.getElementById('segment-gate')!.classList.add('hidden');
+    document.getElementById('diy-gate')!.classList.add('hidden');
+    document.getElementById('contractor-gate')!.classList.add('hidden');
+    document.getElementById('email-gate')!.classList.remove('hidden');
+    (document.getElementById('gate-email') as HTMLInputElement).focus();
+
+    // A/B/C gate_shown — denominator for email-rate conversion.
+    // Now carries qualifying answers for segmented analysis.
+    (window as any).posthog?.capture('gate_shown', {
+      experiment: AB_EXPERIMENT,
+      ab_variant: abVariant,
+      tool_slug: 'load-calculator',
+      segment,
+      is_diy: isDiy,
+      contractor_stage: contractorStage,
+    });
+  }
+
+  // Segment pill pick → home advances to Q2, pro goes straight to gate.
   document.querySelectorAll<HTMLButtonElement>('.segment-pill').forEach(btn => {
     btn.addEventListener('click', () => {
       segment = (btn.dataset.segment || 'home') as 'home' | 'customer';
-      document.getElementById('segment-gate')!.classList.add('hidden');
-      document.getElementById('email-gate')!.classList.remove('hidden');
-      (document.getElementById('gate-email') as HTMLInputElement).focus();
 
       (window as any).posthog?.capture('segment_picked', {
         tool_slug: 'load-calculator',
         trade_slug: 'hvac',
         segment,
       });
-      // A/B/C: record that the email gate was shown — denominator for
-      // conversion rate. Fires after segment pick so drop-offs at the
-      // segment step don't inflate the denominator.
-      (window as any).posthog?.capture('gate_shown', {
-        experiment: AB_EXPERIMENT,
-        ab_variant: abVariant,
+
+      if (segment === 'home') {
+        // Home path → advance to Q2 (DIY check), NOT the email gate.
+        document.getElementById('segment-gate')!.classList.add('hidden');
+        document.getElementById('diy-gate')!.classList.remove('hidden');
+        (window as any).posthog?.capture('diy_shown', {
+          tool_slug: 'load-calculator',
+          trade_slug: 'hvac',
+        });
+      } else {
+        // Pro path → straight to email gate.
+        openEmailGate();
+      }
+    });
+  });
+
+  // Q2: DIY check. Yes → skip Q3, open email gate. No → show Q3.
+  document.querySelectorAll<HTMLButtonElement>('.diy-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      isDiy = btn.dataset.diy === 'yes';
+
+      (window as any).posthog?.capture('diy_picked', {
         tool_slug: 'load-calculator',
-        segment,
+        trade_slug: 'hvac',
+        is_diy: isDiy,
       });
+
+      if (isDiy) {
+        openEmailGate();
+      } else {
+        document.getElementById('diy-gate')!.classList.add('hidden');
+        document.getElementById('contractor-gate')!.classList.remove('hidden');
+        (window as any).posthog?.capture('contractor_shown', {
+          tool_slug: 'load-calculator',
+          trade_slug: 'hvac',
+        });
+      }
+    });
+  });
+
+  // Q3: Contractor stage. All three answers open the email gate.
+  document.querySelectorAll<HTMLButtonElement>('.contractor-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      contractorStage = (btn.dataset.stage || null) as typeof contractorStage;
+
+      (window as any).posthog?.capture('contractor_picked', {
+        tool_slug: 'load-calculator',
+        trade_slug: 'hvac',
+        contractor_stage: contractorStage,
+      });
+
+      openEmailGate();
     });
   });
 
@@ -868,8 +978,10 @@ const faqSchema = {
           tradeName: 'HVAC',
           marketingConsent: true,
           sourceUrl: window.location.pathname,
-          segment,        // 'home' | 'customer' — captured on the segment gate
-          abVariant,      // 'A' | 'B' | 'C'    — email-gate copy experiment arm
+          segment,          // 'home' | 'customer' — captured on the segment gate
+          isDiy,            // true | false | null (null for pro path)
+          contractorStage,  // 'not_yet' | 'has_estimates' | 'researching' | null
+          abVariant,        // 'A' | 'B' | 'C' — email-gate copy experiment arm
           calculationResults: {
             mode: 'whole-house',
             // Results
@@ -909,7 +1021,9 @@ const faqSchema = {
           marketing_consent: true,
           gated: true,
           mode: 'whole-house',
-          segment, // 'home' | 'customer'
+          segment,              // 'home' | 'customer'
+          is_diy: isDiy,
+          contractor_stage: contractorStage,
           // A/B/C tagging — pairs with gate_shown for per-arm conversion
           experiment: AB_EXPERIMENT,
           ab_variant: abVariant,
