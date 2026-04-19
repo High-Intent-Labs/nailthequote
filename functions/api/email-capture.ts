@@ -108,7 +108,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     // columns so the admin per-tool deep-dive can filter/aggregate cleanly.
     // These are Load-Calc-specific today; will be NULL for every other tool
     // and for pre-2026-04-19 Load Calc captures.
-    await supabase.from('email_captures').insert({
+    // Insert and surface the error to Cloudflare logs. The supabase-js
+    // client returns { data, error } instead of throwing — a silent error
+    // here was the cause of the 2026-04-19 regression where
+    // is_diy/contractor_stage were written to a schema that didn't yet
+    // have those columns; the Worker returned 200 and emails were lost
+    // for ~4 hours before the mismatch surfaced downstream in the admin
+    // RPC. Logging + throwing means the next schema drift shows up in
+    // `wrangler tail` / Cloudflare logs immediately.
+    const { error: insertError } = await supabase.from('email_captures').insert({
       email,
       trade: tradeSlug,
       tool_slug: toolSlug,
@@ -120,6 +128,25 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       is_diy: typeof isDiy === 'boolean' ? isDiy : null,
       contractor_stage: contractorStage ?? null,
     });
+    if (insertError) {
+      // Log-only, do NOT throw: by this point Resend has already sent
+      // the user their results email and added their contact. Returning
+      // 500 now would make the user see a failure despite the email
+      // going through, and a resubmit would trigger a duplicate send.
+      // The PostHog `email_captured` event is the authoritative record
+      // for analytics; Supabase persistence is best-effort for admin
+      // inspection. Surface the failure to Cloudflare logs so we catch
+      // drift (schema mismatch, RLS, transient DB) without a stealth
+      // outage like the 2026-04-19 regression.
+      console.error('Supabase email_captures insert failed (NON-FATAL):', {
+        code: insertError.code,
+        message: insertError.message,
+        details: insertError.details,
+        hint: insertError.hint,
+        tool_slug: toolSlug,
+        email,
+      });
+    }
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err) {
