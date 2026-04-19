@@ -42,8 +42,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const {
       email, toolSlug, toolName, tradeSlug, tradeName,
       marketingConsent, sourceUrl, calculationResults,
-      segment,     // 'home' | 'customer' — from the "Who's this for?" gate
-      abVariant,   // 'A' | 'B' | 'C'    — email-gate copy experiment arm
+      segment,          // 'home' | 'customer' — from the "Who's this for?" gate
+      isDiy,            // true | false | null — Q2, home path only (null for pro)
+      contractorStage,  // 'not_yet' | 'has_estimates' | 'researching' | null — Q3, is_diy=false only
+      abVariant,        // 'A' | 'B' | 'C' — email-gate copy experiment arm
     } = body;
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -99,10 +101,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       }
     }
 
-    // 3. Log to Supabase email_captures table. Per migration 003, we now
-    // persist the full input+result snapshot (calculation_data jsonb) plus
-    // the segment and A/B variant so the admin per-tool deep-dive can
-    // inspect what users actually submitted.
+    // 3. Log to Supabase email_captures table. Per migration 003 we persist
+    // the full input+result snapshot (calculation_data jsonb) plus segment
+    // and A/B variant; per migration 007 we also persist the Load Calculator
+    // qualifying-question answers (is_diy + contractor_stage) as their own
+    // columns so the admin per-tool deep-dive can filter/aggregate cleanly.
+    // These are Load-Calc-specific today; will be NULL for every other tool
+    // and for pre-2026-04-19 Load Calc captures.
     await supabase.from('email_captures').insert({
       email,
       trade: tradeSlug,
@@ -112,6 +117,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       calculation_data: calculationResults ?? null,
       segment: segment ?? null,
       ab_variant: abVariant ?? null,
+      is_diy: typeof isDiy === 'boolean' ? isDiy : null,
+      contractor_stage: contractorStage ?? null,
     });
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });

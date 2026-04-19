@@ -82,17 +82,32 @@ export const onRequestPost: PagesFunction<AnalyticsEnv> = async (context) => {
 
     const dc = dateClause(startDate, endDate);
 
-    // 5-step user journey, unique persons per step
+    // 9-step user journey, unique persons per step.
+    // Home path: landed → started → calculated → picked_segment → diy_shown
+    //            → diy_picked → contractor_shown → contractor_picked → submitted_email
+    // Pro path (segment=customer): skips Q2/Q3, so diy_* and contractor_* counts
+    // will naturally exclude those users. Interpret the drop from
+    // picked_segment → diy_shown as roughly the home-share of segment picks.
+    // Interpret the drop from diy_picked → contractor_shown as roughly the
+    // is_diy=false share (DIY users go straight to the email gate).
     const funnelQuery = `
       SELECT
-        count(DISTINCT if(event = 'tool_viewed',      person_id, NULL)) AS landed,
-        count(DISTINCT if(event = 'tool_used',        person_id, NULL)) AS started,
-        count(DISTINCT if(event = 'segment_shown',    person_id, NULL)) AS calculated,
-        count(DISTINCT if(event = 'segment_picked',   person_id, NULL)) AS picked_segment,
-        count(DISTINCT if(event = 'email_captured',   person_id, NULL)) AS submitted_email
+        count(DISTINCT if(event = 'tool_viewed',        person_id, NULL)) AS landed,
+        count(DISTINCT if(event = 'tool_used',          person_id, NULL)) AS started,
+        count(DISTINCT if(event = 'segment_shown',      person_id, NULL)) AS calculated,
+        count(DISTINCT if(event = 'segment_picked',     person_id, NULL)) AS picked_segment,
+        count(DISTINCT if(event = 'diy_shown',          person_id, NULL)) AS diy_shown,
+        count(DISTINCT if(event = 'diy_picked',         person_id, NULL)) AS diy_picked,
+        count(DISTINCT if(event = 'contractor_shown',   person_id, NULL)) AS contractor_shown,
+        count(DISTINCT if(event = 'contractor_picked',  person_id, NULL)) AS contractor_picked,
+        count(DISTINCT if(event = 'email_captured',     person_id, NULL)) AS submitted_email
       FROM events
       WHERE properties.tool_slug = '${TOOL_SLUG}'
-        AND event IN ('tool_viewed','tool_used','segment_shown','segment_picked','email_captured')
+        AND event IN (
+          'tool_viewed','tool_used','segment_shown','segment_picked',
+          'diy_shown','diy_picked','contractor_shown','contractor_picked',
+          'email_captured'
+        )
         ${dc}
     `.trim();
 
@@ -123,16 +138,37 @@ export const onRequestPost: PagesFunction<AnalyticsEnv> = async (context) => {
       ORDER BY variant
     `.trim();
 
-    const [funnelR, helpR, abR] = await Promise.allSettled([
+    // Bucket performance — unique emails per (segment × is_diy × contractor_stage)
+    // combination. The 5 meaningful buckets are described in
+    // load-calculator-qualifying-questions.md §5. Rows where all three are
+    // NULL are pre-v1 captures from before the qualifying questions shipped
+    // (2026-04-19) — frontend labels them "Pre-v1 / unknown".
+    const bucketQuery = `
+      SELECT
+        properties.segment           AS segment,
+        properties.is_diy            AS is_diy,
+        properties.contractor_stage  AS contractor_stage,
+        count() AS emails
+      FROM events
+      WHERE event = 'email_captured'
+        AND properties.tool_slug = '${TOOL_SLUG}'
+        ${dc}
+      GROUP BY segment, is_diy, contractor_stage
+      ORDER BY emails DESC
+    `.trim();
+
+    const [funnelR, helpR, abR, bucketsR] = await Promise.allSettled([
       runHogQL(apiKey, funnelQuery),
       runHogQL(apiKey, helpQuery),
       runHogQL(apiKey, abQuery),
+      runHogQL(apiKey, bucketQuery),
     ]);
 
     return json({
-      funnel: funnelR.status === 'fulfilled' ? funnelR.value : { error: String(funnelR.reason) },
-      help:   helpR.status   === 'fulfilled' ? helpR.value   : { error: String(helpR.reason) },
-      ab:     abR.status     === 'fulfilled' ? abR.value     : { error: String(abR.reason) },
+      funnel:  funnelR.status  === 'fulfilled' ? funnelR.value  : { error: String(funnelR.reason) },
+      help:    helpR.status    === 'fulfilled' ? helpR.value    : { error: String(helpR.reason) },
+      ab:      abR.status      === 'fulfilled' ? abR.value      : { error: String(abR.reason) },
+      buckets: bucketsR.status === 'fulfilled' ? bucketsR.value : { error: String(bucketsR.reason) },
     });
   } catch (err) {
     console.error('load-analytics error:', err);

@@ -71,7 +71,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         <!-- Funnel -->
         <div class="bg-bg-card border border-border rounded-xl p-5">
           <h2 class="font-heading font-semibold text-lg mb-3">Funnel</h2>
-          <p class="text-text-primary text-xs mb-4">Unique users per step. Segment filter does not apply here — source data is PostHog events on the whole tool page.</p>
+          <p class="text-text-primary text-xs mb-4">Unique users per step. Segment filter does not apply here — source data is PostHog events on the whole tool page. Home path: segment pick → DIY Q → (hiring only) Contractor Q → email gate. Pro path skips the DIY/Contractor rows.</p>
           <table class="w-full text-sm">
             <thead>
               <tr class="border-b border-border text-left">
@@ -123,6 +123,24 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         </div>
       </div>
 
+      <!-- Bucket performance — the 5 buckets the qualifying questions produce -->
+      <div class="bg-bg-card border border-border rounded-xl p-5 mb-8">
+        <h2 class="font-heading font-semibold text-lg mb-3">Bucket performance</h2>
+        <p class="text-text-primary text-xs mb-4">Email captures grouped by (segment × is_diy × contractor_stage). The 🟢🟢🟢 bucket is the monetizable one — homeowners hiring who haven't talked to a contractor yet. "Pre-v1 / unknown" are captures from before the qualifying questions shipped (2026-04-19).</p>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-border text-left">
+              <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider">Bucket</th>
+              <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Emails</th>
+              <th class="pb-2 font-medium text-text-primary text-xs uppercase tracking-wider text-right">% of total</th>
+            </tr>
+          </thead>
+          <tbody id="buckets-body" class="text-text-primary">
+            <tr><td colspan="3" class="py-4 text-center text-text-primary">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
       <!-- Email captures table -->
       <div class="bg-bg-card border border-border rounded-xl p-5 mb-12">
         <div class="flex items-center justify-between mb-4 gap-3">
@@ -139,6 +157,8 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
                 <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider">Date</th>
                 <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider">Email</th>
                 <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider">Segment</th>
+                <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider">DIY</th>
+                <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider">Stage</th>
                 <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider">Arm</th>
                 <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider">ZIP · State · Region</th>
                 <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider">Sqft</th>
@@ -156,7 +176,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
               </tr>
             </thead>
             <tbody id="captures-body" class="text-text-primary">
-              <tr><td colspan="17" class="py-4 text-center text-text-primary">Loading…</td></tr>
+              <tr><td colspan="19" class="py-4 text-center text-text-primary">Loading…</td></tr>
             </tbody>
           </table>
         </div>
@@ -265,14 +285,23 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
       tbody.innerHTML = `<tr><td colspan="3" class="py-4 text-center text-text-primary">${escape(funnelResp?.error || 'No data')}</td></tr>`;
       return;
     }
-    const row = funnelResp.results[0] || [0, 0, 0, 0, 0];
-    const [landed, started, calculated, picked, submitted] = row.map((n: any) => Number(n) || 0);
+    // 9 columns in the v1.1 funnel — see load-analytics.ts funnelQuery.
+    const row = funnelResp.results[0] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    const [
+      landed, started, calculated, pickedSeg,
+      diyShown, diyPicked, contractorShown, contractorPicked,
+      submitted,
+    ] = row.map((n: any) => Number(n) || 0);
     const steps: Array<[string, number]> = [
-      ['Landed on page',     landed],
-      ['Started the form',   started],
-      ['Clicked Calculate',  calculated],
-      ['Picked a segment',   picked],
-      ['Submitted email',    submitted],
+      ['Landed on page',         landed],
+      ['Started the form',       started],
+      ['Clicked Calculate',      calculated],
+      ['Picked a segment',       pickedSeg],
+      ['Saw DIY Q',              diyShown],
+      ['Picked DIY answer',      diyPicked],
+      ['Saw Contractor Q',       contractorShown],
+      ['Picked Contractor stage', contractorPicked],
+      ['Submitted email',        submitted],
     ];
     let prev: number | null = null;
     for (const [label, value] of steps) {
@@ -342,13 +371,74 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     }
   }
 
+  // Bucket-label resolver. Matches the 5-bucket matrix in
+  // load-calculator-qualifying-questions.md §5, plus a "Pre-v1 / unknown"
+  // catch-all for captures from before the qualifying questions shipped.
+  function bucketLabel(segment: any, isDiy: any, stage: any): string {
+    if (segment === 'home' && isDiy === true)  return 'Home · DIY';
+    if (segment === 'home' && isDiy === false) {
+      if (stage === 'not_yet')       return '🟢🟢🟢 Home · Hiring · Not yet';
+      if (stage === 'has_estimates') return '🟢🟢 Home · Hiring · Has estimates';
+      if (stage === 'researching')   return '🟠 Home · Hiring · Researching';
+      return 'Home · Hiring · (no stage)';
+    }
+    if (segment === 'customer') return 'Pro (customer job)';
+    return 'Pre-v1 / unknown';
+  }
+
+  function renderBuckets(bucketResp: any) {
+    const tbody = document.getElementById('buckets-body')!;
+    tbody.innerHTML = '';
+    if (bucketResp?.error) {
+      tbody.innerHTML = `<tr><td colspan="3" class="py-4 text-center text-text-primary">${escape(bucketResp.error)}</td></tr>`;
+      return;
+    }
+    const rows = bucketResp?.results || [];
+    if (!rows.length) {
+      tbody.innerHTML = `<tr><td colspan="3" class="py-4 text-center text-text-primary">No email captures in range</td></tr>`;
+      return;
+    }
+    // Collapse rows that map to the same label (e.g. multiple "Pre-v1" rows
+    // from different NULL-triple shapes).
+    const totals = new Map<string, number>();
+    for (const r of rows) {
+      const [segment, isDiy, stage, emails] = r;
+      const label = bucketLabel(segment, isDiy, stage);
+      totals.set(label, (totals.get(label) || 0) + (Number(emails) || 0));
+    }
+    const grandTotal = Array.from(totals.values()).reduce((a, b) => a + b, 0);
+    // Stable display order — 🟢🟢🟢 first, catch-all last.
+    const displayOrder = [
+      '🟢🟢🟢 Home · Hiring · Not yet',
+      '🟢🟢 Home · Hiring · Has estimates',
+      '🟠 Home · Hiring · Researching',
+      'Home · Hiring · (no stage)',
+      'Home · DIY',
+      'Pro (customer job)',
+      'Pre-v1 / unknown',
+    ];
+    const sorted = displayOrder
+      .filter(l => totals.has(l))
+      .concat(Array.from(totals.keys()).filter(l => !displayOrder.includes(l)));
+    for (const label of sorted) {
+      const emails = totals.get(label) || 0;
+      const pct = grandTotal > 0 ? ((emails / grandTotal) * 100).toFixed(1) + '%' : '—';
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr class="border-b border-border/50">
+          <td class="py-2 pr-3">${escape(label)}</td>
+          <td class="py-2 pr-3 text-right font-mono">${emails.toLocaleString()}</td>
+          <td class="py-2 text-right text-text-primary text-xs">${pct}</td>
+        </tr>`);
+    }
+  }
+
   function renderCaptures(rows: any[]) {
     const tbody = document.getElementById('captures-body')!;
     const count = document.getElementById('captures-count')!;
     tbody.innerHTML = '';
     count.textContent = `${rows.length} ${rows.length === 1 ? 'row' : 'rows'}`;
     if (!rows.length) {
-      tbody.innerHTML = `<tr><td colspan="17" class="py-4 text-center text-text-primary">No email captures match the filters</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="19" class="py-4 text-center text-text-primary">No email captures match the filters</td></tr>`;
       return;
     }
     for (const row of rows) {
@@ -364,6 +454,8 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
           <td class="py-2 pr-3 text-xs">${escape(when)}</td>
           <td class="py-2 pr-3">${escape(row.email || '')}</td>
           <td class="py-2 pr-3">${escape(row.segment || '—')}</td>
+          <td class="py-2 pr-3 font-mono">${row.is_diy === true ? 'Y' : row.is_diy === false ? 'N' : '—'}</td>
+          <td class="py-2 pr-3 text-xs">${escape(row.contractor_stage || '—')}</td>
           <td class="py-2 pr-3 font-mono">${escape(row.ab_variant || '—')}</td>
           <td class="py-2 pr-3 text-xs">${escape(zipState)}</td>
           <td class="py-2 pr-3 font-mono">${cd.sqft != null ? Number(cd.sqft).toLocaleString() : ''}</td>
@@ -420,10 +512,11 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
       }
 
       if (analyticsP.status === 'fulfilled') {
-        const { funnel, help, ab } = analyticsP.value;
+        const { funnel, help, ab, buckets } = analyticsP.value;
         renderFunnel(funnel);
         renderAB(ab);
         renderHelp(help);
+        renderBuckets(buckets);
       } else {
         const msg = String(analyticsP.reason);
         const prefix = errorEl.textContent ? errorEl.textContent + ' · ' : '';
@@ -432,6 +525,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         renderFunnel({ error: msg });
         renderAB({ error: msg });
         renderHelp({ error: msg });
+        renderBuckets({ error: msg });
       }
 
       showContent();
