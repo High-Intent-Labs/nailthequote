@@ -479,6 +479,79 @@ const faqSchema = {
       </div>
       <p class="text-text-primary text-sm italic">Estimate only. For permit-ready Manual J, use ACCA-accredited software.</p>
       </div> <!-- end accent-framed results card -->
+
+      <!--
+        Persona-specific Angi CTA. One of five variants reveals based on the
+        segment + isDiy + contractor_stage state captured during the wizard.
+        All variants share the same card shape; the copy + URL + PostHog tag
+        change per persona. Click fires installer_match_clicked with the
+        persona tag so we can measure CTR per bucket (today: 0% baseline).
+        Fallback when state is null/unexpected: show the 'not_yet' variant
+        (safest generic "get quotes" framing).
+      -->
+      <div id="persona-cta" class="hidden mt-6">
+
+        <!-- home + hiring + not_yet 🟢🟢🟢 -->
+        <div data-persona-variant="not_yet" class="persona-cta-card hidden rounded-2xl border-2 border-accent bg-gradient-to-br from-accent/15 to-accent/5 p-6 sm:p-8">
+          <h3 class="font-heading font-bold text-xl text-text-primary mb-2">Ready to hire? Get quotes from Angi-vetted HVAC pros.</h3>
+          <p class="text-text-primary text-sm mb-5">Share your zip, system size, and project scope, and Angi will connect you with background-checked pros near you who can quote the job.</p>
+          <a class="persona-cta-btn inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+             href="https://request.angi.com/service-request/category/10211?utm_source=nailthequote&amp;utm_medium=calculator&amp;utm_campaign=load_calc&amp;utm_content=home_hiring_not_yet"
+             data-persona="home_hiring_not_yet" data-cta-category="angi_hvac">
+            Get My Free Quotes
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <!-- home + hiring + has_estimates 🟡 -->
+        <div data-persona-variant="has_estimates" class="persona-cta-card hidden rounded-2xl border-2 border-accent bg-gradient-to-br from-accent/15 to-accent/5 p-6 sm:p-8">
+          <h3 class="font-heading font-bold text-xl text-text-primary mb-2">Before you pick a quote, make sure it's fair.</h3>
+          <p class="text-text-primary text-sm mb-5">Quotes for the same HVAC job can vary a lot between contractors. The most reliable way to know yours is reasonable is to compare it with more quotes for the same job.</p>
+          <a class="persona-cta-btn inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+             href="https://request.angi.com/service-request/category/10211?utm_source=nailthequote&amp;utm_medium=calculator&amp;utm_campaign=load_calc&amp;utm_content=home_hiring_has_estimates"
+             data-persona="home_hiring_has_estimates" data-cta-category="angi_hvac">
+            Get More Quotes
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <!-- home + hiring + researching 🟡 -->
+        <div data-persona-variant="researching" class="persona-cta-card hidden rounded-2xl border-2 border-accent bg-gradient-to-br from-accent/15 to-accent/5 p-6 sm:p-8">
+          <h3 class="font-heading font-bold text-xl text-text-primary mb-2">Browse Angi-vetted HVAC pros in your area.</h3>
+          <p class="text-text-primary text-sm mb-5">See profiles, reviews, and typical project photos from local contractors. Request a quote only when you're ready.</p>
+          <a class="persona-cta-btn inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+             href="https://request.angi.com/service-request/category/10211?utm_source=nailthequote&amp;utm_medium=calculator&amp;utm_campaign=load_calc&amp;utm_content=home_hiring_researching"
+             data-persona="home_hiring_researching" data-cta-category="angi_hvac">
+            Browse HVAC Pros
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <!-- home DIY 🔴 → Angi Electrical (12026) -->
+        <div data-persona-variant="diy" class="persona-cta-card hidden rounded-2xl border-2 border-accent bg-gradient-to-br from-accent/15 to-accent/5 p-6 sm:p-8">
+          <h3 class="font-heading font-bold text-xl text-text-primary mb-2">Doing it yourself? The 240V hookup still needs a licensed electrician.</h3>
+          <p class="text-text-primary text-sm mb-5">A new HVAC system requires a dedicated 240V circuit. Most states require a licensed electrician for the wiring, and most manufacturers require it for warranty validity.</p>
+          <a class="persona-cta-btn inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+             href="https://request.angi.com/service-request/category/12026?utm_source=nailthequote&amp;utm_medium=calculator&amp;utm_campaign=load_calc&amp;utm_content=home_diy_electrical"
+             data-persona="home_diy" data-cta-category="angi_electrical">
+            Get a Free Electrician Quote
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <!-- pro (contractor) ⚫ → Angi pro signup -->
+        <div data-persona-variant="pro" class="persona-cta-card hidden rounded-2xl border-2 border-accent bg-gradient-to-br from-accent/15 to-accent/5 p-6 sm:p-8">
+          <h3 class="font-heading font-bold text-xl text-text-primary mb-2">Need more customers? Join Angi as a pro.</h3>
+          <p class="text-text-primary text-sm mb-5">Angi is one of the largest networks connecting homeowners with local contractors. Join to receive homeowner leads in the trades and areas you serve.</p>
+          <a class="persona-cta-btn inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+             href="https://signup.angi.com/pro?utm_source=nailthequote&amp;utm_medium=calculator&amp;utm_campaign=load_calc&amp;utm_content=pro_signup"
+             data-persona="pro" data-cta-category="angi_pro">
+            Become an Angi Pro
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+      </div>
     </div>
   </div>
 
@@ -954,6 +1027,51 @@ const faqSchema = {
     document.getElementById('results')!.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  // Persona CTA reveal. Picks one of five variants based on the state
+  // captured during the wizard: Pro (segment=customer), DIY (is_diy=true),
+  // or one of three hiring buckets. Falls back to 'not_yet' if state is
+  // missing — safest generic "get quotes" framing.
+  function showPersonaCta() {
+    let variant: string;
+    if (segment === 'customer') {
+      variant = 'pro';
+    } else if (isDiy === true) {
+      variant = 'diy';
+    } else if (isDiy === false && contractorStage) {
+      variant = contractorStage;
+    } else {
+      variant = 'not_yet';
+    }
+    const container = document.getElementById('persona-cta')!;
+    const target = container.querySelector('[data-persona-variant="' + variant + '"]');
+    if (target) {
+      target.classList.remove('hidden');
+      container.classList.remove('hidden');
+    }
+  }
+
+  // CTA click tracking. Fires installer_match_clicked (the money-metric
+  // event for this page — previously 0/354 because no CTA existed at all)
+  // with the persona tag so we can see CTR by bucket. Browser follows the
+  // href naturally after the PostHog call.
+  document.querySelectorAll<HTMLAnchorElement>('.persona-cta-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const personaTag = btn.getAttribute('data-persona');
+      const ctaCategory = btn.getAttribute('data-cta-category');
+      if ((window as any).posthog) {
+        (window as any).posthog.capture('installer_match_clicked', {
+          tool_slug: 'load-calculator',
+          trade_slug: 'hvac',
+          persona: personaTag,
+          cta_category: ctaCategory,
+          segment,
+          is_diy: isDiy,
+          contractor_stage: contractorStage,
+        });
+      }
+    });
+  });
+
   gateSubmit.addEventListener('click', async () => {
     const email = gateEmail.value.trim();
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -1020,6 +1138,7 @@ const faqSchema = {
 
       document.getElementById('email-gate')!.classList.add('hidden');
       showResults(pendingResult);
+      showPersonaCta();
 
       const meta = (window as any).__ntqToolMeta;
       if ((window as any).posthog && meta) {
