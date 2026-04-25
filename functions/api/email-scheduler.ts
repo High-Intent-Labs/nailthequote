@@ -60,7 +60,25 @@ async function handle(context: Parameters<PagesFunction<Env>>[0]): Promise<Respo
   const supabase = getSupabaseAdmin(context.env);
   const resend = getResend(context.env);
 
-  // 2. Recover stuck rows
+  // 2. Kill switch — admin can pause sends from the dashboard. Fails open: if
+  //    the system_settings row is missing or the query errors, we keep going
+  //    rather than halting all sends because of a settings-table outage.
+  try {
+    const { data: pausedRow } = await supabase
+      .from('system_settings')
+      .select('value')
+      .eq('key', 'email_scheduler_paused')
+      .maybeSingle();
+    const paused = pausedRow?.value === true || pausedRow?.value === 'true';
+    if (paused) {
+      console.log('email-scheduler: paused via system_settings — skipping run');
+      return new Response(JSON.stringify({ paused: true, processed: 0 }), { status: 200 });
+    }
+  } catch (err) {
+    console.error('email-scheduler: kill-switch check failed (continuing fail-open)', err);
+  }
+
+  // 3. Recover stuck rows
   const { data: recoveredCount, error: recErr } = await supabase.rpc('recover_stuck_email_sequence_rows');
   if (recErr) {
     console.error('email-scheduler: recover_stuck failed', recErr);
