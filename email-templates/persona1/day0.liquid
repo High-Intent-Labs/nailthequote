@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your HVAC sizing — and the words that'll save you on quotes</title>
+</head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#27272a;">
+  <div style="max-width:600px;margin:0 auto;padding:32px 20px;">
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Hey there,</p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      You just calculated the heating and cooling needs of your {{ home.sqft | comma }} sqft home in {{ location.city }}, {{ location.state }}. Three numbers came out the other side:
+    </p>
+
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 16px 24px;padding:0;">
+      <li><strong>Cooling:</strong> {{ home.cooling_btu | comma }} BTU/hr</li>
+      <li><strong>Heating:</strong> {{ home.heating_btu | comma }} BTU/hr</li>
+      <li><strong>System size:</strong> {{ home.tonnage }} tons</li>
+    </ul>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      These three numbers are the most useful sentences you can say to an HVAC contractor. Most homeowners walk into the first quote conversation with no idea what size they need. You won't.
+    </p>
+
+    <h2 style="font-size:17px;color:#18181b;margin:32px 0 12px 0;">What the lingo actually means</h2>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      Nobody is born knowing this. Quick translation:
+    </p>
+
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 16px 24px;padding:0;">
+      <li style="margin-bottom:10px;">
+        <strong>BTU</strong> (British Thermal Unit) is just a unit of heat &mdash; like calories for energy. Bigger home, harsher weather, thinner insulation = more BTUs your system has to move. The bigger the load, the bigger the equipment.
+      </li>
+      <li style="margin-bottom:10px;">
+        <strong>Tonnage</strong> has nothing to do with weight. In HVAC, 1 ton = 12,000 BTU/hr of cooling. Your {{ home.tonnage }}-ton system is rated to move {{ home.tonnage | times: 12000 | comma }} BTU/hr of heat out of your home on a hot day. Why "tons"? Holdover from when buildings were cooled with literal blocks of ice &mdash; 1 ton was the cooling power of a ton of ice melting over a day. The term stuck.
+      </li>
+      <li>
+        <strong>Why we give you both heating AND cooling numbers:</strong> some contractors only size for one. If they pick a system based on summer cooling alone, you might end up with heating that struggles in winter. The system they propose should comfortably handle both numbers above.
+      </li>
+    </ul>
+
+    {% assign is_cold = false %}
+    {% assign is_hot = false %}
+    {% assign is_temperate = false %}
+    {% if location.climate_region == "Cold" %}{% assign is_cold = true %}{% endif %}
+    {% if location.climate_region == "Hot" %}{% assign is_hot = true %}{% endif %}
+    {% if location.climate_region == "Warm" or location.climate_region == "Mixed" or location.climate_region == "Cool" %}{% assign is_temperate = true %}{% endif %}
+
+    {% if is_cold %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 14px 0;">
+      Your climate matters too. {{ location.city }} sits in a <strong>cold climate</strong> &mdash; the U.S. building-energy code (called the <strong>IECC</strong>, International Energy Conservation Code) splits the country into climate zones, and you're in Zone {{ location.iecc_zone }}. Your <strong>design heating temperature</strong> is around {{ location.design_temp_low }}&deg;F, which is roughly the coldest you can reasonably expect on a winter day. So heating, not cooling, is your main load.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 14px 0;">
+      That matters because cold-climate homes are exactly where contractors tend to default to gas furnaces and dismiss heat pumps. A <strong>heat pump</strong> is a piece of equipment that does both heating and cooling with no fuel burning &mdash; instead of generating heat, it moves heat (it pulls heat from outside air, even cold outside air, and brings it inside). Modern ones work fine well below 0&deg;F, but the industry hasn't fully caught up with that fact.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      If you're open to a heat pump, here's the benchmark to know: ask each contractor for a <strong>cold-climate heat pump</strong> with an <strong>HSPF2 rating of 9 or higher</strong>. HSPF2 (it stands for Heating Seasonal Performance Factor &mdash; the "2" just means the modern testing standard) is basically the heat-pump version of MPG: higher = more heat per unit of electricity. As a benchmark: 7 is budget, 8 is solid, 9+ is high-efficiency. We'll come back to this on Day 7 because HSPF2 9+ also unlocks a federal tax credit worth up to $2,000.
+    </p>
+    {% endif %}
+
+    {% if is_hot %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 14px 0;">
+      Your climate matters too. {{ location.city }} sits in a <strong>hot climate</strong> &mdash; the U.S. building-energy code (called the <strong>IECC</strong>, International Energy Conservation Code) splits the country into climate zones, and you're in Zone {{ location.iecc_zone }}. Your <strong>design cooling temperature</strong> is around {{ location.design_temp_high }}&deg;F, which is roughly the hottest you can reasonably expect on a summer day. So cooling, not heating, is your main load.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      The thing nobody mentions for hot climates: <strong>humidity</strong> is half the comfort equation. A system that just lowers the temperature without removing moisture leaves your home cool and clammy. The industry term for "how much humidity does this thing pull out of the air" is <strong>latent capacity</strong>. Ask each contractor what their proposed system's latent capacity is &mdash; most won't volunteer the number, but a sharp installer can pull it from the equipment spec sheet without breaking a sweat.
+    </p>
+    {% endif %}
+
+    {% if is_temperate %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 14px 0;">
+      Your climate matters too. {{ location.city }} sits in a {{ location.climate_region | downcase }} climate &mdash; the U.S. building-energy code (called the <strong>IECC</strong>, International Energy Conservation Code) splits the country into climate zones, and you're in Zone {{ location.iecc_zone }}. Both heating and cooling matter in your area, which is why a <strong>heat pump</strong> tends to be the cleanest answer for homes like yours.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      A heat pump is a piece of equipment that does both heating and cooling with no fuel burning &mdash; instead of generating heat, it moves heat. One outdoor unit, both jobs. Worth asking each contractor whether they recommend a heat pump or a traditional AC + furnace combo, and why &mdash; the answer reveals how they think.
+    </p>
+    {% endif %}
+
+    {% if home.occupants >= 5 %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      One thing specific to you: with {{ home.occupants }} people in the house, your humidity load is a bit higher than the calculator's defaults. People generate heat and moisture just by existing &mdash; that's not a flaw in the calc, just a known correction. Mention occupant count when you talk to contractors; a thorough installer will adjust their math for it.
+    </p>
+    {% endif %}
+
+    {% if home.insulation == "Worse than avg" or home.insulation == "Bad" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      Worth flagging: you marked your insulation as {{ home.insulation | downcase }}. That changes the math. If you spend $2-3K upgrading insulation <em>before</em> the HVAC install, your new system can be a smaller (cheaper) size, run less often, and keep you more comfortable. Don't let HVAC contractors skip the insulation conversation just because you came to them for HVAC. (HVAC people call the outer shell of your home &mdash; walls, attic, windows, doors &mdash; the <strong>envelope</strong>. Anything that separates inside from outside.)
+    </p>
+    {% endif %}
+
+    <h2 style="font-size:17px;color:#18181b;margin:32px 0 12px 0;">What's coming over the next two weeks</h2>
+
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 20px 24px;padding:0;">
+      <li><strong>Day 3</strong> &mdash; the 10 things every HVAC quote should include, written so you can spot a sketchy bid the moment it lands.</li>
+      <li><strong>Day 7</strong> &mdash; a federal tax credit worth up to $2,000 most homeowners don't claim because nobody told them.</li>
+      <li><strong>Day 14</strong> &mdash; when you're ready, the fastest way to get 3 quotes side-by-side.</li>
+    </ul>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 8px 0;">
+      When you're ready to start getting quotes:
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 28px 0;">
+      <a href="{{ cta_url }}" style="color:#FF6B2B;font-weight:600;text-decoration:underline;">Get matched with local pros via Angi &rarr;</a>
+    </p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 4px 0;">&mdash; The NailTheQuote team</p>
+
+    {% include 'footer' %}
+
+  </div>
+</body>
+</html>

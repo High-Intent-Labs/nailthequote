@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The 10 things every HVAC quote should include</title>
+</head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#27272a;">
+  <div style="max-width:600px;margin:0 auto;padding:32px 20px;">
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      Three days ago you calculated your home's load &mdash; {{ home.cooling_btu | comma }} BTU cooling, {{ home.tonnage }} tons. Knowing the size is step one. Step two is reading quotes well enough to spot a real bid versus a number on a napkin.
+    </p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 24px 0;">
+      Below is the 10-item checklist. Print it, screenshot it, forward it to whoever's deciding with you. The pattern matters more than any single line: a quote missing 3 or more items is telling you something about how the contractor operates.
+    </p>
+
+    <!-- 1. Permit -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">1. A permit, pulled by the contractor.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      You probably didn't know an HVAC install requires a building permit. It does &mdash; almost everywhere in the U.S. The <strong>permit</strong> is your local building department's way of saying "we'll send an inspector to verify this was installed correctly." Why the contractor (not you) should pull it: a licensed contractor pulls the permit under <em>their</em> license, which makes them legally responsible for passing inspection.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      A real quote will list the permit fee (typically $50-$500) as a line item. If it's not there, ask why &mdash; and how the inspection is being handled.
+    </p>
+
+    <!-- 2. Equipment + AHRI -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">2. Specific make, model, and AHRI certificate number.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      Not just "3-ton Carrier system." That's a vibe, not a quote. A real bid names exactly which <strong>outdoor unit</strong> (the box outside your house, often called the "condenser") and which <strong>indoor unit</strong> (the cabinet usually in your basement, attic, or closet &mdash; sometimes called the "air handler") you're getting, with their model numbers AND an <strong>AHRI certificate number</strong>.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      Plain-English context: HVAC manufacturers sell components separately &mdash; the outdoor unit and the indoor unit are two different boxes that get installed together. <strong>AHRI</strong> is the Air-Conditioning, Heating, and Refrigeration Institute, an independent industry lab. AHRI tests pairs of components together and certifies their actual real-world efficiency.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      "AHRI-matched" means the indoor and outdoor units have been tested as a pair and confirmed to work at their advertised efficiency. Mismatched pairs (a contractor pairing a new outdoor unit with your old indoor coil, for instance, to save money) can be 15-20% less efficient than the box says &mdash; and you only find out when your electricity bills come in higher than expected. The AHRI certificate is a one-page PDF available at ahridirectory.org. A reputable contractor lists the certificate number on the quote, or can email it within an hour.
+    </p>
+
+    <!-- 3. Refrigerant -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">3. The refrigerant type, and where the old refrigerant is going.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      The fluid inside an AC or heat pump is called <strong>refrigerant</strong>. It's what carries heat in or out of your home &mdash; different from water-based heating systems. Refrigerant is regulated because it can damage the atmosphere if released, so handling it requires a federal certification called <strong>EPA 608</strong>. Any technician who touches refrigerant is supposed to have it.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      <strong>Two specific things to ask:</strong>
+    </p>
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 16px 24px;padding:0;">
+      <li style="margin-bottom:8px;"><strong>Which refrigerant does the new system use?</strong> R-410A (the old standard) is being phased out under U.S. environmental rules. The replacements are R-32 and R-454B. Quotes still using R-410A on new installs are either selling old stock (cheaper for the contractor, harder for you to repair in 5+ years when it's no longer manufactured) or behind on training.</li>
+      <li><strong>Who's reclaiming the refrigerant from your old system?</strong> It can't legally be vented to the atmosphere. Should be itemized.</li>
+    </ul>
+
+    <!-- 4. Ductwork -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">4. Ductwork &mdash; what's included, what's being ignored.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      Quick orientation: <strong>ducts</strong> are the metal or insulated-fabric tubes that carry heated or cooled air from your HVAC system to each room. They run inside walls, ceilings, attics, and basements &mdash; you usually only see them as the slotted vents on your floors or ceilings (those are called <strong>registers</strong>). If you have central heat or central AC, you have ducts.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      A lot of post-install comfort complaints &mdash; rooms that don't get cool enough, weird airflow noises, dust everywhere &mdash; trace back to ductwork rather than the new equipment. So a quote silent on ductwork is hiding either an upsell ("we'll find issues during install") or a problem they don't want to fix yet.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      A real quote should mention: any new duct runs needed, any duct sealing or insulation, any repairs to existing ducts.
+    </p>
+
+    {% if home.sqft >= 3000 %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;background-color:#fff7ed;border-left:3px solid #FF6B2B;padding:12px 16px;">
+      At your home size ({{ home.sqft | comma }} sqft), ductwork is a much bigger conversation. Ask each contractor whether your existing ducts can handle a {{ home.tonnage }}-ton system. The industry rule of thumb is <strong>400 cubic feet of air per minute, per ton of cooling</strong>. So your ducts need to move roughly {{ home.tonnage | times: 400 | comma }} cubic feet of air per minute when the system runs at full capacity. If they can't, the best equipment in the world will choke. The contractor should be able to explain this in plain language; if they can't, find one who can.
+    </p>
+    {% endif %}
+
+    <!-- 5. Warranty -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">5. Warranty terms &mdash; both parts AND labor, separately.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">There are two warranties on every HVAC install, and they cover different things:</p>
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 12px 24px;padding:0;">
+      <li style="margin-bottom:8px;"><strong>Parts warranty</strong> comes from the manufacturer. Usually 10 years on major components if you register the unit. This covers the equipment itself if something breaks.</li>
+      <li><strong>Labor warranty</strong> comes from the contractor. Usually 1-2 years. This covers the contractor's cost to install the replacement part if something fails.</li>
+    </ul>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      Why both matter: if a $400 part fails and the manufacturer covers it but you have no labor warranty, you're paying $1,500+ in labor to install the free part. A contractor with no labor warranty is telling you they don't trust their own install.
+    </p>
+
+    <!-- 6. Commissioning -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">6. Commissioning &mdash; the magic word.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      <strong>Commissioning</strong> is the post-install testing that confirms the system actually works at the rated efficiency. After they install it, the technician should:
+    </p>
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 12px 24px;padding:0;">
+      <li>Measure airflow at every register</li>
+      <li>Check that the refrigerant charge is exactly right (not too much, not too little &mdash; both cause problems)</li>
+      <li>Measure the temperature difference between the air going in and coming out</li>
+      <li>Hand you a written report with all the numbers</li>
+    </ul>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      Most contractors skip this step entirely. The ones who don't are the ones to hire. If a quote doesn't mention commissioning, ask the contractor specifically: "Will you do a commissioning report, and what does it cost extra?" Their answer tells you which kind of contractor they are.
+    </p>
+
+    <!-- 7. Disposal -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">7. Old-system disposal.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      Hauling away the old equipment, reclaiming the old refrigerant, all of it. Should be a line item, not an afterthought. A contractor who leaves your old AC sitting in the side yard "for you to handle" is a contractor who's also probably cutting other corners.
+    </p>
+
+    <!-- 8. Electrical -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">8. Electrical work.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      A new HVAC system needs electrical service to run, and a real quote should call out the specific electrical pieces. The basics:
+    </p>
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 12px 24px;padding:0;">
+      <li style="margin-bottom:6px;"><strong>Disconnect</strong> &mdash; a small outdoor switch box mounted on the wall next to the unit. Lets a technician cut power to the system without going to your main panel.</li>
+      <li style="margin-bottom:6px;"><strong>Breaker</strong> &mdash; a new switch in your home's electrical panel, sized for the new system's electrical load.</li>
+      <li><strong>Whip</strong> &mdash; a short flexible cable that connects the disconnect to the unit itself.</li>
+    </ul>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      If your home's electrical panel is old (common in homes built before 1990) and needs upgrading to handle the new system, that's a separate licensed-electrician job &mdash; and a separate line item on the quote. Don't let an HVAC contractor hide a $2,000 panel upgrade inside the HVAC bid; it should be itemized clearly.
+    </p>
+
+    <!-- 9. Zoning -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">9. Zoning, if applicable.</h3>
+    {% if home.sqft >= 2500 %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      For a {{ home.sqft | comma }} sqft home, ask about <strong>zoning</strong> explicitly. Zoning means the home is split into independently-controlled regions, each with its own thermostat. Motorized <strong>dampers</strong> (basically flaps inside the ducts) open and close to direct airflow where it's wanted. A 2- or 3-zone setup typically adds $1,000-$3,000 up front but pays back in comfort + bills, especially in multi-story homes (heat rises, so the upstairs is always too hot in summer without zoning).
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      If a contractor doesn't bring up zoning for a home your size, they're either not thinking carefully or they're optimizing for "cheapest bid" over "best system."
+    </p>
+    {% else %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      Probably not relevant for your home size, but worth knowing the term: <strong>zoning</strong> means having multiple thermostats and <strong>dampers</strong> (motorized flaps in the ducts) that let you cool different rooms independently. Comes up more often in larger or multi-story homes.
+    </p>
+    {% endif %}
+
+    <!-- 10. Labor breakdown -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">10. Labor breakdown, separated from equipment.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 24px 0;">
+      Total bid should split into equipment, materials, labor, permit, disposal. If it's one lump sum, you can't compare quotes meaningfully &mdash; and the contractor knows it. Ask for the breakdown.
+    </p>
+
+    <!-- Climate-specific watch-out -->
+    <h3 style="font-size:16px;color:#18181b;margin:32px 0 8px 0;">One climate-specific watch-out:</h3>
+
+    {% if location.climate_region == "Cold" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      In zone {{ location.iecc_zone }} ({{ location.state }}), ask whether the system is sized for the <strong>design heating temperature</strong> ({{ location.design_temp_low }}&deg;F &mdash; the coldest you can reasonably expect on a winter day) or for a milder average winter day. Some contractors size for the average to win on bid price; you then have an under-sized system three weeks every winter. Real bids reference design conditions explicitly.
+    </p>
+    {% endif %}
+
+    {% if location.climate_region == "Hot" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      In zone {{ location.iecc_zone }} ({{ location.state }}), ask the contractor what their <strong>Manual J calculation</strong> says about your latent (humidity) load. Manual J is the industry-standard load calc &mdash; the same kind of math the calculator on our site did, but more thorough. If a contractor doesn't run a Manual J, or hand-waves latent capacity, that's a contractor who oversizes systems and produces clammy, uncomfortable homes. The bid should reference Manual J as the basis.
+    </p>
+    {% endif %}
+
+    {% if location.climate_region == "Warm" or location.climate_region == "Mixed" or location.climate_region == "Cool" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      In zone {{ location.iecc_zone }}, the system has to perform across a wide temperature range. Ask specifically how their proposed equipment handles design heating ({{ location.design_temp_low }}&deg;F) AND design cooling ({{ location.design_temp_high }}&deg;F). A bid addressing only one is half a bid.
+    </p>
+    {% endif %}
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 24px 0;">
+      <strong>The use:</strong> when Angi sets up your 3 quotes, run each one through this list. The one that scores highest isn't always the cheapest &mdash; but it's almost always the one you'll be glad you picked.
+    </p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 28px 0;">
+      <a href="{{ cta_url }}" style="color:#FF6B2B;font-weight:600;text-decoration:underline;">Get 3 quotes you can actually compare &rarr;</a>
+    </p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 4px 0;">&mdash; NailTheQuote</p>
+
+    {% include 'footer' %}
+
+  </div>
+</body>
+</html>

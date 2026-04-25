@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Two weeks in. Here's the 3-quote ask.</title>
+</head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#27272a;">
+  <div style="max-width:600px;margin:0 auto;padding:32px 20px;">
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      Two weeks ago you calculated a {{ home.tonnage }}-ton system for your {{ home.sqft | comma }} sqft home in {{ location.city }}, {{ location.state }}. Cooling: {{ home.cooling_btu | comma }} BTU. Heating: {{ home.heating_btu | comma }} BTU. Climate zone: IECC {{ location.iecc_zone }}.
+    </p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">You've now got:</p>
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 16px 24px;padding:0;">
+      <li><strong>Day 0</strong> &mdash; your sizing numbers and the vocabulary to use them.</li>
+      <li><strong>Day 3</strong> &mdash; the 10-item checklist for spotting a real quote vs. a sketchy one.</li>
+      <li><strong>Day 7</strong> &mdash; the 25C tax-credit framework and the contractor competence test.</li>
+    </ul>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      The only thing left is getting actual bids in front of you. The shortest path: 3 quotes from local licensed contractors, side-by-side, scored against the Day 3 checklist.
+    </p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      <strong>Why 3 specifically?</strong> One quote is a vibe. Two is a coin flip. Three is a real comparison &mdash; enough to spot which contractor is being thorough, which is cutting corners, and which is overcharging.
+    </p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 24px 0;">
+      Angi handles the matching: describe the project once, three vetted local contractors reach out within 24 hours. No phoning around to schedule 5 separate consultations from scratch.
+    </p>
+
+    <div style="margin:0 0 24px 0;text-align:center;">
+      <a href="{{ cta_url }}" style="display:inline-block;background:#FF6B2B;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:14px 28px;border-radius:8px;">
+        Get 3 free quotes from local HVAC pros &rarr;
+      </a>
+    </div>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      That's the email. Use what you've learned. Pick the quote that scores highest on the checklist, not lowest on price. And remember the 25C paperwork &mdash; the contractor should be willing to walk you through it, or at minimum hand you the manufacturer's certification statement before you sign.
+    </p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Good luck with the install.</p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 4px 0;">&mdash; NailTheQuote</p>
+
+    {% include 'footer' %}
+
+  </div>
+</body>
+</html>
