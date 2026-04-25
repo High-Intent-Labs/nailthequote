@@ -1,0 +1,23 @@
+{
+  "_label": "Boston, MA — large home, cold climate, 4 occupants, average insulation",
+  "_purpose": "Exercises Cold-climate branch + sqft >= 3000 (ductwork CFM callout) + sqft >= 2500 (zoning paragraph)",
+  "home": {
+    "sqft": 3200,
+    "cooling_btu": 38400,
+    "heating_btu": 64000,
+    "tonnage": 3.5,
+    "occupants": 4,
+    "insulation": "Average"
+  },
+  "location": {
+    "city": "Boston",
+    "state": "Massachusetts",
+    "state_slug": "ma",
+    "climate_region": "Cold",
+    "iecc_zone": "5A",
+    "design_temp_low": 9,
+    "design_temp_high": 88
+  },
+  "cta_url": "https://request.angi.com/service-request/category/10211?utm_source=nailthequote&utm_medium=email&utm_campaign=load_calc&utm_content=not_yet_email_PLACEHOLDER",
+  "rebate_lookup_url": "https://programs.dsireusa.org/system/program?state=ma"
+}

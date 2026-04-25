@@ -1,0 +1,88 @@
+{
+  "persona": "home_hiring_not_yet",
+  "description": "Homeowner who has decided to hire a professional and hasn't started shopping. Highest Angi value per email. Time horizon 2-3 weeks between capture and signed contract.",
+  "from_address": "NailTheQuote <hello@nailthequote.com>",
+  "reply_to": "hello@nailthequote.com",
+  "sequence": [
+    {
+      "day": 0,
+      "template": "day0.liquid",
+      "subject_lines": [
+        "Your home needs a {{ home.tonnage }}-ton HVAC system. Here's what that means in English.",
+        "Your {{ location.city }} HVAC sizing — and the words that'll save you on quotes"
+      ],
+      "preheader": "The numbers, the lingo, and what to actually ask the first contractor who calls.",
+      "cta_url_template": "https://request.angi.com/service-request/category/10211?utm_source=nailthequote&utm_medium=email&utm_campaign=load_calc&utm_content=not_yet_email_1",
+      "conditionals": [
+        "location.climate_region in {Cold, Hot, Warm/Mixed/Cool}",
+        "home.occupants >= 5",
+        "home.insulation in {Worse than avg, Bad}"
+      ]
+    },
+    {
+      "day": 3,
+      "template": "day3.liquid",
+      "subject_lines": [
+        "The 10 things every HVAC quote should include",
+        "HVAC quote checklist (forward this to whoever's deciding with you)"
+      ],
+      "preheader": "A bid missing 3+ of these is telling you something about how the contractor operates.",
+      "cta_url_template": "https://request.angi.com/service-request/category/10211?utm_source=nailthequote&utm_medium=email&utm_campaign=load_calc&utm_content=not_yet_email_2",
+      "conditionals": [
+        "home.sqft >= 3000 (CFM-per-ton callout)",
+        "home.sqft >= 2500 vs. < 2500 (zoning paragraph variant)",
+        "location.climate_region in {Cold, Hot, Warm/Mixed/Cool} (climate watch-out)"
+      ]
+    },
+    {
+      "day": 7,
+      "template": "day7.liquid",
+      "subject_lines": [
+        "A federal tax credit worth up to $2,000 most homeowners don't claim",
+        "IRA Section 25C: how to actually get the heat pump tax credit"
+      ],
+      "preheader": "It's not a deduction — it's a dollar-for-dollar credit on your federal taxes.",
+      "cta_url_template": "https://request.angi.com/service-request/category/10211?utm_source=nailthequote&utm_medium=email&utm_campaign=load_calc&utm_content=not_yet_email_3",
+      "rebate_lookup_url_template": "https://programs.dsireusa.org/system/program?state={{ location.state_slug }}",
+      "conditionals": [
+        "location.climate_region in {Cold, Hot, Warm/Mixed/Cool}",
+        "home.tonnage <= 2 (mini-split callout)",
+        "home.tonnage > 5 (dual-system callout)",
+        "location.state (DSIRE URL build)"
+      ]
+    },
+    {
+      "day": 14,
+      "template": "day14.liquid",
+      "subject_lines": [
+        "Two weeks in. Here's the 3-quote ask.",
+        "OK — ready for real quotes?"
+      ],
+      "preheader": "You've got the vocabulary, the checklist, the credit framework. Last step is bids in front of you.",
+      "cta_url_template": "https://request.angi.com/service-request/category/10211?utm_source=nailthequote&utm_medium=email&utm_campaign=load_calc&utm_content=not_yet_email_4",
+      "conditionals": []
+    }
+  ],
+  "personalization_variables": {
+    "home.sqft": "number — square footage from the load calc",
+    "home.cooling_btu": "number — cooling load in BTU/hr",
+    "home.heating_btu": "number — heating load in BTU/hr",
+    "home.tonnage": "number — system size in tons (1 ton = 12,000 BTU/hr cooling)",
+    "home.occupants": "number — 2/3/4/5/6",
+    "home.insulation": "string — Excellent / Better than avg / Average / Worse than avg / Bad",
+    "location.city": "string — resolved from ZIP",
+    "location.state": "string — full name (e.g. Massachusetts)",
+    "location.state_slug": "string — lowercase abbreviation for DSIRE URL (e.g. ma)",
+    "location.climate_region": "string — Hot / Warm / Mixed / Cool / Cold",
+    "location.iecc_zone": "string — 1A through 8",
+    "location.design_temp_low": "number — coldest expected (°F)",
+    "location.design_temp_high": "number — hottest expected (°F)",
+    "cta_url": "string — pre-built Angi URL with utm tags (per-email)",
+    "rebate_lookup_url": "string — DSIRE state-filtered URL (Day 7 only)"
+  },
+  "notes": [
+    "Subject lines run through Liquid render too — the {{ home.tonnage }} merge field in subject 1 of day0 must be hydrated server-side before the send.",
+    "Resend's {{{unsubscribe_url}}} is wrapped in {% raw %}...{% endraw %} inside footer.liquid so it survives Liquid render and reaches Resend intact.",
+    "Pre-2026-04-19 captures lack the qualifying-question tags (segment / is_diy / contractor_stage), so they should NOT be enrolled in this sequence — they go through the legacy re-segment touch instead (per the original plan)."
+  ]
+}

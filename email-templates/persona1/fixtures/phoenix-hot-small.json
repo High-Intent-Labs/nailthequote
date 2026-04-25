@@ -1,0 +1,23 @@
+{
+  "_label": "Phoenix, AZ — small home, hot climate, 2 occupants, poor insulation",
+  "_purpose": "Exercises Hot-climate branch + sqft < 2500 (zoning FYI variant) + Bad insulation branch + tonnage < 2",
+  "home": {
+    "sqft": 1500,
+    "cooling_btu": 22500,
+    "heating_btu": 18000,
+    "tonnage": 1.5,
+    "occupants": 2,
+    "insulation": "Bad"
+  },
+  "location": {
+    "city": "Phoenix",
+    "state": "Arizona",
+    "state_slug": "az",
+    "climate_region": "Hot",
+    "iecc_zone": "2B",
+    "design_temp_low": 37,
+    "design_temp_high": 110
+  },
+  "cta_url": "https://request.angi.com/service-request/category/10211?utm_source=nailthequote&utm_medium=email&utm_campaign=load_calc&utm_content=not_yet_email_PLACEHOLDER",
+  "rebate_lookup_url": "https://programs.dsireusa.org/system/program?state=az"
+}

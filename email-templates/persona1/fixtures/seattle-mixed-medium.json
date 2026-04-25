@@ -1,0 +1,23 @@
+{
+  "_label": "Seattle, WA — medium home, mixed/marine climate, 5 occupants, average insulation",
+  "_purpose": "Exercises Warm/Mixed/Cool climate branch + sqft 2500 boundary (zoning paragraph) + occupants >= 5 (humidity nudge)",
+  "home": {
+    "sqft": 2400,
+    "cooling_btu": 24000,
+    "heating_btu": 38000,
+    "tonnage": 2,
+    "occupants": 5,
+    "insulation": "Better than avg"
+  },
+  "location": {
+    "city": "Seattle",
+    "state": "Washington",
+    "state_slug": "wa",
+    "climate_region": "Cool",
+    "iecc_zone": "4C",
+    "design_temp_low": 23,
+    "design_temp_high": 85
+  },
+  "cta_url": "https://request.angi.com/service-request/category/10211?utm_source=nailthequote&utm_medium=email&utm_campaign=load_calc&utm_content=not_yet_email_PLACEHOLDER",
+  "rebate_lookup_url": "https://programs.dsireusa.org/system/program?state=wa"
+}
