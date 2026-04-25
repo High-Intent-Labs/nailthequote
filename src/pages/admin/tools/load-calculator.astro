@@ -164,6 +164,70 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         </table>
       </div>
 
+      <!-- Email sequence (persona 1) — Tier C admin panel.
+           Shows queue health, per-email engagement (open / click / bounce
+           rates from Resend webhook archive), recent failures, and a kill
+           switch that pauses /api/email-scheduler without code changes. -->
+      <div class="bg-bg-card border border-border rounded-xl p-5 mb-8">
+        <div class="flex items-start justify-between gap-3 mb-4">
+          <div>
+            <h2 class="font-heading font-semibold text-lg">Email sequence (persona 1)</h2>
+            <p class="text-text-primary text-xs mt-1">Per-email engagement for the home / hiring / not_yet nurture sequence. Open + click + bounce counts join <code class="text-xs">email_send_events</code> (Resend webhook archive) on <code class="text-xs">resend_email_id</code>. Date filter does not apply &mdash; queue is shown all-time.</p>
+          </div>
+          <button id="es-killswitch-btn" class="text-xs px-3 py-1.5 rounded-lg border border-border bg-bg-card hover:bg-bg-dark whitespace-nowrap" disabled>Loading…</button>
+        </div>
+
+        <!-- Status summary tiles -->
+        <div id="es-status-summary" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-4 text-xs">
+          <!-- populated by renderEmailSequence -->
+        </div>
+
+        <p id="es-meta" class="text-text-primary text-xs mb-4">&nbsp;</p>
+
+        <!-- Per-email table -->
+        <div class="overflow-x-auto mb-6">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border text-left whitespace-nowrap">
+                <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider">Persona</th>
+                <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider">Email</th>
+                <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Pending</th>
+                <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Sent</th>
+                <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Failed</th>
+                <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Unsub</th>
+                <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Delivered</th>
+                <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Opened</th>
+                <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Clicked</th>
+                <th class="pb-2 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Bounced</th>
+              </tr>
+            </thead>
+            <tbody id="es-per-email-body" class="text-text-primary">
+              <tr><td colspan="10" class="py-4 text-center text-text-primary">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Recent failures -->
+        <div>
+          <h3 class="font-heading font-medium text-sm mb-2">Recent failures (last 10)</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+              <thead>
+                <tr class="border-b border-border text-left whitespace-nowrap">
+                  <th class="pb-2 pr-3 font-medium text-text-primary uppercase tracking-wider">Email</th>
+                  <th class="pb-2 pr-3 font-medium text-text-primary uppercase tracking-wider">Day</th>
+                  <th class="pb-2 pr-3 font-medium text-text-primary uppercase tracking-wider">Failed at (UTC)</th>
+                  <th class="pb-2 font-medium text-text-primary uppercase tracking-wider">Error</th>
+                </tr>
+              </thead>
+              <tbody id="es-failures-body" class="text-text-primary">
+                <tr><td colspan="4" class="py-3 text-center text-text-primary">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <!-- Email captures table -->
       <div class="bg-bg-card border border-border rounded-xl p-5 mb-12">
         <div class="flex items-center justify-between mb-4 gap-3">
@@ -295,6 +359,47 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     if (!res.ok) {
       const text = await res.text();
       throw new Error(`Analytics ${res.status}: ${text.slice(0, 200)}`);
+    }
+    return await res.json();
+  }
+
+  // Email sequence admin RPC — returns queue + engagement rollup in one trip.
+  // Date filter intentionally NOT applied: the queue is small and all-time
+  // counts are what matter when checking pipeline health.
+  async function callEmailSequence(password: string) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_email_sequence_admin`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ admin_password: password }),
+    });
+    if (res.status === 404) {
+      throw new Error('get_email_sequence_admin RPC not found — run migration 010 in Supabase.');
+    }
+    if (!res.ok) {
+      const text = await res.text();
+      if (res.status === 400 || text.includes('Unauthorized')) throw new Error('Unauthorized');
+      throw new Error(`Supabase error ${res.status}: ${text.slice(0, 200)}`);
+    }
+    return await res.json();
+  }
+
+  async function callSetSchedulerPaused(password: string, paused: boolean) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/set_email_scheduler_paused`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ admin_password: password, paused }),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Set paused error ${res.status}: ${text.slice(0, 200)}`);
     }
     return await res.json();
   }
@@ -502,6 +607,130 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     }
   }
 
+  // Email sequence panel — Tier C.
+  const EMAIL_DAY_LABEL = ['Day 0', 'Day 3', 'Day 7', 'Day 14'];
+  const EMAIL_PERSONA_LABEL: Record<string, string> = {
+    home_hiring_not_yet: '🟢🟢🟢 Hiring · not yet',
+    home_hiring_has_estimates: '🟢🟢 Has estimates',
+    home_hiring_researching: '🟠 Researching',
+    home_diy: '🔴 DIY',
+    pro: '⚫ Pro',
+  };
+  const STATUS_TILE_CLASS: Record<string, string> = {
+    pending:      'border-blue-500/30 bg-blue-500/10 text-blue-200',
+    sending:      'border-yellow-500/30 bg-yellow-500/10 text-yellow-200',
+    sent:         'border-emerald-500/30 bg-emerald-500/10 text-emerald-200',
+    failed:       'border-red-500/30 bg-red-500/10 text-red-200',
+    unsubscribed: 'border-orange-500/30 bg-orange-500/10 text-orange-200',
+    cancelled:    'border-zinc-500/30 bg-zinc-500/10 text-zinc-200',
+  };
+  const STATUS_ORDER = ['pending', 'sending', 'sent', 'failed', 'unsubscribed', 'cancelled'];
+
+  function fmtUtc(ts?: string | null): string {
+    if (!ts) return '—';
+    return new Date(ts).toISOString().replace('T', ' ').slice(0, 16);
+  }
+
+  function renderEmailSequence(data: any, errorMsg?: string) {
+    const summaryEl = document.getElementById('es-status-summary')!;
+    const metaEl = document.getElementById('es-meta')!;
+    const perEmailBody = document.getElementById('es-per-email-body')!;
+    const failuresBody = document.getElementById('es-failures-body')!;
+    const killBtn = document.getElementById('es-killswitch-btn') as HTMLButtonElement;
+
+    if (errorMsg || !data) {
+      const msg = errorMsg || 'No data';
+      summaryEl.innerHTML = `<div class="col-span-full text-text-primary text-xs">${escape(msg)}</div>`;
+      metaEl.innerHTML = '&nbsp;';
+      perEmailBody.innerHTML = `<tr><td colspan="10" class="py-4 text-center text-text-primary">${escape(msg)}</td></tr>`;
+      failuresBody.innerHTML = `<tr><td colspan="4" class="py-3 text-center text-text-primary">—</td></tr>`;
+      killBtn.disabled = true;
+      killBtn.textContent = 'Unavailable';
+      return;
+    }
+
+    // 1. Status summary tiles
+    const byStatus: Record<string, number> = {};
+    (data.queueByStatus || []).forEach((r: any) => { byStatus[r.status] = Number(r.count || 0); });
+    summaryEl.innerHTML = STATUS_ORDER.map((s) => {
+      const c = byStatus[s] || 0;
+      const cls = STATUS_TILE_CLASS[s] || 'border-border bg-bg-dark/40';
+      return `<div class="rounded-lg border px-3 py-2 ${cls}">
+        <div class="text-[10px] uppercase tracking-wider opacity-80">${s}</div>
+        <div class="text-lg font-semibold tabular-nums">${c.toLocaleString()}</div>
+      </div>`;
+    }).join('');
+
+    // 2. Meta line — unsubscribe count, oldest pending, newest sent
+    const unsubCount = Number(data.unsubscribeCount || 0);
+    const oldestPending = data.oldestPendingDue;
+    const newestSent = data.newestSent;
+    const metaParts = [
+      `<strong>Unsubscribed:</strong> ${unsubCount.toLocaleString()}`,
+      newestSent ? `<strong>Newest send:</strong> ${fmtUtc(newestSent)} UTC` : null,
+      oldestPending ? `<strong>Oldest pending due:</strong> ${fmtUtc(oldestPending)} UTC <span class="text-orange-400">(scheduler may be lagging)</span>` : null,
+    ].filter(Boolean).join(' &nbsp; · &nbsp; ');
+    metaEl.innerHTML = metaParts || '&nbsp;';
+
+    // 3. Per-email table
+    const rows = (data.queueByPersonaDay || []) as any[];
+    if (rows.length === 0) {
+      perEmailBody.innerHTML = `<tr><td colspan="10" class="py-4 text-center text-text-primary">No queue rows yet — no qualifying captures since enrollment shipped.</td></tr>`;
+    } else {
+      perEmailBody.innerHTML = rows.map((r) => {
+        const personaLabel = EMAIL_PERSONA_LABEL[r.persona] || r.persona;
+        const emailLabel = EMAIL_DAY_LABEL[r.email_number] ?? `#${r.email_number}`;
+        const delivered = Number(r.delivered || 0);
+        const opened = Number(r.opened || 0);
+        const clicked = Number(r.clicked || 0);
+        const bounced = Number(r.bounced || 0);
+        const openPct = delivered > 0 ? Math.round((100 * opened) / delivered) : null;
+        const clickPct = delivered > 0 ? Math.round((100 * clicked) / delivered) : null;
+        const failedClass = Number(r.failed || 0) > 0 ? 'text-red-300 font-semibold' : '';
+        const bouncedClass = bounced > 0 ? 'text-red-300 font-semibold' : '';
+        const pctTag = (n: number | null) => n != null ? ` <span class="text-[10px] opacity-60">(${n}%)</span>` : '';
+        return `<tr class="border-b border-border/60">
+          <td class="py-2 pr-3">${escape(personaLabel)}</td>
+          <td class="py-2 pr-3">${emailLabel}</td>
+          <td class="py-2 pr-3 text-right tabular-nums">${Number(r.pending || 0)}</td>
+          <td class="py-2 pr-3 text-right tabular-nums">${Number(r.sent || 0)}</td>
+          <td class="py-2 pr-3 text-right tabular-nums ${failedClass}">${Number(r.failed || 0)}</td>
+          <td class="py-2 pr-3 text-right tabular-nums">${Number(r.unsubscribed || 0)}</td>
+          <td class="py-2 pr-3 text-right tabular-nums">${delivered}</td>
+          <td class="py-2 pr-3 text-right tabular-nums">${opened}${pctTag(openPct)}</td>
+          <td class="py-2 pr-3 text-right tabular-nums">${clicked}${pctTag(clickPct)}</td>
+          <td class="py-2 text-right tabular-nums ${bouncedClass}">${bounced}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // 4. Recent failures
+    const failures = ((data.recentFailures || []) as any[]).slice(0, 10);
+    if (failures.length === 0) {
+      failuresBody.innerHTML = `<tr><td colspan="4" class="py-3 text-center text-text-primary">No failures yet.</td></tr>`;
+    } else {
+      failuresBody.innerHTML = failures.map((f) => `
+        <tr class="border-b border-border/60">
+          <td class="py-2 pr-3 font-mono">${escape(f.email)}</td>
+          <td class="py-2 pr-3">${EMAIL_DAY_LABEL[f.email_number] ?? f.email_number}</td>
+          <td class="py-2 pr-3 tabular-nums">${fmtUtc(f.claimed_at)}</td>
+          <td class="py-2 text-red-300">${escape(f.error_message || '—')}</td>
+        </tr>`).join('');
+    }
+
+    // 5. Kill switch
+    const paused = !!data.schedulerPaused;
+    killBtn.disabled = false;
+    killBtn.dataset.paused = String(paused);
+    if (paused) {
+      killBtn.textContent = '▶  Resume scheduler';
+      killBtn.className = 'text-xs px-3 py-1.5 rounded-lg border whitespace-nowrap bg-emerald-500/15 border-emerald-500/40 text-emerald-200 hover:bg-emerald-500/25';
+    } else {
+      killBtn.textContent = '⏸  Pause scheduler';
+      killBtn.className = 'text-xs px-3 py-1.5 rounded-lg border whitespace-nowrap bg-bg-card hover:bg-bg-dark border-border text-text-primary';
+    }
+  }
+
   function renderCaptures(rows: any[]) {
     const tbody = document.getElementById('captures-body')!;
     const count = document.getElementById('captures-count')!;
@@ -560,9 +789,10 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     const segmentFilter = segmentSel.value;
 
     try {
-      const [capturesP, analyticsP] = await Promise.allSettled([
+      const [capturesP, analyticsP, emailSeqP] = await Promise.allSettled([
         callCaptures(adminPassword, startDate, endDate, segmentFilter),
         callAnalytics(adminPassword, startDate, endDate),
+        callEmailSequence(adminPassword),
       ]);
 
       if (capturesP.status === 'fulfilled') {
@@ -600,6 +830,12 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         renderPersonaCta({ error: msg });
       }
 
+      if (emailSeqP.status === 'fulfilled') {
+        renderEmailSequence(emailSeqP.value);
+      } else {
+        renderEmailSequence(null, String(emailSeqP.reason));
+      }
+
       showContent();
     } finally {
       loadingEl.classList.add('hidden');
@@ -628,6 +864,31 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
   dateRangeSel.addEventListener('change', loadData);
   segmentSel.addEventListener('change', loadData);
   refreshBtn.addEventListener('click', loadData);
+
+  // Kill-switch toggle. Reads current state from the button's data attribute
+  // (set by renderEmailSequence after each load), flips it, and refreshes the
+  // panel. Confirms before pausing — easy to fat-finger.
+  document.getElementById('es-killswitch-btn')?.addEventListener('click', async () => {
+    const btn = document.getElementById('es-killswitch-btn') as HTMLButtonElement;
+    if (btn.disabled) return;
+    const wasPaused = btn.dataset.paused === 'true';
+    const newState = !wasPaused;
+    if (newState && !confirm('Pause the email scheduler? The cron will keep running but skip all sends until you resume.')) {
+      return;
+    }
+    const prevText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = newState ? 'Pausing…' : 'Resuming…';
+    try {
+      await callSetSchedulerPaused(adminPassword, newState);
+      const data = await callEmailSequence(adminPassword);
+      renderEmailSequence(data);
+    } catch (e: any) {
+      btn.textContent = prevText;
+      btn.disabled = false;
+      alert(`Toggle failed: ${e?.message || e}`);
+    }
+  });
 
   if (adminPassword) {
     loadData();
