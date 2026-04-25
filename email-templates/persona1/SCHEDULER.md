@@ -129,11 +129,37 @@ If something goes wrong, three escalating ways to stop sends:
    UPDATE email_sequence_queue SET status = 'cancelled' WHERE status = 'pending';
    ```
 
-## What ships in Tier C (next PR)
+## Tier C additions (admin panel + kill switch + Resend webhook)
 
-- Admin dashboard panel: email_sequence_queue view by status / persona / day, with retry/cancel/preview controls.
-- `utm_medium=email&utm_content=…` already wired in the manifest CTA URLs; admin will split email-driven vs. on-page CTA clicks.
-- Optional: subject-line A/B testing harness (currently every Day-N send uses subject option 1; option 2 is in the manifest but unused).
+Tier C ships:
+- **Migration 010** — `system_settings` + `email_send_events` tables + `get_email_sequence_admin` and `set_email_scheduler_paused` RPCs.
+- **`/api/resend-webhook`** — receives Resend events (delivered/opened/clicked/bounced/complained) and archives them. Configure in the Resend dashboard with `?secret=<RESEND_WEBHOOK_SECRET>`.
+- **Kill switch** — admin button on `/admin/tools/load-calculator/`. The scheduler reads `system_settings.email_scheduler_paused` at the top of every tick (fail-open if the table is missing).
+- **Admin panel** — "Email sequence (persona 1)" card on the load-calc admin page showing queue status tiles, per-email engagement (open/click/bounce % from the webhook archive), recent failures, and the kill switch.
+
+### Tier C pre-deploy checklist
+
+1. Apply **migration 010** in Supabase SQL Editor before merging the Tier C PR.
+2. Add `RESEND_WEBHOOK_SECRET` to Cloudflare Pages env vars (Production + Preview). `openssl rand -hex 32`.
+3. In the Resend dashboard, create a webhook:
+   - URL: `https://nailthequote.com/api/resend-webhook?secret=<RESEND_WEBHOOK_SECRET>`
+   - Events: `email.delivered`, `email.opened`, `email.clicked`, `email.bounced`, `email.complained`, `email.delivery_delayed`
+4. Confirm engagement data is flowing: `SELECT event_type, COUNT(*) FROM email_send_events GROUP BY event_type;` should show rows within ~1 hour of the first send post-merge.
+
+### Tier C kill-switch behavior
+
+- Admin clicks "Pause scheduler" → `set_email_scheduler_paused(password, true)` → `system_settings.email_scheduler_paused = true`.
+- Next cron tick: scheduler reads `system_settings`, sees `paused=true`, returns `200 {"paused": true, "processed": 0}` without claiming any rows.
+- Admin clicks "Resume scheduler" → flips it back to false → scheduler resumes claiming on the next tick.
+
+The kill switch is **fail-open** — if the `system_settings` query errors, the scheduler keeps running. Otherwise a settings-table outage would halt the entire pipeline.
+
+## What ships in Tier D (future)
+
+- Per-row retry / cancel buttons in the admin (today: SQL only).
+- Subject-line A/B harness (manifest already has subject option 2; unused at send time).
+- Svix signature verification on the Resend webhook (currently URL secret only).
+- Other personas (DIY, has_estimates, researching, pro) once their templates ship.
 
 ## Failure modes & expected behavior
 
