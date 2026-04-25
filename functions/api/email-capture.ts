@@ -2,6 +2,7 @@ import type { Env } from '../_lib/env';
 import { getSupabaseAdmin } from '../_lib/supabase';
 import { getResend, getAudienceId } from '../_lib/resend';
 import { enrollPersona1 } from '../_lib/persona1-enroll';
+import { enrollPersona2 } from '../_lib/persona2-enroll';
 
 // ---------------------------------------------------------------------------
 // Basic in-memory duplicate-submission guard
@@ -172,14 +173,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     //    The qualifier is captured by the wizard (segment + is_diy +
     //    contractor_stage) — see functions/_lib/persona1-enroll.ts for the
     //    decision logic.
+    const captureContext = {
+      email,
+      segment: segment ?? null,
+      isDiy: typeof isDiy === 'boolean' ? isDiy : null,
+      contractorStage: contractorStage ?? null,
+      toolSlug: toolSlug ?? null,
+    };
     try {
-      const enrollResult = await enrollPersona1(supabase, {
-        email,
-        segment: segment ?? null,
-        isDiy: typeof isDiy === 'boolean' ? isDiy : null,
-        contractorStage: contractorStage ?? null,
-        toolSlug: toolSlug ?? null,
-      });
+      const enrollResult = await enrollPersona1(supabase, captureContext);
       if (!enrollResult.enrolled && enrollResult.reason && enrollResult.reason !== 'not-qualified') {
         console.error('persona1 enrollment skipped (NON-FATAL):', {
           email,
@@ -188,6 +190,19 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       }
     } catch (enrollErr) {
       console.error('persona1 enrollment threw (NON-FATAL):', enrollErr);
+    }
+    // Persona-2: home + hiring + has_estimates. Mutually exclusive with
+    // persona-1 by contractor_stage, so at most one will qualify per capture.
+    try {
+      const enrollResult = await enrollPersona2(supabase, captureContext);
+      if (!enrollResult.enrolled && enrollResult.reason && enrollResult.reason !== 'not-qualified') {
+        console.error('persona2 enrollment skipped (NON-FATAL):', {
+          email,
+          reason: enrollResult.reason,
+        });
+      }
+    } catch (enrollErr) {
+      console.error('persona2 enrollment threw (NON-FATAL):', enrollErr);
     }
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });

@@ -12,7 +12,11 @@ import {
   PERSONA1_TEMPLATES,
   PERSONA1_TEMPLATE_BY_NUMBER,
   PERSONA1_MANIFEST,
+  PERSONA2_TEMPLATES,
+  PERSONA2_TEMPLATE_BY_NUMBER,
+  PERSONA2_MANIFEST,
   type Persona1TemplateKey,
+  type Persona2TemplateKey,
 } from '../_generated/email-templates';
 
 let cachedEngine: Liquid | null = null;
@@ -65,6 +69,29 @@ export async function renderPersona1Email(
   const subject = await engine.parseAndRender(sequenceEntry.subject_lines[0], data);
   // Preheader is plain text but we still render it through Liquid in case future
   // preheaders include merge fields.
+  const preheader = await engine.parseAndRender(sequenceEntry.preheader, data);
+
+  return { subject, html, preheader };
+}
+
+/**
+ * Render the persona-2 email at index `emailNumber` (0-2) with the given data.
+ * Mirrors renderPersona1Email but routes through the persona-2 manifest +
+ * templates. Data shape is identical to persona-1 (both use the load-calc
+ * email_captures row).
+ */
+export async function renderPersona2Email(
+  emailNumber: number,
+  data: Record<string, unknown>
+): Promise<RenderResult> {
+  const key = PERSONA2_TEMPLATE_BY_NUMBER[emailNumber] as Persona2TemplateKey | undefined;
+  if (!key) throw new Error(`invalid email_number: ${emailNumber}`);
+  const sequenceEntry = PERSONA2_MANIFEST.sequence[emailNumber];
+  const templateSource = PERSONA2_TEMPLATES[key];
+
+  const engine = getEngine();
+  const html = await engine.parseAndRender(templateSource, data);
+  const subject = await engine.parseAndRender(sequenceEntry.subject_lines[0], data);
   const preheader = await engine.parseAndRender(sequenceEntry.preheader, data);
 
   return { subject, html, preheader };

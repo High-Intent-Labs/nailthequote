@@ -1,0 +1,20 @@
+{
+  "home": {
+    "sqft": 3264,
+    "cooling_btu": 71296,
+    "heating_btu": 89120,
+    "tonnage": 6,
+    "occupants": 4,
+    "insulation": "Better than avg"
+  },
+  "location": {
+    "city": "Ballston Spa",
+    "state": "New York",
+    "state_slug": "ny",
+    "climate_region": "Cool",
+    "iecc_zone": "5A",
+    "design_temp_low": -2,
+    "design_temp_high": 88
+  },
+  "cta_url": "https://request.angi.com/service-request/category/10211?utm_source=nailthequote&utm_medium=email&utm_campaign=load_calc&utm_content=has_estimates_email_PREVIEW"
+}

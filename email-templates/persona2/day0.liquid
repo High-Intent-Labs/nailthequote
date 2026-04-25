@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Score your HVAC quotes against this 10-item checklist</title>
+</head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#27272a;">
+  <div style="max-width:600px;margin:0 auto;padding:32px 20px;">
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Hey there,</p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      You told us you already have HVAC estimates in hand. Good &mdash; comparing quotes is the single biggest thing a homeowner can do to avoid getting taken on this kind of project. The trick is knowing what to compare. Most people compare on the bottom-line price, which is the dimension contractors are best at gaming.
+    </p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      Before anything else, here's what we calculated for your {{ home.sqft | comma }} sqft home in {{ location.city }}, {{ location.state }}:
+    </p>
+
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 16px 24px;padding:0;">
+      <li><strong>Cooling:</strong> {{ home.cooling_btu | comma }} BTU/hr</li>
+      <li><strong>Heating:</strong> {{ home.heating_btu | comma }} BTU/hr</li>
+      <li><strong>System size:</strong> {{ home.tonnage }} tons</li>
+    </ul>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      First check on every quote you have: does the system being proposed match this size? You should see &ldquo;{{ home.tonnage }} tons&rdquo; or &ldquo;{{ home.cooling_btu | comma }} BTU/hr&rdquo; somewhere on the proposal. (1 ton = 12,000 BTU/hr of cooling capacity. The two numbers are just different units for the same thing.) If a contractor proposes something materially smaller or bigger than this without explaining why, that's the first conversation to have.
+    </p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 24px 0;">
+      Underbidding on system size is the easiest way for a contractor to win on price &mdash; and the easiest thing to &ldquo;fix&rdquo; mid-install (&ldquo;turns out you actually need a bigger unit, that'll be another $1,500&rdquo;). If two of your quotes propose the same size and one proposes smaller, the cheap-looking quote may not stay cheap.
+    </p>
+
+    <h2 style="font-size:17px;color:#18181b;margin:32px 0 12px 0;">Now the checklist.</h2>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 24px 0;">
+      Below are the 10 items every HVAC quote should already include. Score each of yours: &check; if it's clearly there, &times; if it isn't or is vague. A quote missing 3+ items is telling you something about how that contractor operates. Day 3 covers what to do about it.
+    </p>
+
+    <!-- 1. Permit -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">1. The permit, with the contractor pulling it.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      You probably didn't know HVAC requires a building permit. It does &mdash; almost everywhere in the U.S. The <strong>permit</strong> is your local building department's way of saying &ldquo;we'll send an inspector to verify this was installed correctly.&rdquo; Why the contractor (not you) should pull it: a licensed contractor pulls the permit under <em>their</em> license, which makes them legally responsible for passing inspection.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 6px 0;">
+      <strong>Look for:</strong> a &ldquo;permit fee&rdquo; line item (typically $50-$500) AND confirmation that the contractor is the one filing it.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      <strong>Missing means:</strong> they're either skipping the permit (illegal in most jurisdictions), or pushing the legal responsibility onto you. A few jurisdictions allow homeowner-pulled permits, but ask why they're not handling it themselves &mdash; the answer reveals a lot.
+    </p>
+
+    <!-- 2. Equipment + AHRI -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">2. Specific make, model, and AHRI certificate number.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      Not just &ldquo;3-ton Carrier system.&rdquo; Real quotes name the exact <strong>outdoor unit</strong> (the box outside, sometimes called the &ldquo;condenser&rdquo;) AND the exact <strong>indoor unit</strong> (the cabinet in your basement, attic, or closet, sometimes called the &ldquo;air handler&rdquo;), with full model numbers AND an <strong>AHRI certificate number</strong>.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      Plain English on AHRI: it stands for the Air-Conditioning, Heating, and Refrigeration Institute &mdash; an independent industry lab that tests pairs of components and certifies their efficiency. &ldquo;AHRI-matched&rdquo; means the indoor and outdoor units have been tested together and confirmed to work at their advertised efficiency. Mismatched pairs (a contractor pairing a new outdoor unit with your old indoor coil to save money) can run 15-20% less efficient than the box says.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 6px 0;">
+      <strong>Look for:</strong> model numbers for both units (a real model number is alphanumeric, usually 8-12 characters &mdash; not a vague description), and a 7-digit AHRI certificate number.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      <strong>Missing means:</strong> the contractor either doesn't know which exact model they're proposing yet (sloppy), or doesn't want you to look it up (sketchy). A reputable contractor lists this clearly.
+    </p>
+
+    <!-- 3. Refrigerant -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">3. The refrigerant type.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      <strong>Refrigerant</strong> is the fluid inside an AC or heat pump that carries heat in or out of your home. It's federally regulated &mdash; handling it requires an EPA 608 certification. Any technician working on your system is supposed to have it.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 6px 0;">
+      <strong>Look for:</strong> the refrigerant type called out by name. R-410A (the old standard) is being phased out under U.S. environmental rules. The replacements are R-32 and R-454B.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      <strong>Missing means</strong> (or R-410A on a new install): the contractor is either selling old stock &mdash; cheaper for them now, harder for you to repair in 5+ years &mdash; or behind on training. Worth asking why they're not on the newer refrigerants.
+    </p>
+
+    <!-- 4. Ductwork -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">4. Ductwork &mdash; what's included.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      <strong>Ducts</strong> are the metal or insulated-fabric tubes that carry heated or cooled air from your HVAC system to each room. They run inside walls, ceilings, attics, and basements &mdash; you usually only see them as the slotted vents on your floors or ceilings (those are called <strong>registers</strong>). If you have central heat or AC, you have ducts.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 6px 0;">
+      <strong>Look for:</strong> explicit mention of new duct runs needed, sealing, insulation upgrades, or repairs to existing ducts.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      <strong>Missing means:</strong> either no duct work is needed (rare for an existing system), or the contractor is hiding a future &ldquo;we found problems mid-install&rdquo; upsell. Ask explicitly: &ldquo;Did you inspect the existing ductwork? What condition is it in?&rdquo; A contractor who can't answer hasn't actually looked.
+    </p>
+
+    {% if home.sqft >= 3000 %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;background-color:#fff7ed;border-left:3px solid #FF6B2B;padding:12px 16px;">
+      At your home size ({{ home.sqft | comma }} sqft), this is one of the most common surprise charges. Industry rule of thumb: a duct system needs to move 400 cubic feet of air per minute, per ton of cooling. So your ducts need to handle ~{{ home.tonnage | times: 400 | comma }} cubic feet per minute. If a quote doesn't mention duct-capacity testing, ask whether they verified your existing ducts can handle the new system. The answer should be specific.
+    </p>
+    {% endif %}
+
+    <!-- 5. Warranty -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">5. Warranty terms &mdash; both parts AND labor, separately.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">Two warranties on every install:</p>
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 12px 24px;padding:0;">
+      <li style="margin-bottom:8px;"><strong>Parts warranty</strong> comes from the manufacturer. Usually 10 years on major components if you register the unit. Covers the equipment.</li>
+      <li><strong>Labor warranty</strong> comes from the contractor. Usually 1-2 years. Covers their cost to install replacement parts.</li>
+    </ul>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      Why both matter: if a $400 part fails and the manufacturer covers it but you have no labor warranty, you're paying $1,500+ in labor to install the free part.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 6px 0;">
+      <strong>Look for:</strong> two separate durations called out &mdash; e.g., &ldquo;10-year parts / 2-year labor.&rdquo;
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      <strong>Missing means:</strong> either no labor warranty (the contractor doesn't trust their own install), or labor warranty bundled into a vague &ldquo;1-year warranty&rdquo; line you can't compare against another quote. Press for the breakdown.
+    </p>
+
+    <!-- 6. Commissioning -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">6. Commissioning.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      This is the magic word. <strong>Commissioning</strong> is the post-install testing that verifies the system actually performs at its rated efficiency: measuring airflow at every register, checking refrigerant charge, measuring temperature differences, and giving you a written report.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 6px 0;">
+      <strong>Look for:</strong> explicit mention of &ldquo;commissioning&rdquo; or &ldquo;post-install verification with written report.&rdquo;
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      <strong>Missing means:</strong> most contractors skip commissioning. The ones who do it call it out as a line item. Ask each contractor directly: &ldquo;Do you commission the system after install?&rdquo; The answer separates careful contractors from the rest.
+    </p>
+
+    <!-- 7. Disposal -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">7. Old-system disposal.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 6px 0;">
+      Hauling away the old equipment, reclaiming the old refrigerant. Should be itemized.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 6px 0;">
+      <strong>Look for:</strong> a &ldquo;disposal&rdquo; or &ldquo;removal&rdquo; line item.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      <strong>Missing means:</strong> a contractor who plans to leave your old AC in the side yard &ldquo;for you to handle&rdquo; is also probably cutting other corners.
+    </p>
+
+    <!-- 8. Electrical -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">8. Electrical work.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      A new HVAC system needs electrical service. The quote should call out the specific pieces:
+    </p>
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 12px 24px;padding:0;">
+      <li style="margin-bottom:6px;"><strong>Disconnect</strong> &mdash; a small outdoor switch box mounted next to the unit, used to cut power for service.</li>
+      <li style="margin-bottom:6px;"><strong>Breaker</strong> &mdash; a new switch in your home's electrical panel, sized for the new system's load.</li>
+      <li><strong>Whip</strong> &mdash; a short flexible cable that connects the disconnect to the unit itself.</li>
+    </ul>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 6px 0;">
+      <strong>Look for:</strong> these items mentioned by name, OR a clear note that no electrical work is needed because the existing wiring matches.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      <strong>Missing means:</strong> either the contractor is sub-ing the electrical work and burying the cost, or they're planning to skip something they shouldn't. If your home was built before 1990, your panel may need upgrading &mdash; that's a separate licensed-electrician line item, not something to hide inside the HVAC bid.
+    </p>
+
+    <!-- 9. Zoning -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">9. Zoning, if applicable.</h3>
+    {% if home.sqft >= 2500 %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">
+      For a {{ home.sqft | comma }} sqft home, this is worth a conversation. <strong>Zoning</strong> means splitting the house into independently-controlled regions, each with its own thermostat. Motorized <strong>dampers</strong> (basically flaps inside the ducts) open and close to direct airflow where it's wanted. Adds $1,000-$3,000 up front, pays back in comfort + bills, especially in multi-story homes (heat rises, upstairs always too hot in summer without zoning).
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      <strong>Missing means:</strong> if none of your quotes brought up zoning for a home your size, the contractors are either not thinking carefully or just optimizing for cheapest bid. The bid that wins on price won't deliver the most comfort.
+    </p>
+    {% else %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      Probably not relevant for your home size, but worth knowing the term: <strong>zoning</strong> means having multiple thermostats and <strong>dampers</strong> (motorized flaps in the ducts) that let you cool different rooms independently. Comes up more in larger or multi-story homes. Skip the score on this one.
+    </p>
+    {% endif %}
+
+    <!-- 10. Labor breakdown -->
+    <h3 style="font-size:16px;color:#18181b;margin:24px 0 8px 0;">10. Labor breakdown, separated from equipment.</h3>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 6px 0;">
+      A real quote splits out: equipment cost, materials cost, labor cost, permit fee, disposal fee.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 6px 0;">
+      <strong>Look for:</strong> a clear line-item breakdown.
+    </p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      <strong>Missing means:</strong> if it's one lump-sum number, you can't compare two quotes meaningfully &mdash; and the contractor knows it. Ask each quote-giver for an itemized breakdown. A contractor who refuses is one whose pricing won't survive the comparison.
+    </p>
+
+    <!-- Climate-specific watch-out -->
+    <h3 style="font-size:16px;color:#18181b;margin:32px 0 8px 0;">One climate-specific watch-out:</h3>
+
+    {% if location.climate_region == "Cold" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      For your zone (IECC Zone {{ location.iecc_zone }}, {{ location.state }}), check whether each quote sized the system for your <strong>design heating temperature</strong> ({{ location.design_temp_low }}&deg;F &mdash; the coldest you can reasonably expect on a winter day) or for an average winter day. Some contractors size for the average so they can quote a smaller, cheaper system &mdash; and three weeks of every winter, you have a system that can't keep up. Real bids reference design conditions explicitly. (&ldquo;IECC&rdquo; is the International Energy Conservation Code &mdash; it splits the U.S. into climate zones used by the building industry.)
+    </p>
+    {% endif %}
+
+    {% if location.climate_region == "Hot" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      For your zone (IECC Zone {{ location.iecc_zone }}, {{ location.state }}), check whether each contractor mentions <strong>Manual J</strong> &mdash; the industry-standard load calculation method. If a quote doesn't reference Manual J, or doesn't address humidity at all, that contractor likely oversizes systems and produces clammy, uncomfortable homes. (A system that just lowers the temperature without removing moisture is the difference between feeling cool and feeling cold-and-clammy.) (&ldquo;IECC&rdquo; is the International Energy Conservation Code &mdash; it splits the U.S. into climate zones.)
+    </p>
+    {% endif %}
+
+    {% if location.climate_region == "Warm" or location.climate_region == "Mixed" or location.climate_region == "Cool" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">
+      For your zone (IECC Zone {{ location.iecc_zone }}), the system has to perform across a wide temperature range. Check whether each quote addresses both your <strong>design heating temperature</strong> ({{ location.design_temp_low }}&deg;F) AND your <strong>design cooling temperature</strong> ({{ location.design_temp_high }}&deg;F). A quote addressing only one is half a quote. (&ldquo;IECC&rdquo; is the International Energy Conservation Code &mdash; it splits the U.S. into climate zones.)
+    </p>
+    {% endif %}
+
+    <h3 style="font-size:16px;color:#18181b;margin:32px 0 8px 0;">How to read your scores:</h3>
+
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 16px 24px;padding:0;">
+      <li style="margin-bottom:10px;"><strong>9-10 &check;:</strong> serious bidder. Move on to comparing warranty, timeline, and contractor reputation against price (we'll cover the framework on Day 10).</li>
+      <li style="margin-bottom:10px;"><strong>6-8 &check;:</strong> missing pieces. Push back, ask for the missing items in writing. Reputable contractors will revise without complaint. The ones who get defensive are telling you something.</li>
+      <li><strong>5 or fewer &check;:</strong> that's not a quote you can really compare. Either the contractor will provide more detail when pushed (give them one chance), or they're not bringing the level of detail you need.</li>
+    </ul>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 24px 0;">
+      If your existing quotes are scoring on the lower end, the asymmetric move is one more independent bid from a contractor who hits all 10 items. Angi will set that up in 24 hours so you have a clean third comparison.
+    </p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 28px 0;">
+      <a href="{{ cta_url }}" style="color:#FF6B2B;font-weight:600;text-decoration:underline;">Get one more quote that hits all 10 &rarr;</a>
+    </p>
+
+    <p style="font-size:15px;line-height:1.65;margin:0 0 4px 0;">&mdash; NailTheQuote</p>
+    <p style="font-size:14px;line-height:1.65;margin:0 0 16px 0;color:#71717a;font-style:italic;">
+      P.S. On Day 3 we'll cover the specific pricing tricks contractors use to make their quote look better than it is &mdash; the brand-substitution play, the labor-only quote that hides equipment markup, the cash-no-permit dodge, and a few more. After that email you'll be reading these quotes like you've worked the trade.
+    </p>
+
+    {% include 'footer' %}
+
+  </div>
+</body>
+</html>

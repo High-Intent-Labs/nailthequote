@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /*
  * embed-email-templates.mjs — generates functions/_generated/email-templates.ts
- * from email-templates/persona1/*.liquid.
+ * from email-templates/<persona>/*.liquid for every persona below.
  *
  * Why generate? Cloudflare Pages Functions are bundled by Wrangler/esbuild,
  * and embedding template content as TS string exports is the most portable
@@ -13,6 +13,10 @@
  *
  * The generated file IS committed to the repo so reviewers can see what the
  * production worker will use. Re-run after every change to .liquid sources.
+ *
+ * To add a new persona: drop a folder under email-templates/<name>/ with the
+ * same shape as persona1 (manifest.json, day*.liquid, partials/footer.liquid),
+ * then add an entry to PERSONAS below.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -20,49 +24,91 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(HERE, '..');
-const SRC = path.join(REPO_ROOT, 'email-templates', 'persona1');
 const OUT_DIR = path.join(REPO_ROOT, 'functions', '_generated');
 const OUT = path.join(OUT_DIR, 'email-templates.ts');
 
 const read = (p) => fs.readFileSync(p, 'utf8');
 
-const footerPartial = read(path.join(SRC, 'partials', 'footer.liquid'));
+// Each persona is bundled as a separate set of exports. Order in this array
+// is independent — the generated file exports each persona's constants in
+// a stable form (PERSONA<N>_MANIFEST etc.).
+const PERSONAS = [
+  {
+    constPrefix: 'PERSONA1',
+    folder: 'persona1',
+    templateKeys: ['day0', 'day3', 'day7', 'day14'],
+  },
+  {
+    constPrefix: 'PERSONA2',
+    folder: 'persona2',
+    templateKeys: ['day0', 'day3', 'day10'],
+  },
+];
 
-// Inline the footer partial at build time. .liquid sources keep
-// `{% include 'footer' %}` for the local preview harness (which uses real
-// Liquid partials lookup), but the production module gets the footer
-// substituted directly so the worker doesn't need a filesystem-backed
-// partials adapter (Cloudflare Workers don't have one).
-const inlineFooter = (tpl) =>
-  tpl.replace(/\{%\s*include\s+['"]footer['"]\s*%\}/g, footerPartial);
+function bundlePersona(p) {
+  const src = path.join(REPO_ROOT, 'email-templates', p.folder);
+  const footerPartial = read(path.join(src, 'partials', 'footer.liquid'));
 
-const templates = {
-  day0: inlineFooter(read(path.join(SRC, 'day0.liquid'))),
-  day3: inlineFooter(read(path.join(SRC, 'day3.liquid'))),
-  day7: inlineFooter(read(path.join(SRC, 'day7.liquid'))),
-  day14: inlineFooter(read(path.join(SRC, 'day14.liquid'))),
-};
-const manifest = JSON.parse(read(path.join(SRC, 'manifest.json')));
+  // Inline the footer partial at build time. .liquid sources keep
+  // `{% include 'footer' %}` for the local preview harness (which uses real
+  // Liquid partials lookup), but the production module gets the footer
+  // substituted directly so the worker doesn't need a filesystem-backed
+  // partials adapter (Cloudflare Workers don't have one).
+  const inlineFooter = (tpl) =>
+    tpl.replace(/\{%\s*include\s+['"]footer['"]\s*%\}/g, footerPartial);
 
-// Sanity check: manifest order must match template names
-const manifestTemplates = manifest.sequence.map((s) => s.template.replace(/\.liquid$/, ''));
-const expected = ['day0', 'day3', 'day7', 'day14'];
-if (JSON.stringify(manifestTemplates) !== JSON.stringify(expected)) {
-  console.error(`manifest order mismatch: got ${JSON.stringify(manifestTemplates)}, expected ${JSON.stringify(expected)}`);
-  process.exit(1);
+  const templates = {};
+  for (const key of p.templateKeys) {
+    templates[key] = inlineFooter(read(path.join(src, `${key}.liquid`)));
+  }
+  const manifest = JSON.parse(read(path.join(src, 'manifest.json')));
+
+  // Sanity check: manifest sequence order must match templateKeys order.
+  const manifestTemplates = manifest.sequence.map((s) => s.template.replace(/\.liquid$/, ''));
+  if (JSON.stringify(manifestTemplates) !== JSON.stringify(p.templateKeys)) {
+    console.error(
+      `${p.folder} manifest order mismatch: got ${JSON.stringify(manifestTemplates)}, expected ${JSON.stringify(p.templateKeys)}`
+    );
+    process.exit(1);
+  }
+
+  return { ...p, footerPartial, templates, manifest };
 }
+
+function renderPersonaSection(p) {
+  const keysUnion = p.templateKeys.map((k) => JSON.stringify(k)).join(' | ');
+  const templatesObj = p.templateKeys
+    .map((k) => `  ${JSON.stringify(k)}: ${JSON.stringify(p.templates[k])},`)
+    .join('\n');
+  const numberArray = p.templateKeys.map((k) => JSON.stringify(k)).join(', ');
+
+  return `
+export const ${p.constPrefix}_MANIFEST: PersonaManifest = ${JSON.stringify(p.manifest, null, 2)};
+
+export const ${p.constPrefix}_TEMPLATES: Record<${keysUnion}, string> = {
+${templatesObj}
+};
+
+export const ${p.constPrefix}_FOOTER_PARTIAL: string = ${JSON.stringify(p.footerPartial)};
+
+// email_number → template key. Indexes match ${p.constPrefix}_MANIFEST.sequence order.
+export const ${p.constPrefix}_TEMPLATE_BY_NUMBER = [${numberArray}] as const;
+export type ${p.constPrefix.charAt(0)}${p.constPrefix.slice(1).toLowerCase()}TemplateKey = (typeof ${p.constPrefix}_TEMPLATE_BY_NUMBER)[number];
+`.trim();
+}
+
+const bundled = PERSONAS.map(bundlePersona);
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
 const banner = `// AUTO-GENERATED by scripts/embed-email-templates.mjs — do not edit by hand.
-// Edit the .liquid sources in email-templates/persona1/ and run:
+// Edit the .liquid sources in email-templates/<persona>/ and run:
 //   npm run prebuild
 // (or it will run automatically before \`npm run build\`).
 //
 // Generated at: ${new Date().toISOString()}`;
 
-const ts = `${banner}
-
+const sharedTypes = `
 export interface SequenceEntry {
   day: number;
   template: string;
@@ -82,22 +128,9 @@ export interface PersonaManifest {
   personalization_variables: Record<string, string>;
   notes: string[];
 }
+`.trim();
 
-export const PERSONA1_MANIFEST: PersonaManifest = ${JSON.stringify(manifest, null, 2)};
-
-export const PERSONA1_TEMPLATES: Record<'day0' | 'day3' | 'day7' | 'day14', string> = {
-  day0: ${JSON.stringify(templates.day0)},
-  day3: ${JSON.stringify(templates.day3)},
-  day7: ${JSON.stringify(templates.day7)},
-  day14: ${JSON.stringify(templates.day14)},
-};
-
-export const PERSONA1_FOOTER_PARTIAL: string = ${JSON.stringify(footerPartial)};
-
-// email_number → template key. Indexes match PERSONA1_MANIFEST.sequence order.
-export const PERSONA1_TEMPLATE_BY_NUMBER = ['day0', 'day3', 'day7', 'day14'] as const;
-export type Persona1TemplateKey = (typeof PERSONA1_TEMPLATE_BY_NUMBER)[number];
-`;
+const ts = [banner, '', sharedTypes, '', ...bundled.map(renderPersonaSection)].join('\n\n') + '\n';
 
 fs.writeFileSync(OUT, ts, 'utf8');
-console.log(`Wrote ${path.relative(REPO_ROOT, OUT)} (${ts.length.toLocaleString()} chars)`);
+console.log(`Wrote ${path.relative(REPO_ROOT, OUT)} (${ts.length.toLocaleString()} chars, ${bundled.length} personas)`);

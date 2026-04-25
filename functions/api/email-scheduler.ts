@@ -19,10 +19,31 @@
 import type { Env } from '../_lib/env';
 import { getSupabaseAdmin } from '../_lib/supabase';
 import { getResend } from '../_lib/resend';
-import { renderPersona1Email } from '../_lib/template-engine';
+import { renderPersona1Email, renderPersona2Email } from '../_lib/template-engine';
 import { buildPersona1TemplateData, PERSONA1_KEY } from '../_lib/persona1-enroll';
+import { buildPersona2TemplateData, PERSONA2_KEY } from '../_lib/persona2-enroll';
 import { buildUnsubscribeUrl } from '../_lib/unsubscribe-token';
-import { PERSONA1_MANIFEST } from '../_generated/email-templates';
+import { PERSONA1_MANIFEST, PERSONA2_MANIFEST, type PersonaManifest } from '../_generated/email-templates';
+
+// Per-persona dispatch table. Adding a new persona means: import its key +
+// builder + render fn, drop a row in here. Everything else is generic.
+type PersonaConfig = {
+  manifest: PersonaManifest;
+  buildData: (capture: CaptureRow, emailNumber: number, ctaUrl: string) => Record<string, unknown>;
+  render: (emailNumber: number, data: Record<string, unknown>) => Promise<{ subject: string; html: string; preheader: string }>;
+};
+const PERSONA_CONFIG: Record<string, PersonaConfig> = {
+  [PERSONA1_KEY]: {
+    manifest: PERSONA1_MANIFEST,
+    buildData: buildPersona1TemplateData,
+    render: renderPersona1Email,
+  },
+  [PERSONA2_KEY]: {
+    manifest: PERSONA2_MANIFEST,
+    buildData: buildPersona2TemplateData,
+    render: renderPersona2Email,
+  },
+};
 
 // Don't claim more than this in a single tick. At 15-min cadence and current
 // volume (~150 captures/wk → ~85 persona1-bucket sends/wk), we'd never hit
@@ -144,9 +165,8 @@ async function processOne(
     return 'unsubscribed';
   }
 
-  // We currently only support persona1. Other personas will return early
-  // until their templates ship.
-  if (row.persona !== PERSONA1_KEY) {
+  const personaConfig = PERSONA_CONFIG[row.persona];
+  if (!personaConfig) {
     await supabase
       .from('email_sequence_queue')
       .update({ status: 'cancelled', error_message: `unsupported persona: ${row.persona}` })
@@ -178,15 +198,15 @@ async function processOne(
   const capture: CaptureRow = captures[0] as CaptureRow;
 
   // Build CTA URL from manifest template (utm_content per email_number).
-  const sequenceEntry = PERSONA1_MANIFEST.sequence[row.email_number];
+  const sequenceEntry = personaConfig.manifest.sequence[row.email_number];
   if (!sequenceEntry) {
-    await markFailed(supabase, row.id, `missing manifest entry for email_number=${row.email_number}`);
+    await markFailed(supabase, row.id, `missing manifest entry for persona=${row.persona} email_number=${row.email_number}`);
     return 'failed_manifest';
   }
   const ctaUrl = sequenceEntry.cta_url_template;
 
-  const data = buildPersona1TemplateData(capture, row.email_number, ctaUrl);
-  const { subject, html, preheader } = await renderPersona1Email(row.email_number, data);
+  const data = personaConfig.buildData(capture, row.email_number, ctaUrl);
+  const { subject, html, preheader } = await personaConfig.render(row.email_number, data);
 
   // Substitute Resend's {{{unsubscribe_url}}} placeholder with our HMAC-signed URL.
   const unsubUrl = await buildUnsubscribeUrl(row.email, env.UNSUBSCRIBE_SIGNING_KEY);
@@ -203,9 +223,9 @@ async function processOne(
 
   // Send via Resend
   const { data: sendResult, error: sendErr } = await resend.emails.send({
-    from: PERSONA1_MANIFEST.from_address,
+    from: personaConfig.manifest.from_address,
     to: row.email,
-    replyTo: PERSONA1_MANIFEST.reply_to,
+    replyTo: personaConfig.manifest.reply_to,
     subject,
     html: htmlWithPreheader,
     headers: {
