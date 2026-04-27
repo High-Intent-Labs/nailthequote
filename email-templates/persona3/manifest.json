@@ -1,0 +1,78 @@
+{
+  "persona": "home_hiring_researching",
+  "description": "Homeowner early in the HVAC buying process. Patient 5-email education sequence over 28 days.",
+  "from_address": "NailTheQuote <hello@nailthequote.com>",
+  "reply_to": "hello@nailthequote.com",
+  "sequence": [
+    {
+      "day": 0,
+      "template": "day0.liquid",
+      "subject_lines": [
+        "Your {{ home.tonnage }}-ton sizing — and the HVAC-buying roadmap",
+        "Your {{ location.city }} HVAC sizing + what to expect next"
+      ],
+      "preheader": "Most HVAC purchases take weeks, not hours. Here is what each phase looks like.",
+      "cta_url_template": "",
+      "conditionals": ["location.climate_region in {Cold, Hot, Warm/Mixed/Cool}"]
+    },
+    {
+      "day": 5,
+      "template": "day5.liquid",
+      "subject_lines": [
+        "Central AC, heat pump, or mini-split: which one for your home?",
+        "The honest HVAC system-type comparison"
+      ],
+      "preheader": "A heat pump is not always right; central AC is not always wrong. Here is how to choose.",
+      "cta_url_template": "",
+      "conditionals": ["location.climate_region in {Cold, Hot, Warm/Mixed/Cool}"]
+    },
+    {
+      "day": 12,
+      "template": "day12.liquid",
+      "subject_lines": [
+        "SEER2, HSPF2, AFUE: which efficiency numbers matter",
+        "When higher HVAC efficiency pays back"
+      ],
+      "preheader": "A higher-efficiency unit is not automatically a better buy. The payback math decides.",
+      "cta_url_template": "",
+      "conditionals": ["location.climate_region in {Cold, Hot, Warm/Mixed/Cool}"]
+    },
+    {
+      "day": 21,
+      "template": "day21.liquid",
+      "subject_lines": [
+        "The HVAC rebate stack — and the {{ location.state }} programs to check",
+        "Federal, state, and utility HVAC rebates: how the stack works"
+      ],
+      "preheader": "Federal credit, state rebate, utility rebate. Some stack, but the paperwork matters.",
+      "cta_url_template": "https://request.angi.com/service-request/category/10211?utm_source=nailthequote&utm_medium=email&utm_campaign=load_calc&utm_content=researching_email_4",
+      "conditionals": ["rebate_lookup_url from location.state_slug"]
+    },
+    {
+      "day": 28,
+      "template": "day28.liquid",
+      "subject_lines": [
+        "You are ready to hire. Here is how to actually do it.",
+        "The contractor-vetting checklist"
+      ],
+      "preheader": "You have the sizing, system type, efficiency math, and rebate path. Last step: bids.",
+      "cta_url_template": "https://request.angi.com/service-request/category/10211?utm_source=nailthequote&utm_medium=email&utm_campaign=load_calc&utm_content=researching_email_5",
+      "conditionals": []
+    }
+  ],
+  "personalization_variables": {
+    "home.sqft": "number — square footage from the load calc",
+    "home.cooling_btu": "number — cooling load in BTU/hr",
+    "home.heating_btu": "number — heating load in BTU/hr",
+    "home.tonnage": "number — system size in tons",
+    "location.city": "string — resolved from ZIP",
+    "location.state": "string — full state name",
+    "location.climate_region": "string — Hot / Warm / Mixed / Cool / Cold",
+    "location.iecc_zone": "string — 1A through 8",
+    "location.design_temp_low": "number — design low temperature",
+    "location.design_temp_high": "number — design high temperature",
+    "cta_url": "string — per-email CTA URL",
+    "rebate_lookup_url": "string — DSIRE state lookup URL"
+  },
+  "notes": ["Uses the same template-data shape as personas 1 and 2."]
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Central AC, heat pump, or mini-split</title></head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#27272a;">
+  <div style="max-width:600px;margin:0 auto;padding:32px 20px;">
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Hey,</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Five days into the roadmap. Today's decision: central AC, heat pump, or ductless mini-split. Contractors often recommend what they install most, so it helps to know the tradeoffs before you ask.</p>
+    <h2 style="font-size:17px;color:#18181b;margin:28px 0 10px 0;">Quick definitions</h2>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 10px 0;"><strong>Central AC plus furnace</strong> means two systems sharing ductwork: one for cooling, one for heating.</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 10px 0;"><strong>Heat pump</strong> means one system that heats and cools by moving heat instead of burning fuel. It uses ducts if you pick a ducted version.</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 18px 0;"><strong>Ductless mini-split</strong> is a heat-pump style system with wall-mounted indoor heads and no ductwork.</p>
+    {% if location.climate_region == "Cold" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">In your cold climate, the decision usually comes down to up-front cost versus long-term flexibility. A traditional AC plus furnace replacement is familiar and often cheaper up front. A cold-climate heat pump may cost more, but it can handle heating and cooling in one system and may qualify for credits or rebates.</p>
+    {% endif %}
+    {% if location.climate_region == "Hot" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">In your hot climate, a heat pump often makes sense because cooling is the primary load and winter heating demand is modest. The key detail is humidity performance: ask how the proposed system removes moisture, not just how many BTUs it moves.</p>
+    {% endif %}
+    {% if location.climate_region == "Warm" or location.climate_region == "Mixed" or location.climate_region == "Cool" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">In your {{ location.climate_region | downcase }} climate, both heating and cooling matter. The practical question is often ducted heat pump versus ductless heat pump, especially if your existing ducts are old, leaky, or undersized.</p>
+    {% endif %}
+    <h2 style="font-size:17px;color:#18181b;margin:28px 0 10px 0;">How to choose</h2>
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 18px 24px;padding:0;">
+      <li><strong>You have good ducts:</strong> compare ducted heat pump against like-for-like AC/furnace replacement.</li>
+      <li><strong>You have no ducts:</strong> compare ductless mini-split against adding ducts during a larger renovation.</li>
+      <li><strong>You have partial ducts:</strong> ask about a hybrid setup: central for the ducted area, mini-split for the addition or problem room.</li>
+      <li><strong>You have a tight budget:</strong> get the lower-cost like-for-like bid, then compare it after credits and rebates.</li>
+    </ul>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Do not lock the choice yet. Day 21 will cover the rebate stack, and that can change which option is actually cheapest.</p>
+    <p style="font-size:15px;line-height:1.65;margin:20px 0 4px 0;">&mdash; NailTheQuote</p>
+{% include 'footer' %}

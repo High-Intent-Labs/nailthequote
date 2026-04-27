@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>HVAC efficiency ratings</title></head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#27272a;">
+  <div style="max-width:600px;margin:0 auto;padding:32px 20px;">
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Hey,</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Day 12. Today is efficiency ratings: the numbers contractors will quote, and when paying for the higher number actually pays back.</p>
+    <h2 style="font-size:17px;color:#18181b;margin:28px 0 10px 0;">Translation guide</h2>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 10px 0;"><strong>SEER2</strong> is cooling efficiency averaged across a season. Higher means more cooling per unit of electricity.</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 10px 0;"><strong>HSPF2</strong> is heat-pump heating efficiency. Higher means more heat per unit of electricity.</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 10px 0;"><strong>EER2</strong> is cooling efficiency under peak heat. It matters most in hot climates.</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 18px 0;"><strong>AFUE</strong> is furnace efficiency. It only applies to fuel-burning furnaces, not heat pumps.</p>
+    <h2 style="font-size:17px;color:#18181b;margin:28px 0 10px 0;">The payback question</h2>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Higher efficiency costs more up front. Whether it is worth it depends on the price difference, annual energy savings, and how long you will own the home. A $2,500 upgrade that saves $150 per year takes about 17 years to pay back. That is too long for many systems.</p>
+    {% if location.climate_region == "Cold" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">In your cold climate, heating efficiency matters most. If you are considering a heat pump, ask about HSPF2 first and SEER2 second.</p>
+    {% endif %}
+    {% if location.climate_region == "Hot" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">In your hot climate, cooling efficiency matters most. SEER2 and EER2 are both worth comparing because your system will run hard for more of the year.</p>
+    {% endif %}
+    {% if location.climate_region == "Warm" or location.climate_region == "Mixed" or location.climate_region == "Cool" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">In your {{ location.climate_region | downcase }} climate, both heating and cooling count. A mid-to-high efficiency heat pump can make sense because it runs in both seasons.</p>
+    {% endif %}
+    <h2 style="font-size:17px;color:#18181b;margin:28px 0 10px 0;">Ask each contractor</h2>
+    <ol style="font-size:15px;line-height:1.7;margin:0 0 18px 24px;padding:0;">
+      <li>What are the SEER2, HSPF2, and EER2 ratings of this exact model?</li>
+      <li>Is the indoor and outdoor equipment an AHRI-matched pair?</li>
+      <li>If I go one tier higher in efficiency, what is the price difference and expected payback?</li>
+    </ol>
+    <p style="font-size:15px;line-height:1.65;margin:0;">Day 21 covers the credits and rebates that can change this math.</p>
+    <p style="font-size:15px;line-height:1.65;margin:20px 0 4px 0;">&mdash; NailTheQuote</p>
+{% include 'footer' %}

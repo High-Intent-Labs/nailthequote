@@ -1,0 +1,89 @@
+{
+  "persona": "home_diy",
+  "description": "DIY homeowner sequence. Technical education over 45 days with a later Angi Electrical CTA for the work that is usually worth hiring out.",
+  "from_address": "NailTheQuote <hello@nailthequote.com>",
+  "reply_to": "hello@nailthequote.com",
+  "sequence": [
+    {
+      "day": 0,
+      "template": "day0.liquid",
+      "subject_lines": [
+        "Your {{ home.tonnage }}-ton sizing — and the honest DIY HVAC playbook",
+        "DIY HVAC: what is realistic and what is not"
+      ],
+      "preheader": "The honest version: some HVAC work is realistic DIY, and some is better hired out.",
+      "cta_url_template": "",
+      "conditionals": ["home.tonnage tier", "location.climate_region in {Cold, Hot}"]
+    },
+    {
+      "day": 4,
+      "template": "day4.liquid",
+      "subject_lines": [
+        "Pulling your own HVAC permit: the homeowner walkthrough",
+        "State permits for DIY HVAC: how it works"
+      ],
+      "preheader": "Permits are less mysterious when you know what the inspector is checking.",
+      "cta_url_template": "",
+      "conditionals": []
+    },
+    {
+      "day": 10,
+      "template": "day10.liquid",
+      "subject_lines": [
+        "The DIY HVAC toolkit: what you actually need",
+        "Tools for DIY HVAC: the practical list"
+      ],
+      "preheader": "Buy the tools that match the project. Skip the ones that only make sense for daily pro use.",
+      "cta_url_template": "",
+      "conditionals": []
+    },
+    {
+      "day": 21,
+      "template": "day21.liquid",
+      "subject_lines": [
+        "Pre-charged mini-splits: the realistic DIY path",
+        "Single-zone, multi-zone, and the DIY mini-split tradeoffs"
+      ],
+      "preheader": "Pre-charged line sets are why DIY HVAC is possible for more homeowners now.",
+      "cta_url_template": "",
+      "conditionals": ["home.tonnage tier", "location.climate_region in {Cold, Hot}"]
+    },
+    {
+      "day": 35,
+      "template": "day35.liquid",
+      "subject_lines": [
+        "When to call a pro: 3 HVAC tasks not worth DIY-ing",
+        "The 3 parts of a DIY HVAC install to hire out"
+      ],
+      "preheader": "Your time and your insurance both have a price. These are the tasks to price carefully.",
+      "cta_url_template": "https://request.angi.com/service-request/category/12026?utm_source=nailthequote&utm_medium=email&utm_campaign=load_calc&utm_content=diy_email_5",
+      "conditionals": []
+    },
+    {
+      "day": 45,
+      "template": "day45.liquid",
+      "subject_lines": [
+        "Tax-credit paperwork for a DIY heat-pump install",
+        "DIY HVAC paperwork: receipts, certification statements, and install dates"
+      ],
+      "preheader": "Self-installs can still need serious paperwork. Keep the records before tax season.",
+      "cta_url_template": "",
+      "conditionals": ["rebate_lookup_url from location.state_slug"]
+    }
+  ],
+  "personalization_variables": {
+    "home.sqft": "number — square footage from the load calc",
+    "home.cooling_btu": "number — cooling load in BTU/hr",
+    "home.heating_btu": "number — heating load in BTU/hr",
+    "home.tonnage": "number — system size in tons",
+    "location.city": "string — resolved from ZIP",
+    "location.state": "string — full state name",
+    "location.climate_region": "string — Hot / Warm / Mixed / Cool / Cold",
+    "location.iecc_zone": "string — 1A through 8",
+    "location.design_temp_low": "number — design low temperature",
+    "location.design_temp_high": "number — design high temperature",
+    "cta_url": "string — per-email CTA URL",
+    "rebate_lookup_url": "string — DSIRE state lookup URL"
+  },
+  "notes": ["Third-party product/vendor names from the draft are intentionally generalized for NTQ public-copy rules."]
+}

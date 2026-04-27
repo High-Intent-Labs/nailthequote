@@ -3,6 +3,9 @@ import { getSupabaseAdmin } from '../_lib/supabase';
 import { getResend, getAudienceId } from '../_lib/resend';
 import { enrollPersona1 } from '../_lib/persona1-enroll';
 import { enrollPersona2 } from '../_lib/persona2-enroll';
+import { enrollPersona3 } from '../_lib/persona3-enroll';
+import { enrollPersona4 } from '../_lib/persona4-enroll';
+import { enrollPersona5 } from '../_lib/persona5-enroll';
 
 // ---------------------------------------------------------------------------
 // Basic in-memory duplicate-submission guard
@@ -203,6 +206,26 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       }
     } catch (enrollErr) {
       console.error('persona2 enrollment threw (NON-FATAL):', enrollErr);
+    }
+    // Remaining load-calculator nurture sequences. All five persona helpers are
+    // mutually exclusive by wizard state.
+    const remainingEnrollments = [
+      ['persona3', enrollPersona3],
+      ['persona4', enrollPersona4],
+      ['persona5', enrollPersona5],
+    ] as const;
+    for (const [personaLabel, enroll] of remainingEnrollments) {
+      try {
+        const enrollResult = await enroll(supabase, captureContext);
+        if (!enrollResult.enrolled && enrollResult.reason && enrollResult.reason !== 'not-qualified') {
+          console.error(`${personaLabel} enrollment skipped (NON-FATAL):`, {
+            email,
+            reason: enrollResult.reason,
+          });
+        }
+      } catch (enrollErr) {
+        console.error(`${personaLabel} enrollment threw (NON-FATAL):`, enrollErr);
+      }
     }
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });

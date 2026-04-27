@@ -15,8 +15,20 @@ import {
   PERSONA2_TEMPLATES,
   PERSONA2_TEMPLATE_BY_NUMBER,
   PERSONA2_MANIFEST,
+  PERSONA3_TEMPLATES,
+  PERSONA3_TEMPLATE_BY_NUMBER,
+  PERSONA3_MANIFEST,
+  PERSONA4_TEMPLATES,
+  PERSONA4_TEMPLATE_BY_NUMBER,
+  PERSONA4_MANIFEST,
+  PERSONA5_TEMPLATES,
+  PERSONA5_TEMPLATE_BY_NUMBER,
+  PERSONA5_MANIFEST,
   type Persona1TemplateKey,
   type Persona2TemplateKey,
+  type Persona3TemplateKey,
+  type Persona4TemplateKey,
+  type Persona5TemplateKey,
 } from '../_generated/email-templates';
 
 let cachedEngine: Liquid | null = null;
@@ -88,6 +100,57 @@ export async function renderPersona2Email(
   if (!key) throw new Error(`invalid email_number: ${emailNumber}`);
   const sequenceEntry = PERSONA2_MANIFEST.sequence[emailNumber];
   const templateSource = PERSONA2_TEMPLATES[key];
+
+  const engine = getEngine();
+  const html = await engine.parseAndRender(templateSource, data);
+  const subject = await engine.parseAndRender(sequenceEntry.subject_lines[0], data);
+  const preheader = await engine.parseAndRender(sequenceEntry.preheader, data);
+
+  return { subject, html, preheader };
+}
+
+export async function renderPersona3Email(
+  emailNumber: number,
+  data: Record<string, unknown>
+): Promise<RenderResult> {
+  const key = PERSONA3_TEMPLATE_BY_NUMBER[emailNumber] as Persona3TemplateKey | undefined;
+  if (!key) throw new Error(`invalid email_number: ${emailNumber}`);
+  const sequenceEntry = PERSONA3_MANIFEST.sequence[emailNumber];
+  const templateSource = PERSONA3_TEMPLATES[key];
+
+  const engine = getEngine();
+  const html = await engine.parseAndRender(templateSource, data);
+  const subject = await engine.parseAndRender(sequenceEntry.subject_lines[0], data);
+  const preheader = await engine.parseAndRender(sequenceEntry.preheader, data);
+
+  return { subject, html, preheader };
+}
+
+export async function renderPersona4Email(
+  emailNumber: number,
+  data: Record<string, unknown>
+): Promise<RenderResult> {
+  const key = PERSONA4_TEMPLATE_BY_NUMBER[emailNumber] as Persona4TemplateKey | undefined;
+  if (!key) throw new Error(`invalid email_number: ${emailNumber}`);
+  const sequenceEntry = PERSONA4_MANIFEST.sequence[emailNumber];
+  const templateSource = PERSONA4_TEMPLATES[key];
+
+  const engine = getEngine();
+  const html = await engine.parseAndRender(templateSource, data);
+  const subject = await engine.parseAndRender(sequenceEntry.subject_lines[0], data);
+  const preheader = await engine.parseAndRender(sequenceEntry.preheader, data);
+
+  return { subject, html, preheader };
+}
+
+export async function renderPersona5Email(
+  emailNumber: number,
+  data: Record<string, unknown>
+): Promise<RenderResult> {
+  const key = PERSONA5_TEMPLATE_BY_NUMBER[emailNumber] as Persona5TemplateKey | undefined;
+  if (!key) throw new Error(`invalid email_number: ${emailNumber}`);
+  const sequenceEntry = PERSONA5_MANIFEST.sequence[emailNumber];
+  const templateSource = PERSONA5_TEMPLATES[key];
 
   const engine = getEngine();
   const html = await engine.parseAndRender(templateSource, data);

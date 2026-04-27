@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Your HVAC-buying roadmap</title></head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#27272a;">
+  <div style="max-width:600px;margin:0 auto;padding:32px 20px;">
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Hey there,</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">You just calculated the sizing for your {{ home.sqft | comma }} sqft home in {{ location.city }}, {{ location.state }}:</p>
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 18px 24px;padding:0;">
+      <li><strong>Cooling:</strong> {{ home.cooling_btu | comma }} BTU/hr</li>
+      <li><strong>Heating:</strong> {{ home.heating_btu | comma }} BTU/hr</li>
+      <li><strong>System size:</strong> {{ home.tonnage }} tons</li>
+    </ul>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">You also told us you are still researching. That is the right time to slow down. Most HVAC purchases move through four phases: research, get quotes, decide, then install. The homeowners who rush usually end up buying whatever the first contractor happens to sell that week.</p>
+    <h2 style="font-size:17px;color:#18181b;margin:28px 0 10px 0;">The realistic roadmap</h2>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 10px 0;"><strong>Phase 1: Research.</strong> Use your sizing result as the starting line. The open questions are system type, efficiency level, and rebates.</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 10px 0;"><strong>Phase 2: Get quotes.</strong> Three quotes is the minimum. One is a vibe; two is a coin flip; three is a comparison.</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 10px 0;"><strong>Phase 3: Decide.</strong> Compare price, warranty, contractor reputation, timeline, and what is included.</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 18px 0;"><strong>Phase 4: Install.</strong> Most installs take 1-3 days, with permit inspection after. Plan around weather, utility timing, and your household schedule.</p>
+    {% if location.climate_region == "Cold" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 18px 0;background:#f8fafc;border-left:3px solid #0f766e;padding:12px 16px;">You are in a cold zone (IECC {{ location.iecc_zone }}, design heating temperature around {{ location.design_temp_low }}&deg;F). Modern cold-climate heat pumps are worth researching before a contractor defaults you to a traditional replacement.</p>
+    {% endif %}
+    {% if location.climate_region == "Hot" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 18px 0;background:#fff7ed;border-left:3px solid #FF6B2B;padding:12px 16px;">You are in a hot zone (IECC {{ location.iecc_zone }}, design cooling temperature around {{ location.design_temp_high }}&deg;F). Humidity removal matters almost as much as temperature. We will cover what to ask about next.</p>
+    {% endif %}
+    {% if location.climate_region == "Warm" or location.climate_region == "Mixed" or location.climate_region == "Cool" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 18px 0;background:#f8fafc;border-left:3px solid #0f766e;padding:12px 16px;">You are in a {{ location.climate_region | downcase }} zone (IECC {{ location.iecc_zone }}), where both heating and cooling matter. That is exactly where heat pumps often deserve a serious look.</p>
+    {% endif %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 10px 0;">What is coming:</p>
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 20px 24px;padding:0;">
+      <li>Day 5: central AC vs. heat pump vs. mini-split.</li>
+      <li>Day 12: SEER2, HSPF2, AFUE, and payback math.</li>
+      <li>Day 21: federal, state, and utility rebates.</li>
+      <li>Day 28: contractor vetting and quote collection.</li>
+    </ul>
+    <p style="font-size:15px;line-height:1.65;margin:0;">No CTA today. Save this email so the roadmap is easy to find.</p>
+    <p style="font-size:15px;line-height:1.65;margin:20px 0 4px 0;">&mdash; NailTheQuote</p>
+{% include 'footer' %}

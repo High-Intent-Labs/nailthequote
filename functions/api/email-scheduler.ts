@@ -19,11 +19,14 @@
 import type { Env } from '../_lib/env';
 import { getSupabaseAdmin } from '../_lib/supabase';
 import { getResend } from '../_lib/resend';
-import { renderPersona1Email, renderPersona2Email } from '../_lib/template-engine';
+import { renderPersona1Email, renderPersona2Email, renderPersona3Email, renderPersona4Email, renderPersona5Email } from '../_lib/template-engine';
 import { buildPersona1TemplateData, PERSONA1_KEY } from '../_lib/persona1-enroll';
 import { buildPersona2TemplateData, PERSONA2_KEY } from '../_lib/persona2-enroll';
+import { buildPersona3TemplateData, PERSONA3_KEY } from '../_lib/persona3-enroll';
+import { buildPersona4TemplateData, PERSONA4_KEY } from '../_lib/persona4-enroll';
+import { buildPersona5TemplateData, PERSONA5_KEY } from '../_lib/persona5-enroll';
 import { buildUnsubscribeUrl } from '../_lib/unsubscribe-token';
-import { PERSONA1_MANIFEST, PERSONA2_MANIFEST, type PersonaManifest } from '../_generated/email-templates';
+import { PERSONA1_MANIFEST, PERSONA2_MANIFEST, PERSONA3_MANIFEST, PERSONA4_MANIFEST, PERSONA5_MANIFEST, type PersonaManifest } from '../_generated/email-templates';
 
 // Per-persona dispatch table. Adding a new persona means: import its key +
 // builder + render fn, drop a row in here. Everything else is generic.
@@ -42,6 +45,21 @@ const PERSONA_CONFIG: Record<string, PersonaConfig> = {
     manifest: PERSONA2_MANIFEST,
     buildData: buildPersona2TemplateData,
     render: renderPersona2Email,
+  },
+  [PERSONA3_KEY]: {
+    manifest: PERSONA3_MANIFEST,
+    buildData: buildPersona3TemplateData,
+    render: renderPersona3Email,
+  },
+  [PERSONA4_KEY]: {
+    manifest: PERSONA4_MANIFEST,
+    buildData: buildPersona4TemplateData,
+    render: renderPersona4Email,
+  },
+  [PERSONA5_KEY]: {
+    manifest: PERSONA5_MANIFEST,
+    buildData: buildPersona5TemplateData,
+    render: renderPersona5Email,
   },
 };
 

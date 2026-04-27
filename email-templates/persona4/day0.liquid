@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>DIY HVAC playbook</title></head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#27272a;">
+  <div style="max-width:600px;margin:0 auto;padding:32px 20px;">
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Hey there,</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 12px 0;">You calculated a {{ home.tonnage }}-ton system for your {{ home.sqft | comma }} sqft home in {{ location.city }}, {{ location.state }}: {{ home.cooling_btu | comma }} BTU cooling and {{ home.heating_btu | comma }} BTU heating.</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">You also told us this is a DIY project. Good. DIY HVAC can save real money, but only if you plan around the work that is realistic for a homeowner and the work that usually needs a license, certification, or inspection signoff.</p>
+    <h2 style="font-size:17px;color:#18181b;margin:28px 0 10px 0;">The honest landscape</h2>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 10px 0;"><strong>Most realistic full-DIY path:</strong> pre-charged mini-split systems with factory-sealed line sets. These avoid most refrigerant handling.</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 10px 0;"><strong>Possible, but harder:</strong> traditional split systems. These usually require EPA 608 certification for refrigerant work plus more tools and more precision.</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 18px 0;"><strong>Commonly hired out:</strong> the 240V electrical circuit, refrigerant work on non-pre-charged systems, and final commissioning.</p>
+    {% if home.tonnage <= 2 %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;background:#f8fafc;border-left:3px solid #0f766e;padding:12px 16px;">Your {{ home.tonnage }}-ton load is in the sweet spot for single-zone or small multi-zone DIY mini-split planning.</p>
+    {% endif %}
+    {% if home.tonnage > 2 and home.tonnage <= 5 %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;background:#f8fafc;border-left:3px solid #0f766e;padding:12px 16px;">Your {{ home.tonnage }}-ton load may fit DIY mini-split planning, but likely as a multi-zone project rather than one indoor head.</p>
+    {% endif %}
+    {% if home.tonnage > 5 %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;background:#fff7ed;border-left:3px solid #FF6B2B;padding:12px 16px;">Your {{ home.tonnage }}-ton load is at the upper end of realistic DIY. Think carefully about a hybrid approach before committing to doing everything yourself.</p>
+    {% endif %}
+    {% if location.climate_region == "Cold" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Cold-climate note: make sure any heat pump or mini-split you consider is rated for low-temperature heating, not just mild-weather operation.</p>
+    {% endif %}
+    {% if location.climate_region == "Hot" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Hot-climate note: humidity removal matters. Look for variable-speed equipment and ask how the system handles latent load.</p>
+    {% endif %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 10px 0;">What is coming: permits, tools, pre-charged mini-splits, when to call a pro, and paperwork for credits/rebates.</p>
+    <p style="font-size:15px;line-height:1.65;margin:20px 0 4px 0;">&mdash; NailTheQuote</p>
+{% include 'footer' %}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Pre-charged mini-splits</title></head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#27272a;">
+  <div style="max-width:600px;margin:0 auto;padding:32px 20px;">
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Hey,</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Day 21. Pre-charged mini-splits are the reason full DIY HVAC is realistic for more homeowners now. The refrigerant is sealed at the factory, and the line set connects without you charging the system from a cylinder.</p>
+    <h2 style="font-size:17px;color:#18181b;margin:28px 0 10px 0;">Single-zone versus multi-zone</h2>
+    {% if home.tonnage <= 2 %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Your {{ home.tonnage }}-ton load is friendly to single-zone or small multi-zone planning. Keep the design simple if one or two indoor heads can cover the space well.</p>
+    {% endif %}
+    {% if home.tonnage > 2 and home.tonnage <= 5 %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Your {{ home.tonnage }}-ton load likely pushes you toward multi-zone planning. Multi-zone is still DIY-able, but line-set routing and condensate drainage become the project.</p>
+    {% endif %}
+    {% if home.tonnage > 5 %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Your {{ home.tonnage }}-ton load is a warning sign for full DIY. Consider using DIY equipment for part of the home and hiring out the rest.</p>
+    {% endif %}
+    <h2 style="font-size:17px;color:#18181b;margin:28px 0 10px 0;">What to check before ordering</h2>
+    <ul style="font-size:15px;line-height:1.7;margin:0 0 18px 24px;padding:0;">
+      <li>Heating capacity at your design low temperature, not just nominal capacity.</li>
+      <li>Whether the line-set length matches your planned route without coiling excess line in a bad location.</li>
+      <li>Drainage path for every indoor head.</li>
+      <li>Electrical amperage and whether your panel can support it.</li>
+      <li>Warranty rules for self-installation and required documentation.</li>
+    </ul>
+    {% if location.climate_region == "Cold" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Cold-climate note: look for equipment specifically rated for low-temperature heating. Standard equipment can lose capacity quickly below freezing.</p>
+    {% endif %}
+    {% if location.climate_region == "Hot" %}
+    <p style="font-size:15px;line-height:1.65;margin:0 0 16px 0;">Hot-climate note: variable-speed operation helps with humidity because the system can run longer at lower output instead of short-cycling.</p>
+    {% endif %}
+    <p style="font-size:15px;line-height:1.65;margin:0;">Day 35 covers the parts of the project that are usually worth hiring out.</p>
+    <p style="font-size:15px;line-height:1.65;margin:20px 0 4px 0;">&mdash; NailTheQuote</p>
+{% include 'footer' %}

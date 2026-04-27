@@ -1,0 +1,48 @@
+{
+  "persona": "pro",
+  "description": "Short pro-to-pro sequence for contractors who use the load calculator.",
+  "from_address": "NailTheQuote <hello@nailthequote.com>",
+  "reply_to": "hello@nailthequote.com",
+  "sequence": [
+    {
+      "day": 0,
+      "template": "day0.liquid",
+      "subject_lines": [
+        "{{ home.tonnage }}-ton load calc + the NTQ pro tool catalog",
+        "Your calc + other free pro tools"
+      ],
+      "preheader": "One quick intro to the NTQ tool suite, then two practical follow-ups.",
+      "cta_url_template": "",
+      "conditionals": []
+    },
+    {
+      "day": 5,
+      "template": "day5.liquid",
+      "subject_lines": [
+        "HVAC job pricing: the math that protects your margin",
+        "Structural pricing for HVAC jobs"
+      ],
+      "preheader": "Cost-plus, flat-rate, overhead recovery, return-trip allowance. Framework, not fake benchmarks.",
+      "cta_url_template": "",
+      "conditionals": []
+    },
+    {
+      "day": 14,
+      "template": "day14.liquid",
+      "subject_lines": [
+        "How Angi Pro lead-gen works",
+        "Need more HVAC leads? Here is the math to run."
+      ],
+      "preheader": "Pay-per-lead math, when it can make sense, and when to skip it.",
+      "cta_url_template": "https://signup.angi.com/pro?utm_source=nailthequote&utm_medium=email&utm_campaign=load_calc&utm_content=pro_email_3",
+      "conditionals": []
+    }
+  ],
+  "personalization_variables": {
+    "home.cooling_btu": "number — cooling load in BTU/hr",
+    "home.heating_btu": "number — heating load in BTU/hr",
+    "home.tonnage": "number — system size in tons",
+    "cta_url": "string — per-email CTA URL"
+  },
+  "notes": ["No competitor SaaS or third-party vendor mentions. Angi claims kept conservative."]
+}

@@ -43,6 +43,21 @@ const PERSONAS = [
     folder: 'persona2',
     templateKeys: ['day0', 'day3', 'day10'],
   },
+  {
+    constPrefix: 'PERSONA3',
+    folder: 'persona3',
+    templateKeys: ['day0', 'day5', 'day12', 'day21', 'day28'],
+  },
+  {
+    constPrefix: 'PERSONA4',
+    folder: 'persona4',
+    templateKeys: ['day0', 'day4', 'day10', 'day21', 'day35', 'day45'],
+  },
+  {
+    constPrefix: 'PERSONA5',
+    folder: 'persona5',
+    templateKeys: ['day0', 'day5', 'day14'],
+  },
 ];
 
 function bundlePersona(p) {
