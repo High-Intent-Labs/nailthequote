@@ -1,0 +1,105 @@
+---
+// Internal-only preview of the post-submit results screen on /hvac/load-calculator
+// for each of the five personas captured by the qualifying questions
+// (segment + is_diy + contractor_stage). Not linked from anywhere on the site;
+// noindex; excluded from sitemap. Built so Alison @ Angi can see what users
+// currently see, on desktop and mobile, side by side.
+import '../styles/global.css';
+
+const personas = [
+  {
+    id: 'not_yet',
+    label: 'Home + Hiring + "Not yet started"',
+    badge: '🟢🟢🟢',
+    note: 'Highest-intent bucket — homeowner ready to hire, has not yet contacted any pro. Routes to Angi HVAC service request (category 10211).',
+  },
+  {
+    id: 'has_estimates',
+    label: 'Home + Hiring + "Already have estimates"',
+    badge: '🟡',
+    note: 'Mid-intent — homeowner has at least one quote, may be comparison-shopping. Routes to Angi HVAC.',
+  },
+  {
+    id: 'researching',
+    label: 'Home + Hiring + "Just researching"',
+    badge: '🟡',
+    note: 'Mid-intent — homeowner browsing pros, not actively hiring yet. Routes to Angi HVAC.',
+  },
+  {
+    id: 'diy',
+    label: 'Home + DIY',
+    badge: '🔴',
+    note: 'Lower HVAC intent (won’t hire an HVAC pro), but the 240V hookup still needs an electrician → routes to Angi Electrical (category 12026).',
+  },
+  {
+    id: 'pro',
+    label: 'Pro / Contractor',
+    badge: '⚫',
+    note: 'HVAC contractor using the tool to size a job → routed to Angi pro signup.',
+  },
+];
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Internal: HVAC Load Calculator confirmation pages by persona</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body class="bg-bg-dark text-text-primary min-h-screen">
+  <div class="max-w-[1500px] mx-auto px-6 md:px-12 py-10">
+    <header class="mb-12">
+      <p class="text-text-muted text-xs font-semibold uppercase tracking-wider mb-3">Internal preview &middot; not linked from the site &middot; noindex</p>
+      <h1 class="font-heading font-extrabold text-3xl md:text-5xl tracking-tight mb-4">HVAC Load Calculator &mdash; confirmation page by persona</h1>
+      <p class="text-text-primary text-base md:text-lg max-w-3xl mb-3">
+        After a homeowner or pro submits the wizard on
+        <a class="text-accent underline" href="/hvac/load-calculator/" target="_blank" rel="noopener">/hvac/load-calculator</a>,
+        the page reveals a results card (cooling/heating load + tonnage) plus a persona-specific Angi CTA.
+        The persona is set by the segment + is_diy + contractor_stage answers captured during the wizard.
+      </p>
+      <p class="text-text-muted text-sm max-w-3xl">
+        Sample data shown: 2,000 sqft home, 8&prime; ceilings, mixed climate &rarr; 30,000 BTU cooling / 36,000 BTU heating / 2.5 tons. Numbers vary per submission; layout and CTA copy do not.
+      </p>
+    </header>
+
+    {personas.map((p) => (
+      <section class="mb-16">
+        <div class="mb-2 flex items-baseline gap-3 flex-wrap">
+          <span class="text-2xl leading-none">{p.badge}</span>
+          <h2 class="font-heading font-bold text-2xl md:text-3xl">{p.label}</h2>
+        </div>
+        <p class="text-text-muted text-sm mb-6 max-w-3xl">{p.note}</p>
+        <div class="flex flex-wrap gap-8 items-start">
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">Desktop &middot; 1024px</h3>
+            <iframe
+              src={`/hvac-confirmation-pages/${p.id}/`}
+              width="1024"
+              height="780"
+              loading="lazy"
+              class="border border-border rounded-lg shadow-2xl bg-bg-dark block"
+              title={`${p.label} — desktop preview`}
+            ></iframe>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">Mobile &middot; 375px</h3>
+            <iframe
+              src={`/hvac-confirmation-pages/${p.id}/`}
+              width="375"
+              height="1100"
+              loading="lazy"
+              class="border border-border rounded-lg shadow-2xl bg-bg-dark block"
+              title={`${p.label} — mobile preview`}
+            ></iframe>
+          </div>
+        </div>
+      </section>
+    ))}
+  </div>
+</body>
+</html>

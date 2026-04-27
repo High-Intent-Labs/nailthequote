@@ -7,7 +7,7 @@ export default defineConfig({
   site: 'https://nailthequote.com',
   trailingSlash: 'always',
   integrations: [sitemap({
-    filter: (page) => !page.includes('/dashboard/'),
+    filter: (page) => !page.includes('/dashboard/') && !page.includes('/hvac-confirmation-pages'),
   })],
   vite: {
     plugins: [tailwindcss()]
