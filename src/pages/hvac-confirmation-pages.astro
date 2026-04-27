@@ -3,8 +3,14 @@
 // for each of the five personas captured by the qualifying questions
 // (segment + is_diy + contractor_stage). Not linked from anywhere on the site;
 // noindex; excluded from sitemap. Built so Alison @ Angi can see what users
-// currently see, on desktop and mobile, side by side.
+// currently see — desktop and mobile, side by side.
+//
+// Note: iframes were considered but blocked by the site-wide CSP
+// `frame-ancestors 'none'` + Cloudflare _headers' additive (not override)
+// behavior. Instead, we inline the markup at two device widths via the
+// InternalHvacResultsPreview component.
 import '../styles/global.css';
+import InternalHvacResultsPreview from '../components/InternalHvacResultsPreview.astro';
 
 const personas = [
   {
@@ -12,30 +18,60 @@ const personas = [
     label: 'Home + Hiring + "Not yet started"',
     badge: '🟢🟢🟢',
     note: 'Highest-intent bucket — homeowner ready to hire, has not yet contacted any pro. Routes to Angi HVAC service request (category 10211).',
+    cta: {
+      headline: 'Ready to hire? Get quotes from Angi-vetted HVAC pros.',
+      body: 'Share your zip, system size, and project scope, and Angi will connect you with background-checked pros near you who can quote the job.',
+      button: 'Get My Free Quotes',
+      href: 'https://request.angi.com/service-request/category/10211?utm_source=nailthequote&utm_medium=calculator&utm_campaign=load_calc&utm_content=home_hiring_not_yet',
+    },
   },
   {
     id: 'has_estimates',
     label: 'Home + Hiring + "Already have estimates"',
     badge: '🟡',
     note: 'Mid-intent — homeowner has at least one quote, may be comparison-shopping. Routes to Angi HVAC.',
+    cta: {
+      headline: "Before you pick a quote, make sure it's fair.",
+      body: 'Quotes for the same HVAC job can vary a lot between contractors. The most reliable way to know yours is reasonable is to compare it with more quotes for the same job.',
+      button: 'Get More Quotes',
+      href: 'https://request.angi.com/service-request/category/10211?utm_source=nailthequote&utm_medium=calculator&utm_campaign=load_calc&utm_content=home_hiring_has_estimates',
+    },
   },
   {
     id: 'researching',
     label: 'Home + Hiring + "Just researching"',
     badge: '🟡',
     note: 'Mid-intent — homeowner browsing pros, not actively hiring yet. Routes to Angi HVAC.',
+    cta: {
+      headline: 'Browse Angi-vetted HVAC pros in your area.',
+      body: "See profiles, reviews, and typical project photos from local contractors. Request a quote only when you're ready.",
+      button: 'Browse HVAC Pros',
+      href: 'https://request.angi.com/service-request/category/10211?utm_source=nailthequote&utm_medium=calculator&utm_campaign=load_calc&utm_content=home_hiring_researching',
+    },
   },
   {
     id: 'diy',
     label: 'Home + DIY',
     badge: '🔴',
     note: 'Lower HVAC intent (won’t hire an HVAC pro), but the 240V hookup still needs an electrician → routes to Angi Electrical (category 12026).',
+    cta: {
+      headline: 'Doing it yourself? The 240V hookup still needs a licensed electrician.',
+      body: 'A new HVAC system requires a dedicated 240V circuit. Most states require a licensed electrician for the wiring, and most manufacturers require it for warranty validity.',
+      button: 'Get a Free Electrician Quote',
+      href: 'https://request.angi.com/service-request/category/12026?utm_source=nailthequote&utm_medium=calculator&utm_campaign=load_calc&utm_content=home_diy_electrical',
+    },
   },
   {
     id: 'pro',
     label: 'Pro / Contractor',
     badge: '⚫',
     note: 'HVAC contractor using the tool to size a job → routed to Angi pro signup.',
+    cta: {
+      headline: 'Need more customers? Join Angi as a pro.',
+      body: 'Angi is one of the largest networks connecting homeowners with local contractors. Join to receive homeowner leads in the trades and areas you serve.',
+      button: 'Become an Angi Pro',
+      href: 'https://signup.angi.com/pro?utm_source=nailthequote&utm_medium=calculator&utm_campaign=load_calc&utm_content=pro_signup',
+    },
   },
 ];
 ---
@@ -76,26 +112,12 @@ const personas = [
         <p class="text-text-muted text-sm mb-6 max-w-3xl">{p.note}</p>
         <div class="flex flex-wrap gap-8 items-start">
           <div>
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">Desktop &middot; 1024px</h3>
-            <iframe
-              src={`/hvac-confirmation-pages/${p.id}/`}
-              width="1024"
-              height="780"
-              loading="lazy"
-              class="border border-border rounded-lg shadow-2xl bg-bg-dark block"
-              title={`${p.label} — desktop preview`}
-            ></iframe>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">Desktop &middot; 720px width</h3>
+            <InternalHvacResultsPreview persona={p} device="desktop" />
           </div>
           <div>
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">Mobile &middot; 375px</h3>
-            <iframe
-              src={`/hvac-confirmation-pages/${p.id}/`}
-              width="375"
-              height="1100"
-              loading="lazy"
-              class="border border-border rounded-lg shadow-2xl bg-bg-dark block"
-              title={`${p.label} — mobile preview`}
-            ></iframe>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">Mobile &middot; 375px width</h3>
+            <InternalHvacResultsPreview persona={p} device="mobile" />
           </div>
         </div>
       </section>

@@ -1,0 +1,81 @@
+---
+// Renders the post-submit results card + persona Angi CTA at a chosen device
+// width (desktop ≈720px or mobile ≈375px). Used by the internal preview at
+// /hvac-confirmation-pages so we can show desktop and mobile side-by-side
+// without iframes (the site-wide CSP `frame-ancestors 'none'` + Cloudflare's
+// additive `_headers` behavior makes per-path framing impossible).
+//
+// Markup mirrors src/pages/hvac/load-calculator.astro (#results > the
+// accent-framed card, then #persona-cta variants). Mock BTU values stand
+// in for the live calc output.
+
+interface Props {
+  persona: {
+    cta: {
+      headline: string;
+      body: string;
+      button: string;
+      href: string;
+    };
+  };
+  device: 'desktop' | 'mobile';
+}
+
+const { persona, device } = Astro.props;
+
+const isDesktop = device === 'desktop';
+const containerWidth = isDesktop ? 'w-[720px]' : 'w-[375px]';
+const cardPadding   = isDesktop ? 'p-8'        : 'p-6';
+const tilesGrid     = isDesktop ? 'grid-cols-3' : 'grid-cols-1';
+---
+
+<div class:list={['bg-bg-card border border-border rounded-2xl shadow-2xl mx-auto', containerWidth, cardPadding]}>
+  <!-- Results card (mirrors #results > .rounded-2xl.border-2.border-accent) -->
+  <div class:list={['rounded-2xl border-2 border-accent bg-accent/5', cardPadding]}>
+    <div class="mb-6 bg-[rgba(52,211,153,0.08)] border border-[rgba(52,211,153,0.25)] rounded-xl p-4 flex items-start gap-3">
+      <div class="shrink-0 w-8 h-8 rounded-full bg-[rgba(52,211,153,0.15)] flex items-center justify-center">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" class="text-[#34D399]">
+          <path d="M16.667 5L7.5 14.167 3.333 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <p class="text-text-primary font-semibold text-sm">Results also sent to your inbox</p>
+        <p class="text-text-primary text-xs mt-0.5">Don't see it? Check your Spam or Promotions folder.</p>
+      </div>
+    </div>
+
+    <h3 class="font-heading font-bold text-xl mb-6">Your Load Calculation</h3>
+    <div class:list={['grid gap-4 mb-6', tilesGrid]}>
+      <div class="bg-bg-dark rounded-xl p-5 text-center">
+        <div class="text-text-primary text-xs font-medium uppercase tracking-wider mb-2">Cooling Load</div>
+        <div class="font-heading font-extrabold text-2xl text-accent">30,000 BTU</div>
+      </div>
+      <div class="bg-bg-dark rounded-xl p-5 text-center">
+        <div class="text-text-primary text-xs font-medium uppercase tracking-wider mb-2">Heating Load</div>
+        <div class="font-heading font-extrabold text-2xl text-text-primary">36,000 BTU</div>
+      </div>
+      <div class="bg-bg-dark rounded-xl p-5 text-center">
+        <div class="text-text-primary text-xs font-medium uppercase tracking-wider mb-2">System Tonnage</div>
+        <div class="font-heading font-extrabold text-2xl text-text-primary">2.5 tons</div>
+      </div>
+    </div>
+    <p class="text-text-primary text-sm italic">Estimate only. For permit-ready Manual J, use ACCA-accredited software.</p>
+  </div>
+
+  <!-- Persona CTA card (mirrors #persona-cta variant) -->
+  <div class="mt-6">
+    <div class:list={['rounded-2xl border-2 border-accent bg-gradient-to-br from-accent/15 to-accent/5', cardPadding]}>
+      <h3 class="font-heading font-bold text-xl text-text-primary mb-2">{persona.cta.headline}</h3>
+      <p class="text-text-primary text-sm mb-5">{persona.cta.body}</p>
+      <a class="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-lg transition-colors no-underline"
+         href={persona.cta.href}
+         target="_blank"
+         rel="noopener">
+        {persona.cta.button}
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
