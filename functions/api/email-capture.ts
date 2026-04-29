@@ -70,8 +70,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     // 1. Send results email with link back to tool
     const toolUrl = `https://nailthequote.com/${tradeSlug}/${toolSlug}`;
     const isTransactional = !!calculationResults;
+    // Persona-branched Angi CTA. Load-calc-only today; other tools get ''.
+    // Mirrors the on-page CTA logic from src/pages/hvac/load-calculator.astro
+    // so email + on-page show the same persona's Angi destination, just with
+    // utm_medium=email vs utm_medium=calculator.
+    const personaCtaHtml = buildLoadCalcPersonaCta(
+      toolSlug, segment, isDiy, contractorStage,
+    );
     const emailHtml = isTransactional
-      ? buildResultsEmailWithData(toolName, toolUrl, calculationResults)
+      ? buildResultsEmailWithData(toolName, toolUrl, calculationResults, personaCtaHtml)
       : buildResultsEmail(toolName, tradeName, toolUrl);
     // Transactional (gated-calculator) emails: simpler subject + headers that tell
     // Gmail this is a 1:1 transactional send, not bulk marketing. Without these,
@@ -281,6 +288,7 @@ function buildResultsEmailWithData(
   toolName: string,
   toolUrl: string,
   results: any,
+  personaCtaHtml: string = '',
 ): string {
   const fmt = (n?: number) => (n === 0 || !!n) ? n.toLocaleString('en-US') : '—';
   const row = (label: string, value: string) =>
@@ -397,6 +405,8 @@ function buildResultsEmailWithData(
     </table>
     ` : ''}
 
+    ${personaCtaHtml}
+
     <p style="font-size:13px;color:#666;line-height:1.5;margin:0 0 24px 0;">
       Estimate only. For permit-ready Manual J, use ACCA-accredited software.
     </p>
@@ -408,6 +418,82 @@ function buildResultsEmailWithData(
   </div>
 </body>
 </html>`;
+}
+
+// Persona CTA block for the transactional results email. Load-calculator only:
+// other tools don't have segment/is_diy/contractor_stage in their wizard.
+// Returns '' for non-load-calc tools so the rest of the email is unchanged.
+// Falls back to home_hiring_not_yet when wizard state is missing — matches the
+// on-page fallback in src/pages/hvac/load-calculator.astro.
+function buildLoadCalcPersonaCta(
+  toolSlug: string | undefined,
+  segment: string | undefined,
+  isDiy: boolean | null | undefined,
+  contractorStage: string | null | undefined,
+): string {
+  if (toolSlug !== 'load-calculator') return '';
+
+  let personaKey: string;
+  if (segment === 'customer') {
+    personaKey = 'pro';
+  } else if (isDiy === true) {
+    personaKey = 'home_diy';
+  } else if (contractorStage === 'has_estimates') {
+    personaKey = 'home_hiring_has_estimates';
+  } else if (contractorStage === 'researching') {
+    personaKey = 'home_hiring_researching';
+  } else if (contractorStage === 'not_yet') {
+    personaKey = 'home_hiring_not_yet';
+  } else {
+    personaKey = 'home_hiring_not_yet';
+  }
+
+  const HVAC_BASE = 'https://request.angi.com/service-request/category/10211';
+  const ELEC_BASE = 'https://request.angi.com/service-request/category/12026';
+  const PRO_BASE = 'https://signup.angi.com/pro';
+  const utm = (persona: string) =>
+    `?utm_source=nailthequote&utm_medium=email&utm_campaign=load_calc&utm_content=${persona}`;
+
+  const variants: Record<string, { headline: string; body: string; linkText: string; url: string }> = {
+    home_hiring_not_yet: {
+      headline: 'Ready to hire? Get quotes from Angi-vetted HVAC pros.',
+      body: 'Free to request, no commitment.',
+      linkText: 'Find HVAC pros near you →',
+      url: HVAC_BASE + utm('home_hiring_not_yet'),
+    },
+    home_hiring_has_estimates: {
+      headline: "Before you pick a quote, make sure it's fair.",
+      body: 'See what other Angi-vetted HVAC pros in your area would charge.',
+      linkText: 'Get more quotes →',
+      url: HVAC_BASE + utm('home_hiring_has_estimates'),
+    },
+    home_hiring_researching: {
+      headline: 'Browse Angi-vetted HVAC pros in your area.',
+      body: 'Read reviews and request quotes when you are ready.',
+      linkText: 'Browse HVAC pros →',
+      url: HVAC_BASE + utm('home_hiring_researching'),
+    },
+    home_diy: {
+      headline: 'The 240V hookup still needs a licensed electrician.',
+      body: 'Get a quote on the electrical work from an Angi-vetted electrician.',
+      linkText: 'Find an electrician →',
+      url: ELEC_BASE + utm('home_diy'),
+    },
+    pro: {
+      headline: 'Need more customers? Join Angi as a pro.',
+      body: 'Angi connects you with homeowners actively requesting quotes.',
+      linkText: 'Join Angi Pro →',
+      url: PRO_BASE + utm('pro'),
+    },
+  };
+  const v = variants[personaKey];
+
+  return `
+    <hr style="border:none;border-top:1px solid #eee;margin:24px 0 20px 0;">
+    <p style="font-size:14px;color:#111;line-height:1.5;margin:0 0 6px 0;font-weight:600;">${v.headline}</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 20px 0;">
+      ${v.body} <a href="${v.url}" style="color:#FF6B2B;text-decoration:underline;">${v.linkText}</a>
+    </p>`;
 }
 
 // ---------------------------------------------------------------------------
