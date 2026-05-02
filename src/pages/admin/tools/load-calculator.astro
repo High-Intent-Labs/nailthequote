@@ -195,14 +195,17 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
                 <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Sent</th>
                 <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Failed</th>
                 <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Unsub</th>
+                <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Unsub %</th>
                 <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Delivered</th>
                 <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Opened</th>
+                <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Opened %</th>
                 <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Clicked</th>
+                <th class="pb-2 pr-3 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Clicked %</th>
                 <th class="pb-2 font-medium text-text-primary text-xs uppercase tracking-wider text-right">Bounced</th>
               </tr>
             </thead>
             <tbody id="es-per-email-body" class="text-text-primary">
-              <tr><td colspan="10" class="py-4 text-center text-text-primary">Loading…</td></tr>
+              <tr><td colspan="13" class="py-4 text-center text-text-primary">Loading…</td></tr>
             </tbody>
           </table>
         </div>
@@ -642,7 +645,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
       const msg = errorMsg || 'No data';
       summaryEl.innerHTML = `<div class="col-span-full text-text-primary text-xs">${escape(msg)}</div>`;
       metaEl.innerHTML = '&nbsp;';
-      perEmailBody.innerHTML = `<tr><td colspan="10" class="py-4 text-center text-text-primary">${escape(msg)}</td></tr>`;
+      perEmailBody.innerHTML = `<tr><td colspan="13" class="py-4 text-center text-text-primary">${escape(msg)}</td></tr>`;
       failuresBody.innerHTML = `<tr><td colspan="4" class="py-3 text-center text-text-primary">—</td></tr>`;
       killBtn.disabled = true;
       killBtn.textContent = 'Unavailable';
@@ -675,33 +678,65 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     // 3. Per-email table
     const rows = (data.queueByPersonaDay || []) as any[];
     if (rows.length === 0) {
-      perEmailBody.innerHTML = `<tr><td colspan="10" class="py-4 text-center text-text-primary">No queue rows yet — no qualifying captures since enrollment shipped.</td></tr>`;
+      perEmailBody.innerHTML = `<tr><td colspan="13" class="py-4 text-center text-text-primary">No queue rows yet — no qualifying captures since enrollment shipped.</td></tr>`;
     } else {
-      perEmailBody.innerHTML = rows.map((r) => {
+      const totals = { pending: 0, sent: 0, failed: 0, unsub: 0, delivered: 0, opened: 0, clicked: 0, bounced: 0 };
+      const fmtPct = (num: number, denom: number) => denom > 0 ? `${Math.round((100 * num) / denom)}%` : '—';
+
+      const rowsHtml = rows.map((r) => {
         const personaLabel = EMAIL_PERSONA_LABEL[r.persona] || r.persona;
         const emailLabel = EMAIL_DAY_LABEL[r.email_number] ?? `#${r.email_number}`;
+        const pending = Number(r.pending || 0);
+        const sent = Number(r.sent || 0);
+        const failed = Number(r.failed || 0);
+        const unsub = Number(r.unsubscribed || 0);
         const delivered = Number(r.delivered || 0);
         const opened = Number(r.opened || 0);
         const clicked = Number(r.clicked || 0);
         const bounced = Number(r.bounced || 0);
-        const openPct = delivered > 0 ? Math.round((100 * opened) / delivered) : null;
-        const clickPct = delivered > 0 ? Math.round((100 * clicked) / delivered) : null;
-        const failedClass = Number(r.failed || 0) > 0 ? 'text-red-300 font-semibold' : '';
+        totals.pending += pending;
+        totals.sent += sent;
+        totals.failed += failed;
+        totals.unsub += unsub;
+        totals.delivered += delivered;
+        totals.opened += opened;
+        totals.clicked += clicked;
+        totals.bounced += bounced;
+        const failedClass = failed > 0 ? 'text-red-300 font-semibold' : '';
         const bouncedClass = bounced > 0 ? 'text-red-300 font-semibold' : '';
-        const pctTag = (n: number | null) => n != null ? ` <span class="text-[10px] opacity-60">(${n}%)</span>` : '';
         return `<tr class="border-b border-border/60">
           <td class="py-2 pr-3">${escape(personaLabel)}</td>
           <td class="py-2 pr-3">${emailLabel}</td>
-          <td class="py-2 pr-3 text-right tabular-nums">${Number(r.pending || 0)}</td>
-          <td class="py-2 pr-3 text-right tabular-nums">${Number(r.sent || 0)}</td>
-          <td class="py-2 pr-3 text-right tabular-nums ${failedClass}">${Number(r.failed || 0)}</td>
-          <td class="py-2 pr-3 text-right tabular-nums">${Number(r.unsubscribed || 0)}</td>
+          <td class="py-2 pr-3 text-right tabular-nums">${pending}</td>
+          <td class="py-2 pr-3 text-right tabular-nums">${sent}</td>
+          <td class="py-2 pr-3 text-right tabular-nums ${failedClass}">${failed}</td>
+          <td class="py-2 pr-3 text-right tabular-nums">${unsub}</td>
+          <td class="py-2 pr-3 text-right tabular-nums">${fmtPct(unsub, delivered)}</td>
           <td class="py-2 pr-3 text-right tabular-nums">${delivered}</td>
-          <td class="py-2 pr-3 text-right tabular-nums">${opened}${pctTag(openPct)}</td>
-          <td class="py-2 pr-3 text-right tabular-nums">${clicked}${pctTag(clickPct)}</td>
+          <td class="py-2 pr-3 text-right tabular-nums">${opened}</td>
+          <td class="py-2 pr-3 text-right tabular-nums">${fmtPct(opened, delivered)}</td>
+          <td class="py-2 pr-3 text-right tabular-nums">${clicked}</td>
+          <td class="py-2 pr-3 text-right tabular-nums">${fmtPct(clicked, delivered)}</td>
           <td class="py-2 text-right tabular-nums ${bouncedClass}">${bounced}</td>
         </tr>`;
       }).join('');
+
+      const totalsRow = `<tr class="border-t-2 border-border font-semibold">
+        <td class="py-2 pr-3" colspan="2">Total</td>
+        <td class="py-2 pr-3 text-right tabular-nums">${totals.pending}</td>
+        <td class="py-2 pr-3 text-right tabular-nums">${totals.sent}</td>
+        <td class="py-2 pr-3 text-right tabular-nums">${totals.failed}</td>
+        <td class="py-2 pr-3 text-right tabular-nums">${totals.unsub}</td>
+        <td class="py-2 pr-3 text-right tabular-nums">${fmtPct(totals.unsub, totals.delivered)}</td>
+        <td class="py-2 pr-3 text-right tabular-nums">${totals.delivered}</td>
+        <td class="py-2 pr-3 text-right tabular-nums">${totals.opened}</td>
+        <td class="py-2 pr-3 text-right tabular-nums">${fmtPct(totals.opened, totals.delivered)}</td>
+        <td class="py-2 pr-3 text-right tabular-nums">${totals.clicked}</td>
+        <td class="py-2 pr-3 text-right tabular-nums">${fmtPct(totals.clicked, totals.delivered)}</td>
+        <td class="py-2 text-right tabular-nums">${totals.bounced}</td>
+      </tr>`;
+
+      perEmailBody.innerHTML = rowsHtml + totalsRow;
     }
 
     // 4. Recent failures
