@@ -6,13 +6,13 @@
 // open/click/bounce rates (see migration 010).
 //
 // Configure in the Resend dashboard:
-//   1. Webhooks → Add endpoint
+//   1. Webhooks -> Add endpoint
 //   2. URL: https://nailthequote.com/api/resend-webhook?secret=<RESEND_WEBHOOK_SECRET>
 //   3. Events: email.delivered, email.opened, email.clicked, email.bounced,
 //      email.complained, email.delivery_delayed
 //
 // Auth model (v1, intentionally simple): shared secret in the URL. Resend
-// also offers Svix signature verification — we should switch to that in a
+// also offers Svix signature verification -- we should switch to that in a
 // follow-up since the URL secret leaks via referer / log lines.
 
 import type { Env } from '../_lib/env';
@@ -23,9 +23,48 @@ interface ResendWebhookEvent {
   created_at?: string;
   data?: {
     email_id?: string;
+    click?: {
+      userAgent?: string;
+      timestamp?: string;
+      [k: string]: unknown;
+    };
+    created_at?: string;
     [k: string]: unknown;
   };
   [k: string]: unknown;
+}
+
+const BOT_UA_PATTERNS = [
+  'amazon cloudfront',
+  'cloudfront',
+  'googlebot',
+  'bingbot',
+  'barracudacentral',
+  'proofpoint',
+  'mimecast',
+  'fireeye',
+  'messagelabs',
+  'fortiguard',
+  'ironport',
+  'sophos',
+  'symantec',
+  'trendmicro',
+  'mcafee',
+  'spider',
+  'prefetch',
+  'link preview',
+];
+
+function isBotClick(data: ResendWebhookEvent['data']): boolean {
+  if (!data?.click) return false;
+
+  const ua = (data.click.userAgent ?? '').toLowerCase();
+
+  if (BOT_UA_PATTERNS.some(p => ua.includes(p))) return true;
+
+  if (!ua) return true;
+
+  return false;
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
@@ -45,9 +84,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const eventType = body?.type;
   const emailId = body?.data?.email_id;
   if (!eventType || !emailId) {
-    // Resend may also send healthcheck POSTs. Don't 500 — just log and return 200.
     console.log('resend-webhook: skipping payload missing type or email_id', body);
     return new Response(JSON.stringify({ ignored: true }), { status: 200 });
+  }
+
+  if (eventType === 'email.clicked' && isBotClick(body.data)) {
+    const ua = body.data?.click?.userAgent ?? 'empty';
+    const to = Array.isArray(body.data?.to) ? (body.data.to as string[])[0] : '?';
+    console.log(`resend-webhook: bot click filtered | to=${to} | ua=${ua} | email=${emailId}`);
+    return new Response(JSON.stringify({ ok: true, filtered: 'bot_click' }), { status: 200 });
   }
 
   const occurredAt = (typeof body.created_at === 'string' && !Number.isNaN(Date.parse(body.created_at)))
@@ -69,7 +114,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       eventType,
       emailId,
     });
-    // Return 500 so Resend retries — we want to capture all events.
     return new Response(JSON.stringify({ error: 'persist_failed' }), { status: 500 });
   }
 
