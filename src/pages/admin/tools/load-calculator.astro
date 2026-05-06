@@ -164,6 +164,19 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         </table>
       </div>
 
+
+      <!-- Daily email sends + clicks chart -->
+      <div class="bg-bg-card border border-border rounded-xl p-5 mb-8">
+        <div class="mb-4">
+          <h2 class="font-heading font-semibold text-lg">Daily Email Sends + Clicks</h2>
+          <p class="text-text-primary text-xs mt-1">Stacked bars = nurture emails sent per day by persona. Orange line = unique email link clicks per day.</p>
+        </div>
+        <div id="email-daily-chart-container" style="position:relative;height:280px;">
+          <canvas id="email-daily-chart"></canvas>
+        </div>
+        <p id="email-daily-chart-error" class="hidden text-[#EF4444] text-xs mt-2"></p>
+      </div>
+
       <!-- Email sequence (persona 1) — Tier C admin panel.
            Shows queue health, per-email engagement (open / click / bounce
            rates from Resend webhook archive), recent failures, and a kill
@@ -280,6 +293,8 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <script>
+  import Chart from 'chart.js/auto';
+
   const SUPABASE_URL = 'https://toovnncuvzqzurugmiib.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvb3ZubmN1dnpxenVydWdtaWliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3NjUxNTYsImV4cCI6MjA4OTM0MTE1Nn0.5oKsdl8AYhUDGOVReAuYUCGOARY_z3G6x-Firkn5oaY';
 
@@ -403,6 +418,20 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     if (!res.ok) {
       const text = await res.text();
       throw new Error(`Set paused error ${res.status}: ${text.slice(0, 200)}`);
+    }
+    return await res.json();
+  }
+
+
+  async function callDailyEmailChart(password: string) {
+    const res = await fetch('/api/admin/email-daily-chart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`DailyChart ${res.status}: ${text.slice(0, 200)}`);
     }
     return await res.json();
   }
@@ -608,6 +637,123 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
           <td class="py-2 text-right font-mono">${ctr}</td>
         </tr>`);
     }
+  }
+
+
+  // Daily email chart
+  const PERSONA_COLORS: Record<string, string> = {
+    home_hiring_not_yet: '#22c55e',
+    home_hiring_has_quotes: '#86efac',
+    home_hiring_has_estimates: '#86efac',
+    home_hiring_researching: '#f97316',
+    home_diy: '#ef4444',
+    pro: '#71717a',
+  };
+  const PERSONA_LABELS: Record<string, string> = {
+    home_hiring_not_yet: 'Hiring: not yet',
+    home_hiring_has_quotes: 'Has estimates',
+    home_hiring_has_estimates: 'Has estimates',
+    home_hiring_researching: 'Researching',
+    home_diy: 'DIY',
+    pro: 'Pro',
+  };
+  let dailyChartInstance: Chart | null = null;
+
+  function renderDailyEmailChart(data: any, errorMsg?: string) {
+    const errEl = document.getElementById('email-daily-chart-error')!;
+    const canvas = document.getElementById('email-daily-chart') as HTMLCanvasElement;
+    if (errorMsg || !data || data.error) {
+      errEl.textContent = errorMsg || data?.error || 'Failed to load chart data';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    errEl.classList.add('hidden');
+
+    const sendsByDay: Record<string, Record<string, number>> = data.sendsByDay || {};
+    const clicksByDay: Record<string, number> = data.clicksByDay || {};
+
+    const allDays = [...new Set([...Object.keys(sendsByDay), ...Object.keys(clicksByDay)])].sort();
+    if (allDays.length === 0) {
+      errEl.textContent = 'No send data yet.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+
+    const personas = [...new Set(Object.values(sendsByDay).flatMap(d => Object.keys(d)))].sort();
+
+    const barDatasets = personas.map(p => ({
+      label: PERSONA_LABELS[p] || p,
+      data: allDays.map(d => sendsByDay[d]?.[p] || 0),
+      backgroundColor: PERSONA_COLORS[p] || '#a1a1aa',
+      stack: 'sends',
+      order: 2,
+    }));
+
+    const clickData = allDays.map(d => clicksByDay[d] || 0);
+    const lineDataset = {
+      label: 'Clicks',
+      data: clickData,
+      type: 'line' as const,
+      borderColor: '#f59e0b',
+      backgroundColor: 'rgba(245, 158, 11, 0.15)',
+      borderWidth: 2.5,
+      pointRadius: 4,
+      pointBackgroundColor: '#f59e0b',
+      fill: false,
+      yAxisID: 'y1',
+      order: 1,
+    };
+
+    dailyChartInstance?.destroy();
+    dailyChartInstance = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: allDays.map(d => {
+          const parts = d.split('-');
+          return `${parts[1]}/${parts[2]}`;
+        }),
+        datasets: [...barDatasets, lineDataset],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { boxWidth: 12, padding: 10, color: '#9ca3af', font: { size: 11 } },
+          },
+          tooltip: {
+            backgroundColor: '#1a1a2e',
+            titleFont: { size: 12 },
+            bodyFont: { size: 12 },
+            padding: 10,
+            cornerRadius: 6,
+          },
+        },
+        scales: {
+          x: {
+            stacked: true,
+            grid: { display: false },
+            ticks: { color: '#9ca3af', font: { size: 11 } },
+          },
+          y: {
+            stacked: true,
+            beginAtZero: true,
+            title: { display: true, text: 'Emails sent', color: '#9ca3af', font: { size: 11 } },
+            ticks: { color: '#9ca3af', font: { size: 11 }, stepSize: 10 },
+            grid: { color: 'rgba(255,255,255,0.06)' },
+          },
+          y1: {
+            position: 'right',
+            beginAtZero: true,
+            title: { display: true, text: 'Clicks', color: '#f59e0b', font: { size: 11 } },
+            ticks: { color: '#f59e0b', font: { size: 11 }, stepSize: 1 },
+            grid: { display: false },
+          },
+        },
+      },
+    });
   }
 
   // Email sequence panel — Tier C.
@@ -824,10 +970,11 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     const segmentFilter = segmentSel.value;
 
     try {
-      const [capturesP, analyticsP, emailSeqP] = await Promise.allSettled([
+      const [capturesP, analyticsP, emailSeqP, dailyChartP] = await Promise.allSettled([
         callCaptures(adminPassword, startDate, endDate, segmentFilter),
         callAnalytics(adminPassword, startDate, endDate),
         callEmailSequence(adminPassword),
+        callDailyEmailChart(adminPassword),
       ]);
 
       if (capturesP.status === 'fulfilled') {
@@ -869,6 +1016,12 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         renderEmailSequence(emailSeqP.value);
       } else {
         renderEmailSequence(null, String(emailSeqP.reason));
+      }
+
+      if (dailyChartP.status === 'fulfilled') {
+        renderDailyEmailChart(dailyChartP.value);
+      } else {
+        renderDailyEmailChart(null, String(dailyChartP.reason));
       }
 
       showContent();
