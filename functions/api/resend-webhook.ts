@@ -62,7 +62,9 @@ function isBotClick(data: ResendWebhookEvent['data']): boolean {
 
   if (BOT_UA_PATTERNS.some(p => ua.includes(p))) return true;
 
-  if (!ua) return true;
+  // Empty UA used to be treated as a bot, which silently dropped legit clicks
+  // from clients that don't expose UA. Allow them through; known bot patterns
+  // above are sufficient to filter the obvious ones.
 
   return false;
 }

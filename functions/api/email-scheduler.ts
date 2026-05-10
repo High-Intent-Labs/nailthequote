@@ -251,6 +251,7 @@ async function processOne(
       'List-Unsubscribe': `<${unsubUrl}>`,
       'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
     },
+    tracking: { click: true, open: true },
   });
 
   if (sendErr) {

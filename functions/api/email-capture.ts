@@ -92,6 +92,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         : `Your ${toolName} Results — NailTheQuote.com`,
       html: emailHtml,
       headers: isTransactional ? { 'Auto-Submitted': 'auto-generated' } : undefined,
+      tracking: { click: true, open: true },
     });
 
     // 2. Add to Resend Audience (if marketing consent)
